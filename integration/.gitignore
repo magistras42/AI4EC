@@ -218,3 +218,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Agent experiment output (run logs, working copies, caches)
+output/
