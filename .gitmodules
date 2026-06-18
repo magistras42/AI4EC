@@ -1,0 +1,4 @@
+[submodule "integration/extern/easycrypt"]
+	path = integration/extern/easycrypt
+	url = git@github.com:KevinLeeFM/easycrypt.git
+	branch = llm-integration
