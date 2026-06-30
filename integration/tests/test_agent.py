@@ -87,6 +87,73 @@ def test_parse_action_tactic_and_undo():
     assert undo.kind == "undo"
 
 
+def test_parse_action_lookup_lemma():
+    lookup = parse_action('{"action": "lookup_lemma", "name": "addr0"}')
+    assert lookup.kind == "lookup_lemma"
+    assert lookup.name == "addr0"
+
+
+def test_build_prompt_includes_repair_hint_and_lookup_tool():
+    prompt = build_prompt(
+        goal="n + 0 = n",
+        top_premises={},
+        failed_tactics=[],
+        proof_tail="proof.",
+        repair_hint="  by broken.",
+        lookup_notes=["addr0: axiom addr0: ..."],
+        enable_lemma_lookup=True,
+    )
+    assert "Repair hint" in prompt
+    assert "by broken." in prompt
+    assert "lookup_lemma" in prompt
+    assert "Lemma lookup results" in prompt
+
+
+@pytest.mark.integration
+def test_agent_stuck_on_repeated_failed_tactics(tmp_path, easycrypt_bin, monkeypatch):
+    source = FIXTURES / "incomplete_proof.ec"
+    work_copy = tmp_path / "incomplete_proof.agent.ec"
+    create_working_copy(source, work_copy)
+
+    from integration.agent.config import AgentConfig
+    from integration.agent.loop import ExitReason, run_agent
+
+    config = AgentConfig(
+        easycrypt_bin=easycrypt_bin,
+        top_k=2,
+        max_steps=50,
+        max_premises=10,
+        llm_model="mock",
+        embed_model="mock-embed",
+        stuck_limit=3,
+    )
+
+    class FakeLlm:
+        def decide(self, _prompt):
+            from integration.agent.llm import TacticAction
+
+            return TacticAction(tactic="by obviously_invalid_tactic.")
+
+    class FakeEmbedder:
+        def _resolve_model(self):
+            return "mock-embed"
+
+        def embed(self, _text):
+            return np.array([1.0, 0.0])
+
+        def build_index(self, premises):
+            return {name: np.array([1.0, 0.0]) for name in premises}
+
+    monkeypatch.setattr("integration.agent.loop.LlmClient", lambda _cfg: FakeLlm())
+    monkeypatch.setattr(
+        "integration.agent.loop.EmbeddingClient", lambda _cfg: FakeEmbedder()
+    )
+
+    result = run_agent(source, config, work_copy=work_copy)
+    assert result.reason == ExitReason.STUCK
+    assert result.steps == 3
+
+
 def test_error_history_normalizes_and_persists(tmp_path):
     path = tmp_path / "history.json"
     history = ErrorHistory(path)

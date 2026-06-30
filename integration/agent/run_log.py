@@ -52,18 +52,24 @@ class AgentRunLog:
         tactic: str | None = None,
         outcome: str,
         error: str | None = None,
+        lookup_name: str | None = None,
+        lookup_result: str | None = None,
     ) -> None:
-        self.record(
-            "iteration",
-            step=step,
-            goal=goal,
-            top_premises=top_premises,
-            ranked_scores=ranked_scores,
-            action=action,
-            tactic=tactic,
-            outcome=outcome,
-            error=error,
-        )
+        fields: dict[str, Any] = {
+            "step": step,
+            "goal": goal,
+            "top_premises": top_premises,
+            "ranked_scores": ranked_scores,
+            "action": action,
+            "tactic": tactic,
+            "outcome": outcome,
+            "error": error,
+        }
+        if lookup_name is not None:
+            fields["lookup_name"] = lookup_name
+        if lookup_result is not None:
+            fields["lookup_result"] = lookup_result
+        self.record("iteration", **fields)
 
     def finish(self, *, reason: str, message: str, steps: int) -> None:
         self.record(

@@ -24,7 +24,13 @@ class UndoAction:
     kind: Literal["undo"] = "undo"
 
 
-AgentAction = Union[TacticAction, UndoAction]
+@dataclass(frozen=True)
+class LookupLemmaAction:
+    kind: Literal["lookup_lemma"] = "lookup_lemma"
+    name: str = ""
+
+
+AgentAction = Union[TacticAction, UndoAction, LookupLemmaAction]
 
 _TACTIC_LINE_RE = re.compile(
     r"(?:(?:by|rewrite|apply|smt|trivial|split|ring|proc|move|case|elim|exists|have|pose)\b[^`\n]{0,200}\.)",
@@ -120,6 +126,11 @@ def parse_action(content: str) -> AgentAction:
     action = payload.get("action")
     if action == "undo":
         return UndoAction()
+    if action == "lookup_lemma":
+        name = str(payload.get("name", "")).strip()
+        if not name:
+            raise ValueError("lookup_lemma action missing name")
+        return LookupLemmaAction(name=name)
     if action == "tactic":
         tactic = str(payload.get("tactic", "")).strip()
         if not tactic:
@@ -170,6 +181,11 @@ def _json_candidates(text: str) -> list[str]:
 def _parse_fields_loosely(text: str) -> dict | None:
     if re.search(r'"action"\s*:\s*"undo"', text):
         return {"action": "undo"}
+    lookup_match = re.search(r'"action"\s*:\s*"lookup_lemma"', text)
+    if lookup_match:
+        name_match = re.search(r'"name"\s*:\s*"([^"]+)"', text)
+        if name_match:
+            return {"action": "lookup_lemma", "name": name_match.group(1)}
     tactic_match = re.search(r'"tactic"\s*:\s*"([^"]+)"', text)
     if tactic_match:
         return {"action": "tactic", "tactic": tactic_match.group(1)}

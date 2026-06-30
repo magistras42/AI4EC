@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import logging
 from dataclasses import dataclass
 from enum import Enum, auto
@@ -20,7 +21,7 @@ from .easycrypt import (
 )
 from .embeddings import EmbeddingClient, rank_by_cosine, top_premises
 from .error_history import ErrorHistory
-from .llm import LlmClient, TacticAction, UndoAction
+from .llm import LlmClient, LookupLemmaAction, TacticAction, UndoAction
 from .premises import (
     load_cached_embeddings,
     parse_premises,
@@ -39,6 +40,7 @@ class ExitReason(Enum):
     STARTUP_ERROR = auto()
     MAX_STEPS = auto()
     LLM_ERROR = auto()
+    STUCK = auto()
 
 
 @dataclass
@@ -91,6 +93,11 @@ def run_agent(
             cursor_upto=bounds.cursor_upto,
         )
 
+    lookup_notes: list[str] = []
+    seen_proof_states: set[str] = set()
+    stuck_counter = 0
+    enable_lookup = config.lemma_lookup_index is not None
+
     for step in range(1, config.max_steps + 1):
         bounds = proof.bounds()
         goal_result = fetch_goal(work_copy, bounds.cursor_upto, config)
@@ -122,6 +129,9 @@ def run_agent(
             top_premises=top,
             failed_tactics=errors.get(goal),
             proof_tail=proof.tail(config.proof_tail_lines),
+            repair_hint=config.repair_hint,
+            lookup_notes=lookup_notes,
+            enable_lemma_lookup=enable_lookup,
         )
 
         try:
@@ -150,6 +160,8 @@ def run_agent(
             undone = proof.undo_last_tactic()
             if not undone:
                 logger.info("Undo requested but no tactic to remove")
+            else:
+                stuck_counter = _increment_stuck(config, stuck_counter)
             if run_log is not None:
                 run_log.iteration(
                     step=step,
@@ -159,6 +171,27 @@ def run_agent(
                     action="undo",
                     outcome="noop" if not undone else "undone",
                 )
+            if _check_stuck(config, stuck_counter, run_log, work_copy, step):
+                return _stuck_result(config, work_copy, step, run_log)
+            continue
+
+        if isinstance(action, LookupLemmaAction):
+            note = _lookup_lemma(config, action.name)
+            lookup_notes.append(note)
+            stuck_counter = _increment_stuck(config, stuck_counter)
+            if run_log is not None:
+                run_log.iteration(
+                    step=step,
+                    goal=goal,
+                    top_premises=top,
+                    ranked_scores=ranked,
+                    action="lookup_lemma",
+                    outcome="lookup",
+                    lookup_name=action.name,
+                    lookup_result=note,
+                )
+            if _check_stuck(config, stuck_counter, run_log, work_copy, step):
+                return _stuck_result(config, work_copy, step, run_log)
             continue
 
         if isinstance(action, TacticAction):
@@ -169,6 +202,7 @@ def run_agent(
                 error_msg = validation.stderr.strip() or validation.stdout.strip()
                 errors.add(goal, error_msg, action.tactic)
                 logger.info("Tactic failed: %s", error_msg)
+                stuck_counter = _increment_stuck(config, stuck_counter)
                 if run_log is not None:
                     run_log.iteration(
                         step=step,
@@ -180,6 +214,8 @@ def run_agent(
                         outcome="failed",
                         error=error_msg,
                     )
+                if _check_stuck(config, stuck_counter, run_log, work_copy, step):
+                    return _stuck_result(config, work_copy, step, run_log)
                 continue
 
             if validation.returncode == 0 and not has_open_goals(validation.stdout):
@@ -197,6 +233,13 @@ def run_agent(
                 _log_finish(run_log, result)
                 return result
 
+            state_hash = _proof_state_hash(proof.tail(config.proof_tail_lines))
+            if state_hash in seen_proof_states:
+                stuck_counter = _increment_stuck(config, stuck_counter)
+            else:
+                seen_proof_states.add(state_hash)
+                stuck_counter = 0
+
             if run_log is not None:
                 run_log.iteration(
                     step=step,
@@ -207,6 +250,8 @@ def run_agent(
                     tactic=action.tactic,
                     outcome="accepted",
                 )
+            if _check_stuck(config, stuck_counter, run_log, work_copy, step):
+                return _stuck_result(config, work_copy, step, run_log)
 
     result = AgentResult(
         reason=ExitReason.MAX_STEPS,
@@ -216,6 +261,62 @@ def run_agent(
     )
     _log_finish(run_log, result)
     return result
+
+
+def _proof_state_hash(proof_tail: str) -> str:
+    return hashlib.sha256(proof_tail.encode("utf-8")).hexdigest()
+
+
+def _increment_stuck(config: AgentConfig, stuck_counter: int) -> int:
+    if config.stuck_limit is None:
+        return stuck_counter
+    return stuck_counter + 1
+
+
+def _check_stuck(
+    config: AgentConfig,
+    stuck_counter: int,
+    run_log: AgentRunLog | None,
+    work_copy: Path,
+    step: int,
+) -> bool:
+    if config.stuck_limit is None:
+        return False
+    return stuck_counter >= config.stuck_limit
+
+
+def _stuck_result(
+    config: AgentConfig,
+    work_copy: Path,
+    step: int,
+    run_log: AgentRunLog | None,
+) -> AgentResult:
+    limit = config.stuck_limit or 0
+    result = AgentResult(
+        reason=ExitReason.STUCK,
+        message=f"Agent stuck after {limit} unproductive iterations",
+        steps=step,
+        work_copy=work_copy,
+    )
+    _log_finish(run_log, result)
+    return result
+
+
+def _lookup_lemma(config: AgentConfig, name: str) -> str:
+    index = config.lemma_lookup_index or {}
+    if name in index:
+        return f"{name}: {index[name]}"
+    lower = name.lower()
+    for key, sig in index.items():
+        if key.lower() == lower:
+            return f"{key}: {sig}"
+    partial = [key for key in index if lower in key.lower()]
+    if len(partial) == 1:
+        key = partial[0]
+        return f"{key}: {index[key]}"
+    if partial:
+        return f"{name}: ambiguous ({', '.join(sorted(partial)[:5])})"
+    return f"{name}: not found"
 
 
 def _log_finish(run_log: AgentRunLog | None, result: AgentResult) -> None:

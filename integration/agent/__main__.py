@@ -77,6 +77,8 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     if result.reason == ExitReason.MAX_STEPS:
         return 2
+    if result.reason == ExitReason.STUCK:
+        return 4
     return 3
 
 

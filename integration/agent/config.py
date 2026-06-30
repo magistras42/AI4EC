@@ -55,6 +55,9 @@ class AgentConfig:
     promote_on_success: bool = False
     proof_tail_lines: int = 20
     log_file: Path | None = None
+    repair_hint: str | None = None
+    lemma_lookup_index: dict[str, str] | None = None
+    stuck_limit: int | None = None
 
 
 def _resolve_easycrypt_bin() -> Path:

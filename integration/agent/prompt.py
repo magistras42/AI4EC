@@ -6,7 +6,7 @@ from pathlib import Path
 
 EXAMPLES_PATH = Path(__file__).resolve().parent / "examples" / "tactics_fewshot.md"
 
-TOOL_SPEC = """\
+BASE_TOOL_SPEC = """\
 Respond with exactly one JSON object and no other text.
 
 Tactic:
@@ -16,10 +16,23 @@ Undo one tactic step (never undo the lemma signature or `proof.` line):
 {"action": "undo"}
 """
 
+LOOKUP_TOOL_SPEC = """
+Lookup a lemma or axiom signature by name:
+{"action": "lookup_lemma", "name": "my_lemma"}
+"""
+
+TOOL_SPEC = BASE_TOOL_SPEC
+
 
 def load_fewshot_examples(path: Path | None = None) -> str:
     example_path = path or EXAMPLES_PATH
     return example_path.read_text(encoding="utf-8")
+
+
+def tool_spec(*, enable_lemma_lookup: bool = False) -> str:
+    if enable_lemma_lookup:
+        return BASE_TOOL_SPEC + LOOKUP_TOOL_SPEC
+    return BASE_TOOL_SPEC
 
 
 def build_prompt(
@@ -28,28 +41,55 @@ def build_prompt(
     failed_tactics: list[tuple[str, str]],
     proof_tail: str,
     fewshot: str | None = None,
+    repair_hint: str | None = None,
+    lookup_notes: list[str] | None = None,
+    enable_lemma_lookup: bool = False,
 ) -> str:
     sections = [
         "You are an EasyCrypt proof assistant agent. Choose the next tactic or undo.",
         "",
-        "## Few-shot examples",
-        fewshot or load_fewshot_examples(),
-        "",
-        "## Current goal",
-        goal,
-        "",
-        "## Top relevant premises",
-        _format_premises(top_premises),
-        "",
-        "## Previously failed at this goal",
-        _format_failures(failed_tactics),
-        "",
-        "## Proof script tail",
-        proof_tail,
-        "",
-        "## Tool specification",
-        TOOL_SPEC,
     ]
+    if repair_hint:
+        sections.extend(
+            [
+                "## Repair hint (reference broken proof)",
+                repair_hint,
+                "",
+            ]
+        )
+    sections.extend(
+        [
+            "## Few-shot examples",
+            fewshot or load_fewshot_examples(),
+            "",
+            "## Current goal",
+            goal,
+            "",
+            "## Top relevant premises",
+            _format_premises(top_premises),
+            "",
+            "## Previously failed at this goal",
+            _format_failures(failed_tactics),
+            "",
+            "## Proof script tail",
+            proof_tail,
+            "",
+        ]
+    )
+    if lookup_notes:
+        sections.extend(
+            [
+                "## Lemma lookup results",
+                "\n".join(lookup_notes) if lookup_notes else "(none)",
+                "",
+            ]
+        )
+    sections.extend(
+        [
+            "## Tool specification",
+            tool_spec(enable_lemma_lookup=enable_lemma_lookup),
+        ]
+    )
     return "\n".join(sections)
 
 
