@@ -1,0 +1,6 @@
+[submodule "refman"]
+	path = refman
+	url = https://github.com/EasyCrypt/refman
+[submodule "easycrypt"]
+	path = easycrypt
+	url = https://github.com/EasyCrypt/easycrypt
