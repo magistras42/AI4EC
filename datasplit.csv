@@ -29,7 +29,8 @@ Algorithmic Bounds, Train
 Rewinding, Test
 XMSS-Jasmin, Train
 Random Password Generator, Train
-Decomposition-Zk, Test
+EasyUC, Train
+Decomposition-Zk, Train
 Zkp-Xpln, Train
 Minivoting, Test
 Yao, Test

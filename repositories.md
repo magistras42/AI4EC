@@ -23,18 +23,20 @@
 | Probabilistic Or | https://github.com/alleystoughton/ProbabilisticOr | None | N/A | stough@bu.edu, gaboardi@bu.edu, mbun@bu.edu | Yes |
 | PCR | https://github.com/alleystoughton/PCR | None | http://alleystoughton.us/research/pcr.pdf | stough@bu.edu | Yes |
 | Saber | https://github.com/MM45/Saber-Formal-Verification-EasyCrypt | MIT | https://eprint.iacr.org/2022/351 | fv-sphincsplus@mmeijers.com, pierre-yves@strub.nu | Yes |
-| ZK in EC | https://github.com/dfirsov/easycrypt-zk-code | None | https://eprint.iacr.org/2022/926 | denis.firsov@gmail.com | Pending |
+| ZK in EC | https://github.com/dfirsov/easycrypt-zk-code | None | https://eprint.iacr.org/2022/926 | denis.firsov@gmail.com | Yes |
 | Easy Schnorr | https://github.com/asifmallik/easyschnorr | None | N/A | pierre@cs.columbia.edu | Yes |
 | Xwing Benchmarks | https://github.com/X-Wing-KEM-Team/xwing-benchmarks | CC0-1.0 | XWing Paper | XWing Team | Yes |
 | FV-XMSS-EC | https://github.com/MM45/FV-XMSS-EC | MIT | https://eprint.iacr.org/2023/408 | fdupress@gmail.com | Yes |
 | AutoCrypt | https://github.com/JHUISI/autocrypt | None | N/A | jakinye3@jhu.edu | Pending |
 | Algorithmic Bounds | https://github.com/alleystoughton/AlgorithmicBounds | N/A | https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ITP.2022.30 | mbun@bu.edu, gaboardi@bu.edu, stough@bu.edu, wqu@monmouth.edu | Yes |
-| Rewinding | https://github.com/dfirsov/easycrypt-rewinding | None | https://eprint.iacr.org/2021/1078 | denis.firsov@gmail.com | Pending |
+| Rewinding | https://github.com/dfirsov/easycrypt-rewinding | None | https://eprint.iacr.org/2021/1078 | denis.firsov@gmail.com | Yes |
 | XMSS-Jasmin | https://github.com/ruipedro16/xmss-jasmin | None | N/A | https://formosa-crypto.org/ | Yes |
 | Random Password Generator | https://github.com/passcert-project/random-password-generator | None | https://arxiv.org/pdf/2106.03626 | https://linkedin.com/in/miguel-tavares-grilo/ | Yes |
-| Decomposition-Zk | https://github.com/Nsidorenco/Decomposition-zk | Unlicense | https://eprint.iacr.org/2021/437 | sidorenco@cs.au.dk | Pending |
+| EasyUC | https://github.com/easyuc/EasyUC | None | https://eprint.iacr.org/2019/582.pdf | stough@bu.edu | Yes |
+| Decomposition-Zk | https://github.com/Nsidorenco/Decomposition-zk | Unlicense | https://eprint.iacr.org/2021/437 | sidorenco@cs.au.dk | Yes |
 | Zkp-Xpln | https://github.com/gerlion/zkp-xpln | None | https://eprint.iacr.org/2012/513.pdf | thomas.haines@anu.edu.au | Yes |
-| Minivoting | https://github.com/catalindragan/minivoting-privacy | None | N/A | catalin.dragan@loria.fr | Pending |
+| Minivoting | https://github.com/catalindragan/minivoting-privacy | None | N/A | catalin.dragan@loria.fr | Yes |
+| Helios | https://gitlab.com/ec-evoting/helios | None | N/A | catalin.dragan@loria.fr | Yes |
 | Yao | https://github.com/fdupress/yao | None | See https://travis-ci.easycrypt.info/easycrypt-projects/yao | fdupress@gmail.com | Yes |
 | QSSM-RS | https://github.com/peavey2787/qssm-rs | BSL 1.1 | N/A | Unknown | Yes |
 | DualKey-MLWR | https://github.com/samlavery/DualKey-MLWR | DualPKSig Research License v1.0 | N/A | sam.lavery@gmail.com | Yes |
@@ -51,16 +53,16 @@
 | Meijers Dissertation | https://github.com/MM45/dissertation-artifacts | MIT | https://research.tue.nl/en/publications/toward-machine-checked-post-quantum-cryptography-formal-verificat/ | reasearch@mmeijers.com | Yes |
 | Evoting Thesis | https://github.com/dn813/prbx-easycrypt-2026 | None | Yes+ | Unknown | No |
 | KZG PCS | https://github.com/gerlion/kzg_pcs | None | See https://www.iacr.org/archive/asiacrypt2010/6477178/6477178.pdf | thomas.haines@anu.edu.au, iang@uwaterloo.ca | Yes | 
-| Commit Non Malleability EC | https://github.com/dfirsov/commitments-non-malleability-ec | None | Unknown | https://ezhuchko.com/, denis.firsov@gmail.com | Pending |
+| Commit Non Malleability EC | https://github.com/dfirsov/commitments-non-malleability-ec | None | Unknown | https://ezhuchko.com/, denis.firsov@gmail.com | Yes |
 | OSKGO Thesis | https://github.com/oskgo/master-artifacts | None | Yes+ | Unknown | No |
 | EasyCrypt Iceberg | https://github.com/xoredtwice/easycrypt-iceberg | None | N/A | Unknown | No |
 | Shipovnik Verification | https://github.com/y4cer/shipovnik_verification | MIT | No | Unknown | Yes |
-| Comparison Non Malleability Unsat | https://github.com/dfirsov/comparison-based-non-malleabiltiy-unsat | None | See http://firsov.ee/cnm-unsat/paper.pdf | https://ezhuchko.com/, denis.firsov@gmail.com | Pending |
+| Comparison Non Malleability Unsat | https://github.com/dfirsov/comparison-based-non-malleabiltiy-unsat | None | See http://firsov.ee/cnm-unsat/paper.pdf | https://ezhuchko.com/, denis.firsov@gmail.com | Yes |
 | EC Final Project | https://github.com/elimbaum/easycrypt-final-project | None | N/A | elimbaum@gmail.com, jainp@bu.edu | Yes |
 | Guessing Game | https://github.com/alleystoughton/GuessingGame | MIT | https://github.com/alleystoughton/GuessingGame/blob/main/fcs2025.pdf | stough@bu.edu | Yes |
 | BLT Signatures | https://github.com/dfirsov/easycrypt-one-time-blt-signature | None | https://eprint.iacr.org/2020/028.pdf | denis.firsov@gmail.com | Pending |
 | Above Threshold | https://github.com/zwang3583/aboveThreshold-DP-Proof | None | N/A | Unknown | No |
-| Sphincs | https://github.com/infopunk/Sphincs-Hash-Function-Security-EasyCrypt | None | N/A | rik@rkvl.org | Pending |
+| Sphincs | https://github.com/infopunk/Sphincs-Hash-Function-Security-EasyCrypt | None | N/A | rik@rkvl.org | Yes |
 | EasyCrypt Examples | https://github.com/AvishkarMahajan/easycrypt_examples | None | N/A | Unknown | No |
 | LQ-1 | https://github.com/LaharadevLQ1/lq1-ec-proofs | MIT | N/A | pavi@lq1.org | Yes |
 | Uvoting | https://github.com/krips/uvoting | None | N/A | kristjan.krips@cyber.ee | Pending |
