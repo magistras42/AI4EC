@@ -13,6 +13,12 @@ Unlike manually constructed examples, these cases originate from real developmen
 | REAL-002 | Tactic Simplification | EasyCrypt/easycrypt | 1c7e6d78 | `examples/SchnorrPK.ec` | ✅ |
 | REAL-003 | SMT Abstraction / Opaque Operator | EasyCrypt/easycrypt | e2d50009 | `theories/algebra/Perms.ec` | ✅ |
 | REAL-004 | Redundant Unfold / Tactic Refinement | EasyCrypt/easycrypt | 6890b877 | `theories/datatypes/FMap.ec` | ✅ |
+| REAL-005 | SMT Call Simplification / Proof Decomposition | EasyCrypt/easycrypt | f644a86f | `theories/algebra/DynMatrix.eca` | ✅ |
+| REAL-006 | Tactic Simplification / Proof Script Maintenance | EasyCrypt/easycrypt | 78cf6eb1 | `tests/procchange.ec` | ✅ |
+| REAL-007 | Async While Obligation / Tactic Refinement | EasyCrypt/easycrypt | 267f8273 | `examples/async-while.ec` | ✅ |
+| REAL-008 | Library Definition / Axiom Replacement | EasyCrypt/easycrypt | ecb33950 | `theories/algebra/Perms.ec` | ✅ |
+| REAL-009 | Proc-change Fresh Local Binding | EasyCrypt/easycrypt | 042456e8 | `tests/procchange.ec` | ✅ |
+| REAL-010 | Proc-change Framing / Regression Test | EasyCrypt/easycrypt | cc03b304 | `tests/procchange.ec` | ✅ |
 
 
 ## Notes
