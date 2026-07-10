@@ -10,6 +10,7 @@ from pathlib import Path
 
 PROOF_RE = re.compile(r"\bproof\.")
 QED_RE = re.compile(r"\bqed\.")
+PROC_TACTIC_RE = re.compile(r"\bproc\.\s*$", re.IGNORECASE)
 
 
 @dataclass
@@ -83,6 +84,16 @@ class ProofFile:
         lines = self.read_lines()
         return "\n".join(lines[-num_lines:])
 
+    def last_tactic_line(self) -> int | None:
+        return _find_last_tactic_line(self.read_lines(), self.bounds())
+
+    def is_last_tactic_proc(self) -> bool:
+        bounds = self.bounds()
+        line_no = _find_last_tactic_line(self.read_lines(), bounds)
+        if line_no is None:
+            return False
+        return PROC_TACTIC_RE.search(self.read_lines()[line_no - 1]) is not None
+
     def count_declarations_before(self, line_limit: int) -> int:
         count = 0
         for i, line in enumerate(self.read_lines(), start=1):
@@ -145,11 +156,26 @@ def _find_proof_start(lines: list[str], from_line: int) -> int:
 
 
 def _find_qed_after(lines: list[str], proof_start_line: int) -> int | None:
+    """Return the 1-based line number of the ``qed.`` that closes the proof
+    opened at *proof_start_line*, or ``None`` if no such line exists.
+
+    We verify ownership by scanning *backwards* from each candidate ``qed.``
+    line to find the nearest preceding ``proof.``.  A candidate is accepted
+    only when that nearest ``proof.`` is exactly ``proof_start_line``; this
+    prevents picking up ``qed.`` lines that belong to earlier, already-closed
+    lemmas in the same file (the root cause of the false-completion bug).
+    """
     if proof_start_line == 0:
         return None
     for i in range(proof_start_line, len(lines) + 1):
-        if QED_RE.search(lines[i - 1]):
-            return i
+        if not QED_RE.search(lines[i - 1]):
+            continue
+        # Verify this qed. belongs to the proof opened at proof_start_line.
+        for j in range(i - 1, 0, -1):
+            if PROOF_RE.search(lines[j - 1]):
+                if j == proof_start_line:
+                    return i   # confirmed: nearest proof. is our target
+                break          # nearest proof. is a different lemma – skip
     return None
 
 
@@ -173,6 +199,14 @@ def _normalize_tactic_line(tactic: str) -> str:
     tactic = tactic.strip()
     if tactic.startswith("```"):
         tactic = tactic.strip("`").strip()
+    # Safety net: `append_tactic` assumes one call inserts exactly one
+    # physical line. If a caller ever passes text containing raw newlines
+    # or control characters (e.g. a degenerate LLM generation that wasn't
+    # caught upstream), collapse it to a single printable line so a later
+    # `remove_lines(..., count=1)` rollback can never leave orphaned
+    # garbage lines behind in the proof file.
+    tactic = "".join(ch if ch.isprintable() else " " for ch in tactic)
+    tactic = re.sub(r"\s+", " ", tactic).strip()
     if not tactic.endswith("."):
         tactic += "."
     if not tactic.startswith("  "):

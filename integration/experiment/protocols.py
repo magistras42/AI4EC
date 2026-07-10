@@ -5,7 +5,10 @@ from __future__ import annotations
 import random
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterator, Protocol
+from typing import TYPE_CHECKING, Iterator, Protocol
+
+if TYPE_CHECKING:
+    from integration.experiment.informal import InformalConfig
 
 
 @dataclass(frozen=True)
@@ -63,7 +66,8 @@ class MutationStrategy(Protocol):
 class ExperimentSpec:
     name: str
     corpus: CorpusProvider
-    mutations: MutationStrategy
+    mutations: MutationStrategy | None = None
+    informal: InformalConfig | None = None
 
 
 class ExperimentSpecRegistry:

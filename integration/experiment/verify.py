@@ -5,14 +5,17 @@ from __future__ import annotations
 from pathlib import Path
 
 from integration.agent.config import AgentConfig
-from integration.agent.easycrypt import has_open_goals, validate_file
+from integration.agent.easycrypt import is_proof_complete_at_cursor
+from integration.agent.proof_file import ProofFile
 
 
 def is_proof_complete(path: Path, config: AgentConfig) -> bool:
-    result = validate_file(path, config)
-    return result.returncode == 0 and not has_open_goals(result.stdout)
+    return is_proof_complete_at_cursor(ProofFile(path), config)
 
 
 def is_proof_incomplete(path: Path, config: AgentConfig) -> bool:
-    result = validate_file(path, config)
-    return result.returncode == 0 and has_open_goals(result.stdout)
+    proof = ProofFile(path)
+    bounds = proof.bounds()
+    if bounds.proof_start_line == 0:
+        return False
+    return not is_proof_complete(path, config)

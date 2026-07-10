@@ -5,12 +5,12 @@ from __future__ import annotations
 import argparse
 import logging
 import sys
+from dataclasses import replace as dc_replace
 from pathlib import Path
 
 from integration.agent.config import AgentConfig
 from integration.experiment.config import ExperimentConfig
 from integration.experiment.corpora.joy import JoyCorpus
-from integration.experiment.mutations.tactics import TacticMutationSet
 from integration.experiment.protocols import ExperimentSpec
 from integration.experiment.runner import run_experiment
 from integration.experiment.specs import SPECS, register_default_specs
@@ -25,9 +25,21 @@ def _build_spec(name: str, data_dir: Path) -> ExperimentSpec:
                 name=spec.name,
                 corpus=JoyCorpus(data_dir=data_dir),
                 mutations=spec.mutations,
+                informal=spec.informal,
             )
         return spec
     raise KeyError(name)
+
+
+def _with_sandbox_dir(spec: ExperimentSpec, data_dir: Path, sandbox_dir: Path) -> ExperimentSpec:
+    if isinstance(spec.corpus, JoyCorpus):
+        return ExperimentSpec(
+            name=spec.name,
+            corpus=JoyCorpus(data_dir=data_dir, sandbox_dir=sandbox_dir),
+            mutations=spec.mutations,
+            informal=spec.informal,
+        )
+    return spec
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -66,6 +78,33 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Cap premises for debugging",
     )
+    run_p.add_argument(
+        "--red-herring-ratio",
+        type=float,
+        default=None,
+        help=(
+            "Fraction of used-lemma count to add as red herrings "
+            "(joy-informal-repair spec only; default 0.3)"
+        ),
+    )
+    run_p.add_argument(
+        "--writer-temperature",
+        type=float,
+        default=None,
+        help=(
+            "Sampling temperature for the informal-proof writer LLM "
+            "(joy-informal-repair spec only; default 0.7)"
+        ),
+    )
+    run_p.add_argument(
+        "--llm-json-mode",
+        action="store_true",
+        help=(
+            "Request structured JSON output (response_format=json_object) from "
+            "the solver LLM, for models that don't reliably follow the plain "
+            "tool-call format"
+        ),
+    )
     run_p.add_argument("-v", "--verbose", action="store_true", help="Verbose logging")
 
     args = parser.parse_args(argv)
@@ -90,6 +129,8 @@ def main(argv: list[str] | None = None) -> int:
         agent.embed_model = args.embed_model
     if args.lm_studio_url:
         agent.lm_studio_base_url = args.lm_studio_url
+    if args.llm_json_mode:
+        agent.llm_json_mode = True
 
     exp_config = ExperimentConfig(
         spec_name=args.spec,
@@ -104,18 +145,26 @@ def main(argv: list[str] | None = None) -> int:
 
     spec = _build_spec(args.spec, args.data_dir)
     exp_config.output_dir.mkdir(parents=True, exist_ok=True)
-    if isinstance(spec.corpus, JoyCorpus):
-        spec = ExperimentSpec(
-            name=spec.name,
-            corpus=JoyCorpus(
-                data_dir=args.data_dir,
-                sandbox_dir=exp_config.output_dir / "sandboxes",
-            ),
-            mutations=spec.mutations,
-        )
+    spec = _with_sandbox_dir(spec, args.data_dir, exp_config.output_dir / "sandboxes")
+
+    if spec.informal is not None:
+        overrides = {}
+        if args.red_herring_ratio is not None:
+            overrides["red_herring_ratio"] = args.red_herring_ratio
+        if args.writer_temperature is not None:
+            overrides["writer_temperature"] = args.writer_temperature
+        if overrides:
+            spec = ExperimentSpec(
+                name=spec.name,
+                corpus=spec.corpus,
+                mutations=spec.mutations,
+                informal=dc_replace(spec.informal, **overrides),
+            )
+
     result = run_experiment(spec, exp_config)
 
     print(f"Spec: {result.spec_name}")
+    print(f"Mode: {result.mode}")
     print(f"Trials: {result.trials_run} run, {result.trials_skipped} skipped")
     print(f"Successes: {result.successes}, stuck: {result.stuck}, max_steps: {result.max_steps}")
     print(f"Errors: {result.errors}")

@@ -54,6 +54,8 @@ class AgentRunLog:
         error: str | None = None,
         lookup_name: str | None = None,
         lookup_result: str | None = None,
+        thought: str | None = None,
+        content: str | None = None,
     ) -> None:
         fields: dict[str, Any] = {
             "step": step,
@@ -69,6 +71,10 @@ class AgentRunLog:
             fields["lookup_name"] = lookup_name
         if lookup_result is not None:
             fields["lookup_result"] = lookup_result
+        if thought is not None:
+            fields["thought"] = thought
+        if content is not None:
+            fields["content"] = content
         self.record("iteration", **fields)
 
     def finish(self, *, reason: str, message: str, steps: int) -> None:

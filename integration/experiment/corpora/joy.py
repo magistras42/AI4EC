@@ -65,7 +65,15 @@ class JoyCorpus(CorpusProvider):
         base = self.sandbox_dir or (self.data_dir / ".experiment-sandboxes" / JOY_SLUG)
         base.mkdir(parents=True, exist_ok=True)
         for entry in entries:
-            dest = base / entry.file.replace("/", "__")
+            # Destination must be unique per lemma, not just per source file:
+            # multiple lemmas commonly share one chapter file, and each one's
+            # sandbox is truncated differently (right after its own `qed.`).
+            # Keying only on the source file would let later entries silently
+            # overwrite earlier ones' sandbox content on disk while earlier
+            # `ProofCase`s still believe their `file` points at their own
+            # (now-corrupted) truncated proof.
+            safe_file = entry.file.replace("/", "__")
+            dest = base / f"{safe_file}__L{entry.line}_{entry.name}.ec"
             try:
                 case = build_sandbox(entry, self.data_dir, dest)
             except (FileNotFoundError, ValueError):

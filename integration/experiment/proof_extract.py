@@ -12,6 +12,53 @@ from .protocols import IndexEntry, ProofCase
 PROOF_LINE_RE = re.compile(r"^\s*proof\.")
 QED_RE = re.compile(r"^\s*qed\.")
 
+# Some corpus files (e.g. Joy's tutorial chapters) set `pragma Goals:
+# printall.` so a human following along in Proof-General sees the full
+# ambient context on every step. For the agent this is actively harmful:
+# EasyCrypt then reprints every declared theory/lemma/axiom on *every*
+# `-upto` goal fetch, which can balloon a single goal print to thousands of
+# tokens and blow past the LLM's context window (observed as a hard
+# "Context size has been exceeded" error). The pragma only affects display
+# verbosity, never proof semantics, so it's safe to neutralize.
+PRAGMA_GOALS_RE = re.compile(r"^\s*pragma\s+Goals\s*:", re.IGNORECASE)
+
+
+def neutralize_verbose_pragmas(lines: list[str]) -> list[str]:
+    """Comment out `pragma Goals: ...` lines in place (line count preserved
+    so all downstream 1-based line-number bookkeeping stays valid)."""
+    return [
+        "(* pragma removed for agent sandbox: avoids oversized goal dumps *)"
+        if PRAGMA_GOALS_RE.match(strip_comments(line))
+        else line
+        for line in lines
+    ]
+
+
+# `print ...` and `search ...` are diagnostic, human-facing REPL commands:
+# they have no effect on any proof obligation, but `ec.exe llm -upto N`
+# replays and captures the *entire* stdout transcript of compiling the file
+# up to line N, not just the state at N. Joy's tutorial chapters sprinkle
+# these liberally as teaching aids (e.g. "search (+)." to show students
+# what's available), and each one can dump dozens of matching
+# lemma/axiom/theory signatures. When a target lemma sits after several of
+# these in the same file, every single goal fetch for that lemma silently
+# carries all of that dump along with it — observed in practice to inflate
+# a ~100-character goal into a >15,000-character prompt, blowing past the
+# LLM's context window ("Context size has been exceeded"). Neutralizing
+# them is safe: they're not tactics and dropping them cannot change whether
+# any proof succeeds.
+REPL_DISPLAY_RE = re.compile(r"^\s*(print|search)\b", re.IGNORECASE)
+
+
+def strip_repl_display_commands(lines: list[str]) -> list[str]:
+    """Comment out top-level `print`/`search` commands (line count preserved)."""
+    return [
+        "(* print/search removed for agent sandbox: avoids oversized goal dumps *)"
+        if REPL_DISPLAY_RE.match(strip_comments(line))
+        else line
+        for line in lines
+    ]
+
 
 def find_proof_region(lines: list[str], lemma_line: int) -> tuple[int, int]:
     """Return 1-based (proof_start_line, qed_line) for lemma starting at lemma_line."""
@@ -55,16 +102,27 @@ def truncate_at_qed(lines: list[str], qed_line: int) -> list[str]:
 
 
 def strip_tactics(lines: list[str], tactic_lines: list[int]) -> list[str]:
-    """Remove tactic lines; drop qed. so the agent starts with an open proof."""
+    """Remove tactic lines; drop the target lemma's closing qed. so the agent
+    starts with an open proof.
+
+    `lines` is expected to already end at the target lemma's own `qed.` (as
+    produced by `truncate_at_qed`/`build_sandbox`). Earlier lemmas in the
+    same source file commonly have their own, already-discharged `qed.`
+    lines, so we must find the LAST `qed.` in `lines`, not the first —
+    otherwise the empty-slate start file gets truncated at some unrelated,
+    earlier lemma instead of the target one.
+    """
     drop = set(tactic_lines)
-    qed_idx: int | None = None
-    out: list[str] = []
+    qed_idx = len(lines) + 1
     for i, line in enumerate(lines, start=1):
-        if i in drop:
-            continue
         if QED_RE.search(strip_comments(line)):
             qed_idx = i
+    out: list[str] = []
+    for i, line in enumerate(lines, start=1):
+        if i >= qed_idx:
             break
+        if i in drop:
+            continue
         out.append(line)
     return out
 
@@ -85,7 +143,9 @@ def build_sandbox(entry: IndexEntry, data_dir: Path, dest: Path) -> ProofCase:
     if not source.exists():
         raise FileNotFoundError(f"Corpus file not found: {source}")
 
-    lines = source.read_text(encoding="utf-8").splitlines()
+    lines = strip_repl_display_commands(
+        neutralize_verbose_pragmas(source.read_text(encoding="utf-8").splitlines())
+    )
     proof_start, qed_line = find_proof_region(lines, entry.line)
     tactic_lines = enumerate_tactic_lines(lines, proof_start, qed_line)
     sandbox_lines = truncate_at_qed(lines, qed_line)

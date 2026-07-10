@@ -31,6 +31,29 @@ Results land in `integration/output/experiments/<timestamp>/`:
 - `events.jsonl` — per-trial event log
 - `trials/trial_NNN/` — original, mutated, agent start file, agent log
 
+## Informal proof repair (`joy-informal-repair`)
+
+A second experiment, `joy-informal-repair`, avoids ever letting an LLM alter
+or invent the proof goal (which mutation-repair's broken tactic hint does
+not risk either, but which any "reprove a proof that's broken for unknown
+reasons" approach would). Instead it takes an already-complete proof, has a
+"writer" LLM redescribe its reasoning as a code-free informal proof sketch,
+and asks a separate "solver" run of the agent loop to reprove the exact same
+(unmodified, guaranteed-correct) lemma from an empty slate using only that
+sketch and a red-herring-salted list of candidate lemmas — never the real
+tactics. See **[INFORMAL_PROOF_REPAIR.md](INFORMAL_PROOF_REPAIR.md)** for
+the full write-up.
+
+```bash
+python3 -m integration.experiment run \
+  --spec joy-informal-repair \
+  --trials 10 \
+  --stuck-limit 20 \
+  --max-steps 200 \
+  --llm-model <model> \
+  --embed-model <embed-model>
+```
+
 ## Adding a new experiment
 
 Register a new `(corpus, mutations)` pair in [`specs.py`](specs.py):
@@ -53,6 +76,12 @@ The runner and agent harness require no further changes.
 When run via the experiment runner, the agent receives:
 
 - **Repair hint** — the mutated (broken) tactic script in the prompt
+  (mutation-repair only; never set for `joy-informal-repair`)
+- **Informal proof sketch** — a code-free natural-language proof description
+  (`joy-informal-repair` only; see
+  [INFORMAL_PROOF_REPAIR.md](INFORMAL_PROOF_REPAIR.md))
+- **Premises override** — restricts the agent's visible premise pool to a
+  curated list instead of the full corpus catalog (`joy-informal-repair` only)
 - **Lemma lookup tool** — `{"action": "lookup_lemma", "name": "..."}`
 - **Stuck limit** — trial ends after 20 cumulative unproductive iterations
   (failed tactics, undos, repeated proof states, lookups)

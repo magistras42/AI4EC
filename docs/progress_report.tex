@@ -1,0 +1,379 @@
+%%
+%% This is file `sample-sigconf-biblatex.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% samples.dtx  (with options: `all,proceedings,sigconf-biblatex')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from sample-sigconf-biblatex.tex.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file samples.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%%
+%%
+%% Commands for TeXCount
+%TC:macro \cite [option:text,text]
+%TC:macro \citep [option:text,text]
+%TC:macro \citet [option:text,text]
+%TC:envir table 0 1
+%TC:envir table* 0 1
+%TC:envir tabular [ignore] word
+%TC:envir displaymath 0 word
+%TC:envir math 0 word
+%TC:envir comment 0 0
+%%
+%% The first command in your LaTeX source must be the \documentclass
+%% command.
+%%
+%% For submission and review of your manuscript please change the
+%% command to \documentclass[manuscript, screen, review]{acmart}.
+%%
+%% When submitting camera ready or to TAPS, please change the command
+%% to \documentclass[sigconf]{acmart} or whichever template is required
+%% for your publication.
+%%
+%%
+\documentclass[acmsmall,natbib=false]{acmart}
+%%
+%% \BibTeX command to typeset BibTeX logo in the docs
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    Bib\TeX}}}
+
+%% Rights management information.  This information is sent to you
+%% when you complete the rights form.  These commands have SAMPLE
+%% values in them; it is your responsibility as an author to replace
+%% the commands and values with those provided to you when you
+%% complete the rights form.
+%% These commands are for a PROCEEDINGS abstract or paper.
+%%
+%%  Uncomment \acmBooktitle if the title of the proceedings is different
+%%  from ``Proceedings of ...''!
+%%
+%%\acmBooktitle{Woodstock '18: ACM Symposium on Neural Gaze Detection,
+%%  June 03--05, 2018, Woodstock, NY}
+
+%% Rights management information (Placeholders)
+\setcopyright{none}
+\acmConference[CS 846]{AI4SE}{August 2026}{Waterloo, ON, Canada}
+\acmYear{2026}
+\acmDOI{}
+\acmISBN{}
+
+%%
+%% Submission ID.
+%% Use this when submitting an article to a sponsored event. You'll
+%% receive a unique submission ID from the organizers
+%% of the event, and this ID should be used as the parameter to this command.
+%%\acmSubmissionID{123-A56-BU3}
+
+%%
+%% For managing citations, it is recommended to use bibliography
+%% files in BibTeX format.
+%%
+%% You can then either use BibTeX with the ACM-Reference-Format style,
+%% or BibLaTeX with the acmnumeric or acmauthoryear sytles, that include
+%% support for advanced citation of software artefact from the
+%% biblatex-software package, also separately available on CTAN.
+%%
+%% Look at the sample-*-biblatex.tex files for templates showcasing
+%% the biblatex styles.
+%%
+
+
+%%
+%% The majority of ACM publications use numbered citations and
+%% references, obtained by selecting the acmnumeric BibLaTeX style.
+%% The acmauthoryear BibLaTeX style switches to the "author year" style.
+%%
+%% If you are preparing content for an event
+%% sponsored by ACM SIGGRAPH, you must use the acmauthoryear style of
+%% citations and references.
+%%
+%% Bibliography style
+\RequirePackage[
+  datamodel=acmdatamodel,
+  style=acmnumeric,
+  ]{biblatex}
+
+%% Declare bibliography sources (one \addbibresource command per source)
+\addbibresource{cs846.bib}
+
+%%
+%% end of the preamble, start of the body of the document source.
+\begin{document}
+
+%%
+%% The "title" command has an optional parameter,
+%% allowing the author to define a "short title" to be used in page headers.
+\title{AI-Assisted Theorem Proving and Proof Repair for EasyCrypt}
+
+%%
+%% The "author" command and its associated commands are used to define
+%% the authors and their affiliations.
+%% Of note is the shared affiliation of the first two authors, and the
+%% "authornote" and "authornotemark" commands
+%% used to denote shared contribution to the research.
+\author{Maggie Simmons}
+\email{m8simmon@uwaterloo.ca}
+\affiliation{%
+  \institution{The University of Waterloo}
+  \city{Waterloo}
+  \state{Ontario}
+  \country{Canada}
+}
+
+\author{Kevin Lee}
+\email{k323lee@uwaterloo.ca}
+\affiliation{%
+  \institution{The University of Waterloo}
+  \city{Waterloo}
+  \state{Ontario}
+  \country{Canada}
+}
+
+\author{Rui Lin}
+\email{r98lin@uwaterloo.ca}
+\affiliation{%
+  \institution{The University of Waterloo}
+  \city{Waterloo}
+  \state{Ontario}
+  \country{Canada}
+}
+
+\author{Minjun Son}
+\email{minjun.son@uwaterloo.ca}
+\affiliation{%
+  \institution{The University of Waterloo}
+  \city{Waterloo}
+  \state{Ontario}
+  \country{Canada}
+}
+
+\author{Aney Moon}
+\email{y22moon@uwaterloo.ca}
+\affiliation{%
+  \institution{The University of Waterloo}
+  \city{Waterloo}
+  \state{Ontario}
+  \country{Canada}
+}
+
+%%
+%% By default, the full list of authors will be used in the page
+%% headers. Often, this list is too long, and will overlap
+%% other information printed in the page headers. This command allows
+%% the author to define a more concise list
+%% of authors' names for this purpose.
+\renewcommand{\shortauthors}{Simmons}
+
+%%
+%% The abstract is a short summary of the work to be presented in the
+%% article.
+\begin{abstract}
+  Provable security is a cornerstone of modern cryptography, aiming to provide formal and precise security guarantees. Computer-aided cryptography makes these traditionally pen-and-paper proofs more formal by requiring proofs to be machine-checkable. However, general purpose proof assistants are often unsuitable for cryptographic proofs, leading to the development and adoption of cryptography-specific proof assistants, such as EasyCrypt.\\
+The complexity of writing machine-verifiable proofs remains prohibitively high in many interesting use-cases. Adding to the challenges of modeling and proving the security of cryptographic primitives and protocols, EasyCrypt has undergone major revision in the past several years, meaning that older EasyCrypt proofs that previously passed verification are now broken. Some of the major revisions relate to how EasyCrypt interacts with SMT solvers to automatically prove certain properties, but it is the user's responsibility to choose and configure an SMT solver for use by the prover. By adapting existing approaches for developing AI-assisted theorem provers for EasyCrypt, we can improve the usability and speed of proof development in the ecosystem by assisting with tasks such as modeling security definitions, tactic suggestion, and proof repair. Additionally, we can improve the solve rate for automated proof search in EasyCrypt with AI-assistance.
+\end{abstract}
+
+%%
+%% The code below is generated by the tool at http://dl.acm.org/ccs.cfm.
+%% Please copy and paste the code instead of the example below.
+%%
+\begin{CCSXML}
+<ccs2012>
+   <concept>
+       <concept_id>10002978.10002986.10002990</concept_id>
+       <concept_desc>Security and privacy~Logic and verification</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+ </ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Security and privacy~Logic and verification}
+
+%%
+%% Keywords. The author(s) should pick words that accurately describe
+%% the work being presented. Separate the keywords with commas.
+\keywords{Computer-Aided Cryptography, Formal Verification, LLM-Assisted Theorem Provers, SMT Solvers}
+
+%%
+%% This command processes the author and affiliation and title
+%% information and builds the first part of the formatted document.
+\maketitle
+
+\section{Introduction}
+Provable security is a cornerstone of modern cryptography, aiming to provide formal and precise security guarantees. Traditionally, these proofs are constructed using pen-and-paper methods, which are inherently informal and prone to subtle human errors. Such oversights can lead to unwarranted security claims and, in the worst-case scenarios, the deployment of insecure cryptographic constructions. To mitigate these risks, computer-aided cryptography (also known as machine-assisted cryptography) has emerged to enforce mathematical rigor by requiring proofs to be entirely machine-checkable. However, due to the unique argumentation styles inherent to cryptographic proofs—such as game-based reductions and probabilistic reasoning—general-purpose proof assistants are often unsuitable. This limitation drove the development and adoption of cryptography-specific proof assistants, most notably EasyCrypt.
+
+Despite the strong guarantees provided by tools like EasyCrypt, the complexity of writing machine-verifiable proofs remains prohibitively high for many interesting use-cases. EasyCrypt typically demands a steep learning curve and significant expertise, as users frequently encounter difficulties when modeling security definitions, selecting appropriate proof tactics, and understanding verification failures. Compounding these challenges, EasyCrypt has undergone major revisions over the past several years. Consequently, older legacy proofs that previously passed verification are now broken, creating a substantial proof maintenance burden for the community. A significant portion of these architectural revisions relates to how EasyCrypt interacts with Satisfiability Modulo Theories (SMT) solvers to automatically prove certain properties. Currently, the responsibility falls entirely on the user to choose and configure an SMT solver for the prover, which often complicates the verification process and limits automation.
+
+Recent advancements in large language models (LLMs) offer a promising avenue to alleviate these burdens. In the broader formal verification landscape, systems like Lean have successfully integrated LLMs to act as intelligent assistants that help users navigate complex proof workflows \cite{leancopilot}. However, adapting these AI-assisted theorem-proving approaches to domain-specific assistants like EasyCrypt remains largely unexplored. Implementing AI-powered tooling within the EasyCrypt ecosystem has the potential to significantly lower the barrier to entry, enabling researchers and practitioners to develop, verify, and maintain cryptographic proofs far more efficiently while preserving strict mathematical correctness through a combination of human intuition and formal verification. In other words, it is especially important for the output of the AI-assisted tool to be readable by humans to ensure the tool is not exploiting a previously undiscovered soundness bug in the prover.
+
+This project aims to investigate how LLMs can be adapted to assist EasyCrypt users by providing automated, error-aware guidance throughout the proof development lifecycle. Specifically, we focus on leveraging AI to assist with modeling security definitions, generating context-aware tactic suggestions, and executing automated proof repair for legacy code broken by recent ecosystem updates. Additionally, we aim to optimize automated proof search within EasyCrypt by utilizing AI assistance to improve SMT solver interaction and solve rates.
+
+\subsection{Research Questions}
+This project investigates the following research questions:
+
+\begin{itemize}
+    \item \textbf{RQ1}: Can large language models effectively assist users in developing and maintaining EasyCrypt proofs?
+    \item \textbf{RQ2}: How can proof states, retrieved premises, and verifier feedback be incorporated into an iterative AI-assisted proving workflow?
+    \item \textbf{RQ3}: To what extent can AI-assisted choice and configuration of SMT solvers improve the performance of EasyCrypt's \texttt{smt()} tactic?
+\end{itemize}
+
+\section{Background}
+In this section, we provide a brief summary of game-hopping arguments, EasyCrypt, LLM-assisted theorem proving, and SMT solvers.
+\subsection{Game Hopping}
+In modern cryptography, security is rarely proven in a single step. Instead, we use a technique known as \textit{game hopping}. A \textit{game} is a formal experiment involving an adversary and a challenger. For example, a proof relying on the indistinguishability of a protocol to some ideal implementation might proceed as follows:
+\begin{itemize}
+    \item \textbf{Game 0 (Real):} The adversary interacts with the actual protocol.
+    \item \textbf{Game 1:} The adversary interacts with the protocol, but some real part of the protocol has been replaced with an idealized, indistinguishable representation of the real component.
+    \item \textbf{Game $n$ (Ideal):} The adversary interacts with a world where the security property is perfectly satisfied via some idealized oracle (e.g., all ciphertexts are replaced by random noise).
+\end{itemize}
+
+The proof consists of a sequence of sequential "hops". If we can prove that a computationally bounded adversary cannot distinguish between Game $i$ and Game $i+1$ for each hop, then the adversary cannot distinguish between the Real and Ideal worlds. 
+
+\subsection{EasyCrypt}
+EasyCrypt is a proof assistant designed for the formal verification of cryptographic constructions and security proofs. It combines interactive proving with automated reasoning through SMT solvers and has been used to verify cryptographic protocols, secure multi-party computation schemes, and zero-knowledge proofs.
+
+Unlike general-purpose proof assistants such as Lean or Rocq, EasyCrypt focuses specifically on cryptographic reasoning and game-based proofs.
+
+\subsection{LLM-Assisted Theorem Proving}
+Recent research has explored using LLMs to automate and facilitate formal verification. Lean~4, a general-purpose proof assistant built on dependent type theory, has been a popular testbed for such work (e.g., LeanDojo, DeepSeek-Prover-V2, LeanCopilot) \cite{yang2023leandojo, ren2025deepseekproverv2, leancopilot}. Proprietary systems building on Lean such as Harmonic's Aristotle \cite{achim2025aristotle} have achieved gold-medal performance on the 2025 International Mathematical Olympiad. These approaches treat LLMs as assistants that select tactics, retrieve relevant lemmas, or repair failed proof attempts---using the proof assistant itself as a verifier to ensure correctness and reject hallucinations.
+
+Common themes across these methodologies include:
+\begin{itemize}
+    \item \textbf{Agentic verification loop:} Feedback from the proof assistant is integrated into an iterative generation-and-verification cycle.
+    \item \textbf{Informal subgoal decomposition:} Complex proofs are broken into natural-language subgoals, which are then translated into formal Lean proofs \cite{ren2025deepseekproverv2}.
+    \item \textbf{Tactic generation:} A transformer model fine-tuned on proof states and premises proposes the next proof step.
+    \item \textbf{Premise retrieval:} Relevant lemmas are retrieved from a large corpus by encoding premises into vectors ahead of time and ranking them by cosine similarity to the current proof state, producing a concise set of candidates for the tactic generator.
+    \item \textbf{Fine-tuning on \textsc{Mathlib4}:} Lean~4's extensive mathematical library provides a large corpus for training and evaluation \cite{yang2023leandojo}; decontamination is enforced by ensuring test theorems do not appear in the training set.
+\end{itemize}
+
+No prior work has explored AI-assisted theorem proving for EasyCrypt
+
+\subsection{SMT Solvers}
+
+Instead of type theories, EasyCrypt discharges many proof obligations through the Satisfiability Modulo Theories (SMT) tactic, which sends the goal to external SMT solvers such as Z3, CVC5, and Alt-Ergo. SMT solvers receive first-order logic expressions from its client and decides whether or not they are satisfiable (i.e. whether there exists a variable assignment that satisfies the logical expressions). The complexity and potential undecidability of such a task means that a solver may timeout before it can make a decision.
+
+The choice of solvers to invoke and of auxiliary lemmas to pass as hints strongly affects success rate and speed. However, these choices are currently made heuristically, which forces users to choose a solver by running all solvers in parallel trials-and-error. Although automated solver selection methodologies \cite{DBLP:conf/tacas/ScottNPNG21, fastSMT, ijcai2024p211} exists, they have relied on task-specific learning or classical machine learning search algorithms. All of these require labeled training instances, a stream of related queries, or an expensive offline search. To the best of our knowledge, no prior work has applied LLMs to solver or hint selection for SMT calls, and none of these techniques have been brought to EasyCrypt.
+
+
+\section{Methodology}
+\subsection{Experimental Corpus and Trial Construction}
+
+A corpus of open-source EasyCrypt developments was assembled from publicly available repositories and used to construct proof-reconstruction tasks. Each source file is scanned to identify lemma declarations, which are indexed by name, file location, and full signature. Individual lemmas are sandboxed into self-contained files that include all necessary context preceding the target lemma---prior definitions, required theories, and earlier lemmas---but nothing after it. Diagnostic commands that cause EasyCrypt to print verbose ambient-context dumps on every goal fetch are neutralized during sandboxing, as unchecked these can inflate a single goal printout from a few dozen tokens to tens of thousands, overwhelming the model's context window.
+
+To extract the proof state and the set of globally visible lemmas and axioms at any given point in a file, we extended EasyCrypt's existing batch-mode interface with a new \texttt{-premises} flag. The standard batch interface already supports stopping compilation at a specified line and printing the current proof goal; the extension additionally enumerates all lemmas and axioms accessible in the current scope, grouped by theory, using EasyCrypt's internal environment API. This output is parsed by the agent to build a premise index at the start of each trial.
+
+For initial feasibility experiments, we drew proofs from \textit{The Joy of EasyCrypt}~\cite{joyofec}, a pedagogical tutorial corpus. This corpus was chosen specifically because its proofs are simple and well-understood, making it possible to diagnose harness and model behavior without the confound of proof complexity. It is not representative of the production cryptographic verification tasks that motivate this work.
+
+The intended use case for this system is proof repair: a user supplies a broken proof together with its verified goal and relevant premises, and the agent attempts to reconstruct a valid tactic script. Because no corpus of such broken proofs with guaranteed-correct goals currently exists in accessible form, the initial experiments simulate this setting by converting verified proofs into informal sketches. Concretely, each trial proceeds as follows. A verified lemma is selected from the corpus, and its tactic script is hidden from the solver. A separate \textit{writer} LLM call produces a natural-language proof sketch using the hidden tactic script as background context only; the writer prompt explicitly prohibits EasyCrypt syntax, tactic names, and code fragments, and the output is checked for leaked proof syntax before use. The visible premises are partitioned: lemmas actually used in the reference proof are identified by textual search against the proof script, and a set of plausible-but-incorrect \textit{red herrings} is selected by cosine similarity to the used lemmas from the remaining catalog. The solver agent then receives the lemma statement, the informal sketch, and this curated premise list---but not the reference tactics---and is asked to construct a valid proof from scratch.
+
+This design ensures that the proof goal is never LLM-manufactured: every trial starts from a lemma that EasyCrypt has already verified, so a successful reconstruction is a genuine proof of the intended statement. As collaborators contribute corpora of genuinely broken EasyCrypt proofs, the informal sketch step can be bypassed entirely and the agent evaluated against real repair tasks without structural changes to the pipeline.
+
+\subsection{Prompts and Retrieved Context}
+
+The solver agent uses retrieval-augmented in-context prompting rather than model fine-tuning. Every prompt iteration contains: a system instruction to emit a single structured action, the informal proof sketch, a fixed block of EasyCrypt proof-pattern examples, the current EasyCrypt goal state, a ranked list of candidate premises, a history of tactics that failed at the current goal, and the most recent lines of the proof in progress.
+
+The proof-pattern examples cover approximately thirty goal-shape-to-tactic mappings spanning procedure stepping, weakest-precondition reasoning, loop handling, rewriting, premise application, and arithmetic automation. Each entry pairs a natural-language description of the goal with the canonical EasyCrypt tactic. For instance:
+
+\begin{quote}
+\textit{Goal: Hoare judgment about a procedure call} $\Rightarrow$ \texttt{proc.}\\
+\textit{Goal: straight-line assignment/return after \texttt{proc}} $\Rightarrow$ \texttt{wp; skip; smt().}\\
+\textit{Goal: simple ring equality over integers} $\Rightarrow$ \texttt{by ring.}
+\end{quote}
+
+Premise retrieval is performed at two points. At trial startup, all lemmas and axioms visible at the proof location are embedded into a vector index. On each iteration, the current goal text is embedded and the premises are re-ranked by cosine similarity, with only the top-ranked entries included in the prompt. This ensures the prompt reflects the most contextually relevant facts at each proof step rather than a static, potentially stale list.
+
+The red-herring design serves an important evaluation purpose: by including premises that are semantically similar to the correct ones but not actually needed, the agent cannot succeed merely by using every available lemma. This more closely mirrors the realistic setting where the correct choice of lemma requires genuine reasoning about the current goal.
+
+\subsection{Verification-Guided Agent Loop}
+
+The agent operates as an interactive prover. On each step, it receives the current proof state and context described above, and returns one of three structured actions: propose a tactic to append to the proof, undo the most recently accepted tactic, or look up the full signature of a named lemma from the indexed corpus. Every proposed tactic is immediately checked by EasyCrypt against the full file; tactics that are syntactically or semantically invalid are rejected, rolled back, and recorded in the per-goal error history so the model does not repeat them. A tactic that EasyCrypt accepts advances the proof state.
+
+The agent tracks a \textit{stuck counter} that increments on any unproductive action: a failed tactic, an undo, a repeated proof state, or a lemma lookup. When this counter reaches a configurable limit, the trial terminates as \textsc{Stuck}. Other termination conditions are \textsc{MaxSteps} (the per-trial step budget is exhausted), \textsc{LLMError} (the model returns an empty, malformed, or unparseable response), and \textsc{Complete} (no open goals remain after a tactic is accepted).
+
+Figure~\ref{fig:agent-loop} illustrates the full loop, including the three available actions, failure handling, and termination conditions.
+
+\begin{figure}[ht]
+    \centering
+    \fbox{%
+    \begin{tabular}{c}
+    \textbf{Trial setup} \\
+    Verified lemma $\rightarrow$ hide tactics $\rightarrow$ generate informal sketch \\
+    Build premise index (used lemmas + red herrings) \\[4pt]
+    \hline\\[-4pt]
+    \textbf{Each iteration} \\
+    Fetch current goal from EasyCrypt \\
+    Rank premises by cosine similarity to goal \\
+    Build prompt: sketch + examples + goal + premises + error history \\[2pt]
+    $\downarrow$ LLM $\downarrow$ \\[2pt]
+    \textbf{Action: tactic} $\rightarrow$ EasyCrypt check \\
+    \quad accepted $\rightarrow$ advance; check for completion \\
+    \quad rejected $\rightarrow$ roll back; add to error history; increment stuck counter \\[2pt]
+    \textbf{Action: undo} $\rightarrow$ remove last tactic; increment stuck counter \\[2pt]
+    \textbf{Action: lookup} $\rightarrow$ retrieve lemma signature; increment stuck counter \\[4pt]
+    \hline\\[-4pt]
+    \textbf{Termination} \\
+    \textsc{Complete}: no open goals remain \\
+    \textsc{Stuck}: stuck counter $\geq$ limit \\
+    \textsc{MaxSteps}: step budget exhausted \\
+    \textsc{LLMError}: model returns unusable response
+    \end{tabular}}
+    \caption{The verification-guided agent loop. The agent selects one of three actions per iteration; EasyCrypt acts as an oracle that accepts or rejects each tactic. Failed tactics are recorded and excluded from future suggestions at the same goal state.}
+    \Description{A structured diagram showing the agent loop: trial setup, per-iteration prompt construction and LLM action, EasyCrypt checking with rollback on failure, and four termination conditions.}
+    \label{fig:agent-loop}
+\end{figure}
+
+An important design property is that the verifier's role is purely oracular: it cannot be fooled by a model that produces a plausible-looking but incorrect proof, since EasyCrypt rejects unsound tactics outright. This means any proof the agent constructs is machine-verified. The converse risk---that the agent succeeds by proving a weakened or vacuous statement---is addressed by the trial construction: the proof goal is always taken from an existing verified lemma and is never modified, so there is no weaker statement for the agent to slip through.
+
+\subsection{SMT Solver and Hint Selection}
+
+EasyCrypt discharges many proof obligations by invoking external SMT solvers via the \texttt{smt()} tactic, optionally supplied with explicit lemma hints of the form \texttt{smt(h1, h2)}. The choice of solver and the selection of hints significantly affect both success rate and runtime, but current practice requires users to make these choices manually or by running multiple solvers in parallel.
+
+The agent's action space currently does not include explicit hint selection---the model proposes the full tactic text including any hints it chooses to include---and the SMT component has not yet been evaluated in isolation. The failure analysis described in Section~\ref{sec:eval} shows that several proof goals which should be automatable via SMT were not discharged by the available solver configuration, suggesting that hint selection is a meaningful axis of improvement. Evaluating this separately from the full proof-generation task---measuring whether model-selected hints improve solve rate or runtime over bare \texttt{smt()} on a fixed set of obligations---is a planned next step.
+
+\subsection{Evaluation and Lessons Learned}
+\label{sec:eval}
+
+The primary goal of the initial experiments was to validate the end-to-end pipeline and characterize the failure modes of a locally-run model on tutorial-level proofs. Experiments used \texttt{google/gemma-4-12b-qat}, a quantized 12-billion-parameter model running on local hardware via an OpenAI-compatible inference server.
+
+\paragraph{Infrastructure validation.} The pipeline executed correctly end-to-end: corpora were cloned and indexed, sandbox files were constructed, informal sketches were generated and screened for contamination, premise manifests including red herrings were built and embedded, and the agent loop ran to termination for every trial. The patched EasyCrypt binary correctly provided goal states and premise lists at requested file positions.
+
+A completion detection bug was discovered during result analysis, however, which invalidates all reported \textsc{Complete} outcomes from the current runs. The bug causes the agent to incorrectly declare a proof complete when the working file still contains an open proof obligation. Because the sandbox files retain all preceding lemmas from the same source chapter---each with their own closed proof blocks---the heuristic used to detect proof closure identifies an earlier lemma's closing marker as belonging to the target proof. The result is that EasyCrypt finds no active proof at the probed location, not because the target proof is finished, but because it is examining a position that belongs to a different, already-closed lemma. Direct verification confirms that none of the working copies flagged as complete actually contain a closed proof. This bug is documented separately and a fix is in progress; it does not affect the validity of \textsc{Stuck}, \textsc{MaxSteps}, or \textsc{LLMError} outcomes.
+
+\paragraph{Failure taxonomy.} Setting aside the spurious completions, the trials produced four distinct and well-documented failure modes.
+
+\textit{Context window overflow.} On several trials, the prompt exceeded the model's usable context window before the first tactic was ever generated, terminating immediately with a context-size error. The prompt contains multiple substantial components---the proof-pattern examples, the informal sketch, the goal text, the premise list, the error history, and the proof tail---and their combined size regularly approached or exceeded the available token budget. This problem was partly mitigated by neutralizing verbose diagnostic commands in the sandbox files, but the fundamental constraint is the model's limited window.
+
+\textit{Runaway chain-of-thought.} On multiple trials, the model entered an extended reasoning loop, repeating the same observation about the current goal dozens of times without converging on a tactic. The output token budget was exhausted before a structured action was emitted, producing an empty response and an \textsc{LLMError} termination. This pattern was especially prevalent on goals involving relational Hoare judgments (written as $P_1 \sim P_2$ in EasyCrypt), which the model appeared to find confusing, and on goals involving exponent identities over real numbers.
+
+\textit{Goal-shape confusion.} Even when the model produced a tactic, it often misidentified the type of the current goal. A representative example from the most recent run involved proving a Hoare triple of the form $\{4 \leq x\}\ \texttt{x\_sq}\ \{16 \leq \mathtt{res}\}$. After the correct first step (\texttt{proc.}), EasyCrypt displays the residual obligation in a program-logic form showing \texttt{pre} and \texttt{post} fields. The model repeatedly treated this display as an ordinary logical implication and attempted to discharge it directly with \texttt{smt()}, \texttt{ring}, and \texttt{algebra}---all of which require the goal to first be reduced to ambient logic via \texttt{wp; skip.}. EasyCrypt's error messages for these failures are terse and do not indicate what the correct next step should be, making self-correction difficult without richer guidance in the prompt.
+
+\textit{Nonlinear arithmetic.} Several goals that were correctly reduced to ambient-logic obligations were still not discharged, because the required arithmetic facts fall outside what the available SMT configuration (Alt-Ergo alone) can decide automatically. Goals involving products, squares, or logarithms of integer or real variables require either explicit lemma hints or manual decomposition into linear sub-goals. The model correctly identified these as candidates for \texttt{smt()}-style automation but did not supply the necessary hints or intermediary steps.
+
+\paragraph{Throughput.} Individual LLM calls on the local hardware took between two and fifteen minutes each. A trial running to the maximum step budget could therefore take thirty to forty minutes of wall-clock time. This severely limits the number of experiments that can be run and makes iterative prompt refinement slow. The constraint is hardware-imposed: the model runs near the memory ceiling of the local machine, and increasing the number of trials or the step budget directly multiplies the runtime.
+
+\paragraph{Summary.} The current experiments establish that the methodology is sound and the pipeline is functional, but that the local model is not adequate for sustained evaluation. None of the observed failure modes reflect fundamental limitations of the approach; each has a clear remedy. The completion detection bug will be fixed. The context window, reasoning loop, goal-shape confusion, and throughput issues are all addressed by moving to a frontier-scale model with a larger context window. The nonlinear arithmetic failures motivate dedicated SMT hint selection work. These findings directly motivate the next steps described below.
+
+\paragraph{Next steps.} The most pressing priority is to re-run experiments on a frontier model---specifically DeepSeek-V3 or GLM-4.5---accessed via API. These models operate with context windows one to two orders of magnitude larger than the local model, return completions in seconds, and have substantially stronger mathematical reasoning capability. This single change is expected to resolve or substantially reduce the context overflow, runaway reasoning, and goal-shape confusion failures simultaneously.
+
+Concurrently, the prompt will be revised to address the goal-shape confusion pattern: explicit guidance distinguishing program-logic and ambient-logic goal forms will be added, and the few-shot examples will be extended with multi-step tactic sequences for the post-\texttt{proc} pattern. Error messages from EasyCrypt will be enriched before being shown to the model, mapping known terse error strings to descriptions that indicate what class of tactic is likely needed.
+
+Once the completion detection bug is fixed and the frontier-model runs produce reliable outcomes, the evaluation will be extended to genuinely broken EasyCrypt developments contributed by collaborators, replacing the informal-sketch simulation with real repair tasks. Longer-term, the corpus will be extended beyond the tutorial-level Joy proofs toward production cryptographic verification code, where the proof complexity and the practical value of automated assistance are both significantly higher.
+%%
+%% Print the bibliography
+%%
+\printbibliography
+
+\end{document}

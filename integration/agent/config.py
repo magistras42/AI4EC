@@ -22,6 +22,7 @@ DEFAULT_EASYCRYPT_BIN = (
 
 PREMISES_SEPARATOR = "(* --- premises --- *)"
 NO_ACTIVE_PROOF = "No active proof."
+NO_MORE_GOALS = "No more goals"
 
 
 @dataclass
@@ -49,13 +50,17 @@ class AgentConfig:
     llm_temperature: float = 0.2
     llm_json_mode: bool = False
     llm_tactic_only: bool = False
-    llm_max_tokens: int = 1024
+    llm_max_tokens: int = field(
+        default_factory=lambda: int(os.environ.get("LM_STUDIO_LLM_MAX_TOKENS", "8192"))
+    )
     work_copy_suffix: str = ".agent.ec"
     output_dir: Path = field(default_factory=lambda: DEFAULT_OUTPUT_DIR)
     promote_on_success: bool = False
     proof_tail_lines: int = 20
     log_file: Path | None = None
     repair_hint: str | None = None
+    informal_proof: str | None = None
+    premises_override: dict[str, str] | None = None
     lemma_lookup_index: dict[str, str] | None = None
     stuck_limit: int | None = None
 

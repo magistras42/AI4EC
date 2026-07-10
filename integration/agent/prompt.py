@@ -4,21 +4,26 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from .llm import action_response_format_spec
+
 EXAMPLES_PATH = Path(__file__).resolve().parent / "examples" / "tactics_fewshot.md"
 
 BASE_TOOL_SPEC = """\
 Respond with exactly one JSON object and no other text.
 
 Tactic:
-{"action": "tactic", "tactic": "by rewrite addr0."}
+{"action": "tactic", "tactic": "by rewrite addr0.", "name": ""}
 
 Undo one tactic step (never undo the lemma signature or `proof.` line):
-{"action": "undo"}
+{"action": "undo", "tactic": "", "name": ""}
+
+Never use the `admit` tactic: it marks a goal as assumed rather than
+proving it, and will be rejected outright.
 """
 
 LOOKUP_TOOL_SPEC = """
 Lookup a lemma or axiom signature by name:
-{"action": "lookup_lemma", "name": "my_lemma"}
+{"action": "lookup_lemma", "tactic": "", "name": "my_lemma"}
 """
 
 TOOL_SPEC = BASE_TOOL_SPEC
@@ -30,9 +35,10 @@ def load_fewshot_examples(path: Path | None = None) -> str:
 
 
 def tool_spec(*, enable_lemma_lookup: bool = False) -> str:
+    spec = BASE_TOOL_SPEC
     if enable_lemma_lookup:
-        return BASE_TOOL_SPEC + LOOKUP_TOOL_SPEC
-    return BASE_TOOL_SPEC
+        spec += LOOKUP_TOOL_SPEC
+    return spec + "\n" + action_response_format_spec()
 
 
 def build_prompt(
@@ -42,6 +48,7 @@ def build_prompt(
     proof_tail: str,
     fewshot: str | None = None,
     repair_hint: str | None = None,
+    informal_proof: str | None = None,
     lookup_notes: list[str] | None = None,
     enable_lemma_lookup: bool = False,
 ) -> str:
@@ -54,6 +61,14 @@ def build_prompt(
             [
                 "## Repair hint (reference broken proof)",
                 repair_hint,
+                "",
+            ]
+        )
+    if informal_proof:
+        sections.extend(
+            [
+                "## Informal proof sketch (natural-language reference, no code)",
+                informal_proof,
                 "",
             ]
         )
@@ -70,6 +85,19 @@ def build_prompt(
             "",
             "## Previously failed at this goal",
             _format_failures(failed_tactics),
+        ]
+    )
+    if failed_tactics:
+        sections.extend(
+            [
+                "IMPORTANT: do NOT repeat any tactic listed above verbatim — "
+                "it is guaranteed to fail identically again at this exact "
+                "goal. Choose a genuinely different tactic, or a different "
+                "lemma/argument, instead."
+            ]
+        )
+    sections.extend(
+        [
             "",
             "## Proof script tail",
             proof_tail,
