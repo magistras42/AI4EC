@@ -302,6 +302,7 @@ def run_agent(
             if validation.returncode != 0:
                 proof.remove_lines(inserted_line)
                 error_msg = validation.stderr.strip() or validation.stdout.strip()
+                error_msg = _enrich_error(error_msg, action.tactic, goal)
                 errors.add(goal, error_msg, action.tactic)
                 logger.info("Tactic failed: %s", error_msg)
                 stuck_counter = _increment_stuck(config, stuck_counter)
@@ -373,6 +374,131 @@ def run_agent(
 
 def _proof_state_hash(proof_tail: str) -> str:
     return hashlib.sha256(proof_tail.encode("utf-8")).hexdigest()
+
+
+# ---------------------------------------------------------------------------
+# Error enrichment
+# ---------------------------------------------------------------------------
+
+# Raw EasyCrypt error strings are often too terse for a model to self-correct
+# from.  These patterns map known short messages to richer guidance that names
+# the likely cause and suggests what to try next.
+_ERROR_HINTS: list[tuple[re.Pattern, str]] = [
+    (
+        re.compile(r"cannot prove goal \(strict\)", re.IGNORECASE),
+        (
+            "The SMT backend could not close this goal automatically. "
+            "This usually means the goal is nonlinear (e.g. products, squares, "
+            "or exponentials), involves a type the solver does not handle well, "
+            "or simply needs a named lemma hint. "
+            "Try: (1) supply a hint — smt(lemma_name). "
+            "(2) if the goal is still in Hoare/program-logic form (you see "
+            "'pre =' and 'post ='), apply 'wp.' then 'skip.' first, then retry smt(). "
+            "(3) introduce an intermediate fact with 'have h : ... by smt(). smt(h).'"
+        ),
+    ),
+    (
+        re.compile(r"InvalidGoalShape", re.IGNORECASE),
+        (
+            "The tactic requires a goal of a specific shape that the current goal "
+            "does not match. Common causes: "
+            "(1) 'algebra' and 'ring' only work on equalities, not inequalities — "
+            "if your goal is an inequality use 'smt()' instead. "
+            "(2) 'left'/'right' only work on disjunctions — check that the goal "
+            "is actually a disjunction ('\\/'). "
+            "(3) 'split' only works on conjunctions or existentials. "
+            "(4) The goal may still be in Hoare/program-logic form; reduce it "
+            "with 'wp.' or 'skip.' before applying ambient-logic tactics."
+        ),
+    ),
+    (
+        re.compile(r"conclusion must be an equation", re.IGNORECASE),
+        (
+            "The 'ring' and 'field' tactics only discharge goals of the form "
+            "'lhs = rhs'. Your goal is not an equality. "
+            "If the goal is an inequality or implication, use 'smt()' instead. "
+            "If the goal is in Hoare/program-logic form, apply 'wp.' and 'skip.' "
+            "first to reduce it to an ambient-logic equality before using 'ring'."
+        ),
+    ),
+    (
+        re.compile(r"cannot apply `left` on that goal", re.IGNORECASE),
+        (
+            "The 'left' tactic only applies when the goal is a disjunction (A \\/ B). "
+            "The current goal is not a disjunction. "
+            "If you see 'pre = P' and 'post = Q' in the goal, the proof is still in "
+            "Hoare/program-logic form — use 'wp.' then 'skip.' to reduce it to an "
+            "ambient-logic goal before attempting propositional tactics."
+        ),
+    ),
+    (
+        re.compile(r"cannot apply `right` on that goal", re.IGNORECASE),
+        (
+            "The 'right' tactic only applies when the goal is a disjunction (A \\/ B). "
+            "The current goal is not a disjunction. "
+            "If the goal is in Hoare/program-logic form, reduce it first with "
+            "'wp.' and 'skip.'."
+        ),
+    ),
+    (
+        re.compile(
+            r"expecting a goal of the form:\s*hoare\[S\]|phoare\[S\]|equiv\[S\]",
+            re.IGNORECASE,
+        ),
+        (
+            "This tactic (e.g. 'wp', 'sp', 'rnd', 'call', 'skip') requires the goal "
+            "to be a Hoare/pHoare/equiv program-logic judgment, but the current goal "
+            "is already in ambient logic. "
+            "Do not apply program-logic tactics after the goal has been reduced by "
+            "'skip.' or 'wp.'. Use 'smt()', 'trivial', 'ring', or 'assumption' instead."
+        ),
+    ),
+    (
+        re.compile(r"parse error|illegal character|syntax error", re.IGNORECASE),
+        (
+            "EasyCrypt could not parse the tactic. Common causes: "
+            "(1) A bare semicolon with nothing after it — 'if;' or 'wp;' are parse "
+            "errors. In EasyCrypt, ';' is a tactic combinator: 'if; auto.' means "
+            "apply 'if', then 'auto' on every subgoal. The whole expression up to "
+            "the final '.' is one tactic. Write 'if; auto.' not 'if;'. "
+            "(2) Missing period at the end — every tactic must end with '.'. "
+            "(3) Mismatched parentheses or brackets. "
+            "(4) Invalid or misspelled identifiers — EasyCrypt is case-sensitive "
+            "and module names must be capitalised. "
+            "(5) Lean/Coq/Isabelle syntax used instead of EasyCrypt syntax."
+        ),
+    ),
+    (
+        re.compile(r"unknown lemma|not found|unbound", re.IGNORECASE),
+        (
+            "The lemma or identifier name was not found in the current scope. "
+            "Check spelling and capitalisation — EasyCrypt is case-sensitive. "
+            "Use the 'lookup_lemma' action to retrieve the exact name and "
+            "signature of a candidate lemma before applying it."
+        ),
+    ),
+]
+
+
+def _enrich_error(raw_error: str, tactic: str, goal: str) -> str:
+    """Augment a raw EasyCrypt error message with actionable guidance.
+
+    Matches known terse error patterns and appends a hint explaining the
+    likely cause and suggesting concrete next steps.  The original error
+    text is preserved so the model still sees the precise message.
+    """
+    hint = _hint_for_error(raw_error, tactic, goal)
+    if hint:
+        return f"{raw_error}\n[hint] {hint}"
+    return raw_error
+
+
+def _hint_for_error(raw_error: str, tactic: str, goal: str) -> str:
+    """Return a hint string for a known error pattern, or empty string."""
+    for pattern, hint in _ERROR_HINTS:
+        if pattern.search(raw_error):
+            return hint
+    return ""
 
 
 def _increment_stuck(config: AgentConfig, stuck_counter: int) -> int:

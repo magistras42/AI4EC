@@ -130,7 +130,11 @@ def _json_system_prompt() -> str:
         "Use your hidden reasoning channel for brief step-by-step analysis. "
         "Always finish by putting ONLY the final JSON action object in the "
         "visible assistant reply, with no markdown fences or extra text. "
-        "Never put the JSON answer only in reasoning or commentary."
+        "Never put the JSON answer only in reasoning or commentary. "
+        "If you find yourself repeating the same observation about the goal more "
+        "than once, stop immediately, commit to the best available tactic, and "
+        "emit the JSON action. The JSON object MUST appear in the visible reply, "
+        "not only in your reasoning or thinking."
     )
 
 

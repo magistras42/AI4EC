@@ -55,6 +55,28 @@ def build_prompt(
     sections = [
         "You are an EasyCrypt proof assistant agent. Choose the next tactic or undo.",
         "",
+        "## Reading the current goal",
+        (
+            "EasyCrypt displays goals in two distinct forms that require different tactics:\n"
+            "\n"
+            "PROGRAM-LOGIC form — you will see 'pre = ...' and 'post = ...' fields,\n"
+            "or a line like 'Func.procedure' between the pre and post. This means the\n"
+            "proof is still inside Hoare/pHoare/equiv reasoning. You MUST use program-\n"
+            "logic tactics (proc, wp, skip, call, inline, rnd, seq, if, while) to\n"
+            "reduce this before ANY ambient-logic tactic (smt, ring, algebra, trivial)\n"
+            "can apply. Typical sequence: proc. then wp; skip; smt().\n"
+            "\n"
+            "AMBIENT-LOGIC form — the goal shows a plain formula with no 'pre'/'post'\n"
+            "fields, e.g. '0 <= x', 'a + b = b + a', or 'P => Q'. Now you can use\n"
+            "smt(), ring, trivial, rewrite, apply, have, split, left, right, etc.\n"
+            "Do NOT apply proc/wp/skip/call to an ambient-logic goal.\n"
+            "\n"
+            "ring and algebra only work on EQUALITIES (lhs = rhs). For inequalities\n"
+            "or implications, use smt(). If smt() alone fails on a nonlinear goal\n"
+            "(products, squares, logs), try smt(lemma_name) with a relevant lemma,\n"
+            "or introduce an intermediate step: have h : fact by smt(). smt(h)."
+        ),
+        "",
     ]
     if repair_hint:
         sections.extend(
