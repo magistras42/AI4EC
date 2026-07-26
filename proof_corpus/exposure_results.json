@@ -1,0 +1,5788 @@
+[
+  {
+    "name": "SimpleORAM",
+    "url": "https://github.com/IvanRenison/SimpleORAM-Jasmin",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/SimpleORAM",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2025.10",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2025-10-27T15:01:43+01:00, nearest preceding release r2025.10"
+    },
+    "releases_crossed": [
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 236.3,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 36,
+          "score": 111.5
+        },
+        "syntax_change": {
+          "count": 10,
+          "score": 24.4
+        },
+        "tactic_change": {
+          "count": 46,
+          "score": 95.39999999999993
+        },
+        "lemma_added": {
+          "count": 12,
+          "score": 5.0
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 983,
+      "total_tactic_count": 3778,
+      "ratio": 0.2601905770248809,
+      "multiplier": 1.0,
+      "amplified_total": 297.78
+    },
+    "proof_complexity": {
+      "lemma_count": 58,
+      "mean_depth": 38.12,
+      "top_fraction_mean_depth": 141.33,
+      "long_lemma_count": 15,
+      "depth_complexity": 100.05,
+      "complexity_score": 126.08
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 297.78
+  },
+  {
+    "name": "EvoCrypt",
+    "url": "https://github.com/SRI-CSL/evocrypt",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/EvoCrypt",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2024.01",
+      "confidence": "high",
+      "method": "docker_config",
+      "detail": "found in proof/Dockerfile"
+    },
+    "releases_crossed": [
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 1103,
+      "total_tactic_count": 4769,
+      "ratio": 0.23128538477668276,
+      "multiplier": 1.0,
+      "amplified_total": 470.47
+    },
+    "proof_complexity": {
+      "lemma_count": 197,
+      "mean_depth": 16.5,
+      "top_fraction_mean_depth": 59.52,
+      "long_lemma_count": 35,
+      "depth_complexity": 42.31,
+      "complexity_score": 52.1
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 470.47
+  },
+  {
+    "name": "Formosa Dilithium",
+    "url": "https://github.com/formosa-crypto/dilithium",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Formosa-Dilithium",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "high",
+      "method": "docker_config",
+      "detail": "found in proofs/docker/Dockerfile"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 1015,
+      "total_tactic_count": 5337,
+      "ratio": 0.1901817500468428,
+      "multiplier": 1.0,
+      "amplified_total": 454.77
+    },
+    "proof_complexity": {
+      "lemma_count": 452,
+      "mean_depth": 6.61,
+      "top_fraction_mean_depth": 18.96,
+      "long_lemma_count": 45,
+      "depth_complexity": 14.02,
+      "complexity_score": 16.69
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 454.77
+  },
+  {
+    "name": "Formosa Keccak",
+    "url": "https://github.com/formosa-crypto/formosa-keccak",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Formosa-Keccak",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.02",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-03-02T12:15:31+01:00, nearest preceding release r2026.02"
+    },
+    "releases_crossed": [
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 172.8,
+      "by_kind": {
+        "tactic_change": {
+          "count": 32,
+          "score": 65.69999999999997
+        },
+        "syntax_change": {
+          "count": 8,
+          "score": 16.4
+        },
+        "mechanism_change": {
+          "count": 28,
+          "score": 86.5
+        },
+        "lemma_added": {
+          "count": 9,
+          "score": 4.2
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 2135,
+      "total_tactic_count": 8988,
+      "ratio": 0.23753894080996885,
+      "multiplier": 1.0,
+      "amplified_total": 213.85
+    },
+    "proof_complexity": {
+      "lemma_count": 261,
+      "mean_depth": 13.57,
+      "top_fraction_mean_depth": 44.3,
+      "long_lemma_count": 24,
+      "depth_complexity": 32.01,
+      "complexity_score": 39.61
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 213.85
+  },
+  {
+    "name": "Formosa SLHDSA",
+    "url": "https://github.com/formosa-crypto/formosa-slhdsa",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Formosa-SLHDSA",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.06",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-06-30T10:44:53+01:00, nearest preceding release r2026.06"
+    },
+    "releases_crossed": [
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 60.9,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 13,
+          "score": 39.5
+        },
+        "tactic_change": {
+          "count": 8,
+          "score": 16.8
+        },
+        "lemma_added": {
+          "count": 3,
+          "score": 2.2
+        },
+        "syntax_change": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 1925,
+      "total_tactic_count": 13524,
+      "ratio": 0.14233954451345757,
+      "multiplier": 1.0,
+      "amplified_total": 69.57
+    },
+    "proof_complexity": {
+      "lemma_count": 308,
+      "mean_depth": 26.34,
+      "top_fraction_mean_depth": 90.1,
+      "long_lemma_count": 98,
+      "depth_complexity": 64.6,
+      "complexity_score": 73.8
+    },
+    "smt_solver_info": [
+      {
+        "solver": "alt-ergo",
+        "version": "2.6",
+        "source_file": "easycrypt.project"
+      },
+      {
+        "solver": "cvc5",
+        "version": "1.0",
+        "source_file": "easycrypt.project"
+      },
+      {
+        "solver": "z3",
+        "version": "4.12",
+        "source_file": "easycrypt.project"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 69.57
+  },
+  {
+    "name": "Formosa XMSS",
+    "url": "https://github.com/formosa-crypto/formosa-xmss",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Formosa-XMSS",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.06",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-06-22T15:43:44+01:00, nearest preceding release r2026.06"
+    },
+    "releases_crossed": [
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 60.9,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 13,
+          "score": 39.5
+        },
+        "tactic_change": {
+          "count": 8,
+          "score": 16.8
+        },
+        "lemma_added": {
+          "count": 3,
+          "score": 2.2
+        },
+        "syntax_change": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 3981,
+      "total_tactic_count": 23906,
+      "ratio": 0.16652723165732453,
+      "multiplier": 1.0,
+      "amplified_total": 71.04
+    },
+    "proof_complexity": {
+      "lemma_count": 638,
+      "mean_depth": 22.57,
+      "top_fraction_mean_depth": 77.47,
+      "long_lemma_count": 169,
+      "depth_complexity": 55.51,
+      "complexity_score": 64.75
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 71.04
+  },
+  {
+    "name": "Formosa MLKEM",
+    "url": "https://github.com/formosa-crypto/formosa-mlkem",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Formosa-MLKEM",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.05",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-05-26T08:30:46+02:00, nearest preceding release r2026.05"
+    },
+    "releases_crossed": [
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 106.4,
+      "by_kind": {
+        "lemma_added": {
+          "count": 4,
+          "score": 3.2
+        },
+        "mechanism_change": {
+          "count": 21,
+          "score": 67.0
+        },
+        "tactic_change": {
+          "count": 13,
+          "score": 27.000000000000004
+        },
+        "syntax_change": {
+          "count": 4,
+          "score": 9.2
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 11479,
+      "total_tactic_count": 62185,
+      "ratio": 0.18459435555198198,
+      "multiplier": 1.0,
+      "amplified_total": 126.04
+    },
+    "proof_complexity": {
+      "lemma_count": 1934,
+      "mean_depth": 14.46,
+      "top_fraction_mean_depth": 47.48,
+      "long_lemma_count": 388,
+      "depth_complexity": 34.27,
+      "complexity_score": 40.59
+    },
+    "smt_solver_info": [
+      {
+        "solver": "z3",
+        "version": "4.8.14",
+        "source_file": "scripts/docker/Dockerfile"
+      },
+      {
+        "solver": "z3",
+        "version": "2.31",
+        "source_file": "scripts/docker/Dockerfile"
+      },
+      {
+        "solver": "z3",
+        "version": "2.31",
+        "source_file": "scripts/docker/Dockerfile"
+      },
+      {
+        "solver": "z3",
+        "version": "2.31",
+        "source_file": "scripts/docker/Dockerfile"
+      },
+      {
+        "solver": "z3",
+        "version": "2.31",
+        "source_file": "scripts/docker/Dockerfile"
+      },
+      {
+        "solver": "cvc5",
+        "version": "1.2",
+        "source_file": "easycrypt.project"
+      },
+      {
+        "solver": "z3",
+        "version": "4.8",
+        "source_file": "easycrypt.project"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 126.04
+  },
+  {
+    "name": "Formosa Arch-Specs",
+    "url": "https://github.com/formosa-crypto/arch-specs",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Formosa-Arch-Specs",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.06",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-07-13T09:54:38+02:00, nearest preceding release r2026.06"
+    },
+    "releases_crossed": [
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 60.9,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 13,
+          "score": 39.5
+        },
+        "tactic_change": {
+          "count": 8,
+          "score": 16.8
+        },
+        "lemma_added": {
+          "count": 3,
+          "score": 2.2
+        },
+        "syntax_change": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 0,
+      "total_tactic_count": 42,
+      "ratio": 0.0,
+      "multiplier": 1.0,
+      "amplified_total": 60.9
+    },
+    "proof_complexity": {
+      "lemma_count": 0,
+      "mean_depth": 0.0,
+      "top_fraction_mean_depth": 0.0,
+      "long_lemma_count": 0,
+      "depth_complexity": 0.0,
+      "complexity_score": 0.0
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 60.9
+  },
+  {
+    "name": "Formosa MLDSA Correctness",
+    "url": "https://github.com/formosa-crypto/formosa-mldsa-correctness",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Formosa-MLDSA-Correctness",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.03",
+      "confidence": "high",
+      "method": "submodule_pin_resolved",
+      "detail": "sha=cd6faa0ef208935347915e16bb29e9edb1e64ac1, describe=r2026.03-63-gcd6faa0e"
+    },
+    "releases_crossed": [
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 140.2,
+      "by_kind": {
+        "tactic_change": {
+          "count": 23,
+          "score": 47.09999999999999
+        },
+        "lemma_added": {
+          "count": 7,
+          "score": 4.0
+        },
+        "syntax_change": {
+          "count": 6,
+          "score": 13.600000000000001
+        },
+        "mechanism_change": {
+          "count": 24,
+          "score": 75.5
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 1960,
+      "total_tactic_count": 10849,
+      "ratio": 0.18066181214858512,
+      "multiplier": 1.0,
+      "amplified_total": 165.53
+    },
+    "proof_complexity": {
+      "lemma_count": 538,
+      "mean_depth": 10.3,
+      "top_fraction_mean_depth": 33.23,
+      "long_lemma_count": 81,
+      "depth_complexity": 24.06,
+      "complexity_score": 28.4
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 165.53
+  },
+  {
+    "name": "Formosa 25519",
+    "url": "https://github.com/formosa-crypto/formosa-25519",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Formosa-25519",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.06",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-07-22T14:31:24+02:00, nearest preceding release r2026.06"
+    },
+    "releases_crossed": [
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 60.9,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 13,
+          "score": 39.5
+        },
+        "tactic_change": {
+          "count": 8,
+          "score": 16.8
+        },
+        "lemma_added": {
+          "count": 3,
+          "score": 2.2
+        },
+        "syntax_change": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 599,
+      "total_tactic_count": 3814,
+      "ratio": 0.15705296276874672,
+      "multiplier": 1.0,
+      "amplified_total": 70.46
+    },
+    "proof_complexity": {
+      "lemma_count": 280,
+      "mean_depth": 11.8,
+      "top_fraction_mean_depth": 34.01,
+      "long_lemma_count": 47,
+      "depth_complexity": 25.13,
+      "complexity_score": 29.07
+    },
+    "smt_solver_info": [
+      {
+        "solver": "cvc4",
+        "version": "1.8",
+        "source_file": "scripts/docker/Dockerfile"
+      },
+      {
+        "solver": "z3",
+        "version": "2.31",
+        "source_file": "scripts/docker/Dockerfile"
+      },
+      {
+        "solver": "z3",
+        "version": "2.31",
+        "source_file": "scripts/docker/Dockerfile"
+      },
+      {
+        "solver": "z3",
+        "version": "2.31",
+        "source_file": "scripts/docker/Dockerfile"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 70.46
+  },
+  {
+    "name": "Formosa Crypto-Specs",
+    "url": "https://github.com/formosa-crypto/crypto-specs",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Formosa-Crypto-Specs",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.02",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-02-23T12:29:06+01:00, nearest preceding release r2026.02"
+    },
+    "releases_crossed": [
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 172.8,
+      "by_kind": {
+        "tactic_change": {
+          "count": 32,
+          "score": 65.69999999999997
+        },
+        "syntax_change": {
+          "count": 8,
+          "score": 16.4
+        },
+        "mechanism_change": {
+          "count": 28,
+          "score": 86.5
+        },
+        "lemma_added": {
+          "count": 9,
+          "score": 4.2
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 1226,
+      "total_tactic_count": 9043,
+      "ratio": 0.13557447749640605,
+      "multiplier": 1.0,
+      "amplified_total": 196.23
+    },
+    "proof_complexity": {
+      "lemma_count": 758,
+      "mean_depth": 6.95,
+      "top_fraction_mean_depth": 21.35,
+      "long_lemma_count": 70,
+      "depth_complexity": 15.59,
+      "complexity_score": 17.71
+    },
+    "smt_solver_info": [
+      {
+        "solver": "cvc5",
+        "version": "1.2",
+        "source_file": "easycrypt.project"
+      },
+      {
+        "solver": "z3",
+        "version": "4.8",
+        "source_file": "easycrypt.project"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 196.23
+  },
+  {
+    "name": "Formosa Jasmin Tutorial",
+    "url": "https://github.com/formosa-crypto/jasmin-tutorial",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Formosa-Jasmin-Tutorial",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.03",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-04-03T13:49:09+02:00, nearest preceding release r2026.03"
+    },
+    "releases_crossed": [
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 140.2,
+      "by_kind": {
+        "tactic_change": {
+          "count": 23,
+          "score": 47.09999999999999
+        },
+        "lemma_added": {
+          "count": 7,
+          "score": 4.0
+        },
+        "syntax_change": {
+          "count": 6,
+          "score": 13.600000000000001
+        },
+        "mechanism_change": {
+          "count": 24,
+          "score": 75.5
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 174,
+      "total_tactic_count": 2709,
+      "ratio": 0.06423034330011074,
+      "multiplier": 1.0,
+      "amplified_total": 149.21
+    },
+    "proof_complexity": {
+      "lemma_count": 603,
+      "mean_depth": 2.36,
+      "top_fraction_mean_depth": 5.72,
+      "long_lemma_count": 5,
+      "depth_complexity": 4.37,
+      "complexity_score": 4.65
+    },
+    "smt_solver_info": [
+      {
+        "solver": "z3",
+        "version": "2.31",
+        "source_file": "setup/Dockerfile"
+      },
+      {
+        "solver": "z3",
+        "version": "2.31",
+        "source_file": "setup/Dockerfile"
+      },
+      {
+        "solver": "z3",
+        "version": "2.31",
+        "source_file": "setup/Dockerfile"
+      },
+      {
+        "solver": "z3",
+        "version": "2.31",
+        "source_file": "setup/Dockerfile"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 149.21
+  },
+  {
+    "name": "Formosa Libjade",
+    "url": "https://github.com/formosa-crypto/libjade",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Formosa-Libjade",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.06",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-07-09T15:44:15+02:00, nearest preceding release r2026.06"
+    },
+    "releases_crossed": [
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 60.9,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 13,
+          "score": 39.5
+        },
+        "tactic_change": {
+          "count": 8,
+          "score": 16.8
+        },
+        "lemma_added": {
+          "count": 3,
+          "score": 2.2
+        },
+        "syntax_change": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 579,
+      "total_tactic_count": 3924,
+      "ratio": 0.14755351681957188,
+      "multiplier": 1.0,
+      "amplified_total": 69.89
+    },
+    "proof_complexity": {
+      "lemma_count": 329,
+      "mean_depth": 5.94,
+      "top_fraction_mean_depth": 18.2,
+      "long_lemma_count": 32,
+      "depth_complexity": 13.3,
+      "complexity_score": 15.26
+    },
+    "smt_solver_info": [
+      {
+        "solver": "cvc4",
+        "version": "1.8",
+        "source_file": "scripts/docker/Dockerfile"
+      },
+      {
+        "solver": "z3",
+        "version": "2.31",
+        "source_file": "scripts/docker/Dockerfile"
+      },
+      {
+        "solver": "z3",
+        "version": "2.31",
+        "source_file": "scripts/docker/Dockerfile"
+      },
+      {
+        "solver": "z3",
+        "version": "2.31",
+        "source_file": "scripts/docker/Dockerfile"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 69.89
+  },
+  {
+    "name": "Formosa X-Wing",
+    "url": "https://github.com/formosa-crypto/formosa-x-wing",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Formosa-X-Wing",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2024.01",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2024-11-28T20:47:56+00:00, nearest preceding release r2024.01"
+    },
+    "releases_crossed": [
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 383,
+      "total_tactic_count": 1663,
+      "ratio": 0.23030667468430546,
+      "multiplier": 1.0,
+      "amplified_total": 470.1
+    },
+    "proof_complexity": {
+      "lemma_count": 31,
+      "mean_depth": 14.84,
+      "top_fraction_mean_depth": 30.5,
+      "long_lemma_count": 10,
+      "depth_complexity": 24.24,
+      "complexity_score": 29.82
+    },
+    "smt_solver_info": [
+      {
+        "solver": "alt-ergo",
+        "version": "2.5",
+        "source_file": "easycrypt.project"
+      },
+      {
+        "solver": "cvc5",
+        "version": "1.0",
+        "source_file": "easycrypt.project"
+      },
+      {
+        "solver": "z3",
+        "version": "4.12",
+        "source_file": "easycrypt.project"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 470.1
+  },
+  {
+    "name": "Formosa libjbn",
+    "url": "https://github.com/formosa-crypto/libjbn",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Formosa-libjbn",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "high",
+      "method": "config_string",
+      "detail": "found in README.md"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 307,
+      "total_tactic_count": 2366,
+      "ratio": 0.1297548605240913,
+      "multiplier": 1.0,
+      "amplified_total": 431.68
+    },
+    "proof_complexity": {
+      "lemma_count": 174,
+      "mean_depth": 8.34,
+      "top_fraction_mean_depth": 24.43,
+      "long_lemma_count": 29,
+      "depth_complexity": 18.0,
+      "complexity_score": 20.33
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 431.68
+  },
+  {
+    "name": "Jasmin-Zk",
+    "url": "https://github.com/dfirsov/jasmin-zk",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Jasmin-Zk",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2023-10-06T16:17:32+03:00, nearest preceding release r2022.04"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 5644,
+      "total_tactic_count": 26827,
+      "ratio": 0.21038505982778544,
+      "multiplier": 1.0,
+      "amplified_total": 462.49
+    },
+    "proof_complexity": {
+      "lemma_count": 1000,
+      "mean_depth": 13.88,
+      "top_fraction_mean_depth": 47.8,
+      "long_lemma_count": 220,
+      "depth_complexity": 34.24,
+      "complexity_score": 41.44
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 462.49
+  },
+  {
+    "name": "Asymmetric Ladder",
+    "url": "https://github.com/proof-ladders/asymmetric-ladder",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Asymmetric-Ladder",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2025.11",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2025-12-04T15:10:02+00:00, nearest preceding release r2025.11"
+    },
+    "releases_crossed": [
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 222.9,
+      "by_kind": {
+        "tactic_change": {
+          "count": 44,
+          "score": 91.79999999999994
+        },
+        "mechanism_change": {
+          "count": 35,
+          "score": 106.5
+        },
+        "syntax_change": {
+          "count": 9,
+          "score": 20.4
+        },
+        "lemma_added": {
+          "count": 9,
+          "score": 4.2
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 5,
+      "total_tactic_count": 338,
+      "ratio": 0.014792899408284023,
+      "multiplier": 1.0,
+      "amplified_total": 226.2
+    },
+    "proof_complexity": {
+      "lemma_count": 26,
+      "mean_depth": 6.58,
+      "top_fraction_mean_depth": 14.86,
+      "long_lemma_count": 2,
+      "depth_complexity": 11.55,
+      "complexity_score": 11.72
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 226.2
+  },
+  {
+    "name": "Zksync-Verification",
+    "url": "https://github.com/NethermindEth/zksync-verification",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Zksync-Verification",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2024.01",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2024-09-09T06:05:54+01:00, nearest preceding release r2024.01"
+    },
+    "releases_crossed": [
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 2472,
+      "total_tactic_count": 50098,
+      "ratio": 0.04934328715717194,
+      "multiplier": 1.0,
+      "amplified_total": 400.95
+    },
+    "proof_complexity": {
+      "lemma_count": 962,
+      "mean_depth": 35.38,
+      "top_fraction_mean_depth": 135.42,
+      "long_lemma_count": 131,
+      "depth_complexity": 95.4,
+      "complexity_score": 100.11
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 400.95
+  },
+  {
+    "name": "Probabilistic Or",
+    "url": "https://github.com/alleystoughton/ProbabilisticOr",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Probabilistic-Or",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.05",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-05-27T12:02:29+02:00, nearest preceding release r2026.05"
+    },
+    "releases_crossed": [
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 106.4,
+      "by_kind": {
+        "lemma_added": {
+          "count": 4,
+          "score": 3.2
+        },
+        "mechanism_change": {
+          "count": 21,
+          "score": 67.0
+        },
+        "tactic_change": {
+          "count": 13,
+          "score": 27.000000000000004
+        },
+        "syntax_change": {
+          "count": 4,
+          "score": 9.2
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 37,
+      "total_tactic_count": 158,
+      "ratio": 0.23417721518987342,
+      "multiplier": 1.0,
+      "amplified_total": 131.32
+    },
+    "proof_complexity": {
+      "lemma_count": 14,
+      "mean_depth": 8.57,
+      "top_fraction_mean_depth": 22.25,
+      "long_lemma_count": 3,
+      "depth_complexity": 16.78,
+      "complexity_score": 20.71
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 131.32
+  },
+  {
+    "name": "PCR",
+    "url": "https://github.com/alleystoughton/PCR",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/PCR",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.06",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-06-30T08:00:57-04:00, nearest preceding release r2026.06"
+    },
+    "releases_crossed": [
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 60.9,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 13,
+          "score": 39.5
+        },
+        "tactic_change": {
+          "count": 8,
+          "score": 16.8
+        },
+        "lemma_added": {
+          "count": 3,
+          "score": 2.2
+        },
+        "syntax_change": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 750,
+      "total_tactic_count": 3334,
+      "ratio": 0.22495500899820037,
+      "multiplier": 1.0,
+      "amplified_total": 74.6
+    },
+    "proof_complexity": {
+      "lemma_count": 257,
+      "mean_depth": 7.56,
+      "top_fraction_mean_depth": 22.15,
+      "long_lemma_count": 35,
+      "depth_complexity": 16.32,
+      "complexity_score": 19.99
+    },
+    "smt_solver_info": [
+      {
+        "solver": "alt-ergo",
+        "version": "4.15.3",
+        "source_file": "README.md"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 74.6
+  },
+  {
+    "name": "Saber",
+    "url": "https://github.com/MM45/Saber-Formal-Verification-EasyCrypt",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Saber",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "high",
+      "method": "config_string",
+      "detail": "found in README.md"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 118,
+      "total_tactic_count": 1667,
+      "ratio": 0.07078584283143372,
+      "multiplier": 1.0,
+      "amplified_total": 409.15
+    },
+    "proof_complexity": {
+      "lemma_count": 262,
+      "mean_depth": 3.47,
+      "top_fraction_mean_depth": 8.79,
+      "long_lemma_count": 7,
+      "depth_complexity": 6.66,
+      "complexity_score": 7.13
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 409.15
+  },
+  {
+    "name": "ZK in EC",
+    "url": "https://github.com/dfirsov/easycrypt-zk-code",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/ZK-in-EC",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "high",
+      "method": "config_string",
+      "detail": "found in README.md"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 2590,
+      "total_tactic_count": 10941,
+      "ratio": 0.236724248240563,
+      "multiplier": 1.0,
+      "amplified_total": 472.55
+    },
+    "proof_complexity": {
+      "lemma_count": 192,
+      "mean_depth": 35.4,
+      "top_fraction_mean_depth": 92.44,
+      "long_lemma_count": 122,
+      "depth_complexity": 69.62,
+      "complexity_score": 86.1
+    },
+    "smt_solver_info": [
+      {
+        "solver": "why3",
+        "version": "1.4.1",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "z3",
+        "version": "4.8.7",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "cvc4",
+        "version": "1.6",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.4.2",
+        "source_file": "README.md"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 472.55
+  },
+  {
+    "name": "Easy Schnorr",
+    "url": "https://github.com/asifmallik/easyschnorr",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Easy-Schnorr",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": null,
+      "confidence": "high",
+      "method": "git_commit_date_predates_changelog",
+      "commit_date": "2019-12-20T20:45:08-05:00",
+      "detail": "last commit 2019-12-20T20:45:08-05:00 predates all known releases (earliest cataloged is r2022.04) -- treat as older than the full known changelog history, i.e. maximally exposed"
+    },
+    "releases_crossed": [
+      "r2022.04",
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 85,
+      "total_tactic_count": 276,
+      "ratio": 0.3079710144927536,
+      "multiplier": 1.0,
+      "amplified_total": 499.78
+    },
+    "proof_complexity": {
+      "lemma_count": 10,
+      "mean_depth": 21.9,
+      "top_fraction_mean_depth": 33.33,
+      "long_lemma_count": 7,
+      "depth_complexity": 28.76,
+      "complexity_score": 37.62
+    },
+    "smt_solver_info": [],
+    "predates_changelog": true,
+    "predates_changelog_days": 858,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 40.0,
+    "total_exposure_score": 539.78
+  },
+  {
+    "name": "Xwing Benchmarks",
+    "url": "https://github.com/X-Wing-KEM-Team/xwing-benchmarks",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Xwing-Benchmarks",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2024-03-27T21:09:27+01:00, nearest preceding release r2022.04"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 579,
+      "total_tactic_count": 3924,
+      "ratio": 0.14755351681957188,
+      "multiplier": 1.0,
+      "amplified_total": 438.48
+    },
+    "proof_complexity": {
+      "lemma_count": 329,
+      "mean_depth": 5.94,
+      "top_fraction_mean_depth": 18.2,
+      "long_lemma_count": 32,
+      "depth_complexity": 13.3,
+      "complexity_score": 15.26
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 438.48
+  },
+  {
+    "name": "FV-XMSS-EC",
+    "url": "https://github.com/MM45/FV-XMSS-EC",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/FV-XMSS-EC",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.02",
+      "confidence": "high",
+      "method": "docker_config",
+      "detail": "found in Dockerfile"
+    },
+    "releases_crossed": [
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 172.8,
+      "by_kind": {
+        "tactic_change": {
+          "count": 32,
+          "score": 65.69999999999997
+        },
+        "syntax_change": {
+          "count": 8,
+          "score": 16.4
+        },
+        "mechanism_change": {
+          "count": 28,
+          "score": 86.5
+        },
+        "lemma_added": {
+          "count": 9,
+          "score": 4.2
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 1038,
+      "total_tactic_count": 8201,
+      "ratio": 0.12656993049628093,
+      "multiplier": 1.0,
+      "amplified_total": 194.67
+    },
+    "proof_complexity": {
+      "lemma_count": 281,
+      "mean_depth": 15.36,
+      "top_fraction_mean_depth": 48.77,
+      "long_lemma_count": 63,
+      "depth_complexity": 35.41,
+      "complexity_score": 39.89
+    },
+    "smt_solver_info": [
+      {
+        "solver": "z3",
+        "version": "4.13.4",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.6.0",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.6",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "z3",
+        "version": "4.13.4",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.6.0",
+        "source_file": "easycrypt.project"
+      },
+      {
+        "solver": "z3",
+        "version": "4.13.4",
+        "source_file": "easycrypt.project"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 194.67
+  },
+  {
+    "name": "AutoCrypt",
+    "url": "https://github.com/JHUISI/autocrypt",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/AutoCrypt",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": null,
+      "confidence": "high",
+      "method": "git_commit_date_predates_changelog",
+      "commit_date": "2013-10-01T00:06:51-04:00",
+      "detail": "last commit 2013-10-01T00:06:51-04:00 predates all known releases (earliest cataloged is r2022.04) -- treat as older than the full known changelog history, i.e. maximally exposed"
+    },
+    "releases_crossed": [
+      "r2022.04",
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 24,
+      "total_tactic_count": 406,
+      "ratio": 0.059113300492610835,
+      "multiplier": 1.0,
+      "amplified_total": 404.69
+    },
+    "proof_complexity": {
+      "lemma_count": 1,
+      "mean_depth": 235.0,
+      "top_fraction_mean_depth": 235.0,
+      "long_lemma_count": 1,
+      "depth_complexity": 235.0,
+      "complexity_score": 248.89
+    },
+    "smt_solver_info": [],
+    "predates_changelog": true,
+    "predates_changelog_days": 3130,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 40.0,
+    "total_exposure_score": 444.69
+  },
+  {
+    "name": "Algorithmic Bounds",
+    "url": "https://github.com/alleystoughton/AlgorithmicBounds",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Algorithmic-Bounds",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.05",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-06-05T12:42:58-04:00, nearest preceding release r2026.05"
+    },
+    "releases_crossed": [
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 106.4,
+      "by_kind": {
+        "lemma_added": {
+          "count": 4,
+          "score": 3.2
+        },
+        "mechanism_change": {
+          "count": 21,
+          "score": 67.0
+        },
+        "tactic_change": {
+          "count": 13,
+          "score": 27.000000000000004
+        },
+        "syntax_change": {
+          "count": 4,
+          "score": 9.2
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 669,
+      "total_tactic_count": 7369,
+      "ratio": 0.09078572397883024,
+      "multiplier": 1.0,
+      "amplified_total": 116.06
+    },
+    "proof_complexity": {
+      "lemma_count": 795,
+      "mean_depth": 7.71,
+      "top_fraction_mean_depth": 21.71,
+      "long_lemma_count": 106,
+      "depth_complexity": 16.11,
+      "complexity_score": 17.57
+    },
+    "smt_solver_info": [
+      {
+        "solver": "alt-ergo",
+        "version": "4.15.3",
+        "source_file": "README.md"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 116.06
+  },
+  {
+    "name": "Rewinding",
+    "url": "https://github.com/dfirsov/easycrypt-rewinding",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Rewinding",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "high",
+      "method": "config_string",
+      "detail": "found in README.md"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 1573,
+      "total_tactic_count": 7808,
+      "ratio": 0.20146004098360656,
+      "multiplier": 1.0,
+      "amplified_total": 459.08
+    },
+    "proof_complexity": {
+      "lemma_count": 182,
+      "mean_depth": 34.93,
+      "top_fraction_mean_depth": 94.24,
+      "long_lemma_count": 110,
+      "depth_complexity": 70.51,
+      "complexity_score": 84.72
+    },
+    "smt_solver_info": [
+      {
+        "solver": "why3",
+        "version": "1.5.0",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "z3",
+        "version": "4.8.7",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "cvc4",
+        "version": "1.6",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.4.1",
+        "source_file": "README.md"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 459.08
+  },
+  {
+    "name": "XMSS-Jasmin",
+    "url": "https://github.com/ruipedro16/xmss-jasmin",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/XMSS-Jasmin",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2025.03",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2025-03-31T12:00:33+02:00, nearest preceding release r2025.03"
+    },
+    "releases_crossed": [
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 282.9,
+      "by_kind": {
+        "syntax_change": {
+          "count": 12,
+          "score": 29.199999999999996
+        },
+        "tactic_change": {
+          "count": 56,
+          "score": 115.79999999999993
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        },
+        "lemma_added": {
+          "count": 22,
+          "score": 8.999999999999996
+        },
+        "mechanism_change": {
+          "count": 39,
+          "score": 126.5
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 1692,
+      "total_tactic_count": 9046,
+      "ratio": 0.18704399734689364,
+      "multiplier": 1.0,
+      "amplified_total": 335.81
+    },
+    "proof_complexity": {
+      "lemma_count": 171,
+      "mean_depth": 34.77,
+      "top_fraction_mean_depth": 120.67,
+      "long_lemma_count": 64,
+      "depth_complexity": 86.31,
+      "complexity_score": 102.46
+    },
+    "smt_solver_info": [
+      {
+        "solver": "alt-ergo",
+        "version": "2.5.2",
+        "source_file": "Dockerfile"
+      },
+      {
+        "solver": "cvc4",
+        "version": "1.8",
+        "source_file": "Dockerfile"
+      },
+      {
+        "solver": "z3",
+        "version": "4.13.0",
+        "source_file": "Dockerfile"
+      },
+      {
+        "solver": "z3",
+        "version": "4.13.0",
+        "source_file": "Dockerfile"
+      },
+      {
+        "solver": "z3",
+        "version": "4.13.0",
+        "source_file": "Dockerfile"
+      },
+      {
+        "solver": "z3",
+        "version": "4.13.0",
+        "source_file": "Dockerfile"
+      },
+      {
+        "solver": "z3",
+        "version": "4.12.4",
+        "source_file": "easycrypt.project"
+      },
+      {
+        "solver": "cvc4",
+        "version": "1.8",
+        "source_file": "easycrypt.project"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.5.2",
+        "source_file": "easycrypt.project"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 335.81
+  },
+  {
+    "name": "Random Password Generator",
+    "url": "https://github.com/passcert-project/random-password-generator",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Random-Password-Generator",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": null,
+      "confidence": "high",
+      "method": "git_commit_date_predates_changelog",
+      "commit_date": "2022-01-23T21:53:42+00:00",
+      "detail": "last commit 2022-01-23T21:53:42+00:00 predates all known releases (earliest cataloged is r2022.04) -- treat as older than the full known changelog history, i.e. maximally exposed"
+    },
+    "releases_crossed": [
+      "r2022.04",
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 654,
+      "total_tactic_count": 3585,
+      "ratio": 0.18242677824267783,
+      "multiplier": 1.0,
+      "amplified_total": 451.81
+    },
+    "proof_complexity": {
+      "lemma_count": 72,
+      "mean_depth": 26.39,
+      "top_fraction_mean_depth": 86.33,
+      "long_lemma_count": 19,
+      "depth_complexity": 62.36,
+      "complexity_score": 73.73
+    },
+    "smt_solver_info": [],
+    "predates_changelog": true,
+    "predates_changelog_days": 93,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 40.0,
+    "total_exposure_score": 491.81
+  },
+  {
+    "name": "EasyUC",
+    "url": "https://github.com/easyuc/EasyUC",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/EasyUC",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.06",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-07-08T13:57:56-04:00, nearest preceding release r2026.06"
+    },
+    "releases_crossed": [
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 60.9,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 13,
+          "score": 39.5
+        },
+        "tactic_change": {
+          "count": 8,
+          "score": 16.8
+        },
+        "lemma_added": {
+          "count": 3,
+          "score": 2.2
+        },
+        "syntax_change": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 23885,
+      "total_tactic_count": 56296,
+      "ratio": 0.4242752593434702,
+      "multiplier": 1.0,
+      "amplified_total": 86.74
+    },
+    "proof_complexity": {
+      "lemma_count": 2295,
+      "mean_depth": 18.92,
+      "top_fraction_mean_depth": 69.45,
+      "long_lemma_count": 344,
+      "depth_complexity": 49.24,
+      "complexity_score": 70.13
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 86.74
+  },
+  {
+    "name": "Decomposition-Zk",
+    "url": "https://github.com/Nsidorenco/Decomposition-zk",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Decomposition-Zk",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.06",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-07-06T17:40:09+02:00, nearest preceding release r2026.06"
+    },
+    "releases_crossed": [
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 60.9,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 13,
+          "score": 39.5
+        },
+        "tactic_change": {
+          "count": 8,
+          "score": 16.8
+        },
+        "lemma_added": {
+          "count": 3,
+          "score": 2.2
+        },
+        "syntax_change": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 927,
+      "total_tactic_count": 2862,
+      "ratio": 0.3238993710691824,
+      "multiplier": 1.0,
+      "amplified_total": 80.63
+    },
+    "proof_complexity": {
+      "lemma_count": 58,
+      "mean_depth": 44.76,
+      "top_fraction_mean_depth": 145.73,
+      "long_lemma_count": 22,
+      "depth_complexity": 105.34,
+      "complexity_score": 139.46
+    },
+    "smt_solver_info": [
+      {
+        "solver": "why3",
+        "version": "1.3.3",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "z3",
+        "version": "4.8.6",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "1.2.3",
+        "source_file": "README.md"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 80.63
+  },
+  {
+    "name": "Zkp-Xpln",
+    "url": "https://github.com/gerlion/zkp-xpln",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Zkp-Xpln",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2024.01",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2024-12-21T12:49:36+11:00, nearest preceding release r2024.01"
+    },
+    "releases_crossed": [
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 1393,
+      "total_tactic_count": 7015,
+      "ratio": 0.19857448325017818,
+      "multiplier": 1.0,
+      "amplified_total": 457.98
+    },
+    "proof_complexity": {
+      "lemma_count": 167,
+      "mean_depth": 38.96,
+      "top_fraction_mean_depth": 133.93,
+      "long_lemma_count": 62,
+      "depth_complexity": 95.94,
+      "complexity_score": 114.99
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 457.98
+  },
+  {
+    "name": "Minivoting",
+    "url": "https://github.com/catalindragan/minivoting-privacy",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Minivoting",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": null,
+      "confidence": "high",
+      "method": "git_commit_date_predates_changelog",
+      "commit_date": "2017-02-27T16:42:31+01:00",
+      "detail": "last commit 2017-02-27T16:42:31+01:00 predates all known releases (earliest cataloged is r2022.04) -- treat as older than the full known changelog history, i.e. maximally exposed"
+    },
+    "releases_crossed": [
+      "r2022.04",
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 1407,
+      "total_tactic_count": 5547,
+      "ratio": 0.253650621957815,
+      "multiplier": 1.0,
+      "amplified_total": 479.02
+    },
+    "proof_complexity": {
+      "lemma_count": 351,
+      "mean_depth": 9.92,
+      "top_fraction_mean_depth": 31.64,
+      "long_lemma_count": 43,
+      "depth_complexity": 22.95,
+      "complexity_score": 28.77
+    },
+    "smt_solver_info": [],
+    "predates_changelog": true,
+    "predates_changelog_days": 1884,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 38.36,
+    "total_exposure_score": 517.38
+  },
+  {
+    "name": "Helios",
+    "url": "https://gitlab.com/ec-evoting/helios",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Helios",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": null,
+      "confidence": "high",
+      "method": "git_commit_date_predates_changelog",
+      "commit_date": "2017-02-27T16:42:31+01:00",
+      "detail": "last commit 2017-02-27T16:42:31+01:00 predates all known releases (earliest cataloged is r2022.04) -- treat as older than the full known changelog history, i.e. maximally exposed"
+    },
+    "releases_crossed": [
+      "r2022.04",
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 1407,
+      "total_tactic_count": 5547,
+      "ratio": 0.253650621957815,
+      "multiplier": 1.0,
+      "amplified_total": 479.02
+    },
+    "proof_complexity": {
+      "lemma_count": 351,
+      "mean_depth": 9.92,
+      "top_fraction_mean_depth": 31.64,
+      "long_lemma_count": 43,
+      "depth_complexity": 22.95,
+      "complexity_score": 28.77
+    },
+    "smt_solver_info": [],
+    "predates_changelog": true,
+    "predates_changelog_days": 1884,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 38.36,
+    "total_exposure_score": 517.38
+  },
+  {
+    "name": "Yao",
+    "url": "https://github.com/fdupress/yao",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Yao",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": null,
+      "confidence": "high",
+      "method": "version_file_sha_predates_tagging_scheme",
+      "commit_date": "2017-03-15T14:41:10+01:00",
+      "detail": "sha=0f68ed759844eb3aff58a9dea6b91cbda2a36c3f dated 2017-03-15T14:41:10+01:00; no release tag is an ancestor of this commit (it predates EasyCrypt's r20YY.MM tagging scheme) -- treat as older than the full known changelog history, i.e. maximally exposed"
+    },
+    "releases_crossed": [
+      "r2022.04",
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 1440,
+      "total_tactic_count": 9604,
+      "ratio": 0.1499375260308205,
+      "multiplier": 1.0,
+      "amplified_total": 439.39
+    },
+    "proof_complexity": {
+      "lemma_count": 313,
+      "mean_depth": 26.56,
+      "top_fraction_mean_depth": 89.2,
+      "long_lemma_count": 102,
+      "depth_complexity": 64.14,
+      "complexity_score": 73.76
+    },
+    "smt_solver_info": [],
+    "predates_changelog": true,
+    "predates_changelog_days": 1868,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 40.0,
+    "total_exposure_score": 479.39
+  },
+  {
+    "name": "QSSM-RS",
+    "url": "https://github.com/peavey2787/qssm-rs",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/QSSM-RS",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.05",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-05-16T01:21:18-04:00, nearest preceding release r2026.05"
+    },
+    "releases_crossed": [
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 106.4,
+      "by_kind": {
+        "lemma_added": {
+          "count": 4,
+          "score": 3.2
+        },
+        "mechanism_change": {
+          "count": 21,
+          "score": 67.0
+        },
+        "tactic_change": {
+          "count": 13,
+          "score": 27.000000000000004
+        },
+        "syntax_change": {
+          "count": 4,
+          "score": 9.2
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 272,
+      "total_tactic_count": 7821,
+      "ratio": 0.03477816136043984,
+      "multiplier": 1.0,
+      "amplified_total": 110.1
+    },
+    "proof_complexity": {
+      "lemma_count": 1412,
+      "mean_depth": 5.15,
+      "top_fraction_mean_depth": 13.21,
+      "long_lemma_count": 87,
+      "depth_complexity": 9.98,
+      "complexity_score": 10.33
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 110.1
+  },
+  {
+    "name": "DualKey-MLWR",
+    "url": "https://github.com/samlavery/DualKey-MLWR",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/DualKey-MLWR",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2025.11",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-01-27T16:27:41-08:00, nearest preceding release r2025.11"
+    },
+    "releases_crossed": [
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 222.9,
+      "by_kind": {
+        "tactic_change": {
+          "count": 44,
+          "score": 91.79999999999994
+        },
+        "mechanism_change": {
+          "count": 35,
+          "score": 106.5
+        },
+        "syntax_change": {
+          "count": 9,
+          "score": 20.4
+        },
+        "lemma_added": {
+          "count": 9,
+          "score": 4.2
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 482,
+      "total_tactic_count": 2762,
+      "ratio": 0.17451122375090514,
+      "multiplier": 1.0,
+      "amplified_total": 261.8
+    },
+    "proof_complexity": {
+      "lemma_count": 496,
+      "mean_depth": 4.05,
+      "top_fraction_mean_depth": 10.95,
+      "long_lemma_count": 26,
+      "depth_complexity": 8.19,
+      "complexity_score": 9.62
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 261.8
+  },
+  {
+    "name": "Solberg Defense",
+    "url": "https://github.com/mortensol/EasyCrypt",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Solberg-Defense",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": null,
+      "confidence": "high",
+      "method": "git_commit_date_predates_changelog",
+      "commit_date": "2018-12-25T23:13:48+01:00",
+      "detail": "last commit 2018-12-25T23:13:48+01:00 predates all known releases (earliest cataloged is r2022.04) -- treat as older than the full known changelog history, i.e. maximally exposed"
+    },
+    "releases_crossed": [
+      "r2022.04",
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 336,
+      "total_tactic_count": 1340,
+      "ratio": 0.2507462686567164,
+      "multiplier": 1.0,
+      "amplified_total": 477.91
+    },
+    "proof_complexity": {
+      "lemma_count": 102,
+      "mean_depth": 8.35,
+      "top_fraction_mean_depth": 26.54,
+      "long_lemma_count": 19,
+      "depth_complexity": 19.26,
+      "complexity_score": 24.09
+    },
+    "smt_solver_info": [],
+    "predates_changelog": true,
+    "predates_changelog_days": 1218,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 32.12,
+    "total_exposure_score": 510.03
+  },
+  {
+    "name": "MPCEC",
+    "url": "https://github.com/spitters/MPCEC",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/MPCEC",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2023-02-08T16:17:11+01:00, nearest preceding release r2022.04"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 475,
+      "total_tactic_count": 2387,
+      "ratio": 0.1989945538332635,
+      "multiplier": 1.0,
+      "amplified_total": 458.14
+    },
+    "proof_complexity": {
+      "lemma_count": 127,
+      "mean_depth": 9.8,
+      "top_fraction_mean_depth": 30.97,
+      "long_lemma_count": 23,
+      "depth_complexity": 22.5,
+      "complexity_score": 26.98
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 458.14
+  },
+  {
+    "name": "Cryptolib",
+    "url": "https://github.com/maximedenes/cryptolib",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Cryptolib",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": null,
+      "confidence": "high",
+      "method": "git_commit_date_predates_changelog",
+      "commit_date": "2022-03-15T15:25:13+01:00",
+      "detail": "last commit 2022-03-15T15:25:13+01:00 predates all known releases (earliest cataloged is r2022.04) -- treat as older than the full known changelog history, i.e. maximally exposed"
+    },
+    "releases_crossed": [
+      "r2022.04",
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 0,
+      "total_tactic_count": 2103,
+      "ratio": 0.0,
+      "multiplier": 1.0,
+      "amplified_total": 382.1
+    },
+    "proof_complexity": {
+      "lemma_count": 0,
+      "mean_depth": 0.0,
+      "top_fraction_mean_depth": 0.0,
+      "long_lemma_count": 0,
+      "depth_complexity": 0.0,
+      "complexity_score": 0.0
+    },
+    "smt_solver_info": [],
+    "predates_changelog": true,
+    "predates_changelog_days": 42,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 4.0,
+    "total_exposure_score": 386.1
+  },
+  {
+    "name": "SpaceWallet",
+    "url": "https://github.com/vSpaceWallet/Proofs",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/SpaceWallet",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2024.01",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2024-11-27T12:55:39+00:00, nearest preceding release r2024.01"
+    },
+    "releases_crossed": [
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 544,
+      "total_tactic_count": 1834,
+      "ratio": 0.2966194111232279,
+      "multiplier": 1.0,
+      "amplified_total": 495.44
+    },
+    "proof_complexity": {
+      "lemma_count": 12,
+      "mean_depth": 75.58,
+      "top_fraction_mean_depth": 296.67,
+      "long_lemma_count": 1,
+      "depth_complexity": 208.23,
+      "complexity_score": 270.0
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 495.44
+  },
+  {
+    "name": "Frodo-EC",
+    "url": "https://github.com/strub/frodo-easycrypt",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Frodo-EC",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2024.01",
+      "confidence": "high",
+      "method": "submodule_pin_resolved",
+      "detail": "sha=a8274feb63b62d281db350cd6dd8940c69aca835, describe=r2024.01-6-ga8274feb"
+    },
+    "releases_crossed": [
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 72,
+      "total_tactic_count": 570,
+      "ratio": 0.12631578947368421,
+      "multiplier": 1.0,
+      "amplified_total": 430.37
+    },
+    "proof_complexity": {
+      "lemma_count": 28,
+      "mean_depth": 11.32,
+      "top_fraction_mean_depth": 28.86,
+      "long_lemma_count": 8,
+      "depth_complexity": 21.84,
+      "complexity_score": 24.6
+    },
+    "smt_solver_info": [
+      {
+        "solver": "alt-ergo",
+        "version": "2.4",
+        "source_file": "easycrypt.project"
+      },
+      {
+        "solver": "cvc4",
+        "version": "1.8",
+        "source_file": "easycrypt.project"
+      },
+      {
+        "solver": "z3",
+        "version": "4.8",
+        "source_file": "easycrypt.project"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 430.37
+  },
+  {
+    "name": "Modelling PQC EC",
+    "url": "https://github.com/Cimylog/modelling_pqc_in_easycrypt",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Modelling-PQC-EC",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2022-05-31T10:51:51+02:00, nearest preceding release r2022.04"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 100,
+      "total_tactic_count": 768,
+      "ratio": 0.13020833333333334,
+      "multiplier": 1.0,
+      "amplified_total": 431.85
+    },
+    "proof_complexity": {
+      "lemma_count": 76,
+      "mean_depth": 7.66,
+      "top_fraction_mean_depth": 19.89,
+      "long_lemma_count": 8,
+      "depth_complexity": 15.0,
+      "complexity_score": 16.95
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 431.85
+  },
+  {
+    "name": "EzRSA",
+    "url": "https://github.com/zaclegarssure/EzRSA",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/EzRSA",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2023-01-09T20:45:31+01:00, nearest preceding release r2022.04"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 28,
+      "total_tactic_count": 139,
+      "ratio": 0.2014388489208633,
+      "multiplier": 1.0,
+      "amplified_total": 459.07
+    },
+    "proof_complexity": {
+      "lemma_count": 3,
+      "mean_depth": 17.67,
+      "top_fraction_mean_depth": 26.0,
+      "long_lemma_count": 2,
+      "depth_complexity": 22.67,
+      "complexity_score": 27.23
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 459.07
+  },
+  {
+    "name": "CS591 Project",
+    "url": "https://github.com/nbcohen99/CS591Project",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/CS591-Project",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": null,
+      "confidence": "high",
+      "method": "git_commit_date_predates_changelog",
+      "commit_date": "2020-05-06T13:37:53-04:00",
+      "detail": "last commit 2020-05-06T13:37:53-04:00 predates all known releases (earliest cataloged is r2022.04) -- treat as older than the full known changelog history, i.e. maximally exposed"
+    },
+    "releases_crossed": [
+      "r2022.04",
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 22,
+      "total_tactic_count": 177,
+      "ratio": 0.12429378531073447,
+      "multiplier": 1.0,
+      "amplified_total": 429.59
+    },
+    "proof_complexity": {
+      "lemma_count": 27,
+      "mean_depth": 3.56,
+      "top_fraction_mean_depth": 10.0,
+      "long_lemma_count": 2,
+      "depth_complexity": 7.42,
+      "complexity_score": 8.34
+    },
+    "smt_solver_info": [],
+    "predates_changelog": true,
+    "predates_changelog_days": 720,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 11.12,
+    "total_exposure_score": 440.71
+  },
+  {
+    "name": "Mystery Thesis",
+    "url": "https://github.com/student10428798/Thesis_Easycrypt",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Mystery-Thesis",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2023-07-28T13:27:57+02:00, nearest preceding release r2022.04"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 31,
+      "total_tactic_count": 148,
+      "ratio": 0.20945945945945946,
+      "multiplier": 1.0,
+      "amplified_total": 462.13
+    },
+    "proof_complexity": {
+      "lemma_count": 4,
+      "mean_depth": 43.25,
+      "top_fraction_mean_depth": 52.0,
+      "long_lemma_count": 4,
+      "depth_complexity": 48.5,
+      "complexity_score": 58.66
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 462.13
+  },
+  {
+    "name": "EasyPIR",
+    "url": "https://github.com/henrybarthelemy/easypir",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/EasyPIR",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2024.01",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2024-11-22T14:08:54-05:00, nearest preceding release r2024.01"
+    },
+    "releases_crossed": [
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 14,
+      "total_tactic_count": 151,
+      "ratio": 0.09271523178807947,
+      "multiplier": 1.0,
+      "amplified_total": 417.53
+    },
+    "proof_complexity": {
+      "lemma_count": 7,
+      "mean_depth": 6.14,
+      "top_fraction_mean_depth": 9.0,
+      "long_lemma_count": 0,
+      "depth_complexity": 7.86,
+      "complexity_score": 8.59
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 417.53
+  },
+  {
+    "name": "Meijers Dissertation",
+    "url": "https://github.com/MM45/dissertation-artifacts",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Meijers-Dissertation",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.02",
+      "confidence": "high",
+      "method": "docker_config",
+      "detail": "found in impleqv/Dockerfile"
+    },
+    "releases_crossed": [
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 172.8,
+      "by_kind": {
+        "tactic_change": {
+          "count": 32,
+          "score": 65.69999999999997
+        },
+        "syntax_change": {
+          "count": 8,
+          "score": 16.4
+        },
+        "mechanism_change": {
+          "count": 28,
+          "score": 86.5
+        },
+        "lemma_added": {
+          "count": 9,
+          "score": 4.2
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 7068,
+      "total_tactic_count": 45761,
+      "ratio": 0.15445466663752977,
+      "multiplier": 1.0,
+      "amplified_total": 199.49
+    },
+    "proof_complexity": {
+      "lemma_count": 1227,
+      "mean_depth": 21.87,
+      "top_fraction_mean_depth": 74.28,
+      "long_lemma_count": 329,
+      "depth_complexity": 53.31,
+      "complexity_score": 61.55
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 199.49
+  },
+  {
+    "name": "Evoting Thesis",
+    "url": "https://github.com/dn813/prbx-easycrypt-2026",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Evoting-Thesis",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.05",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-05-04T17:30:33+01:00, nearest preceding release r2026.05"
+    },
+    "releases_crossed": [
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 106.4,
+      "by_kind": {
+        "lemma_added": {
+          "count": 4,
+          "score": 3.2
+        },
+        "mechanism_change": {
+          "count": 21,
+          "score": 67.0
+        },
+        "tactic_change": {
+          "count": 13,
+          "score": 27.000000000000004
+        },
+        "syntax_change": {
+          "count": 4,
+          "score": 9.2
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 4,
+      "total_tactic_count": 165,
+      "ratio": 0.024242424242424242,
+      "multiplier": 1.0,
+      "amplified_total": 108.98
+    },
+    "proof_complexity": {
+      "lemma_count": 2,
+      "mean_depth": 61.5,
+      "top_fraction_mean_depth": 62.0,
+      "long_lemma_count": 2,
+      "depth_complexity": 61.8,
+      "complexity_score": 63.3
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 108.98
+  },
+  {
+    "name": "KZG PCS",
+    "url": "https://github.com/gerlion/kzg_pcs",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/KZG-PCS",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2025.03",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2025-04-21T09:22:23+10:00, nearest preceding release r2025.03"
+    },
+    "releases_crossed": [
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 282.9,
+      "by_kind": {
+        "syntax_change": {
+          "count": 12,
+          "score": 29.199999999999996
+        },
+        "tactic_change": {
+          "count": 56,
+          "score": 115.79999999999993
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        },
+        "lemma_added": {
+          "count": 22,
+          "score": 8.999999999999996
+        },
+        "mechanism_change": {
+          "count": 39,
+          "score": 126.5
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 1384,
+      "total_tactic_count": 5165,
+      "ratio": 0.26795740561471443,
+      "multiplier": 1.0,
+      "amplified_total": 358.71
+    },
+    "proof_complexity": {
+      "lemma_count": 195,
+      "mean_depth": 23.82,
+      "top_fraction_mean_depth": 67.14,
+      "long_lemma_count": 72,
+      "depth_complexity": 49.81,
+      "complexity_score": 63.16
+    },
+    "smt_solver_info": [
+      {
+        "solver": "alt-ergo",
+        "version": "2.4.2",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.4.2",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "cvc4",
+        "version": "1.8.0",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "cvc4",
+        "version": "1.8.0",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "cvc4",
+        "version": "1.8.0",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "cvc5",
+        "version": "1.0.5",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "cvc5",
+        "version": "1.0.5",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "cvc5",
+        "version": "1.0.5",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "z3",
+        "version": "4.12.6",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "z3",
+        "version": "4.12.6",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "z3",
+        "version": "4.12.6",
+        "source_file": "README.md"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 358.71
+  },
+  {
+    "name": "Commit Non Malleability EC",
+    "url": "https://github.com/dfirsov/commitments-non-malleability-ec",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Commit-Non-Malleability-EC",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2022-05-16T11:13:57+03:00, nearest preceding release r2022.04"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 632,
+      "total_tactic_count": 3381,
+      "ratio": 0.18692694469091983,
+      "multiplier": 1.0,
+      "amplified_total": 453.52
+    },
+    "proof_complexity": {
+      "lemma_count": 184,
+      "mean_depth": 20.11,
+      "top_fraction_mean_depth": 55.02,
+      "long_lemma_count": 78,
+      "depth_complexity": 41.06,
+      "complexity_score": 48.73
+    },
+    "smt_solver_info": [
+      {
+        "solver": "why3",
+        "version": "1.4.0",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "z3",
+        "version": "4.8.7",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "cvc4",
+        "version": "1.6",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.4.0",
+        "source_file": "README.md"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 453.52
+  },
+  {
+    "name": "OSKGO Thesis",
+    "url": "https://github.com/oskgo/master-artifacts",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/OSKGO-Thesis",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2023-06-01T01:34:37+02:00, nearest preceding release r2022.04"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 135,
+      "total_tactic_count": 1026,
+      "ratio": 0.13157894736842105,
+      "multiplier": 1.0,
+      "amplified_total": 432.38
+    },
+    "proof_complexity": {
+      "lemma_count": 95,
+      "mean_depth": 7.33,
+      "top_fraction_mean_depth": 22.42,
+      "long_lemma_count": 9,
+      "depth_complexity": 16.38,
+      "complexity_score": 18.54
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 432.38
+  },
+  {
+    "name": "EasyCrypt Iceberg",
+    "url": "https://github.com/xoredtwice/easycrypt-iceberg",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/EasyCrypt-Iceberg",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.02",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-02-19T10:50:27-05:00, nearest preceding release r2026.02"
+    },
+    "releases_crossed": [
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 172.8,
+      "by_kind": {
+        "tactic_change": {
+          "count": 32,
+          "score": 65.69999999999997
+        },
+        "syntax_change": {
+          "count": 8,
+          "score": 16.4
+        },
+        "mechanism_change": {
+          "count": 28,
+          "score": 86.5
+        },
+        "lemma_added": {
+          "count": 9,
+          "score": 4.2
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 1929,
+      "total_tactic_count": 13584,
+      "ratio": 0.1420053003533569,
+      "multiplier": 1.0,
+      "amplified_total": 197.34
+    },
+    "proof_complexity": {
+      "lemma_count": 314,
+      "mean_depth": 25.94,
+      "top_fraction_mean_depth": 88.34,
+      "long_lemma_count": 98,
+      "depth_complexity": 63.38,
+      "complexity_score": 72.38
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 197.34
+  },
+  {
+    "name": "Shipovnik Verification",
+    "url": "https://github.com/y4cer/shipovnik_verification",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Shipovnik-Verification",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2024.01",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2024-11-06T04:58:54+00:00, nearest preceding release r2024.01"
+    },
+    "releases_crossed": [
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 0,
+      "total_tactic_count": 16,
+      "ratio": 0.0,
+      "multiplier": 1.0,
+      "amplified_total": 382.1
+    },
+    "proof_complexity": {
+      "lemma_count": 0,
+      "mean_depth": 0.0,
+      "top_fraction_mean_depth": 0.0,
+      "long_lemma_count": 0,
+      "depth_complexity": 0.0,
+      "complexity_score": 0.0
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 382.1
+  },
+  {
+    "name": "Comparison Non Malleability Unsat",
+    "url": "https://github.com/dfirsov/comparison-based-non-malleabiltiy-unsat",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Comparison-Non-Malleability-Unsat",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "high",
+      "method": "config_string",
+      "detail": "found in README.md"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 56,
+      "total_tactic_count": 616,
+      "ratio": 0.09090909090909091,
+      "multiplier": 1.0,
+      "amplified_total": 416.84
+    },
+    "proof_complexity": {
+      "lemma_count": 26,
+      "mean_depth": 30.88,
+      "top_fraction_mean_depth": 69.29,
+      "long_lemma_count": 17,
+      "depth_complexity": 53.93,
+      "complexity_score": 58.83
+    },
+    "smt_solver_info": [
+      {
+        "solver": "why3",
+        "version": "1.5.0",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "z3",
+        "version": "4.8.7",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "cvc4",
+        "version": "1.6",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.4.1",
+        "source_file": "README.md"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 416.84
+  },
+  {
+    "name": "EC Final Project",
+    "url": "https://github.com/elimbaum/easycrypt-final-project",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/EC-Final-Project",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2024-05-04T18:00:10-04:00, nearest preceding release r2022.04"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 165,
+      "total_tactic_count": 793,
+      "ratio": 0.2080706179066835,
+      "multiplier": 1.0,
+      "amplified_total": 461.6
+    },
+    "proof_complexity": {
+      "lemma_count": 28,
+      "mean_depth": 22.61,
+      "top_fraction_mean_depth": 70.14,
+      "long_lemma_count": 9,
+      "depth_complexity": 51.13,
+      "complexity_score": 61.77
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 461.6
+  },
+  {
+    "name": "Guessing Game",
+    "url": "https://github.com/alleystoughton/GuessingGame",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Guessing-Game",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.05",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-06-05T12:49:26-04:00, nearest preceding release r2026.05"
+    },
+    "releases_crossed": [
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 106.4,
+      "by_kind": {
+        "lemma_added": {
+          "count": 4,
+          "score": 3.2
+        },
+        "mechanism_change": {
+          "count": 21,
+          "score": 67.0
+        },
+        "tactic_change": {
+          "count": 13,
+          "score": 27.000000000000004
+        },
+        "syntax_change": {
+          "count": 4,
+          "score": 9.2
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 1054,
+      "total_tactic_count": 2502,
+      "ratio": 0.4212629896083134,
+      "multiplier": 1.0,
+      "amplified_total": 151.22
+    },
+    "proof_complexity": {
+      "lemma_count": 114,
+      "mean_depth": 15.85,
+      "top_fraction_mean_depth": 55.38,
+      "long_lemma_count": 11,
+      "depth_complexity": 39.57,
+      "complexity_score": 56.24
+    },
+    "smt_solver_info": [
+      {
+        "solver": "alt-ergo",
+        "version": "4.15.3",
+        "source_file": "README.md"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 151.22
+  },
+  {
+    "name": "BLT Signatures",
+    "url": "https://github.com/dfirsov/easycrypt-one-time-blt-signature",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/BLT-Signatures",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "high",
+      "method": "config_string",
+      "detail": "found in README.md"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 912,
+      "total_tactic_count": 4302,
+      "ratio": 0.21199442119944212,
+      "multiplier": 1.0,
+      "amplified_total": 463.1
+    },
+    "proof_complexity": {
+      "lemma_count": 234,
+      "mean_depth": 17.34,
+      "top_fraction_mean_depth": 50.07,
+      "long_lemma_count": 76,
+      "depth_complexity": 36.98,
+      "complexity_score": 44.81
+    },
+    "smt_solver_info": [
+      {
+        "solver": "why3",
+        "version": "1.5.0",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "z3",
+        "version": "4.8.7",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "cvc4",
+        "version": "1.6",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.4.1",
+        "source_file": "README.md"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 463.1
+  },
+  {
+    "name": "Above Threshold",
+    "url": "https://github.com/zwang3583/aboveThreshold-DP-Proof",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Above-Threshold",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": null,
+      "confidence": "high",
+      "method": "git_commit_date_predates_changelog",
+      "commit_date": "2020-05-05T17:07:23-04:00",
+      "detail": "last commit 2020-05-05T17:07:23-04:00 predates all known releases (earliest cataloged is r2022.04) -- treat as older than the full known changelog history, i.e. maximally exposed"
+    },
+    "releases_crossed": [
+      "r2022.04",
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 153,
+      "total_tactic_count": 399,
+      "ratio": 0.38345864661654133,
+      "multiplier": 1.0,
+      "amplified_total": 528.62
+    },
+    "proof_complexity": {
+      "lemma_count": 39,
+      "mean_depth": 9.21,
+      "top_fraction_mean_depth": 25.1,
+      "long_lemma_count": 10,
+      "depth_complexity": 18.74,
+      "complexity_score": 25.93
+    },
+    "smt_solver_info": [],
+    "predates_changelog": true,
+    "predates_changelog_days": 721,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 34.57,
+    "total_exposure_score": 563.19
+  },
+  {
+    "name": "Sphincs",
+    "url": "https://github.com/infopunk/Sphincs-Hash-Function-Security-EasyCrypt",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Sphincs",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2025.11",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-01-21T10:28:48+01:00, nearest preceding release r2025.11"
+    },
+    "releases_crossed": [
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 222.9,
+      "by_kind": {
+        "tactic_change": {
+          "count": 44,
+          "score": 91.79999999999994
+        },
+        "mechanism_change": {
+          "count": 35,
+          "score": 106.5
+        },
+        "syntax_change": {
+          "count": 9,
+          "score": 20.4
+        },
+        "lemma_added": {
+          "count": 9,
+          "score": 4.2
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 91,
+      "total_tactic_count": 241,
+      "ratio": 0.3775933609958506,
+      "multiplier": 1.0,
+      "amplified_total": 307.07
+    },
+    "proof_complexity": {
+      "lemma_count": 6,
+      "mean_depth": 37.5,
+      "top_fraction_mean_depth": 99.5,
+      "long_lemma_count": 2,
+      "depth_complexity": 74.7,
+      "complexity_score": 102.91
+    },
+    "smt_solver_info": [
+      {
+        "solver": "alt-ergo",
+        "version": "2.5",
+        "source_file": "easycrypt.project"
+      },
+      {
+        "solver": "cvc5",
+        "version": "1.0",
+        "source_file": "easycrypt.project"
+      },
+      {
+        "solver": "z3",
+        "version": "4.12",
+        "source_file": "easycrypt.project"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 307.07
+  },
+  {
+    "name": "EasyCrypt Examples",
+    "url": "https://github.com/AvishkarMahajan/easycrypt_examples",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/EasyCrypt-Examples",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.06",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-06-30T17:04:46+08:00, nearest preceding release r2026.06"
+    },
+    "releases_crossed": [
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 60.9,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 13,
+          "score": 39.5
+        },
+        "tactic_change": {
+          "count": 8,
+          "score": 16.8
+        },
+        "lemma_added": {
+          "count": 3,
+          "score": 2.2
+        },
+        "syntax_change": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 223,
+      "total_tactic_count": 1181,
+      "ratio": 0.18882303132938189,
+      "multiplier": 1.0,
+      "amplified_total": 72.4
+    },
+    "proof_complexity": {
+      "lemma_count": 149,
+      "mean_depth": 6.84,
+      "top_fraction_mean_depth": 23.11,
+      "long_lemma_count": 17,
+      "depth_complexity": 16.6,
+      "complexity_score": 19.73
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 72.4
+  },
+  {
+    "name": "LQ-1",
+    "url": "https://github.com/LaharadevLQ1/lq1-ec-proofs",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/LQ-1",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.03",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-03-29T23:35:43+05:30, nearest preceding release r2026.03"
+    },
+    "releases_crossed": [
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 140.2,
+      "by_kind": {
+        "tactic_change": {
+          "count": 23,
+          "score": 47.09999999999999
+        },
+        "lemma_added": {
+          "count": 7,
+          "score": 4.0
+        },
+        "syntax_change": {
+          "count": 6,
+          "score": 13.600000000000001
+        },
+        "mechanism_change": {
+          "count": 24,
+          "score": 75.5
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 53,
+      "total_tactic_count": 164,
+      "ratio": 0.3231707317073171,
+      "multiplier": 1.0,
+      "amplified_total": 185.51
+    },
+    "proof_complexity": {
+      "lemma_count": 25,
+      "mean_depth": 4.56,
+      "top_fraction_mean_depth": 10.0,
+      "long_lemma_count": 1,
+      "depth_complexity": 7.82,
+      "complexity_score": 10.35
+    },
+    "smt_solver_info": [
+      {
+        "solver": "z3",
+        "version": "4.8.12",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.4.3",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "z3",
+        "version": "4.8.12",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.4.3",
+        "source_file": "README.md"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 185.51
+  },
+  {
+    "name": "Uvoting",
+    "url": "https://github.com/krips/uvoting",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Uvoting",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": null,
+      "confidence": "high",
+      "method": "git_commit_date_predates_changelog",
+      "commit_date": "2018-07-20T15:32:55+03:00",
+      "detail": "last commit 2018-07-20T15:32:55+03:00 predates all known releases (earliest cataloged is r2022.04) -- treat as older than the full known changelog history, i.e. maximally exposed"
+    },
+    "releases_crossed": [
+      "r2022.04",
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 119,
+      "total_tactic_count": 1010,
+      "ratio": 0.11782178217821782,
+      "multiplier": 1.0,
+      "amplified_total": 427.12
+    },
+    "proof_complexity": {
+      "lemma_count": 8,
+      "mean_depth": 104.5,
+      "top_fraction_mean_depth": 269.5,
+      "long_lemma_count": 5,
+      "depth_complexity": 203.5,
+      "complexity_score": 227.48
+    },
+    "smt_solver_info": [],
+    "predates_changelog": true,
+    "predates_changelog_days": 1376,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 40.0,
+    "total_exposure_score": 467.12
+  },
+  {
+    "name": "FV Sphincs",
+    "url": "https://github.com/MM45/FV-SPHINCSPLUS-EC",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/FV-Sphincs",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.02",
+      "confidence": "high",
+      "method": "docker_config",
+      "detail": "found in Dockerfile"
+    },
+    "releases_crossed": [
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 172.8,
+      "by_kind": {
+        "tactic_change": {
+          "count": 32,
+          "score": 65.69999999999997
+        },
+        "syntax_change": {
+          "count": 8,
+          "score": 16.4
+        },
+        "mechanism_change": {
+          "count": 28,
+          "score": 86.5
+        },
+        "lemma_added": {
+          "count": 9,
+          "score": 4.2
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 1927,
+      "total_tactic_count": 13576,
+      "ratio": 0.14194166175604006,
+      "multiplier": 1.0,
+      "amplified_total": 197.33
+    },
+    "proof_complexity": {
+      "lemma_count": 309,
+      "mean_depth": 26.34,
+      "top_fraction_mean_depth": 89.24,
+      "long_lemma_count": 98,
+      "depth_complexity": 64.08,
+      "complexity_score": 73.18
+    },
+    "smt_solver_info": [
+      {
+        "solver": "z3",
+        "version": "4.13.4",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.6.0",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.6",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "z3",
+        "version": "4.13.4",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.6.0",
+        "source_file": "easycrypt.project"
+      },
+      {
+        "solver": "z3",
+        "version": "4.13.4",
+        "source_file": "easycrypt.project"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 197.33
+  },
+  {
+    "name": "ElGamal",
+    "url": "https://github.com/derens99/ElGamal-proof",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/ElGamal",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": null,
+      "confidence": "high",
+      "method": "git_commit_date_predates_changelog",
+      "commit_date": "2020-05-10T21:05:57-04:00",
+      "detail": "last commit 2020-05-10T21:05:57-04:00 predates all known releases (earliest cataloged is r2022.04) -- treat as older than the full known changelog history, i.e. maximally exposed"
+    },
+    "releases_crossed": [
+      "r2022.04",
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 162,
+      "total_tactic_count": 869,
+      "ratio": 0.18642117376294592,
+      "multiplier": 1.0,
+      "amplified_total": 453.33
+    },
+    "proof_complexity": {
+      "lemma_count": 69,
+      "mean_depth": 8.75,
+      "top_fraction_mean_depth": 26.44,
+      "long_lemma_count": 14,
+      "depth_complexity": 19.37,
+      "complexity_score": 22.98
+    },
+    "smt_solver_info": [],
+    "predates_changelog": true,
+    "predates_changelog_days": 716,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 30.64,
+    "total_exposure_score": 483.97
+  },
+  {
+    "name": "Old Formosa Libjc",
+    "url": "https://github.com/tfaoliveira/libjc",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Old-Formosa-Libjc",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": null,
+      "confidence": "high",
+      "method": "submodule_pin_predates_tagging_scheme",
+      "commit_date": "2019-10-25T17:59:30+02:00",
+      "detail": "sha=e53aab77538317b87a8ad1cce3516fa0d924d3db dated 2019-10-25T17:59:30+02:00; no release tag is an ancestor of this commit (it predates EasyCrypt's r20YY.MM tagging scheme) -- treat as older than the full known changelog history, i.e. maximally exposed"
+    },
+    "releases_crossed": [
+      "r2022.04",
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 1761,
+      "total_tactic_count": 12587,
+      "ratio": 0.13990625248272026,
+      "multiplier": 1.0,
+      "amplified_total": 435.56
+    },
+    "proof_complexity": {
+      "lemma_count": 819,
+      "mean_depth": 7.83,
+      "top_fraction_mean_depth": 23.6,
+      "long_lemma_count": 103,
+      "depth_complexity": 17.29,
+      "complexity_score": 19.71
+    },
+    "smt_solver_info": [],
+    "predates_changelog": true,
+    "predates_changelog_days": 914,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 26.28,
+    "total_exposure_score": 461.84
+  },
+  {
+    "name": "SRI High Assurance Crypto",
+    "url": "https://github.com/SRI-CSL/high-assurance-crypto",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/SRI-High-Assurance-Crypto",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2024.01",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2025-01-10T10:57:41+00:00, nearest preceding release r2024.01"
+    },
+    "releases_crossed": [
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 6099,
+      "total_tactic_count": 51255,
+      "ratio": 0.11899326894937079,
+      "multiplier": 1.0,
+      "amplified_total": 427.57
+    },
+    "proof_complexity": {
+      "lemma_count": 1978,
+      "mean_depth": 8.75,
+      "top_fraction_mean_depth": 30.3,
+      "long_lemma_count": 157,
+      "depth_complexity": 21.68,
+      "complexity_score": 24.26
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 427.57
+  },
+  {
+    "name": "EasyCrypt",
+    "url": "https://github.com/EasyCrypt/easycrypt",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/EasyCrypt",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2026.07",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-07-24T14:28:29+02:00, nearest preceding release r2026.07"
+    },
+    "releases_crossed": [],
+    "breaking_change_score": {
+      "total": 0.0,
+      "by_kind": {}
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 3723,
+      "total_tactic_count": 39042,
+      "ratio": 0.09535884432149992,
+      "multiplier": 1.0,
+      "amplified_total": 0.0
+    },
+    "proof_complexity": {
+      "lemma_count": 5749,
+      "mean_depth": 3.49,
+      "top_fraction_mean_depth": 9.9,
+      "long_lemma_count": 230,
+      "depth_complexity": 7.34,
+      "complexity_score": 8.04
+    },
+    "smt_solver_info": [
+      {
+        "solver": "alt-ergo",
+        "version": "2.6.0",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.6.0",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "why3",
+        "version": "1.8",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.6.0",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "cvc5",
+        "version": "1.0.8",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "z3",
+        "version": "4.12",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.6.0",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.6.0",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "why3",
+        "version": "1.8.0",
+        "source_file": "dune-project"
+      },
+      {
+        "solver": "why3",
+        "version": "1.8.0",
+        "source_file": "easycrypt.opam"
+      },
+      {
+        "solver": "cvc5",
+        "version": "1.0",
+        "source_file": "easycrypt.project"
+      },
+      {
+        "solver": "z3",
+        "version": "4.12",
+        "source_file": "easycrypt.project"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 0.0
+  },
+  {
+    "name": "Merkle Damgard",
+    "url": "Private",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Merkle-Damgard",
+    "error": "clone failed: fatal: repository 'Private' does not exist"
+  },
+  {
+    "name": "CMAC",
+    "url": "Private",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/CMAC",
+    "error": "clone failed: fatal: repository 'Private' does not exist"
+  },
+  {
+    "name": "CraftCodeLab",
+    "url": "https://github.com/Hacker-Code-J/EasyCrypt-CraftCodeLab",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/CraftCodeLab",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "high",
+      "method": "docker_config",
+      "detail": "found in formosa/2022-ec-jasmin/installation/docker/Dockerfile"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 497,
+      "total_tactic_count": 5689,
+      "ratio": 0.08736157496923888,
+      "multiplier": 1.0,
+      "amplified_total": 415.48
+    },
+    "proof_complexity": {
+      "lemma_count": 1210,
+      "mean_depth": 2.41,
+      "top_fraction_mean_depth": 6.14,
+      "long_lemma_count": 16,
+      "depth_complexity": 4.64,
+      "complexity_score": 5.05
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 415.48
+  },
+  {
+    "name": "Formal Methods S&P",
+    "url": "https://github.com/SmoothThunk/Formal-Methods-in-Security-and-Privacy",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Formal-Methods-S&P",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2024-03-15T15:23:41-04:00, nearest preceding release r2022.04"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 140,
+      "total_tactic_count": 647,
+      "ratio": 0.21638330757341576,
+      "multiplier": 1.0,
+      "amplified_total": 464.78
+    },
+    "proof_complexity": {
+      "lemma_count": 34,
+      "mean_depth": 13.59,
+      "top_fraction_mean_depth": 35.44,
+      "long_lemma_count": 10,
+      "depth_complexity": 26.7,
+      "complexity_score": 32.48
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 464.78
+  },
+  {
+    "name": "EasyTeach",
+    "url": "https://github.com/tarakaramg/EasyTeach",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/EasyTeach",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": null,
+      "confidence": "high",
+      "method": "git_commit_date_predates_changelog",
+      "commit_date": "2020-07-01T17:52:23-04:00",
+      "detail": "last commit 2020-07-01T17:52:23-04:00 predates all known releases (earliest cataloged is r2022.04) -- treat as older than the full known changelog history, i.e. maximally exposed"
+    },
+    "releases_crossed": [
+      "r2022.04",
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 9843,
+      "total_tactic_count": 19878,
+      "ratio": 0.49517054029580443,
+      "multiplier": 1.0,
+      "amplified_total": 571.3
+    },
+    "proof_complexity": {
+      "lemma_count": 744,
+      "mean_depth": 21.87,
+      "top_fraction_mean_depth": 81.74,
+      "long_lemma_count": 97,
+      "depth_complexity": 57.79,
+      "complexity_score": 86.41
+    },
+    "smt_solver_info": [],
+    "predates_changelog": true,
+    "predates_changelog_days": 664,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 40.0,
+    "total_exposure_score": 611.3
+  },
+  {
+    "name": "EasyTeach Alley",
+    "url": "https://github.com/alleystoughton/EasyTeach",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/EasyTeach-Alley",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2025.11",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-01-28T18:34:43-05:00, nearest preceding release r2025.11"
+    },
+    "releases_crossed": [
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 222.9,
+      "by_kind": {
+        "tactic_change": {
+          "count": 44,
+          "score": 91.79999999999994
+        },
+        "mechanism_change": {
+          "count": 35,
+          "score": 106.5
+        },
+        "syntax_change": {
+          "count": 9,
+          "score": 20.4
+        },
+        "lemma_added": {
+          "count": 9,
+          "score": 4.2
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 180,
+      "total_tactic_count": 1071,
+      "ratio": 0.16806722689075632,
+      "multiplier": 1.0,
+      "amplified_total": 260.36
+    },
+    "proof_complexity": {
+      "lemma_count": 121,
+      "mean_depth": 5.26,
+      "top_fraction_mean_depth": 14.77,
+      "long_lemma_count": 13,
+      "depth_complexity": 10.97,
+      "complexity_score": 12.81
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 260.36
+  },
+  {
+    "name": "The Joy of EasyCrypt",
+    "url": "https://github.com/tejasanilshah/the-joy-of-easycrypt",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/The-Joy-of-EasyCrypt",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2022-08-08T17:58:35+03:00, nearest preceding release r2022.04"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 64,
+      "total_tactic_count": 491,
+      "ratio": 0.13034623217922606,
+      "multiplier": 1.0,
+      "amplified_total": 431.91
+    },
+    "proof_complexity": {
+      "lemma_count": 39,
+      "mean_depth": 8.56,
+      "top_fraction_mean_depth": 18.5,
+      "long_lemma_count": 7,
+      "depth_complexity": 14.53,
+      "complexity_score": 16.42
+    },
+    "smt_solver_info": [],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 431.91
+  },
+  {
+    "name": "Acc sElect",
+    "url": "https://github.com/mortensol/acc-select",
+    "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Acc-sElect",
+    "target_version": "r2026.07",
+    "detected_source_version": {
+      "version": "r2022.04",
+      "confidence": "high",
+      "method": "config_string",
+      "detail": "found in README.md"
+    },
+    "releases_crossed": [
+      "r2023.09",
+      "r2024.01",
+      "r2024.09",
+      "r2025.02",
+      "r2025.03",
+      "r2025.08",
+      "r2025.10",
+      "r2025.11",
+      "r2026.02",
+      "r2026.03",
+      "r2026.05",
+      "r2026.06",
+      "r2026.07"
+    ],
+    "breaking_change_score": {
+      "total": 382.1,
+      "by_kind": {
+        "mechanism_change": {
+          "count": 57,
+          "score": 183.5
+        },
+        "syntax_change": {
+          "count": 18,
+          "score": 41.199999999999996
+        },
+        "lemma_renamed": {
+          "count": 1,
+          "score": 1.7999999999999998
+        },
+        "tactic_change": {
+          "count": 70,
+          "score": 142.49999999999997
+        },
+        "lemma_added": {
+          "count": 29,
+          "score": 10.699999999999996
+        },
+        "lemma_removed": {
+          "count": 1,
+          "score": 2.4
+        }
+      }
+    },
+    "automation_reliance": {
+      "fragile_tactic_count": 544,
+      "total_tactic_count": 1834,
+      "ratio": 0.2966194111232279,
+      "multiplier": 1.0,
+      "amplified_total": 495.44
+    },
+    "proof_complexity": {
+      "lemma_count": 12,
+      "mean_depth": 75.58,
+      "top_fraction_mean_depth": 296.67,
+      "long_lemma_count": 1,
+      "depth_complexity": 208.23,
+      "complexity_score": 270.0
+    },
+    "smt_solver_info": [
+      {
+        "solver": "z3",
+        "version": "4.8.10",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "cvc4",
+        "version": "1.8",
+        "source_file": "README.md"
+      },
+      {
+        "solver": "alt-ergo",
+        "version": "2.4.0",
+        "source_file": "README.md"
+      }
+    ],
+    "predates_changelog": false,
+    "predates_changelog_days": null,
+    "version_unknown": false,
+    "unresolved_version_penalty_applied": 0.0,
+    "total_exposure_score": 495.44
+  }
+]
