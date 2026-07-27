@@ -1,0 +1,10 @@
+{
+  "path": "theories/distributions/DList.ec",
+  "confidence": "verified_current_source (whole file, 561 lines)",
+  "caveat": "No true git-diff was possible. This is a structural snapshot of the file's CURRENT (main-branch) content plus any changelog-confirmed version deltas. What follows instead is (a) an accurate structural snapshot of the file's CURRENT (main-branch) content, fetched directly from the URL given, and (b) every version-specific change to this library that could be confirmed from the EasyCrypt Releases changelog (r2022.04-r2026.07). Use (a) to fix a reference to something that no longer exists under its old name/path; use (b) to know when a change happened.",
+  "current_content_summary": "dlist d n (an [opaque] op) is the distribution of length-n lists sampled i.i.d. from d, built via `fold` over a dprod/dapply construction. Core lemmas: dlist0/dlist1/dlistS/dlistSr, dlist_add, dlist_djoin (relating dlist to DJoin.djoin over a fixed-length nseq), dlist1E/dlistE (mass function), supp_dlist(_size), dlist_ll/uni/fu, dlist_dmap, dlist_perm_eq, dlist_rev, dlist_dlist (nested dlist flattening), dlist_insert, dlist_setE/dlist_set2E (probability of a set of positions matching a predicate), and dmap_dlist_partial_perm (added r2026.03: reindexing a subset of positions via an injective function). Two abstract theories, `ParametricProgram` and `Program` (the latter fixing the distribution d as a theory parameter rather than a procedure argument), each define four equivalent module implementations of list-sampling -- Sample (one dlist draw), SampleCons (recursive head+tail draws), Loop (a while-loop building the list by prepending), LoopSnoc (a while-loop building the list by appending) -- with proved `equiv`s between all four. These are the standard lemmas used to justify rewriting a `for`-loop-based sampling routine as a single dlist draw or vice versa.",
+  "requires": "AllCore, List, FSet, Distr, DProd, StdOrder, StdBigop.",
+  "version_diffs_found": [
+    "r2026.03: new lemma dmap_dlist_partial_perm added, part of a broader stdlib-lemma PR (#942)."
+  ]
+}

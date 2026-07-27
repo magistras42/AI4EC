@@ -1,0 +1,7 @@
+{
+  "path": "theories/core/CoreReal.ec",
+  "confidence": "verified_current_source (whole file, 13 lines)",
+  "caveat": "No true git-diff was possible. This is a structural snapshot of the file's CURRENT (main-branch) content plus any changelog-confirmed version deltas.",
+  "current_content_summary": "The real-number analogue of CoreInt: from_int (the int -> real embedding, i.e. what `%r` resolves to), zero/one (defined via from_int), add, opp, mul, inv, lt, and le (derived from lt). Again, purely SMT-binding primitives -- Real.ec is the user-facing theory.",
+  "version_diffs_found": "None found by name in the scanned changelog window."
+}

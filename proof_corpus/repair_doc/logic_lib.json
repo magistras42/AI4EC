@@ -1,0 +1,7 @@
+{
+  "path": "theories/prelude/Logic.ec",
+  "confidence": "verified_current_source (whole file, 727 lines)",
+  "caveat": "No true git-diff was possible. This is a structural snapshot of the file's CURRENT (main-branch) content plus any changelog-confirmed version deltas.",
+  "current_content_summary": "Also part of the prelude. Provides the general-purpose vocabulary used throughout the rest of the standard library: the 'a option type (None/Some) with oapp/odflt/obind/omap/oget/is_none/is_some; function combinators (\\o composition, \\c Kleisli-style option composition, transpose, eta_, idfun); a large set of algebraic-property predicates used to state generic lemmas (injective, surjective, cancel, pcancel, bijective, involutive, commutative, associative, idempotent, left_id/right_id, left_distributive/right_distributive, and many more); predicate/relation combinators (pred0/predT/predI/predU/predC/pred1/predU1/predC1/predD1 and their 'rel' 2-argument analogues); order-relation predicates (reflexive, transitive, symmetric, antisymmetric, total); a long block of boolean-algebra lemmas (andb*/orb*/addb* where addb is xor via ^); quantifier-shuffling lemmas (forall_eq/exists_eq/forall_iff/etc.); the choice operator choiceb/choicebd (Hilbert-style choice, used to define pinv, the canonical partial inverse of a function); and the locked/unlock mechanism for controlling reduction/rewriting.",
+  "version_diffs_found": "None found by name in the scanned changelog window."
+}

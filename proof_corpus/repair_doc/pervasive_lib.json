@@ -1,0 +1,7 @@
+{
+  "path": "theories/prelude/Pervasive.ec",
+  "confidence": "verified_current_source (whole file, 39 lines)",
+  "caveat": "No true git-diff was possible. This is a structural snapshot of the file's CURRENT (main-branch) content plus any changelog-confirmed version deltas.",
+  "current_content_summary": "The absolute bottom of the theory stack (part of the 'prelude', compiled in with `-boot`, not requirable normally). Declares the primitive types unit (with tt), bool (with true/false and the core boolean connectives ! || \\/ && /\\ => <=>), polymorphic equality (=)/(<>), int, real, 'a distr (with mu : 'a distr -> ('a -> bool) -> real as the primitive probability-measure operator that Distr.ec's whole API is later built on), the universal witness : 'a value (EasyCrypt requires every type to be inhabited), and exn (exceptions).",
+  "version_diffs_found": "None found by name in the scanned changelog window; this file is about as low-churn as EasyCrypt gets."
+}
