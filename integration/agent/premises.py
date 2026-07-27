@@ -19,7 +19,15 @@ from typing import NamedTuple
 
 
 THEORY_HEADER_RE = re.compile(r"^=+\s*.+\s*=+$")
-PREMISE_RE = re.compile(r"^(lemma|axiom)\s+(\w+)[^:]*:\s*(.+)$")
+# pp_axiom output shape: optional locality prefix (local/declare), kind
+# (lemma/axiom), optional nosmt tag, optional [tags ...], then the basename.
+PREMISE_RE = re.compile(
+    r"^(?:(local|declare)\s+)?"
+    r"(lemma|axiom)"
+    r"(?:\s+nosmt)?"
+    r"(?:\s+\[[^\]]*\])?"
+    r"\s+(\w+)[^:]*:\s*(.+)$"
+)
 
 
 class LemmaRef(NamedTuple):
@@ -65,12 +73,14 @@ def parse_premises(premises_text: str) -> dict[str, str]:
         match = PREMISE_RE.match(line)
         if not match:
             continue
-        kind, name, _stmt = match.groups()
+        locality, kind, name, stmt = match.groups()
         ref = LemmaRef(theory=current_theory, name=name)
+        # Preserve locality in catalog text so the model sees section-locals.
+        prefix = f"{locality} " if locality else ""
         if current_theory:
-            text = f"[{current_theory}] {kind} {name}: {match.group(3)}"
+            text = f"[{current_theory}] {prefix}{kind} {name}: {stmt}"
         else:
-            text = f"{kind} {name}: {match.group(3)}"
+            text = f"{prefix}{kind} {name}: {stmt}"
         # Same theory+name should not appear twice; last write wins if it does.
         premises[ref.key] = text
 

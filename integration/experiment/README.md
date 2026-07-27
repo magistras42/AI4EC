@@ -262,6 +262,13 @@ When run via the experiment runner, the agent receives:
   a row, independent of `--stuck-limit`. The model can always request a
   larger `count`, so a repeated no-op undo is a clear stuck signal rather
   than progress.
+- **Section-local lemmas** — while an EasyCrypt section is open, `local lemma`
+  declarations are present in `Ax.all` (the same table tactics resolve
+  against via `EcEnv.Ax.lookup`). The `llm -premises` dump therefore prints
+  them with a `local ` prefix (e.g. `local  lemma G3_true: …`). The agent's
+  `parse_premises` accepts this prefix and includes them in the catalog
+  under their qualified `Theory.basename` key, matching tactic name
+  resolution.
 
 The standalone agent CLI (`python -m integration.agent`) always enables the
 lookup/search tools against EasyCrypt premises; no extra config is required.

@@ -71,6 +71,119 @@ lemma exprM: forall (x m n : int), x ^ (m * n) = x ^ m ^ n.
     assert "int" in premises["Ring.IntID.exprM"]
 
 
+def test_parse_premises_accepts_local_lemma():
+    """local lemma lines (pp_axiom with locality prefix) must be parsed."""
+    text = """
+========== Top ==========
+
+local  lemma INDCPA_HEG_G1: forall &m, Pr[G1(A).main() @ &m : res] = 1%r.
+local  lemma G1_G2: forall &m, Pr[G1(A).main() @ &m : res] = Pr[G2(A).main() @ &m : res].
+local  lemma G3_true: forall &m, Pr[G3(A).main() @ &m : res] = 1%r / 2%r.
+lemma plain_lemma: forall x, x + 0 = x.
+"""
+    premises = parse_premises(text)
+    assert "Top.INDCPA_HEG_G1" in premises
+    assert "Top.G1_G2" in premises
+    assert "Top.G3_true" in premises
+    assert "Top.plain_lemma" in premises
+    # Locality preserved in catalog text
+    assert "local lemma INDCPA_HEG_G1" in premises["Top.INDCPA_HEG_G1"]
+    assert "[Top]" in premises["Top.INDCPA_HEG_G1"]
+    # Plain lemma has no locality prefix
+    assert "local" not in premises["Top.plain_lemma"]
+
+
+def test_parse_premises_accepts_declare_lemma():
+    """declare lemma lines must be parsed just like local."""
+    text = """
+========== Theory ==========
+
+declare  lemma assumed_fact: forall x, x = x.
+"""
+    premises = parse_premises(text)
+    assert "Theory.assumed_fact" in premises
+    assert "declare lemma assumed_fact" in premises["Theory.assumed_fact"]
+
+
+def test_parse_premises_accepts_nosmt_lemma():
+    """lemma nosmt (hidden from smt) must still appear in the catalog."""
+    text = """
+========== Foo ==========
+
+lemma nosmt hidden_from_smt: forall x, x + 0 = x.
+local  lemma nosmt local_nosmt: forall y, y * 1 = y.
+"""
+    premises = parse_premises(text)
+    assert "Foo.hidden_from_smt" in premises
+    assert "Foo.local_nosmt" in premises
+    assert "local lemma local_nosmt" in premises["Foo.local_nosmt"]
+
+
+def test_parse_premises_accepts_tagged_lemma():
+    """lemma [tag1 tag2] with bracket tags must be parsed."""
+    text = """
+========== Ring ==========
+
+lemma [algebra ring] addrC: forall x y, x + y = y + x.
+local  lemma [local_tag] tagged_local: forall z, z = z.
+"""
+    premises = parse_premises(text)
+    assert "Ring.addrC" in premises
+    assert "Ring.tagged_local" in premises
+    assert "local lemma tagged_local" in premises["Ring.tagged_local"]
+
+
+def test_parse_premises_double_space_locality_matches():
+    """pp_axiom joins locality and kind via pp_list \" \" which may produce
+    double spaces. The regex must handle this."""
+    text = """
+========== Top ==========
+
+local  lemma G3_true: forall &m, Pr[G3(A).main() @ &m : res] = 1%r / 2%r.
+declare  axiom assumed: true.
+"""
+    premises = parse_premises(text)
+    assert "Top.G3_true" in premises
+    assert "Top.assumed" in premises
+    assert "local lemma G3_true" in premises["Top.G3_true"]
+    assert "declare axiom assumed" in premises["Top.assumed"]
+
+
+def test_parse_premises_elgamal_smoke():
+    """Smoke test: a fixture mimicking the ElGamal trial_000 agent_start dump
+    must produce catalog entries for the section-local game-hop lemmas."""
+    elgamal_snippet = """
+========== Top ==========
+
+lemma dmap1E ['a, 'b]: forall (f : 'a -> 'b) (d : 'a distr) (b : 'b), mu1 (dmap d f) b = mu d (pred1 b \\o f).
+axiom cyclic_group_card: FDistr.dt = dunifin.
+
+local  lemma INDCPA_HEG_G1: forall &m, `|Pr[INDCPA(HEG, A).main() @ &m : res] - 1%r/2%r| = `|Pr[G1(A).main() @ &m : res] - 1%r/2%r|.
+local  lemma G1_G2: equiv[G1(A).main ~ G2(A).main : true ==> ={res}].
+local  lemma G2_G3: forall &m, Pr[G2(A).main() @ &m : res] = Pr[G3(A).main() @ &m : res].
+local  lemma G3_true: forall &m, Pr[G3(A).main() @ &m : res] = 1%r / 2%r.
+local  lemma conclusion: forall &m, `|Pr[INDCPA(HEG, A).main() @ &m : res] - 1%r/2%r| = `|Pr[DDH0(B(A)).main() @ &m : res] - Pr[DDH1(B(A)).main() @ &m : res]|.
+
+========== IntDiv ==========
+
+lemma nosmt edivzP: forall m d, m = d * (edivz m d) + (emodz m d).
+"""
+    premises = parse_premises(elgamal_snippet)
+    # All section-local game-hop lemmas must appear
+    for name in ("INDCPA_HEG_G1", "G1_G2", "G2_G3", "G3_true", "conclusion"):
+        key = f"Top.{name}"
+        assert key in premises, f"{key} missing from catalog"
+        assert "local lemma" in premises[key]
+    # Plain lemmas and axioms still work
+    assert "Top.dmap1E" in premises
+    assert "Top.cyclic_group_card" in premises
+    assert "IntDiv.edivzP" in premises
+    # nosmt lemma in a different theory also works
+    assert "lemma edivzP" in premises["IntDiv.edivzP"]
+    # Total count: 5 local + 2 plain in Top + 1 in IntDiv = 8
+    assert len(premises) == 8
+
+
 def test_proof_file_append_and_undo(tmp_path):
     source = FIXTURES / "incomplete_proof.ec"
     copy = create_working_copy(source, tmp_path / "work.ec")
