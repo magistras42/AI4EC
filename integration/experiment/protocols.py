@@ -45,9 +45,6 @@ class CorpusProvider(Protocol):
     def load_cases(self) -> list[ProofCase]:
         """Return all eligible proof cases for this corpus."""
 
-    def lemma_lookup_index(self) -> dict[str, str]:
-        """Map lemma name to signature for the lookup tool."""
-
     def sample_cases(self, count: int, rng: random.Random) -> list[ProofCase]:
         """Sample up to `count` cases (with replacement if pool is smaller)."""
 
@@ -63,11 +60,23 @@ class MutationStrategy(Protocol):
 
 
 @dataclass(frozen=True)
+class BrokenFormalConfig:
+    """Marker config for specs where the "informal proof" sketch shown to
+    the solver is the corpus's own genuinely broken formal tactic script,
+    rather than a writer-LLM natural-language paraphrase (see
+    :mod:`integration.experiment.corpora.elgamal`). Deliberately has no
+    red-herring/writer knobs: this mode never curates a lemma manifest, so
+    the solver ranks premises against the full ambient catalog, same as
+    `joy-tactic-repair`."""
+
+
+@dataclass(frozen=True)
 class ExperimentSpec:
     name: str
     corpus: CorpusProvider
     mutations: MutationStrategy | None = None
     informal: InformalConfig | None = None
+    broken_formal: BrokenFormalConfig | None = None
 
 
 class ExperimentSpecRegistry:

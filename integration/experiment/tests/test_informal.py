@@ -29,6 +29,13 @@ def test_extract_used_lemma_names_matches_word_boundaries():
     assert used == ["addr0", "addrC", "mulrC"]
 
 
+def test_extract_used_lemma_names_matches_qualified_paths():
+    tactic_text = "  by apply RField.exprM.\n"
+    candidates = ["RField.exprM", "Ring.IntID.exprM", "RField.addr0"]
+    used = extract_used_lemma_names(tactic_text, candidates)
+    assert used == ["RField.exprM"]
+
+
 def test_extract_used_lemma_names_does_not_match_substrings():
     tactic_text = "by rewrite addrCextra."
     candidates = ["addrC"]

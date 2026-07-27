@@ -172,3 +172,34 @@ def apply_lines(path: Path, lines: list[str]) -> None:
     if text:
         text += "\n"
     path.write_text(text, encoding="utf-8")
+
+
+def admit_prior_lemmas(lines: list[str], prior_lemma_lines: list[int]) -> list[str]:
+    """Replace each prior lemma's proof body with a single `admit.`, so a
+    later target lemma's goal remains reachable even when earlier lemmas in
+    the same file are broken (e.g. a genuinely broken corpus where we only
+    care about repairing one target and must assume everything it depends on
+    is proven).
+
+    `prior_lemma_lines` are 1-based lines where a *prior* (non-target) lemma
+    is declared — typically every other lemma's `IndexEntry.line` from the
+    same source file. The line count of `lines` is preserved (tactic lines
+    are blanked rather than removed) so any other 1-based line-number
+    bookkeeping computed against the original file — including the target
+    lemma's own `lemma_line`/`proof_start_line`/`qed_line` and later prior
+    entries processed in the same pass — stays valid.
+    """
+    out = list(lines)
+    for lemma_line in sorted(set(prior_lemma_lines)):
+        try:
+            proof_start, qed_line = find_proof_region(out, lemma_line)
+        except ValueError:
+            continue
+        tactic_lines = enumerate_tactic_lines(out, proof_start, qed_line)
+        if not tactic_lines:
+            continue
+        first, *rest = tactic_lines
+        out[first - 1] = "  admit."
+        for line_no in rest:
+            out[line_no - 1] = ""
+    return out

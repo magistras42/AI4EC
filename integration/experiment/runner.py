@@ -12,7 +12,10 @@ from pathlib import Path
 
 from integration.agent import run_agent
 from integration.agent.config import AgentConfig
+from integration.agent.easycrypt import fetch_goal_and_premises, has_open_goals
 from integration.agent.loop import ExitReason
+from integration.agent.pricing import estimate_usage_cost
+from integration.agent.usage import TokenUsage, average_usage
 from integration.experiment.config import ExperimentConfig
 from integration.experiment.informal import (
     InformalWriterError,
@@ -40,6 +43,15 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _cost_for_usage(usage: TokenUsage, agent: AgentConfig) -> dict | None:
+    estimate = estimate_usage_cost(
+        usage,
+        provider=agent.llm_provider,
+        model=agent.llm_model,
+    )
+    return estimate.as_dict() if estimate is not None else None
+
+
 @dataclass
 class TrialResult:
     trial_id: int
@@ -57,6 +69,10 @@ class TrialResult:
     red_herring_count: int | None = None
     real_lemmas_referenced: int | None = None
     red_herrings_referenced: int | None = None
+    retrospective_file: str | None = None
+    token_usage: TokenUsage = field(default_factory=TokenUsage)
+    # DeepSeek USD estimate when model rates are known; None for local providers.
+    estimated_cost: dict | None = None
 
 
 @dataclass
@@ -72,6 +88,10 @@ class ExperimentResult:
     errors: int
     trial_results: list[TrialResult] = field(default_factory=list)
     output_dir: Path | None = None
+    token_usage: TokenUsage = field(default_factory=TokenUsage)
+    # Totals divided by `trials_run`, for comparing run economy across models.
+    token_usage_per_trial: dict[str, float] = field(default_factory=dict)
+    estimated_cost: dict | None = None
 
 
 class EventLog:
@@ -123,7 +143,11 @@ def is_proof_incomplete_from_lines(
 
 
 def _experiment_mode(spec: ExperimentSpec) -> str:
-    return "informal" if spec.informal is not None else "mutation"
+    if spec.informal is not None:
+        return "informal"
+    if spec.broken_formal is not None:
+        return "broken_formal"
+    return "mutation"
 
 
 def _count_referenced_lemmas(
@@ -145,7 +169,8 @@ def run_informal_trial(
     rng: random.Random,
     trial_dir: Path,
 ) -> TrialResult:
-    agent_config = config.agent
+    usage = TokenUsage()
+    agent_config = replace(config.agent, usage_tracker=usage)
     informal_config = spec.informal
     trial_dir.mkdir(parents=True, exist_ok=True)
 
@@ -165,6 +190,8 @@ def run_informal_trial(
             duration_s=0.0,
             skipped=True,
             skip_reason="not_complete",
+            token_usage=usage,
+        estimated_cost=_cost_for_usage(usage, agent_config),
         )
 
     lines = case.file.read_text(encoding="utf-8").splitlines()
@@ -191,6 +218,8 @@ def run_informal_trial(
             duration_s=0.0,
             skipped=True,
             skip_reason="writer_truncated",
+            token_usage=usage,
+        estimated_cost=_cost_for_usage(usage, agent_config),
         )
     if looks_contaminated(informal_text):
         return TrialResult(
@@ -205,6 +234,8 @@ def run_informal_trial(
             duration_s=0.0,
             skipped=True,
             skip_reason="writer_leaked_code",
+            token_usage=usage,
+        estimated_cost=_cost_for_usage(usage, agent_config),
         )
 
     herrings = select_red_herrings(
@@ -232,10 +263,11 @@ def run_informal_trial(
         repair_hint=None,
         informal_proof=informal_text,
         premises_override=dict(manifest),
-        lemma_lookup_index=spec.corpus.lemma_lookup_index(),
         stuck_limit=config.stuck_limit,
         log_file=trial_dir / "agent_log.json",
         output_dir=trial_dir,
+        right_fix=tactic_text,
+        retrospective_file=trial_dir / "timeout_retrospective.json",
     )
 
     start = time.monotonic()
@@ -264,6 +296,104 @@ def run_informal_trial(
         red_herring_count=len(herrings),
         real_lemmas_referenced=real_referenced,
         red_herrings_referenced=herring_referenced,
+        retrospective_file=(
+            str(result.retrospective_file) if result.retrospective_file else None
+        ),
+        token_usage=usage,
+        estimated_cost=_cost_for_usage(usage, agent_config),
+    )
+
+
+def run_broken_formal_trial(
+    trial_id: int,
+    case: ProofCase,
+    config: ExperimentConfig,
+    trial_dir: Path,
+) -> TrialResult:
+    """Trial for a genuinely broken formal-proof corpus (e.g. ElGamal): the
+    corpus has already admitted every lemma the target depends on (see
+    `integration.experiment.corpora.elgamal`), so the only thing left to
+    check here is that the target's own goal is reachable. The solver is
+    given the corpus's own broken tactic script as reference — not a
+    writer-LLM paraphrase — and ranks premises against the full ambient
+    catalog (no red herrings / curated manifest): this measures repair
+    effectiveness and efficiency against a genuinely broken proof, not
+    against an informal sketch plus a hand-picked lemma set.
+    """
+    usage = TokenUsage()
+    agent_config = replace(config.agent, usage_tracker=usage)
+    trial_dir.mkdir(parents=True, exist_ok=True)
+
+    original_path = trial_dir / "original.ec"
+    original_path.write_bytes(case.file.read_bytes())
+
+    goal_result = fetch_goal_and_premises(case.file, case.proof_start_line, agent_config)
+    if goal_result.returncode != 0 or not has_open_goals(goal_result.stdout):
+        return TrialResult(
+            trial_id=trial_id,
+            name=case.name,
+            source_file=str(case.file),
+            mode="broken_formal",
+            mutations_applied=[],
+            steps=0,
+            reason="SKIPPED",
+            message=(
+                "Target goal unreachable even after admitting prior lemmas "
+                f"(stderr: {goal_result.stderr.strip()[:300]})"
+            ),
+            duration_s=0.0,
+            skipped=True,
+            skip_reason="goal_unreachable",
+            token_usage=usage,
+            estimated_cost=_cost_for_usage(usage, agent_config),
+        )
+
+    lines = case.file.read_text(encoding="utf-8").splitlines()
+    broken_proof_text = "\n".join(lines[i - 1] for i in case.tactic_lines)
+    (trial_dir / "informal_proof.md").write_text(
+        broken_proof_text + "\n", encoding="utf-8"
+    )
+
+    start_lines = strip_tactics(lines, case.tactic_lines)
+    agent_start = trial_dir / "agent_start.ec"
+    apply_lines(agent_start, start_lines)
+
+    trial_agent_config = replace(
+        agent_config,
+        repair_hint=None,
+        informal_proof=broken_proof_text,
+        informal_proof_is_formal=True,
+        premises_override=None,
+        stuck_limit=config.stuck_limit,
+        log_file=trial_dir / "agent_log.json",
+        output_dir=trial_dir,
+        right_fix=broken_proof_text,
+        retrospective_file=trial_dir / "timeout_retrospective.json",
+    )
+
+    start = time.monotonic()
+    result = run_agent(
+        agent_start,
+        trial_agent_config,
+        work_copy=trial_dir / "agent_work.agent.ec",
+    )
+    duration = time.monotonic() - start
+
+    return TrialResult(
+        trial_id=trial_id,
+        name=case.name,
+        source_file=str(case.file),
+        mode="broken_formal",
+        mutations_applied=[],
+        steps=result.steps,
+        reason=result.reason.name,
+        message=result.message,
+        duration_s=round(duration, 3),
+        retrospective_file=(
+            str(result.retrospective_file) if result.retrospective_file else None
+        ),
+        token_usage=usage,
+        estimated_cost=_cost_for_usage(usage, agent_config),
     )
 
 
@@ -277,12 +407,17 @@ def run_trial(
 ) -> TrialResult:
     if spec.informal is not None:
         return run_informal_trial(trial_id, case, spec, config, rng, trial_dir)
+    if spec.broken_formal is not None:
+        return run_broken_formal_trial(trial_id, case, config, trial_dir)
 
-    agent_config = config.agent
+    usage = TokenUsage()
+    agent_config = replace(config.agent, usage_tracker=usage)
     trial_dir.mkdir(parents=True, exist_ok=True)
 
     original_path = trial_dir / "original.ec"
     original_path.write_bytes(case.file.read_bytes())
+    original_lines = case.file.read_text(encoding="utf-8").splitlines()
+    right_fix = format_hint(original_lines, case.tactic_lines)
 
     prep = _prepare_mutation(case, spec, agent_config, rng, config.mutation_retries)
     if prep is None:
@@ -297,6 +432,8 @@ def run_trial(
             duration_s=0.0,
             skipped=True,
             skip_reason="mutation_failed",
+            token_usage=usage,
+        estimated_cost=_cost_for_usage(usage, agent_config),
         )
 
     mutated_lines, tactic_lines, operators = prep
@@ -315,6 +452,8 @@ def run_trial(
             duration_s=0.0,
             skipped=True,
             skip_reason="not_complete",
+            token_usage=usage,
+        estimated_cost=_cost_for_usage(usage, agent_config),
         )
 
     hint = format_hint(mutated_lines, tactic_lines)
@@ -325,10 +464,11 @@ def run_trial(
     trial_agent_config = replace(
         agent_config,
         repair_hint=hint,
-        lemma_lookup_index=spec.corpus.lemma_lookup_index(),
         stuck_limit=config.stuck_limit,
         log_file=trial_dir / "agent_log.json",
         output_dir=trial_dir,
+        right_fix=right_fix,
+        retrospective_file=trial_dir / "timeout_retrospective.json",
     )
 
     start = time.monotonic()
@@ -348,6 +488,11 @@ def run_trial(
         reason=result.reason.name,
         message=result.message,
         duration_s=round(duration, 3),
+        retrospective_file=(
+            str(result.retrospective_file) if result.retrospective_file else None
+        ),
+        token_usage=usage,
+        estimated_cost=_cost_for_usage(usage, agent_config),
     )
 
 
@@ -369,12 +514,14 @@ def run_experiment(spec: ExperimentSpec, config: ExperimentConfig) -> Experiment
     cases = spec.corpus.sample_cases(config.trials, rng)
     trial_results: list[TrialResult] = []
     successes = stuck = max_steps = errors = skipped = 0
+    total_usage = TokenUsage()
 
     for i, case in enumerate(cases):
         trial_dir = config.output_dir / "trials" / f"trial_{i:03d}"
         logger.info("Trial %d: %s", i, case.name)
         trial = run_trial(i, case, spec, config, rng, trial_dir)
         trial_results.append(trial)
+        total_usage.merge(trial.token_usage)
         events.record("trial_finish", **asdict(trial))
 
         if trial.skipped:
@@ -390,11 +537,14 @@ def run_experiment(spec: ExperimentSpec, config: ExperimentConfig) -> Experiment
         else:
             errors += 1
 
+    trials_run = len(cases) - skipped
+    estimated_cost = _cost_for_usage(total_usage, config.agent)
+    cost_usd = estimated_cost["usd"] if estimated_cost is not None else None
     result = ExperimentResult(
         spec_name=spec.name,
         mode=_experiment_mode(spec),
         trials_requested=config.trials,
-        trials_run=len(cases) - skipped,
+        trials_run=trials_run,
         trials_skipped=skipped,
         successes=successes,
         stuck=stuck,
@@ -402,7 +552,20 @@ def run_experiment(spec: ExperimentSpec, config: ExperimentConfig) -> Experiment
         errors=errors,
         trial_results=trial_results,
         output_dir=config.output_dir,
+        token_usage=total_usage,
+        token_usage_per_trial=average_usage(
+            total_usage, trials_run, cost_usd=cost_usd
+        ),
+        estimated_cost=estimated_cost,
     )
     _write_summary(config.output_dir / "summary.json", result)
-    events.record("experiment_finish", successes=successes, stuck=stuck, errors=errors)
+    events.record(
+        "experiment_finish",
+        successes=successes,
+        stuck=stuck,
+        errors=errors,
+        token_usage=total_usage.as_dict(),
+        token_usage_per_trial=result.token_usage_per_trial,
+        estimated_cost=estimated_cost,
+    )
     return result

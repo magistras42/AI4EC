@@ -9,27 +9,29 @@ from unittest.mock import patch
 import pytest
 
 from integration.agent.config import AgentConfig
+from integration.agent.easycrypt import LlmResult
 from integration.agent.loop import AgentResult, ExitReason
 from integration.experiment.config import ExperimentConfig
 from integration.experiment.corpora.joy import JoyCorpus, load_index_entries
 from integration.experiment.informal import InformalConfig, InformalWriterError
 from integration.experiment.mutations.tactics import TacticMutationSet
-from integration.experiment.protocols import ExperimentSpec, IndexEntry, ProofCase
+from integration.experiment.protocols import (
+    BrokenFormalConfig,
+    ExperimentSpec,
+    IndexEntry,
+    ProofCase,
+)
 from integration.experiment.runner import run_experiment
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 
 
 class StaticCorpus:
-    def __init__(self, cases: list[ProofCase], lookup: dict[str, str]) -> None:
+    def __init__(self, cases: list[ProofCase]) -> None:
         self._cases = cases
-        self._lookup = lookup
 
     def load_cases(self) -> list[ProofCase]:
         return self._cases
-
-    def lemma_lookup_index(self) -> dict[str, str]:
-        return self._lookup
 
     def sample_cases(self, count: int, rng) -> list[ProofCase]:
         return self._cases[:count]
@@ -152,7 +154,7 @@ def test_run_experiment_records_success(mock_run, mock_complete, mock_incomplete
     case = _make_case(tmp_path)
     spec = ExperimentSpec(
         name="test-spec",
-        corpus=StaticCorpus([case], {"target": case.index_entry.signature}),
+        corpus=StaticCorpus([case]),
         mutations=TacticMutationSet(),
     )
     out = tmp_path / "out"
@@ -169,6 +171,92 @@ def test_run_experiment_records_success(mock_run, mock_complete, mock_incomplete
     assert (out / "summary.json").exists()
     assert (out / "events.jsonl").exists()
     mock_run.assert_called_once()
+    trial_agent_config = mock_run.call_args.args[1]
+    assert "by rewrite /addC." in trial_agent_config.right_fix
+    assert trial_agent_config.retrospective_file == (
+        out / "trials" / "trial_000" / "timeout_retrospective.json"
+    )
+
+
+@patch("integration.experiment.runner.is_proof_incomplete", return_value=True)
+@patch("integration.experiment.runner.is_proof_complete", return_value=True)
+@patch("integration.experiment.runner.run_agent")
+def test_run_experiment_reports_token_usage_and_per_trial_average(
+    mock_run, mock_complete, mock_incomplete, tmp_path
+):
+    def fake_agent(source, agent_config, work_copy=None):
+        agent_config.usage_tracker.record(
+            _usage_response(prompt=300, completion=50, cache_hit=200, cache_miss=100)
+        )
+        return AgentResult(reason=ExitReason.COMPLETE, message="Proof complete", steps=1)
+
+    mock_run.side_effect = fake_agent
+    case = _make_case(tmp_path)
+    spec = ExperimentSpec(
+        name="test-spec",
+        corpus=StaticCorpus([case, case]),
+        mutations=TacticMutationSet(),
+    )
+    out = tmp_path / "out-usage"
+    from integration.agent.config import apply_deepseek_provider
+
+    agent = apply_deepseek_provider(AgentConfig(max_steps=5), model="deepseek-v4-flash")
+    config = ExperimentConfig(
+        trials=2,
+        output_dir=out,
+        seed=0,
+        agent=agent,
+    )
+
+    result = run_experiment(spec, config)
+
+    assert result.trials_run == 2
+    assert result.token_usage.calls == 2
+    assert result.token_usage.prompt_tokens == 600
+    assert result.token_usage.completion_tokens == 100
+    assert result.token_usage.cached_prompt_tokens == 400
+    assert result.token_usage.cache_miss_prompt_tokens == 200
+    assert result.token_usage_per_trial["prompt_tokens_per_trial"] == 300.0
+    assert result.token_usage_per_trial["completion_tokens_per_trial"] == 50.0
+    assert result.estimated_cost is not None
+    assert result.estimated_cost["model"] == "deepseek-v4-flash"
+    # 400 hit * 0.0028/1M + 200 miss * 0.14/1M + 100 out * 0.28/1M
+    expected = (400 * 0.0028 + 200 * 0.14 + 100 * 0.28) / 1_000_000
+    assert abs(result.estimated_cost["usd"] - expected) < 1e-12
+    assert result.token_usage_per_trial["estimated_cost_usd_per_trial"] == round(
+        expected / 2, 8
+    )
+
+    summary = json.loads((out / "summary.json").read_text())
+    assert summary["token_usage"]["total_tokens"] == 700
+    assert summary["token_usage"]["cache_miss_prompt_tokens"] == 200
+    assert summary["token_usage_per_trial"]["total_tokens_per_trial"] == 350.0
+    assert summary["trial_results"][0]["token_usage"]["prompt_tokens"] == 300
+    assert summary["trial_results"][0]["estimated_cost"]["usd"] == round(
+        expected / 2, 8
+    )
+
+
+def _usage_response(
+    *,
+    prompt: int,
+    completion: int,
+    cache_hit: int = 0,
+    cache_miss: int | None = None,
+):
+    class _Usage:
+        prompt_tokens = prompt
+        completion_tokens = completion
+        total_tokens = prompt + completion
+        prompt_cache_hit_tokens = cache_hit
+        prompt_cache_miss_tokens = (
+            cache_miss if cache_miss is not None else max(0, prompt - cache_hit)
+        )
+
+    class _Response:
+        usage = _Usage()
+
+    return _Response()
 
 
 @patch("integration.experiment.runner.is_proof_complete", return_value=True)
@@ -199,7 +287,7 @@ def test_run_experiment_informal_mode(
     case = _make_case(tmp_path)
     spec = ExperimentSpec(
         name="test-informal-spec",
-        corpus=StaticCorpus([case], {"target": case.index_entry.signature}),
+        corpus=StaticCorpus([case]),
         mutations=None,
         informal=InformalConfig(),
     )
@@ -227,6 +315,10 @@ def test_run_experiment_informal_mode(
         "addC": "lemma addC : forall x y, x + y = y + x.",
         "unrelated_lemma": "lemma unrelated_lemma : true.",
     }
+    assert "by rewrite /addC." in trial_agent_config.right_fix
+    assert trial_agent_config.retrospective_file == (
+        trial_dir / "timeout_retrospective.json"
+    )
 
     assert (trial_dir / "original.ec").exists()
     assert (trial_dir / "agent_start.ec").exists()
@@ -250,7 +342,7 @@ def test_run_experiment_informal_mode_skips_on_contamination(
     case = _make_case(tmp_path)
     spec = ExperimentSpec(
         name="test-informal-spec",
-        corpus=StaticCorpus([case], {"target": case.index_entry.signature}),
+        corpus=StaticCorpus([case]),
         mutations=None,
         informal=InformalConfig(),
     )
@@ -283,7 +375,7 @@ def test_run_experiment_informal_mode_skips_on_truncated_writer(
     case = _make_case(tmp_path)
     spec = ExperimentSpec(
         name="test-informal-spec",
-        corpus=StaticCorpus([case], {"target": case.index_entry.signature}),
+        corpus=StaticCorpus([case]),
         mutations=None,
         informal=InformalConfig(),
     )
@@ -298,4 +390,98 @@ def test_run_experiment_informal_mode_skips_on_truncated_writer(
     result = run_experiment(spec, config)
     assert result.trials_skipped == 1
     assert result.trial_results[0].skip_reason == "writer_truncated"
+    mock_run.assert_not_called()
+
+
+_OPEN_GOAL_STDOUT = (
+    "Current goal\n\n"
+    "Type variables: <none>\n\n"
+    "------------------------------------------------------------------------\n"
+    "0 + n = n\n"
+)
+
+
+@patch("integration.experiment.runner.fetch_goal_and_premises")
+@patch("integration.experiment.runner.run_agent")
+def test_run_experiment_broken_formal_mode(mock_run, mock_fetch, tmp_path):
+    """`elgamal-broken-repair`-style trial: no writer call, no red herrings/
+    manifest, the corpus's own (broken) tactic text is passed through as
+    `informal_proof` with `informal_proof_is_formal=True`, and premises are
+    left to the full ambient catalog (`premises_override=None`)."""
+    mock_fetch.return_value = LlmResult(returncode=0, stdout=_OPEN_GOAL_STDOUT, stderr="")
+    mock_run.return_value = AgentResult(
+        reason=ExitReason.COMPLETE,
+        message="Proof complete",
+        steps=5,
+    )
+
+    case = _make_case(tmp_path)
+    spec = ExperimentSpec(
+        name="test-broken-formal-spec",
+        corpus=StaticCorpus([case]),
+        mutations=None,
+        broken_formal=BrokenFormalConfig(),
+    )
+    out = tmp_path / "out-broken-formal"
+    config = ExperimentConfig(
+        trials=1,
+        output_dir=out,
+        seed=0,
+        agent=AgentConfig(max_steps=5),
+    )
+
+    result = run_experiment(spec, config)
+    trial_dir = out / "trials" / "trial_000"
+
+    assert result.mode == "broken_formal"
+    assert result.trials_run == 1
+    assert result.successes == 1
+    assert result.trial_results[0].mode == "broken_formal"
+
+    mock_run.assert_called_once()
+    trial_agent_config = mock_run.call_args.args[1]
+    assert trial_agent_config.repair_hint is None
+    assert trial_agent_config.premises_override is None
+    assert trial_agent_config.informal_proof_is_formal is True
+    assert "by rewrite /addC." in trial_agent_config.informal_proof
+    assert "trivial." in trial_agent_config.informal_proof
+    assert "by rewrite /addC." in trial_agent_config.right_fix
+
+    assert (trial_dir / "original.ec").exists()
+    assert (trial_dir / "agent_start.ec").exists()
+    assert not (trial_dir / "lemma_manifest.json").exists()
+    assert not (trial_dir / "lemma_manifest_labeled.json").exists()
+
+    informal_proof_text = (trial_dir / "informal_proof.md").read_text(encoding="utf-8")
+    assert "by rewrite /addC." in informal_proof_text
+
+
+@patch("integration.experiment.runner.fetch_goal_and_premises")
+@patch("integration.experiment.runner.run_agent")
+def test_run_experiment_broken_formal_mode_skips_unreachable_goal(
+    mock_run, mock_fetch, tmp_path
+):
+    """If admitting every prior lemma still doesn't make the target's goal
+    reachable (e.g. a corpus-porting gap), the trial must skip cleanly
+    rather than hand the solver a bogus/empty goal."""
+    mock_fetch.return_value = LlmResult(returncode=1, stdout="", stderr="parse error")
+
+    case = _make_case(tmp_path)
+    spec = ExperimentSpec(
+        name="test-broken-formal-spec",
+        corpus=StaticCorpus([case]),
+        mutations=None,
+        broken_formal=BrokenFormalConfig(),
+    )
+    out = tmp_path / "out-broken-formal-unreachable"
+    config = ExperimentConfig(
+        trials=1,
+        output_dir=out,
+        seed=0,
+        agent=AgentConfig(max_steps=5),
+    )
+
+    result = run_experiment(spec, config)
+    assert result.trials_skipped == 1
+    assert result.trial_results[0].skip_reason == "goal_unreachable"
     mock_run.assert_not_called()

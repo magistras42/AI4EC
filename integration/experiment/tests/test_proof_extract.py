@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from integration.experiment.proof_extract import (
+    admit_prior_lemmas,
     build_sandbox,
     enumerate_tactic_lines,
     find_proof_region,
@@ -135,6 +136,54 @@ def test_build_sandbox_strips_pragma_and_repl_display_commands(tmp_path):
     assert "print addC" not in text
     assert "search (+)" not in text
     assert case.tactic_lines == [10, 11]
+
+
+def test_admit_prior_lemmas_stubs_only_prior_lemmas():
+    lines = (FIXTURES / "multi_lemma.ec").read_text(encoding="utf-8").splitlines()
+    # "target" (line 8) is the trial's target; "first" (line 3) is a prior
+    # lemma that must be admitted so target's goal stays reachable. "after"
+    # (line 14) is neither prior to nor the target — it must be untouched.
+    admitted = admit_prior_lemmas(lines, prior_lemma_lines=[3])
+
+    assert len(admitted) == len(lines)
+    text = "\n".join(admitted)
+    assert "by rewrite addr0." not in text
+    assert "  admit." in admitted[4]  # line 5 (1-based) -> index 4
+    assert "lemma first" in text
+    assert "qed." in admitted[5]
+
+    # target and after are untouched.
+    assert "by rewrite /addC." in text
+    assert "trivial." in text
+    assert admitted[13] == "lemma after (n : int) : n = n."
+
+
+def test_admit_prior_lemmas_ignores_out_of_range_lines():
+    lines = (FIXTURES / "multi_lemma.ec").read_text(encoding="utf-8").splitlines()
+    # An out-of-range "prior lemma" line (e.g. from stale bookkeeping) must
+    # be skipped without raising; the rest of the file is unaffected.
+    admitted = admit_prior_lemmas(lines, prior_lemma_lines=[len(lines) + 5])
+    assert admitted == lines
+
+
+def test_admit_prior_lemmas_handles_multiple_priors_and_keeps_line_numbers_stable():
+    lines = (FIXTURES / "multi_lemma.ec").read_text(encoding="utf-8").splitlines()
+    # Both "first" (line 3) and "target" (line 8) are treated as priors of
+    # some later, hypothetical target; "after" (line 14) stays untouched.
+    # Line numbers for later lemmas must remain valid after earlier ones are
+    # stubbed, since the stubbing is done in a single pass over `lines`.
+    admitted = admit_prior_lemmas(lines, prior_lemma_lines=[3, 8])
+
+    assert len(admitted) == len(lines)
+    text = "\n".join(admitted)
+    assert "by rewrite addr0." not in text
+    assert "by rewrite /addC." not in text
+    assert text.count("admit.") == 2
+    assert admitted[13] == "lemma after (n : int) : n = n."
+    # "after"'s own proof region is still found correctly at its original line.
+    proof_start, qed_line = find_proof_region(admitted, lemma_line=14)
+    assert proof_start == 15
+    assert qed_line == 17
 
 
 def test_format_hint_includes_tactics_only():

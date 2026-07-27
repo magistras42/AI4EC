@@ -52,10 +52,6 @@ class JoyCorpus(CorpusProvider):
         self.sandbox_dir = sandbox_dir
         self._cached_cases: list[ProofCase] | None = None
 
-    def lemma_lookup_index(self) -> dict[str, str]:
-        entries = load_index_entries(self.proofs_index)
-        return {e.name: e.signature for e in entries}
-
     def load_cases(self) -> list[ProofCase]:
         if self._cached_cases is not None:
             return self._cached_cases

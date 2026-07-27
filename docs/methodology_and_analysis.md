@@ -201,11 +201,13 @@ flowchart TD
         BuildPrompt --> LLM["LLM (google/gemma-4-12b-qat\nvia LM Studio)"]
         LLM -->|tactic| TryTactic["Append tactic\nvalidate_file()"]
         LLM -->|undo| Undo["undo_last_tactic()"]
-        LLM -->|lookup_lemma| Lookup["lookup_lemma()\nFull corpus index"]
+        LLM -->|lookup_lemma| Lookup["lookup_lemma()\nEasyCrypt Ax.all"]
+        LLM -->|search_lemmas| Search["search_lemmas()\nEasyCrypt Ax.all"]
         TryTactic -->|accepted| CheckComplete{"Proof\ncomplete?"}
         TryTactic -->|failed| ErrorHistory["Add to error_history\nincrement stuck_counter"]
         Undo --> StuckCheck
         Lookup --> StuckCheck
+        Search --> StuckCheck
         ErrorHistory --> StuckCheck{"stuck_counter\n>= stuck_limit?"}
         CheckComplete -->|no| Loop
         CheckComplete -->|yes| COMPLETE["ExitReason.COMPLETE ✓"]
@@ -339,9 +341,12 @@ From `run-20260709T142319Z` (the current latest), the following tactic failure p
 ### Integrate the Broken Proof Corpus from Collaborators
 
 - The informal proof simulation (converting complete proofs into plain-English sketches) was adopted specifically because no corpus of genuinely broken proofs with verified correct goals existed at the time of this work.
-- Collaborators on this project are contributing a corpus of broken EasyCrypt proofs. Integrating this corpus removes the simulation layer entirely: the agent can be given a real broken proof, its verified goal, and a set of premises, and asked to reconstruct a correct proof — which is the actual intended use case.
-- This also provides a more honest evaluation signal. In the informal-repair setup, the agent is trying to reprove a proof the writer LLM already described in natural language; with real broken proofs, no such description exists and the agent must reason about the goal and premises from scratch.
-- Concretely, integrating this corpus means implementing a new `CorpusProvider` (analogous to `JoyCorpus`) that loads from the broken-proof dataset, and registering a corresponding `ExperimentSpec` in `specs.py`. The solver agent loop and all downstream infrastructure remain unchanged.
+- **Update**: a first genuinely broken corpus is now integrated — `elgamal-broken-repair`, over `derens99/ElGamal-proof`'s Hashed ElGamal development (`data/derens99-ElGamal-proof/hashedelgamal.ec`, 2020), which no longer compiles against the vendored EasyCrypt release. See `integration/experiment/corpora/elgamal.py` and the "Genuinely broken proofs" section of `integration/experiment/README.md`.
+- This removes the simulation layer entirely for that corpus: the agent is given the corpus's own broken tactic script (not a writer-LLM paraphrase), the goal as written in the source, and the full premise catalog, and asked to reconstruct a correct proof.
+- Two distinct kinds of breakage had to be disentangled: (1) mechanical syntax/API drift (renamed theories, dropped syntax, changed restriction-set spelling) that has nothing to do with proof reasoning and is ported once, offline, preserving line numbers; and (2) genuinely broken tactic scripts inside specific lemmas (confirmed empirically post-port: `INDCPA_HEG_G1` and `G1_G2_eq` still fail tactic-by-tactic), which is what the harness actually evaluates.
+- "Assume everything the target depends on is already proven" is implemented by replacing every *prior* lemma's proof body with `admit.` before the target (`admit_prior_lemmas`), since the corpus's lemmas are a strictly linear sequence — this is a safe over-approximation of the target's real dependency set, and EasyCrypt does not distinguish "proven" from "admitted" when consuming a fact.
+- Unlike `joy-informal-repair`, this spec has no red-herring/curated lemma manifest: premises are ranked against the full ambient catalog (same as `joy-tactic-repair`), so the measurement is effectiveness/efficiency at repairing a genuinely broken proof, not effectiveness at using a user-curated "likely useful" lemma set.
+- Remaining future work: only `hashedelgamal.ec` (15 lemmas) is wired up; the corpus's `encryption/` SymEnc-from-PRF tutorial, the official EasyCrypt `examples/elgamal*.ec`, and any further collaborator-contributed broken corpora would each need their own `CorpusProvider` following the same pattern.
 
 ### Improve Prompts and Error Feedback
 

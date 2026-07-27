@@ -2,10 +2,15 @@
 
 from __future__ import annotations
 
+from integration.experiment.corpora.elgamal import ElGamalCorpus
 from integration.experiment.corpora.joy import JoyCorpus
 from integration.experiment.informal import InformalConfig
 from integration.experiment.mutations.tactics import TacticMutationSet
-from integration.experiment.protocols import ExperimentSpec, ExperimentSpecRegistry
+from integration.experiment.protocols import (
+    BrokenFormalConfig,
+    ExperimentSpec,
+    ExperimentSpecRegistry,
+)
 
 SPECS = ExperimentSpecRegistry()
 
@@ -29,6 +34,15 @@ def register_default_specs(data_dir) -> None:
                 corpus=JoyCorpus(data_dir=data),
                 mutations=None,
                 informal=InformalConfig(),
+            )
+        )
+    if "elgamal-broken-repair" not in list(SPECS.names()):
+        SPECS.register(
+            ExperimentSpec(
+                name="elgamal-broken-repair",
+                corpus=ElGamalCorpus(data_dir=data),
+                mutations=None,
+                broken_formal=BrokenFormalConfig(),
             )
         )
 

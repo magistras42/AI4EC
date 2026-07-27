@@ -4,6 +4,10 @@ These are illustrative patterns, not an exhaustive tactic list — you may use
 any valid EasyCrypt tactic. Never use `admit.`: it marks a goal as assumed
 without proof rather than actually proving it, and will be rejected.
 
+Do not memorize corpus-specific lemma names from any tutorial. Match the
+*shape* of the current goal (ambient vs program-logic; while vs call vs
+empty program) and pick a tactic that fits that shape.
+
 ---
 
 ## CRITICAL: semicolon syntax
@@ -31,6 +35,9 @@ first. Do NOT apply `smt()`, `ring`, `algebra`, `left`, `right`, `split`,
 **Ambient-logic goals** show a plain formula with no `pre`/`post` fields.
 You can then apply `smt()`, `ring`, `trivial`, `rewrite`, `apply`, etc.
 
+After `skip.`, the goal becomes ambient even if the previous goal had
+`pre`/`post`. Re-read the new goal before choosing the next tactic.
+
 ---
 
 ## Program logic / procedure stepping
@@ -38,6 +45,12 @@ You can then apply `smt()`, `ring`, `trivial`, `rewrite`, `apply`, etc.
 Goal: Hoare or probabilistic Hoare judgment about a procedure call
 (you see `pre = P`, a procedure name, and `post = Q`)
 Tactic: `proc.`
+
+Goal: `equiv` between two named procedures, and a later step must apply a
+lemma about those procedures via `call`
+Tactic: `proc*.`
+NOTE: plain `proc.` opens the bodies and drops the procedure-call identity.
+Use `proc*.` when you need to keep that identity for a subsequent `call`.
 
 Goal: after `proc.`, goal shows `pre = P` and `post = Q` with no procedure
 body line — straight-line assignment or return statement only
@@ -80,13 +93,65 @@ Tactic: `byphoare (: ={glob A}) => //.`
 
 ---
 
+## Calls, inlining, and relational structure
+
+Goal: `equiv` with the same abstract adversary/procedure call on both sides
+and no useful specification available
+WRONG: `call (_: ={glob A} ==> ={res}).`  (often regenerates the same goal)
+RIGHT: `call (_: true).` then `auto.` / `skip.`
+
+Goal: `equiv` (or Hoare) still shows a call to a *concrete* module whose
+body is in scope — constants / assignments are not yet visible
+Tactic: `inline *.` (or `inline M.f.`) then `wp.` / `simplify.` / `auto.`
+
+Goal: `equiv` sides are misaligned (e.g. a `while` or `if` on one side only,
+other side empty or different leading statement)
+Tactic pattern:
+  `seq 0 1: (={x,y} /\ ...).`   (adjust counts to the prefix you can match)
+  then `auto.` / `while (...)` / `rcondf k` on the remaining asymmetric part
+NOTE: applying `while` / `rcondf` / `skip` to the wrong side yields a shape
+error. That means "wrong head statement", not "switch to smt()".
+
+Goal: `equiv` procedure-level goal where you will finish by calling already-
+proved relational lemmas about the same procedures
+Tactic: `proc*.` then case-split / `call` those lemmas — not a from-scratch
+`while` proof of the inlined bodies (unless the lemmas are unavailable).
+
+---
+
 ## Loops
 
 Goal: judgment whose program has a `while` loop
-Tactic: `while (0 <= i /\ i <= n); auto; smt().`
+Preferred approach — apply `while` alone, then discharge each subgoal
+separately (body preservation, then initialization / exit):
+  Step 1: `while (0 <= i /\ i <= n /\ r = x ^ i).`
+  Step 2 (preservation): `wp.` then `skip.` then `smt().` /
+  `progress.` / `smt(Lemma).` as needed
+  Step 3 (init / exit): `wp.` / `skip.` / `simplify.` or `progress.` /
+  `smt().` as needed when residual goals are definitionally busy
 
-Goal: unroll a bounded loop a fixed number of times
-Tactic: `unroll 1.`
+After `proc.` on a concrete precondition, consider `simplify.` once before
+a loop tactic if the goal text still looks unreduced (projections, pairs,
+large equalities). Prefer stepwise tactics over one-shot compounds when
+unsure.
+
+Optional one-shot shortcut (use at most once — abandon after any failure):
+  `while (0 <= i /\ i <= n /\ r = x ^ i); auto; smt().`
+
+If `while (...); auto; smt().` fails even once, switch to the stepwise
+approach above and/or change the invariant. Never resubmit the same
+compound `while (...); auto; smt().` tactic.
+
+Goal: bounded loop whose trip count is a small constant already known in
+the precondition (so an invariant is unnecessary)
+Tactic pattern (code positions are examples — match the printed indices):
+  `unroll 3.`
+  `unroll 4.`
+  `rcondf 5; auto.`
+NOTE: `wp` / `skip` cannot consume a live `while`. If `unroll k` fails with
+an invalid code position, inspect the numbered statements and pick the
+loop's index; do not keep retrying `while` with cosmetic invariant edits
+when the bound is statically tiny.
 
 Goal: loop condition is statically false — discharge the false branch
 Tactic: `rcondf 1; auto.`
@@ -102,6 +167,26 @@ Tactic: `if; auto.`
 
 ---
 
+## After skip: ambient residuals
+
+Goal: you just applied `skip.` (or `wp; skip.`) and the new goal has NO
+`pre`/`post` — it is ambient, possibly a large implication/conjunction
+WRONG: `skip.` / `wp.` / `proc.` again
+RIGHT options:
+  - `progress.` or `simplify.` to decompose / reduce
+  - `split.` / `move => ...` for conjuncts and binders
+  - `smt().` or `smt(LemmaName).` once the goal is a simpler ambient formula
+  - `rewrite LemmaName.` for algebraic identities SMT cannot invent
+
+Goal: loop-body or init/exit residual still mentions exponents / products
+and bare `smt()` fails
+Try in order: `progress.` → `simplify.` → `smt(Ring.IntID.exprS).` (or
+whatever identity search returns) → manual `rewrite` / `have`.
+Nonlinear arithmetic is a common SMT blind spot; a named lemma hint is
+normal, not a last resort.
+
+---
+
 ## Arithmetic automation (ambient logic only)
 
 IMPORTANT: these tactics only work AFTER the goal has been reduced to
@@ -110,12 +195,15 @@ ambient logic by `wp.`, `skip.`, `proc.`, etc.
 Goal: linear arithmetic over integers or rationals — equalities or inequalities
 Tactic: `smt().`
 
-Goal: `smt()` fails on a goal involving products, squares, or other nonlinear terms
+Goal: `smt()` fails on a goal involving products, squares, exponents, or logs
 Approach 1 — supply a named lemma hint: `smt(mulr_ge0).`
 Approach 2 — introduce an intermediate linear fact first:
   `have h : 0 <= x by smt(). smt(h).`
 Approach 3 — manually decompose:
   `have h1 : 4 <= x by smt(). have h2 : x * x >= 4 * x by smt(mulr_le_l). smt().`
+Approach 4 — search then rewrite: substring/exact search for a short token
+  from the identity name (optionally `theory:RField` / `theory:Ring.IntID`),
+  then `rewrite Qualified.lemma.` / `smt(Qualified.lemma).`
 
 Goal: equality between two polynomial expressions over integers
 Tactic: `by ring.`
@@ -207,6 +295,11 @@ Tactic: `congr.`
 
 Goal: trivial tautology or immediate consequence of hypotheses
 Tactic: `trivial.`
+
+Goal: simplify the goal expression (unfold definitions, reduce noise)
+Tactic: `simplify.`
+Use after program-logic steps when the residual goal is definitionally
+busy; skip when the goal is already a short ambient formula.
 
 Goal: simplify the goal expression, may split into subgoals
 Tactic: `progress.`

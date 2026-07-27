@@ -57,9 +57,10 @@ spec; see [`integration/experiment/runner.py`](runner.py)'s
    point) via `fetch_premises_at_cursor()`.
 3. **Extract which lemmas the real proof actually used** —
    `extract_used_lemma_names()` does a word-boundary text search of the
-   hidden tactic script against the catalog's names. This is a simple
-   heuristic; a lemma name has to appear literally in the tactic text to
-   count as "used".
+   tactic script against catalog keys. Keys are EasyCrypt-qualified paths
+   (`Theory.basename`), matching how proofs typically cite lemmas
+   (`apply RField.exprM`). This is a simple heuristic; a lemma name has to
+   appear literally in the tactic text to count as "used".
 4. **Write the informal proof** — `write_informal_proof()` makes a single
    chat completion call with a system prompt that explicitly forbids
    EasyCrypt syntax, tactic names, and code blocks, and gives the model the
@@ -91,9 +92,10 @@ spec; see [`integration/experiment/runner.py`](runner.py)'s
    `AgentConfig.premises_override` set to the manifest (so the "Top relevant
    premises" section of the prompt is drawn only from this curated pool,
    still ranked per-iteration by cosine similarity to the current goal, the
-   same way premises are ranked everywhere else). The `lookup_lemma` tool
-   still uses the full corpus-wide `lemma_lookup_index()`, unrestricted,
-   same as the other experiments.
+   same way premises are ranked everywhere else). The `lookup_lemma` and
+   `search_lemmas` tools use EasyCrypt `Ax.all` at the proof cursor (via
+   `llm -upto -premises`), not `proofs_index.json`, so the open/unsolved
+   lemma is never offered as a searchable premise.
 10. **Post-hoc scoring** — after the run, the final working copy is scanned
     for references to manifest names, recording how many real lemmas vs. red
     herrings the agent actually incorporated into its final tactics.
@@ -146,6 +148,7 @@ was introduced:
 
 ```
 integration/output/experiments/<timestamp>/
+├── run_flags.json        # CLI flags/argv + resolved LLM settings for this run
 ├── summary.json          # aggregate metrics; "mode": "informal"
 ├── events.jsonl          # per-trial event log
 └── trials/trial_NNN/
@@ -170,6 +173,10 @@ integration/output/experiments/<timestamp>/
 - `real_lemmas_referenced` / `red_herrings_referenced` — how many of each the
   solver actually used in its final proof (a proxy for whether it was
   grounding its tactics correctly vs. leaning on noise)
+- `token_usage` — prompt/completion tokens spent on that trial, including the
+  writer call; `summary.json` adds run totals and `token_usage_per_trial`
+- `estimated_cost` — USD estimate from DeepSeek list prices when `--deepseek`
+  is used (cache-hit / cache-miss / output breakdown); null for local models
 
 `agent_log.json` is the full activity log; `summary.json` + `events.jsonl`
 are the aggregate/per-trial performance summary, same as

@@ -8,6 +8,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from .usage import TokenUsage
+
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -18,6 +20,7 @@ class AgentRunLog:
     path: Path
     source: Path
     work_copy: Path
+    usage: TokenUsage | None = None
     _events: list[dict[str, Any]] = field(default_factory=list, repr=False)
 
     def record(self, event: str, **fields: Any) -> None:
@@ -54,6 +57,10 @@ class AgentRunLog:
         error: str | None = None,
         lookup_name: str | None = None,
         lookup_result: str | None = None,
+        search_query: str | None = None,
+        search_result: str | None = None,
+        undo_count: int | None = None,
+        undone: int | None = None,
         thought: str | None = None,
         content: str | None = None,
     ) -> None:
@@ -71,6 +78,14 @@ class AgentRunLog:
             fields["lookup_name"] = lookup_name
         if lookup_result is not None:
             fields["lookup_result"] = lookup_result
+        if search_query is not None:
+            fields["search_query"] = search_query
+        if search_result is not None:
+            fields["search_result"] = search_result
+        if undo_count is not None:
+            fields["undo_count"] = undo_count
+        if undone is not None:
+            fields["undone"] = undone
         if thought is not None:
             fields["thought"] = thought
         if content is not None:
@@ -83,6 +98,7 @@ class AgentRunLog:
             reason=reason,
             message=message,
             steps=steps,
+            token_usage=self.usage.as_dict() if self.usage is not None else None,
         )
 
     def _flush(self) -> None:

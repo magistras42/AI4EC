@@ -70,15 +70,25 @@ class ProofFile:
         del lines[start_idx : start_idx + count]
         self.write_lines(lines)
 
-    def undo_last_tactic(self) -> bool:
-        bounds = self.bounds()
-        lines = self.read_lines()
-        tactic_line = _find_last_tactic_line(lines, bounds)
-        if tactic_line is None:
-            return False
-        del lines[tactic_line - 1]
-        self.write_lines(lines)
-        return True
+    def undo_last_tactic(self, count: int = 1) -> int:
+        """Remove up to ``count`` trailing tactics. Returns how many were undone.
+
+        Never removes the lemma signature or the ``proof.`` line. If fewer than
+        ``count`` tactics remain, undoes as many as possible.
+        """
+        if count < 1:
+            return 0
+        undone = 0
+        for _ in range(count):
+            bounds = self.bounds()
+            lines = self.read_lines()
+            tactic_line = _find_last_tactic_line(lines, bounds)
+            if tactic_line is None:
+                break
+            del lines[tactic_line - 1]
+            self.write_lines(lines)
+            undone += 1
+        return undone
 
     def tail(self, num_lines: int = 20) -> str:
         lines = self.read_lines()

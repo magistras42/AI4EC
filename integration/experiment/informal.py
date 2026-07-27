@@ -17,7 +17,7 @@ from typing import Iterable
 
 from openai import OpenAI
 
-from integration.agent.config import AgentConfig
+from integration.agent.config import AgentConfig, chat_client_kwargs, chat_completion_kwargs
 from integration.agent.easycrypt import fetch_goal_and_premises, split_goal_and_premises
 from integration.agent.embeddings import EmbeddingClient, rank_by_cosine
 from integration.agent.premises import parse_premises
@@ -143,11 +143,7 @@ def write_informal_proof(
     informal_config: InformalConfig,
 ) -> str:
     """One-shot writer LLM call producing a code-free informal proof sketch."""
-    client = OpenAI(
-        base_url=config.lm_studio_base_url,
-        api_key="lm-studio",
-        timeout=config.lm_studio_timeout,
-    )
+    client = OpenAI(**chat_client_kwargs(config))
     model = informal_config.writer_model or config.llm_model or _resolve_default_model(client)
     user_prompt = (
         f"Lemma statement:\n{signature}\n\n"
@@ -167,7 +163,10 @@ def write_informal_proof(
             messages=messages,
             temperature=informal_config.writer_temperature,
             max_tokens=max_tokens,
+            **chat_completion_kwargs(config),
         )
+        if config.usage_tracker is not None:
+            config.usage_tracker.record(response)
         choice = response.choices[0]
         content = choice.message.content or ""
         finish_reason = getattr(choice, "finish_reason", None)
