@@ -31,7 +31,7 @@ while IFS=',' read -r name url; do
 
     # Replace spaces with underscores for safe file naming
     safe_name="${name// /_}"
-    out_file="eval/${safe_name}.zip"
+    out_file="../zip/${safe_name}.zip"
     
     # Strip any trailing slashes from the URL
     url="${url%/}"
