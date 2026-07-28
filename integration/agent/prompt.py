@@ -274,6 +274,38 @@ def _side_is_empty(side: str) -> bool:
     return not compact
 
 
+def _detect_judgment_type(goal: str) -> str:
+    """Identify whether the current goal is hoare, phoare, or equiv.
+
+    Returns a short label string or empty if undetermined.
+    """
+    text = goal or ""
+    # Explicit judgment keywords in the goal text
+    compact = re.sub(r"\s+", " ", text).lower()
+    if "equiv[" in compact or "equiv [" in compact:
+        return "equiv"
+    if "phoare[" in compact or "phoare [" in compact:
+        return "phoare"
+    if "ehoare[" in compact or "ehoare [" in compact:
+        return "ehoare"
+    if "hoare[" in compact or "hoare [" in compact:
+        return "hoare"
+
+    # Detect from structural markers
+    # Bound field indicates phoare
+    if re.search(r"\bBound\s*:", text):
+        return "phoare (Bound field present — use `rnd` for samplings, not `wp`)"
+    # Two-column equiv markers
+    if "{1}" in text or "{2}" in text or "={" in text:
+        return "equiv"
+    if re.search(r"\s~\s", text):
+        return "equiv"
+    # If we see `pre =` and `post =` without equiv markers, it's hoare
+    if "pre =" in text and "post =" in text:
+        return "hoare"
+    return ""
+
+
 def format_active_goal_shape_hints(goal: str) -> str:
     """Proactive, shape-conditioned hints for the current EasyCrypt goal.
 
@@ -303,6 +335,11 @@ def format_active_goal_shape_hints(goal: str) -> str:
             "judgment). Use program-logic tactics only until statements are "
             "gone. Do not apply `smt` / `ring` / `trivial` / `split` yet."
         )
+        # Identify the specific judgment type to help the agent choose tactics.
+        _jtype = _detect_judgment_type(goal)
+        if _jtype:
+            bullets.append(f"Judgment type: **{_jtype}**.")
+
         block = _program_statement_block(goal)
         left, right = _split_equiv_columns(block)
         is_equiv = (
@@ -488,12 +525,20 @@ def build_prompt(
             ]
         )
     if informal_proof:
-        heading = (
-            "## Broken formal proof (reference only — it does NOT compile; "
-            "do not paste it verbatim)"
-            if informal_proof_is_formal
-            else "## Informal proof sketch (natural-language reference, no code)"
-        )
+        if informal_proof_is_formal:
+            heading = (
+                "## Broken formal proof (your primary strategy)\n"
+                "This proof *used to compile* on an older EasyCrypt version. "
+                "Follow it step-by-step as closely as possible. When a tactic "
+                "from this script fails, diagnose the specific error and adapt "
+                "minimally (e.g. fix a variable name, adjust an index, add a "
+                "missing qualifier) rather than abandoning the strategy. The "
+                "overall proof structure, tactic ordering, and invariants are "
+                "almost certainly correct — only minor syntax or API drift may "
+                "need repair."
+            )
+        else:
+            heading = "## Informal proof sketch (natural-language reference, no code)"
         sections.extend([heading, informal_proof, ""])
     sections.extend(
         [

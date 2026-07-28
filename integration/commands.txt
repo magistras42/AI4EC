@@ -8,3 +8,14 @@ python3 -m integration.experiment run \
   --llm-max-tokens 16384 \
   --thinking adaptive \
   --embed-model "text-embedding-nomic-embed-text-v1.5"
+
+python3 -m integration.experiment run \
+  --deepseek \
+  --spec elgamal-broken-repair \
+  --trials 4 \
+  --stuck-limit 20 \
+  --max-steps 15 \
+  --llm-model "deepseek-v4-pro" \
+  --llm-max-tokens 16384 \
+  --thinking adaptive \
+  --embed-model "text-embedding-nomic-embed-text-v1.5"

@@ -225,3 +225,6 @@ __marimo__/
 
 # Agent experiment output (run logs, working copies, caches)
 output/
+
+# Agent premises embedding cache (large, regenerated on the fly)
+*.premises_cache.json

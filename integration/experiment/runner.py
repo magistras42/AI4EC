@@ -14,6 +14,7 @@ from integration.agent import run_agent
 from integration.agent.config import AgentConfig
 from integration.agent.easycrypt import fetch_goal_and_premises, has_open_goals
 from integration.agent.loop import ExitReason
+from integration.agent.premises import cache_path as _premises_cache_path
 from integration.agent.pricing import estimate_usage_cost
 from integration.agent.usage import TokenUsage, average_usage
 from integration.experiment.config import ExperimentConfig
@@ -37,6 +38,16 @@ from integration.experiment.protocols import ExperimentSpec, ProofCase
 from integration.experiment.verify import is_proof_complete, is_proof_incomplete
 
 logger = logging.getLogger(__name__)
+
+
+def _cleanup_premises_cache(work_copy: Path) -> None:
+    """Remove the premises embedding cache left by run_agent to save disk space."""
+    cache = _premises_cache_path(work_copy, cursor_upto=0, embed_model="")
+    if cache.exists():
+        try:
+            cache.unlink()
+        except OSError:
+            pass
 
 
 def _utc_now() -> str:
@@ -277,6 +288,7 @@ def run_informal_trial(
         work_copy=trial_dir / "agent_work.agent.ec",
     )
     duration = time.monotonic() - start
+    _cleanup_premises_cache(trial_dir / "agent_work.agent.ec")
 
     real_referenced, herring_referenced = _count_referenced_lemmas(
         trial_dir / "agent_work.agent.ec", used, herrings
@@ -370,6 +382,13 @@ def run_broken_formal_trial(
         right_fix=broken_proof_text,
         retrospective_file=trial_dir / "timeout_retrospective.json",
     )
+    # Adaptive step limit: scale max_steps to proof complexity
+    if config.adaptive_steps_multiplier is not None:
+        adaptive_max = max(
+            config.min_adaptive_steps,
+            int(config.adaptive_steps_multiplier * len(case.tactic_lines)),
+        )
+        trial_agent_config = replace(trial_agent_config, max_steps=adaptive_max)
 
     start = time.monotonic()
     result = run_agent(
@@ -378,6 +397,7 @@ def run_broken_formal_trial(
         work_copy=trial_dir / "agent_work.agent.ec",
     )
     duration = time.monotonic() - start
+    _cleanup_premises_cache(trial_dir / "agent_work.agent.ec")
 
     return TrialResult(
         trial_id=trial_id,
@@ -478,6 +498,7 @@ def run_trial(
         work_copy=trial_dir / "agent_work.agent.ec",
     )
     duration = time.monotonic() - start
+    _cleanup_premises_cache(trial_dir / "agent_work.agent.ec")
 
     return TrialResult(
         trial_id=trial_id,
@@ -511,12 +532,35 @@ def run_experiment(spec: ExperimentSpec, config: ExperimentConfig) -> Experiment
         seed=config.seed,
     )
 
-    cases = spec.corpus.sample_cases(config.trials, rng)
+    if config.sort_by_difficulty:
+        all_cases = spec.corpus.load_cases()
+        all_cases.sort(key=lambda c: len(c.tactic_lines))
+        cases = all_cases[: config.trials]
+    else:
+        cases = spec.corpus.sample_cases(config.trials, rng)
     trial_results: list[TrialResult] = []
     successes = stuck = max_steps = errors = skipped = 0
     total_usage = TokenUsage()
 
     for i, case in enumerate(cases):
+        # Check cost limit before starting next trial
+        if config.cost_limit_usd is not None:
+            running_cost = _cost_for_usage(total_usage, config.agent)
+            if running_cost is not None and running_cost["usd"] >= config.cost_limit_usd:
+                logger.info(
+                    "Cost limit reached ($%.4f >= $%.2f) — stopping after %d trials",
+                    running_cost["usd"],
+                    config.cost_limit_usd,
+                    i,
+                )
+                events.record(
+                    "cost_limit_reached",
+                    cost_usd=running_cost["usd"],
+                    limit_usd=config.cost_limit_usd,
+                    trials_completed=i,
+                )
+                break
+
         trial_dir = config.output_dir / "trials" / f"trial_{i:03d}"
         logger.info("Trial %d: %s", i, case.name)
         trial = run_trial(i, case, spec, config, rng, trial_dir)

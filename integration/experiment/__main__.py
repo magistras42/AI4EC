@@ -88,6 +88,12 @@ def main(argv: list[str] | None = None) -> int:
         help="Stuck iteration limit per trial",
     )
     run_p.add_argument("--max-steps", type=int, default=200, help="Max agent steps per trial")
+    run_p.add_argument(
+        "--cost-limit",
+        type=float,
+        default=None,
+        help="Stop experiment after cumulative API spend exceeds this USD amount",
+    )
     run_p.add_argument("--seed", type=int, default=None, help="Random seed")
     run_p.add_argument("--data-dir", type=Path, default=Path("data"), help="Corpus data dir")
     run_p.add_argument("--output-dir", type=Path, default=None, help="Experiment output dir")
@@ -276,6 +282,7 @@ def main(argv: list[str] | None = None) -> int:
         seed=args.seed,
         data_dir=args.data_dir,
         agent=agent,
+        cost_limit_usd=args.cost_limit,
     )
     if args.output_dir is not None:
         exp_config.output_dir = args.output_dir

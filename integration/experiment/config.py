@@ -24,6 +24,16 @@ class ExperimentConfig:
     output_dir: Path = field(default_factory=_default_experiment_output)
     mutation_retries: int = 5
     agent: AgentConfig = field(default_factory=AgentConfig)
+    # When True, trials are ordered shortest-proof-first (by tactic line count)
+    # instead of randomly sampled. Gives a clearer sense of capability gradient.
+    sort_by_difficulty: bool = False
+    # When set, per-trial max_steps = max(min_adaptive_steps, int(multiplier * proof_lines)).
+    # Overrides the global agent.max_steps for broken-formal trials.
+    adaptive_steps_multiplier: float | None = None
+    min_adaptive_steps: int = 10
+    # Stop the experiment after cumulative API spend reaches this amount.
+    # None disables the cost limit (runs all trials regardless of spend).
+    cost_limit_usd: float | None = None
 
     def with_agent_defaults(self) -> ExperimentConfig:
         """Apply experiment-specific agent defaults."""

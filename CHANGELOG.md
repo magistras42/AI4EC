@@ -2,6 +2,71 @@
 
 All notable changes to this project are recorded here, grouped by the date they were implemented.
 
+## 2026-07-28
+
+### Broken-proof prompt strategy, judgment-type hints, adaptive steps, and experiment notebook
+
+Analysis of `run-20260727T162303Z` (ElGamal `elgamal-broken-repair`, 3/4 trials
+failed at MAX_STEPS) revealed three systemic issues: the prompt actively
+discouraged following the broken proof, the agent couldn't identify hoare vs
+phoare vs equiv judgments, and hard proofs got the same step budget as trivial
+ones.
+
+#### Prompt — broken proof as primary strategy (`prompt.py`)
+
+- **Heading changed** from "reference only — do not paste it verbatim" to
+  "your primary strategy — follow it step-by-step as closely as possible".
+  Adds guidance that the proof *used to compile* on an older EasyCrypt version
+  and only minor syntax/API drift needs repair.
+- This directly addresses the observed pattern where the agent treated the
+  broken proof as a vague hint instead of a near-solution requiring surgical
+  fixes.
+
+#### Prompt — judgment type detection (`prompt.py`)
+
+- New `_detect_judgment_type()` helper classifies goals as hoare, phoare, or
+  equiv from structural markers:
+  - `Bound :` field → phoare (with guidance to use `rnd` for samplings)
+  - `~` operator, `{1}`/`{2}` qualifiers, `={` sugar → equiv
+  - `pre =` / `post =` without the above → hoare
+- Active goal-shape hints now include a **Judgment type** bullet (e.g.
+  "Judgment type: **phoare (Bound field present — use `rnd` for samplings,
+  not `wp`)**").
+- Addresses trial 3 failure where the agent applied `wp` to a phoare goal
+  and trial 2 confusion about whether bodies were open.
+
+#### Experiment runner — adaptive step limits (`config.py`, `runner.py`)
+
+- `ExperimentConfig.adaptive_steps_multiplier: float | None` — when set,
+  per-trial `max_steps = max(min_adaptive_steps, int(multiplier × proof_lines))`.
+  Recommended: 1.4× for broken-formal trials.
+- `ExperimentConfig.min_adaptive_steps: int = 10` — floor for trivial proofs.
+- Applied in `run_broken_formal_trial()` after building the agent config.
+
+#### Experiment runner — shortest-first ordering (`config.py`, `runner.py`)
+
+- `ExperimentConfig.sort_by_difficulty: bool = False` — when True, uses
+  `load_cases()` sorted by `len(tactic_lines)` ascending instead of random
+  sampling. First N trials are the shortest proofs, giving a clearer
+  capability gradient.
+
+#### Jupyter notebook (`notebooks/elgamal_broken_repair.ipynb`)
+
+- New notebook for running the ElGamal experiment with the improved settings.
+- Sections: configuration, case preview (all 15 proofs with adaptive budgets),
+  full experiment run, results summary, per-trial DataFrame + bar chart,
+  failed-trial retrospective inspection, and single-trial debug mode.
+- The 15 available proofs range from 1-line (enc_stateless) to 104-line
+  (G1_G2_eq), with adaptive steps from 10 to 145.
+
+#### Investigation notes (not code changes)
+
+- **q1 scope issue** (trial 2): NOT a harness bug. Caused by agent choosing
+  `proc*.` when the broken proof uses `proc.` + `inline*.`. After `proc.`,
+  local variables like `q1` become accessible for `seq` invariants. The
+  few-shot guide's "prefer `proc*.`" advice misled the agent for proofs that
+  need oracle inlining.
+
 ## 2026-07-26
 
 ### Proactive goal-shape hints and broader program-logic few-shots
