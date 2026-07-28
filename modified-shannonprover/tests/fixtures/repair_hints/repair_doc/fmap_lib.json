@@ -1,0 +1,10 @@
+{
+  "path": "theories/datatypes/FMap.ec",
+  "confidence": "test_fixture",
+  "caveat": "Trimmed test fixture, not the real repair_doc entry.",
+  "current_content_summary": "Type ('a,'b) fmap. fdom/frng give the DOMAIN and RANGE of a map as an FSet.fset.",
+  "requires": "AllCore, SmtMap, FSet",
+  "version_diffs_found": [
+    "r2025.02: 'FMap: add lemmas on range after update' (#690) -- new lemmas about how frng changes after a .[x <- v] update."
+  ]
+}
