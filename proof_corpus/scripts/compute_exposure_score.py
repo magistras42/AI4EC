@@ -141,6 +141,34 @@ PREDATES_CHANGELOG_MAX_SCALE = 2.0
 # complexity-based scaling as the predates-changelog penalty.
 VERSION_UNKNOWN_PENALTY_DEFAULT = 8.0
 
+def strip_comments(text: str) -> str:
+    """Remove EasyCrypt comments, including nested (* ... *).
+
+    Adapted from benchmark/ec_scanner.py::strip_comments -- without this,
+    a commented-out `(* lemma foo. proof. ... qed. *)` block false-positive
+    matches PROOF_BLOCK_RE/INLINE_BY_RE/TACTIC_TOKEN_RE below and gets
+    counted into the depth/complexity/automation-ratio numbers.
+    """
+    out: list[str] = []
+    i = 0
+    n = len(text)
+    depth = 0
+    while i < n:
+        if i + 1 < n and text[i : i + 2] == "(*":
+            depth += 1
+            i += 2
+            continue
+        if i + 1 < n and text[i : i + 2] == "*)":
+            if depth > 0:
+                depth -= 1
+            i += 2
+            continue
+        if depth == 0:
+            out.append(text[i])
+        i += 1
+    return "".join(out)
+
+
 FRAGILE_TACTICS = {"smt", "auto", "algebra"}
 # a broad approximation of "tactic invocation" tokens, used only as the
 # denominator for a ratio -- doesn't need to be a precise EasyCrypt parser.
@@ -563,6 +591,7 @@ def compute_automation_ratio(repo_path: Path, exclude_dirs: set[str] | None = No
             text = path.read_text(errors="ignore")
         except OSError:
             continue
+        text = strip_comments(text)
         for m in TACTIC_TOKEN_RE.finditer(text):
             total_count += 1
             if m.group(1) in FRAGILE_TACTICS:
@@ -602,6 +631,16 @@ MEAN_WEIGHT = 0.4
 TOP_MEAN_WEIGHT = 0.6
 
 
+def count_tactics(body: str, extra: int = 0) -> int:
+    """Count of tactic-terminating periods inside a proof body -- extracted
+    so estimate_repair_difficulty.py's per-lemma scoring can reuse the exact
+    same depth-counting rule extract_lemma_depths uses at repo granularity,
+    rather than a second, possibly-drifting implementation. ``extra``
+    accounts for the "+1 for the by clause itself" case for inline
+    ``lemma ... by tactic.`` proofs (see extract_lemma_depths below)."""
+    return len(TACTIC_TERMINATOR_RE.findall(body)) + extra
+
+
 def extract_lemma_depths(repo_path: Path, exclude_dirs: set[str] | None = None) -> list[int]:
     """Depth per lemma = count of tactic-terminating periods inside its
     proof body -- whether that's an explicit proof...qed/abort/admit
@@ -610,20 +649,20 @@ def extract_lemma_depths(repo_path: Path, exclude_dirs: set[str] | None = None) 
     tactics are required to close the goal', not an exact parse.
 
     NOTE: this is still a heuristic, not a real EasyCrypt parser -- edge
-    cases (nested comments containing the word 'proof' or 'by', lemmas
-    declared but never proved at all, unusual formatting) can still be
-    missed or miscounted. Treat depth/lemma-count as directional signal,
-    not ground truth."""
+    cases (lemmas declared but never proved at all, unusual formatting)
+    can still be missed or miscounted. Treat depth/lemma-count as
+    directional signal, not ground truth."""
     depths = []
     for path in iter_ec_files(repo_path, exclude_dirs):
         text = _read_text(path)
         if text is None:
             continue
+        text = strip_comments(text)
 
         proof_block_spans = []
         for m in PROOF_BLOCK_RE.finditer(text):
             proof_block_spans.append(m.span())
-            depth = len(TACTIC_TERMINATOR_RE.findall(m.group(1)))
+            depth = count_tactics(m.group(1))
             if depth > 0:
                 depths.append(depth)
 
@@ -634,7 +673,7 @@ def extract_lemma_depths(repo_path: Path, exclude_dirs: set[str] | None = None) 
             # counting the same lemma or miscounting an internal step.
             if any(start <= m.start() < end for start, end in proof_block_spans):
                 continue
-            depth = len(TACTIC_TERMINATOR_RE.findall(m.group(1))) + 1  # +1 for the "by" clause itself
+            depth = count_tactics(m.group(1), extra=1)  # +1 for the "by" clause itself
             depths.append(depth)
     return depths
 
