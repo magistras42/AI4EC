@@ -2,3 +2,9 @@
 	path = integration/extern/easycrypt
 	url = git@github.com:KevinLeeFM/easycrypt.git
 	branch = llm-integration
+[submodule "refman"]
+	path = refman
+	url = https://github.com/EasyCrypt/refman
+[submodule "easycrypt"]
+	path = easycrypt
+	url = https://github.com/EasyCrypt/easycrypt

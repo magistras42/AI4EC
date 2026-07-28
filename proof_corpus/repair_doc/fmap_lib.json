@@ -1,0 +1,11 @@
+{
+  "path": "theories/datatypes/FMap.ec",
+  "confidence": "verified_current_source (whole file, 960 lines)",
+  "caveat": "No true git-diff was possible. What follows instead is (a) an accurate structural snapshot of the file's CURRENT (main-branch) content, fetched directly from the URL given, and (b) every version-specific change to this library that could be confirmed from the EasyCrypt Releases changelog (r2022.04-r2026.07). Use (a) to fix a reference to something that no longer exists under its old name/path; use (b) to know when a change happened.",
+  "current_content_summary": "Type ('a,'b) fmap (finite-domain partial maps) is built on top of SmtMap's total-map type via a tomap/ofmap isomorphism to ('a, 'b option) map (tomapK/ofmapK/isfmap_offmap are the defining axioms). Core API: get/set notations `.[_]`/`.[_ <- _]`, dom/rng, empty, rem, fmap_eqP (extensionality), eq_except (per-key equality outside a predicate set X -- used heavily in ROM/PRF-style up-to-bad arguments), map/filter (functorial map and predicate filter), fdom/frng (the DOMAIN and RANGE of a map AS AN FSet.fset -- this is the fmap/FSet integration point), fmapW (structural induction principle via fdom), the `+` operator (right-biased map union/override), has/find/find_spec (search a map for a key/value pair satisfying a predicate), ofassoc (build a map from an association list), fsize (= FSet.card (fdom m)), fcoll (whether two distinct keys collide under some function f -- used by PROM's collision-bound lemma), and a block of 'flagged map' helpers (restr/noflags/in_dom_with/bounded) plus merge/union_map/pair_map for combining two maps pointwise. This is a large, actively-used API surface -- the single most import-repair-relevant library of the nine, alongside SmtMap.",
+  "requires": "AllCore, SmtMap, Finite, List, FSet, Ring, StdOrder; imports CoreMap.",
+  "version_diffs_found": [
+    "r2025.02: 'FMap: add lemmas on range after update' (#690) -- new lemmas about how frng changes after a .[x <- v] update.",
+    "r2025.02 (related, not FMap itself): SmtMap was split the same release (#605) -- see the SmtMap file; FMap.ec's own reliance on SmtMap for its underlying total-map representation means this split is relevant context even though the FMap.ec file itself wasn't the PR's target."
+  ]
+}

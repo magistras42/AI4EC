@@ -1,0 +1,7 @@
+{
+  "path": "theories/core/CoreInt.ec",
+  "confidence": "verified_current_source (whole file, 14 lines)",
+  "caveat": "No true git-diff was possible. This is a structural snapshot of the file's CURRENT (main-branch) content plus any changelog-confirmed version deltas.",
+  "current_content_summary": "Purely a set of SMT-bound primitives for int, not meant to be used directly (Int.ec is the user-facing theory built on top of it): zero, one, lt, le (derived from lt), add, opp, mul, absz (derived from le), plus the intind induction axiom. Everything here is re-exposed with friendlier infix names (<, <=, +, -[unary], *, |_|) by Int.ec.",
+  "version_diffs_found": "None found by name in the scanned changelog window."
+}
