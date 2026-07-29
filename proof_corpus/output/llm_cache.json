@@ -1,0 +1,3486 @@
+{
+  "EasyCrypt/easycrypt::1044::Bump esbuild from 0.27.2 to 0.28.1 in /doc/extensions/ecproofs/proofnav": {
+    "kind": "internal",
+    "identifiers": [
+      "esbuild",
+      "from",
+      "doc",
+      "extensions",
+      "ecproofs",
+      "proofnav"
+    ],
+    "summary": "Bumped esbuild dependency in the proofnav documentation extension from 0.27.2 to 0.28.1.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::1045::Fix anomaly when alias-cloning a datatype type": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "anomaly",
+      "alias",
+      "cloning",
+      "datatype",
+      "type",
+      "ecTheoryReplay"
+    ],
+    "summary": "Fixed an anomaly (crash) that occurred when alias-cloning a datatype type.",
+    "repair_hint": "If a proof fails during a clone that aliases a datatype, this fix may resolve it; check that the clone now type-checks correctly.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1030::[distributions] in programmatic list sampling, make the distribution dynamic": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "distributions",
+      "programmatic",
+      "list",
+      "sampling",
+      "make",
+      "distribution",
+      "dynamic",
+      "DList"
+    ],
+    "summary": "In DList, programmatic list sampling was changed so that the distribution is dynamic rather than static.",
+    "repair_hint": "If proofs involving DList sampling break, check whether lemmas about list distributions now require dynamic rather than static distribution arguments.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1049::use conversion in t_ehoare_call_core": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "use",
+      "conversion",
+      "t_ehoare_call_core"
+    ],
+    "summary": "The ehoare call core tactic now uses conversion, improving its applicability.",
+    "repair_hint": "If ehoare call proofs behave differently, the tactic now applies conversion automatically; goals that previously required manual conversion steps may now close automatically or require different subgoals.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1050::typing: precise diagnostics for failed operator applications": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "typing",
+      "precise",
+      "diagnostics",
+      "failed",
+      "operator",
+      "applications",
+      "ecTyping",
+      "ecUnify"
+    ],
+    "summary": "The type-checker now produces more precise diagnostics when operator applications fail.",
+    "repair_hint": "This is a diagnostics/error-message improvement and should not break proofs, but if operator application errors surface differently, review the new error messages for clues.",
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::1052::After generalization of theories, remember work obtained by the theory": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "generalization",
+      "theories",
+      "remember",
+      "work",
+      "obtained",
+      "theory",
+      "ecSection"
+    ],
+    "summary": "After generalizing theories in sections, work (lemmas/definitions) obtained by the theory is now correctly remembered.",
+    "repair_hint": "If proofs inside sections that use theories fail with missing lemmas or definitions, this bug fix may resolve the issue; re-check that cloned theory content is available after generalization.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1057::fix(subst): also bind expression-locals when substituting a form-local (#1056)": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "subst",
+      "also",
+      "bind",
+      "expression",
+      "locals",
+      "substituting",
+      "form",
+      "local",
+      "ecCoreSubst",
+      "ecSubst"
+    ],
+    "summary": "Fixed a bug in substitution where expression-locals were not bound when substituting a formula-local.",
+    "repair_hint": "If proofs involving substitution of formula locals (especially with eager calls) break or previously failed, check whether the substitution now correctly handles expression-locals.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1058::Additional quotient theory with user provided `canon` map": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "quotient",
+      "theory",
+      "user",
+      "provided",
+      "canon",
+      "map",
+      "Quotient",
+      "DynMatrix",
+      "Matrix",
+      "PolyReduce"
+    ],
+    "summary": "Added an additional quotient theory that accepts a user-provided canonical map, and updated related algebra theories to use it.",
+    "repair_hint": "If proofs using Quotient, Matrix, DynMatrix, or PolyReduce break, check whether the new canon-map-based quotient theory changed the interface or available lemmas.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1061::Migrate `MSet` to use quotients to eliminate axioms": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "use",
+      "quotients",
+      "eliminate",
+      "axioms",
+      "MSet"
+    ],
+    "summary": "Migrated MSet to use the quotient theory, eliminating previously required axioms.",
+    "repair_hint": "If proofs depending on MSet axioms fail, those axioms may now be derivable lemmas with different names or statements; search for the corresponding quotient-based lemmas.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::752::Add bit-level circuit reasoning: circuit/extens tactics and bind command": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "bit",
+      "level",
+      "circuit",
+      "reasoning",
+      "extens",
+      "tactics",
+      "bind",
+      "command"
+    ],
+    "summary": "Added new bit-level circuit reasoning support including the `circuit`, `extens` tactics and the `bind` command.",
+    "repair_hint": "These are new features; if existing proofs conflict with new keywords (`circuit`, `extens`, `bind`), rename any user identifiers that clash with these new tactic/command names.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1059::Stronger precondition in pRHL tactics `eager-seq` and `eager-while`": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "precondition",
+      "pRHL",
+      "tactics",
+      "eager",
+      "seq",
+      "while",
+      "eager_seq",
+      "eager_while"
+    ],
+    "summary": "The pRHL tactics `eager-seq` and `eager-while` now accept a stronger (more general) precondition.",
+    "repair_hint": "If proofs using `eager-seq` or `eager-while` break, the precondition shape accepted by these tactics has changed; adjust the provided precondition to match the new, stronger form.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::1060::feat: variant for up-to-bad call/proc tactics": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "feat",
+      "variant",
+      "bad",
+      "call",
+      "proc",
+      "tactics"
+    ],
+    "summary": "Added a new variant for up-to-bad call/proc tactics in pRHL.",
+    "repair_hint": "If proofs using `call` or `proc` tactics fail, check whether the new up-to-bad variant changes the expected goal shape or requires different arguments.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1014::Use auto unfold for some `Logic` operators": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "auto",
+      "unfold",
+      "operators",
+      "Logic"
+    ],
+    "summary": "Several operators in the `Logic` theory are now marked for auto-unfolding, which can change proof automation behavior across the library.",
+    "repair_hint": "If proofs break due to unexpected unfolding of logical operators, check whether `smt`, `auto`, or other automated tactics now unfold operators that were previously opaque; you may need to add `nosmt` hints or fold definitions manually.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::1063::typing: defer failed-application classification (perf)": {
+    "kind": "internal",
+    "identifiers": [
+      "typing",
+      "defer",
+      "failed",
+      "application",
+      "classification",
+      "perf",
+      "ecTyping",
+      "ecUnify"
+    ],
+    "summary": "Deferred failed-application classification in the type-checker for performance improvement.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::1064::feat: print an individual procedure (`print [proc] M.p`)": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "feat",
+      "print",
+      "individual",
+      "procedure",
+      "proc"
+    ],
+    "summary": "Added support for printing an individual procedure using `print [proc] M.p`.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::1053::New lemmas for stdlib": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "lemmas",
+      "stdlib",
+      "Ring",
+      "RealExp",
+      "Core",
+      "Int",
+      "Logic"
+    ],
+    "summary": "New lemmas were added to several standard library theories including Ring, RealExp, Core, Int, and Logic, with some breaking changes.",
+    "repair_hint": "If proofs break due to naming conflicts or changed lemma statements, check for newly added lemmas in Ring.ec, RealExp.ec, Core.ec, Int.ec, and Logic.ec that may shadow or conflict with existing names.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::1067::feat: named ring/field instances for `ring`/`field` structure selection": {
+    "kind": "syntax_change",
+    "identifiers": [
+      "feat",
+      "named",
+      "ring",
+      "field",
+      "instances",
+      "structure",
+      "selection"
+    ],
+    "summary": "The `ring` and `field` tactics now support named ring/field instances for explicit structure selection.",
+    "repair_hint": "If `ring` or `field` tactics fail where multiple instances exist, try specifying the instance by name using the new named instance syntax.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1068::fix(quotient): keep repr/pi opaque to SMT": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "quotient",
+      "keep",
+      "repr",
+      "opaque",
+      "Quotient",
+      "DynMatrix",
+      "pi"
+    ],
+    "summary": "The `repr` and `pi` functions in the Quotient theory are now kept opaque to the SMT solver.",
+    "repair_hint": "If proofs relying on SMT discharging goals involving `repr` or `pi` from Quotient break, those goals may now need to be handled manually or with explicit unfolding.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::1062::Fix soundness bug with clone overrides of subtypes": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "soundness",
+      "bug",
+      "clone",
+      "overrides",
+      "subtypes"
+    ],
+    "summary": "A soundness bug with clone overrides of subtypes was fixed.",
+    "repair_hint": "If proofs using clone with subtype overrides behave differently, the fix may have changed which overrides are accepted or how they are applied.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1069::PolyReduceZp: use default clone overrides (`<=`) and drop redundant `p` param": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "use",
+      "default",
+      "clone",
+      "overrides",
+      "drop",
+      "redundant",
+      "param",
+      "PolyReduceZp",
+      "PolyReduce"
+    ],
+    "summary": "PolyReduceZp was refactored to use default clone overrides and the redundant `p` parameter was removed.",
+    "repair_hint": "If proofs using PolyReduceZp break, check for uses of the `p` parameter or clone instantiation patterns that assumed the old override style.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::1071::feat(circuit): polymorphic array `init` binding kind (`painit`)": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "feat",
+      "circuit",
+      "polymorphic",
+      "array",
+      "init",
+      "binding",
+      "kind",
+      "painit",
+      "QFABV"
+    ],
+    "summary": "A new polymorphic array `init` binding kind (`painit`) was added to the circuit subsystem.",
+    "repair_hint": "If circuit-related proofs break, check whether the new `painit` binding kind conflicts with existing array init patterns in QFABV or circuit declarations.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::997::Fall back to checking equality of expressions in `sim`": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "back",
+      "checking",
+      "equality",
+      "expressions",
+      "sim"
+    ],
+    "summary": "The `sim` tactic now falls back to checking equality of expressions when other checks fail.",
+    "repair_hint": "If proofs using `sim` break or unexpectedly succeed, the changed expression-equality fallback may alter which goals are closed or left open.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::954::Add named and local simplify hint databases": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "named",
+      "local",
+      "simplify",
+      "hint",
+      "databases",
+      "hint simplify"
+    ],
+    "summary": "Named and local simplify hint databases were added, enabling scoped and named collections of simplification hints.",
+    "repair_hint": "If `simplify` or `hint simplify` behavior changes, check whether hints are now being picked up from or excluded by named/local databases that did not exist before.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1073::feat: configurable warnings (uninit locals, unused unfold)": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "feat",
+      "configurable",
+      "warnings",
+      "uninit",
+      "locals",
+      "unused",
+      "unfold"
+    ],
+    "summary": "Warnings for uninitialized locals and unused unfold are now configurable.",
+    "repair_hint": "If proof scripts that previously suppressed or relied on specific warning behavior break, check the new warning configuration options for uninit locals and unused unfold.",
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::923::[refold]: allow rigid unification": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "refold",
+      "allow",
+      "rigid",
+      "unification"
+    ],
+    "summary": "The `refold` tactic was extended to allow rigid unification.",
+    "repair_hint": "If proofs using `refold` behave differently, the new rigid unification mode may change which terms are matched and refolded.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1075::perf: relax OCaml 5.x GC pacing for custom blocks, warn on 5.0\u20135.3": {
+    "kind": "internal",
+    "identifiers": [
+      "perf",
+      "relax",
+      "pacing",
+      "custom",
+      "blocks",
+      "warn"
+    ],
+    "summary": "OCaml 5.x GC pacing for custom blocks was relaxed and a warning for OCaml 5.0\u20135.3 was added.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::1080::Make proof-local simplify hint databases visible to conversion": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "proof",
+      "local",
+      "simplify",
+      "hint",
+      "databases",
+      "visible",
+      "conversion",
+      "hint simplify"
+    ],
+    "summary": "Proof-local simplify hint databases are now visible to the conversion mechanism used during type-checking and tactics.",
+    "repair_hint": "If proofs involving conversion or unification now close goals they previously did not (or vice versa), it may be because local simplify hints are now applied during conversion.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1079::nix: repair flake for Nix 2.35 / macOS 26, modernize toolchain": {
+    "kind": "internal",
+    "identifiers": [
+      "nix",
+      "repair",
+      "flake",
+      "macOS",
+      "modernize",
+      "toolchain"
+    ],
+    "summary": "The Nix flake was repaired for Nix 2.35 and macOS 26, and the toolchain was modernized.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::1081::[docker] add z3 5.0.0 to docker environment": {
+    "kind": "internal",
+    "identifiers": [
+      "docker",
+      "environment"
+    ],
+    "summary": "Z3 5.0.0 was added to the Docker build environment.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::1083::Simpler SMT\u00a0goals": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "goals",
+      "Bigalg",
+      "List"
+    ],
+    "summary": "Lemmas in Bigalg and List were simplified to produce easier SMT goals.",
+    "repair_hint": "If proofs in Bigalg or List theories break, check whether the simplified lemma statements still match the forms expected by downstream proof scripts.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1082::Update eclistings.sty (math style)": {
+    "kind": "documentation",
+    "identifiers": [
+      "eclistings",
+      "sty",
+      "math",
+      "style"
+    ],
+    "summary": "Updated the LaTeX math style in eclistings.sty for EasyCrypt listings.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::992::Added exact lemma for parameteriezed global hybrids.": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "exact",
+      "lemma",
+      "parameteriezed",
+      "global",
+      "hybrids",
+      "GlobalHybrid"
+    ],
+    "summary": "An exact lemma for parameterized global hybrids was added to the GlobalHybrid theory.",
+    "repair_hint": "Check if existing proofs using GlobalHybrid need to be updated to use the new lemma; the 'breaking change' label suggests some interfaces or lemma signatures may have changed.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::1002::subtype: generalize over section-declared free types at section close": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "subtype",
+      "generalize",
+      "over",
+      "section",
+      "declared",
+      "free",
+      "types",
+      "close"
+    ],
+    "summary": "Subtype declarations now generalize over section-declared free types when a section is closed.",
+    "repair_hint": "If proofs using subtypes defined inside sections break, check whether the generalized type parameters now appear where concrete types were expected.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::988::Check that `Distr` is in scope when tagging distributions, fixing #211": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "scope",
+      "tagging",
+      "distributions",
+      "fixing",
+      "Distr",
+      "DigitalSignatures"
+    ],
+    "summary": "EasyCrypt now checks that the `Distr` module is in scope when tagging distributions, which may break code that previously tagged distributions without importing `Distr`.",
+    "repair_hint": "If distribution tagging fails, ensure `Distr` is imported/in scope before the distribution declaration or tag annotation.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::1000::Refactor CI to run in fresh build box": {
+    "kind": "internal",
+    "identifiers": [
+      "run",
+      "fresh",
+      "build",
+      "box"
+    ],
+    "summary": "CI pipeline was refactored to run in a fresh build box.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::1004::[provers] update all CVC5 versions": {
+    "kind": "internal",
+    "identifiers": [
+      "provers",
+      "update",
+      "all",
+      "versions"
+    ],
+    "summary": "All CVC5 prover versions used in the Docker build were updated.",
+    "repair_hint": "If proofs previously discharged by CVC5 now fail or vice versa, the updated CVC5 version may have changed its behavior; try adjusting timeout or switching SMT solvers.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1010::[docker] use binary alt-ergo builds": {
+    "kind": "internal",
+    "identifiers": [
+      "docker",
+      "use",
+      "binary",
+      "alt",
+      "ergo",
+      "builds"
+    ],
+    "summary": "Docker build was updated to use binary Alt-Ergo builds instead of source builds.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::1013::Emit proper error message when typing `={pvar}` in a single sided context": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "proper",
+      "error",
+      "message",
+      "typing",
+      "pvar",
+      "single",
+      "sided",
+      "context"
+    ],
+    "summary": "A proper error message is now emitted when the `={pvar}` syntax is used in a single-sided context instead of silently failing or giving a confusing error.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::1012::Prevent type parameters in subtypes": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "type",
+      "parameters",
+      "subtypes"
+    ],
+    "summary": "Type parameters are now disallowed in subtype declarations.",
+    "repair_hint": "If a subtype declaration with type parameters previously compiled, it will now be rejected; refactor the declaration to remove type parameters.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::1007::[docker] consolidate dockerfiles": {
+    "kind": "internal",
+    "identifiers": [
+      "docker",
+      "consolidate",
+      "dockerfiles"
+    ],
+    "summary": "Multiple Dockerfiles were consolidated into a single unified Dockerfile.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::1015::split: add `split *` and `split +` to iterate over top-level conjunctions": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "split",
+      "iterate",
+      "over",
+      "top",
+      "level",
+      "conjunctions"
+    ],
+    "summary": "The `split` tactic gained `split *` and `split +` variants that iterate over all top-level conjunctions.",
+    "repair_hint": "If proof scripts use `split` in a loop or with combinators to break conjunctions, consider replacing them with `split *` or `split +`; existing uses of plain `split` should be unaffected.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1021::Cloning: support inlining a type via clone-inline (clinline)": {
+    "kind": "syntax_change",
+    "identifiers": [
+      "support",
+      "inlining",
+      "type",
+      "via",
+      "clone",
+      "inline",
+      "clinline"
+    ],
+    "summary": "Cloning now supports inlining a type via a new `clone-inline` (`clinline`) construct.",
+    "repair_hint": "This is an additive feature; existing clone statements should be unaffected, but if a proof relies on a cloned type being abstract, using clinline elsewhere could change the environment.",
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::1023::PHL: make eqobs-in programmatically reusable (split parse/tactic)": {
+    "kind": "internal",
+    "identifiers": [
+      "make",
+      "eqobs",
+      "programmatically",
+      "reusable",
+      "split",
+      "parse",
+      "tactic",
+      "eqobs_in",
+      "ecPhlEqobs",
+      "ecPhlRwEquiv"
+    ],
+    "summary": "The `eqobs-in` PHL tactic was refactored to separate parsing from the core tactic logic for programmatic reuse.",
+    "repair_hint": "If proof scripts using `eqobs_in` or related rewrite-equiv tactics break, check whether the tactic interface or argument format changed.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1016::congr: add `congr pat` and `congr *` variants": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "congr",
+      "pat",
+      "variants"
+    ],
+    "summary": "The `congr` tactic gained `congr pat` and `congr *` variants for pattern-directed and exhaustive congruence.",
+    "repair_hint": "Existing uses of plain `congr` should be unaffected; if goals involving congruence now behave differently, try the new `congr *` variant.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1017::bullets: focusing operators behind +strict_bullets pragma": {
+    "kind": "syntax_change",
+    "identifiers": [
+      "bullets",
+      "focusing",
+      "operators",
+      "behind",
+      "strict_bullets",
+      "pragma"
+    ],
+    "summary": "Focusing/bullet operators were introduced behind a `+strict_bullets` pragma, enabling structured proof focusing.",
+    "repair_hint": "If the `+strict_bullets` pragma is enabled, proof scripts using legacy bullet syntax may need to be updated to conform to the new strict bullet discipline.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1032::[runtest] list failing files": {
+    "kind": "internal",
+    "identifiers": [
+      "runtest",
+      "list",
+      "failing",
+      "files"
+    ],
+    "summary": "The runtest script was updated to list failing files in its output.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::1029::Switch axiom replay to use `exact` rather than a custom apply variant": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "axiom",
+      "replay",
+      "use",
+      "exact",
+      "rather",
+      "than",
+      "custom",
+      "apply",
+      "variant"
+    ],
+    "summary": "Axiom replay during clone now uses the `exact` tactic instead of a custom apply variant.",
+    "repair_hint": "If a clone with parametric axioms fails, check whether the axiom replay step now requires goals to be closed by `exact`; you may need to adjust the axiom statements or proof obligations to match.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::996::Check equality of expressions up to convertibility": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "equality",
+      "expressions",
+      "convertibility",
+      "ecReduction"
+    ],
+    "summary": "Expression equality checks now account for convertibility rather than syntactic equality.",
+    "repair_hint": "If a proof that previously failed due to non-syntactically-equal but convertible expressions now succeeds (or vice versa), this change in reduction/equality checking is the likely cause; try adding or removing explicit reduction steps.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::987::Bugfix: form_read track Fglob like Fpvar": {
+    "kind": "internal",
+    "identifiers": [
+      "form_read",
+      "track",
+      "like",
+      "Fglob",
+      "Fpvar"
+    ],
+    "summary": "Fixed `form_read` in `ecPV` to track `Fglob` nodes the same way it tracks `Fpvar` nodes.",
+    "repair_hint": "If a proof involving global variables and procedure change (`proc change`) was silently unsound or failing, this bugfix may now correctly flag or allow such goals; revisit any `proc change` steps involving globals.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1008::[ci] do not rebuild base or base-build in PR runs": {
+    "kind": "internal",
+    "identifiers": [
+      "rebuild",
+      "base",
+      "build",
+      "runs"
+    ],
+    "summary": "CI workflow updated to skip rebuilding base Docker images on pull request runs.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::1025::Simplify some smt calls": {
+    "kind": "internal",
+    "identifiers": [
+      "smt",
+      "calls",
+      "DynMatrix"
+    ],
+    "summary": "Some `smt` calls in `DynMatrix.eca` were simplified.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::1035::[ci] hotfix for the one untested path in docker PR": {
+    "kind": "internal",
+    "identifiers": [
+      "hotfix",
+      "one",
+      "untested",
+      "path",
+      "docker"
+    ],
+    "summary": "Hotfix applied to the CI Docker PR workflow for a previously untested path.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::1038::ecall: avoid internal name collision in abstract_pvs": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "ecall",
+      "avoid",
+      "internal",
+      "name",
+      "collision",
+      "abstract_pvs"
+    ],
+    "summary": "Fixed an internal name collision in `abstract_pvs` within the `ecall` tactic implementation.",
+    "repair_hint": "If `ecall` was failing or producing incorrect goals due to name collisions, this bugfix should resolve it; re-run proofs using `ecall` to verify they now succeed.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1040::proc change: well-formed goals when introducing fresh locals": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "proc",
+      "change",
+      "well",
+      "formed",
+      "goals",
+      "introducing",
+      "fresh",
+      "locals",
+      "proc change"
+    ],
+    "summary": "Fixed `proc change` to produce well-formed goals when introducing fresh local variables.",
+    "repair_hint": "If `proc change` goals were malformed or proofs were failing after introducing fresh locals, this fix should correct the goal structure; re-check any proofs using `proc change` with local introductions.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1031::feat(phl): support backward ecall on bdHoare/phoare goals": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "feat",
+      "phl",
+      "support",
+      "backward",
+      "ecall",
+      "bdHoare",
+      "phoare",
+      "goals"
+    ],
+    "summary": "Added support for backward `ecall` on `bdHoare`/`phoare` goals.",
+    "repair_hint": "If a proof script uses `ecall` in a backward direction on a `bdHoare` or `phoare` goal and was previously failing, it may now succeed with this new support.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::1034::Warn on useless unfolds by default": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "useless",
+      "unfolds",
+      "default"
+    ],
+    "summary": "EasyCrypt now warns by default when an `unfold` has no effect.",
+    "repair_hint": "If proofs now emit warnings (or errors, depending on configuration) about useless `unfold` calls, locate and remove or fix the redundant `unfold` steps in the proof script.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1039::smt: add `[smt_inline]` operator tag to \u03b4/\u03b2-reduce at use sites": {
+    "kind": "syntax_change",
+    "identifiers": [
+      "smt",
+      "smt_inline",
+      "operator",
+      "tag",
+      "reduce",
+      "use",
+      "sites"
+    ],
+    "summary": "A new `[smt_inline]` operator tag was added to allow \u03b4/\u03b2-reduction of operators at their SMT use sites.",
+    "repair_hint": "If an `smt` call is failing because an operator is not being unfolded, try annotating the operator definition with `[smt_inline]` to force inlining when the lemma is sent to the SMT solver.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::1043::typing: resolve record projections from the record type": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "typing",
+      "resolve",
+      "record",
+      "projections",
+      "from",
+      "type"
+    ],
+    "summary": "The type checker now resolves record field projections based on the record type, allowing use of projections without importing the defining module.",
+    "repair_hint": "If record projection references were previously failing due to scope/import issues, they may now resolve correctly; conversely, ambiguous projections might now resolve differently, so check any proof relying on record field access.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::1036::[external-ci] point SPHINCS+ job to formosa repo": {
+    "kind": "internal",
+    "identifiers": [
+      "external",
+      "point",
+      "job",
+      "formosa",
+      "repo"
+    ],
+    "summary": "External CI configuration updated to point the SPHINCS+ job at the Formosa repository.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::948::Improve rewrite framing with formula-level read tracking": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "rewrite",
+      "framing",
+      "formula",
+      "level",
+      "read",
+      "tracking",
+      "ecPhlRewrite"
+    ],
+    "summary": "The rewrite tactic's framing analysis was improved by tracking reads at the formula level rather than coarser granularity.",
+    "repair_hint": "If rewrite-based PHL/pRHL goals previously failed due to framing issues, try re-running; if they now fail where they previously succeeded, check that the formula-level read set is computed correctly for the rewritten expression.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::938::Refactor cfold propagation and add eager mode": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "cfold",
+      "propagation",
+      "eager",
+      "mode"
+    ],
+    "summary": "The `cfold` tactic was refactored for propagation and gained an eager mode.",
+    "repair_hint": "If `cfold` proofs break, check whether the new eager mode syntax is required or whether the refactored propagation changes the normal form produced by `cfold`.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::947::\"global\" hybrid theory, plus two examples": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "global",
+      "hybrid",
+      "theory",
+      "plus",
+      "two",
+      "examples",
+      "GlobalHybrid",
+      "GlobalHybridExamp1",
+      "GlobalHybridExamp2"
+    ],
+    "summary": "A new `GlobalHybrid` theory was added to the library along with two example files.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::952::Fix printing of notations": {
+    "kind": "internal",
+    "identifiers": [
+      "printing",
+      "notations"
+    ],
+    "summary": "Fixed incorrect printing of notations in the pretty-printer.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::953::Tighten proc-change observability": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "proc",
+      "change",
+      "observability",
+      "proc_change",
+      "ecPhlRewrite"
+    ],
+    "summary": "The observability check for the proc-change tactic was tightened to be more precise.",
+    "repair_hint": "If proc-change or related rewrite tactics now reject goals that previously succeeded, the stricter observability check may be the cause; verify that the variables observed by the adversary are correctly characterized.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::956::Fix pretty printing of hoare statements/formulas.": {
+    "kind": "internal",
+    "identifiers": [
+      "pretty",
+      "printing",
+      "hoare",
+      "statements",
+      "formulas"
+    ],
+    "summary": "Fixed pretty printing of Hoare statements and formulas.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::957::Redundant \";\"s in pretty printing of stmts in forms": {
+    "kind": "internal",
+    "identifiers": [
+      "pretty",
+      "printing",
+      "stmts",
+      "forms"
+    ],
+    "summary": "Removed redundant semicolons in pretty printing of statements inside formulas.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::959::extend Xreal: expectation for dbiased": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "extend",
+      "expectation",
+      "dbiased",
+      "Xreal"
+    ],
+    "summary": "Added expectation lemmas for `dbiased` to the `Xreal` theory.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::845::Another example for eHoare": {
+    "kind": "documentation",
+    "identifiers": [
+      "example",
+      "eHoare"
+    ],
+    "summary": "Added a new example file demonstrating eHoare reasoning on a random boolean matrix.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::961::bump and add prover versions in docker": {
+    "kind": "internal",
+    "identifiers": [
+      "bump",
+      "prover",
+      "versions",
+      "docker"
+    ],
+    "summary": "Updated Docker build file to bump and add prover versions.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::962::Activate CI on merge_group": {
+    "kind": "internal",
+    "identifiers": [
+      "merge_group"
+    ],
+    "summary": "CI workflow was extended to also run on merge_group events.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::945::Extend code-position handling with gap/range semantics": {
+    "kind": "syntax_change",
+    "identifiers": [
+      "code",
+      "position",
+      "handling",
+      "gap",
+      "range",
+      "semantics",
+      "swap",
+      "wp",
+      "sp",
+      "rnd",
+      "inline",
+      "call",
+      "while",
+      "cfold",
+      "outline"
+    ],
+    "summary": "Code-position handling across many PHL tactics was extended with gap/range semantics, changing how positions are specified in tactic arguments.",
+    "repair_hint": "If PHL tactic invocations that specify code positions (e.g., `swap`, `wp`, `rnd`, `inline`, `call`) now fail to parse or apply, update the position syntax to use the new gap/range notation introduced by this change.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::950::Merge the default optional postcondition for exception into the map of exceptions": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "default",
+      "optional",
+      "postcondition",
+      "exception",
+      "into",
+      "map",
+      "exceptions",
+      "ecPhlCall",
+      "ecPhlConseq",
+      "ecPhlFun",
+      "ecPhlWp"
+    ],
+    "summary": "The representation of the default optional postcondition for exceptions was merged into the exception map, changing the internal AST and typing of exception-handling constructs.",
+    "repair_hint": "If proofs involving exception postconditions (in `call`, `conseq`, or `fun` tactics) now fail, check whether the syntax or structure for specifying the default exception postcondition needs to be updated to use the new unified exception map format.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::935::Fix async while obligations and document the tactic": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "async",
+      "while",
+      "obligations",
+      "document",
+      "tactic",
+      "async_while",
+      "LoopTransform"
+    ],
+    "summary": "Fixed incorrect proof obligations generated by the `async while` tactic and added documentation for it.",
+    "repair_hint": "If proofs using `async while` break, the generated subgoals may have changed shape due to the fix; update the proof steps that discharge the async-while obligations accordingly.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::963::Fix simplify flag handling in `cfold`": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "simplify",
+      "flag",
+      "handling",
+      "cfold"
+    ],
+    "summary": "Fixed incorrect handling of the simplify flag in the `cfold` tactic.",
+    "repair_hint": "If `cfold` with or without the simplify flag now behaves differently, the fix may change whether simplification is applied after folding; adjust proof scripts that relied on the previous (buggy) behavior.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::964::Add option to bind new local variables with proc change": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "option",
+      "bind",
+      "local",
+      "variables",
+      "proc",
+      "change",
+      "proc change"
+    ],
+    "summary": "The `proc change` tactic gains an option to bind new local variables introduced by the change.",
+    "repair_hint": "If a proof using `proc change` fails, check whether the new syntax for binding local variables is required or conflicts with existing usage.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::967::remove stray printing of lemma": {
+    "kind": "internal",
+    "identifiers": [
+      "remove",
+      "stray",
+      "printing",
+      "lemma",
+      "EventPartitioning"
+    ],
+    "summary": "Removed a stray/accidental printing of a lemma in the EventPartitioning theory.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::966::Print type parameters of operators when not inferrable from arguments": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "type",
+      "parameters",
+      "operators",
+      "inferrable",
+      "from",
+      "arguments"
+    ],
+    "summary": "EasyCrypt now prints type parameters of operators when they cannot be inferred from the arguments.",
+    "repair_hint": "If proof output or `print` commands produce different output affecting proof scripts that parse printed terms, check for additional type parameters in operator displays.",
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::965::Refactor ecPhlConseq.ml: restructure, deduplicate, document, and annotate": {
+    "kind": "internal",
+    "identifiers": [
+      "ecPhlConseq",
+      "restructure",
+      "deduplicate",
+      "document",
+      "annotate"
+    ],
+    "summary": "Internal refactoring of ecPhlConseq.ml: restructured, deduplicated, documented, and annotated without semantic changes.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::937::Add forward ecall with framed preconditions": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "forward",
+      "ecall",
+      "framed",
+      "preconditions",
+      "call"
+    ],
+    "summary": "A forward `ecall` variant with framed preconditions is added to the PHL tactic set.",
+    "repair_hint": "If proofs using `ecall` or `call` fail, check whether the new framed-precondition syntax is now expected or whether changes to related infrastructure (ecPhlCall, ecPhlExists) affect existing call tactics.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::970::implement `allperms` to get rid of some unneeded axioms": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "implement",
+      "allperms",
+      "get",
+      "rid",
+      "unneeded",
+      "axioms",
+      "Perms"
+    ],
+    "summary": "Implemented `allperms` in the Perms theory, replacing some axioms with proved lemmas.",
+    "repair_hint": "If proofs relying on axioms in Perms.ec break, check whether those axioms were removed and replaced by the new `allperms` definition.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::974::Fix multi-line error message": {
+    "kind": "internal",
+    "identifiers": [
+      "multi",
+      "line",
+      "error",
+      "message"
+    ],
+    "summary": "Fixed formatting of multi-line error messages in the loop transformation module.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::971::Add a LaTeX formatting style file": {
+    "kind": "documentation",
+    "identifiers": [
+      "formatting",
+      "style",
+      "file"
+    ],
+    "summary": "Added a LaTeX formatting style file for EasyCrypt listings.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::955::Add contextual rewrite-pattern selection": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "contextual",
+      "rewrite",
+      "pattern",
+      "selection"
+    ],
+    "summary": "Added contextual rewrite-pattern selection, allowing users to specify which occurrence of a pattern to rewrite using context.",
+    "repair_hint": "If `rewrite` tactics behave differently or fail, check whether the new pattern-selection syntax conflicts with existing rewrite invocations or changes which occurrence is rewritten.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::973::feat(phl): add `simplify if` tactic": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "feat",
+      "phl",
+      "simplify",
+      "tactic",
+      "simplify if"
+    ],
+    "summary": "Added a new `simplify if` tactic for PHL goals that simplifies conditional statements.",
+    "repair_hint": "This is a new tactic addition; existing proofs are unlikely to break, but if `simplify if` is mentioned in a failing proof context, ensure the EasyCrypt version supports it.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::975::Work around #334 in definition of `allperms`": {
+    "kind": "internal",
+    "identifiers": [
+      "around",
+      "definition",
+      "allperms",
+      "Perms"
+    ],
+    "summary": "Applied a workaround in the definition of `allperms` to avoid a known issue (#334).",
+    "repair_hint": "If proofs involving `allperms` in Perms.ec fail, check whether the workaround changed the definition in a way that affects downstream lemmas.",
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::981::Added prover quorum to project files and command line.": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "prover",
+      "quorum",
+      "project",
+      "files",
+      "command",
+      "line"
+    ],
+    "summary": "Added a prover quorum option to project files and the command line, allowing users to require a minimum number of provers to agree.",
+    "repair_hint": "If SMT-backed proofs start failing or behaving differently, check whether a prover quorum setting is now in effect that requires more than one prover to discharge goals.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::986::feat: add `expect \"...\" by print ...` command": {
+    "kind": "syntax_change",
+    "identifiers": [
+      "feat",
+      "expect",
+      "print",
+      "command"
+    ],
+    "summary": "Added an `expect \"...\" by print ...` command for testing expected output of print commands.",
+    "repair_hint": "This is a new command addition; it should not break existing proofs, but scripts using `expect` in a different context should be reviewed.",
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::984::add error messages on some call failures": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "error",
+      "messages",
+      "call",
+      "failures"
+    ],
+    "summary": "Improved error messages for certain failures of the `call` tactic in PHL.",
+    "repair_hint": "If `call` tactic failures now produce different error messages, update any proof scripts or tooling that pattern-match on error output; the tactic behavior itself is unchanged.",
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::979::[docker] provers: bump alt-ergo to 2.6.3": {
+    "kind": "internal",
+    "identifiers": [
+      "docker",
+      "provers",
+      "bump",
+      "alt",
+      "ergo"
+    ],
+    "summary": "Bumped the Alt-Ergo prover version to 2.6.3 in the Docker build configuration.",
+    "repair_hint": "If SMT proofs that previously relied on Alt-Ergo now fail or pass differently, the updated prover version may have changed its behavior; try adjusting prover timeouts or switching provers.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::887::Make abstract phoare `proc` use a >= 1": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "abstract",
+      "phoare",
+      "proc",
+      "use"
+    ],
+    "summary": "The abstract phoare `proc` tactic now uses a bound of >= 1 instead of a previous bound.",
+    "repair_hint": "If a phoare proof using abstract `proc` fails, check whether the bound condition has changed from = 1 to >= 1 and adjust the proof obligations accordingly.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::884::document the `proc` tactic": {
+    "kind": "documentation",
+    "identifiers": [
+      "document",
+      "proc",
+      "tactic"
+    ],
+    "summary": "Documentation for the `proc` tactic was added.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::893::[external-ci] use formosa-xmss security proof": {
+    "kind": "internal",
+    "identifiers": [
+      "external",
+      "use",
+      "formosa",
+      "xmss",
+      "security",
+      "proof"
+    ],
+    "summary": "External CI configuration updated to use the formosa-xmss security proof.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::896::Exposed in the API for EcScope.Theory functions for manually beginning and finishing requires": {
+    "kind": "internal",
+    "identifiers": [
+      "functions",
+      "manually",
+      "beginning",
+      "finishing",
+      "requires",
+      "EcScope"
+    ],
+    "summary": "API functions for manually beginning and finishing requires were exposed in EcScope.Theory.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::898::Fix spurious line breaks in pretty-printing of qualified module paths": {
+    "kind": "internal",
+    "identifiers": [
+      "spurious",
+      "line",
+      "breaks",
+      "pretty",
+      "printing",
+      "qualified",
+      "module",
+      "paths"
+    ],
+    "summary": "Fixed spurious line breaks in pretty-printing of qualified module paths.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::895::document `clear` tactic": {
+    "kind": "documentation",
+    "identifiers": [
+      "document",
+      "clear",
+      "tactic"
+    ],
+    "summary": "Documentation for the `clear` tactic was added.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::894::document  `proc*`": {
+    "kind": "documentation",
+    "identifiers": [
+      "document",
+      "proc",
+      "proc*"
+    ],
+    "summary": "Documentation for the `proc*` tactic was added.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::900::Eager: match on last statement and use EqTest": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "match",
+      "last",
+      "statement",
+      "use",
+      "eager"
+    ],
+    "summary": "The eager tactic was fixed to match on the last statement and use EqTest correctly.",
+    "repair_hint": "If eager-based proofs fail or behave differently, the fix to last-statement matching and EqTest may change which goals are generated; review the proof structure around eager calls.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::888::Tactic: add hoare split": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "hoare",
+      "split",
+      "hoare_split"
+    ],
+    "summary": "A new `hoare split` tactic was added for splitting hoare judgments.",
+    "repair_hint": "If a proof script previously worked around the lack of hoare split, it may now be simplified; existing proofs are unlikely to break but new tactic name conflicts are possible.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::903::In clone, allow applying renamings pre-emptively": {
+    "kind": "syntax_change",
+    "identifiers": [
+      "clone",
+      "allow",
+      "applying",
+      "renamings",
+      "pre",
+      "emptively"
+    ],
+    "summary": "The `clone` command now allows renamings to be applied pre-emptively before the cloning is finalized.",
+    "repair_hint": "If a clone command behaves unexpectedly, check whether pre-emptive renamings are being applied and adjust renaming order accordingly.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::904::In hidden theories, remove all hints": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "hidden",
+      "theories",
+      "remove",
+      "all",
+      "hints"
+    ],
+    "summary": "All hints are now removed when processing hidden theories.",
+    "repair_hint": "If proofs relying on hints from hidden theories start failing, those hints are no longer available; explicit lemma references may be needed.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::906::Fix issue #905, improve error message on missing two sided memory": {
+    "kind": "internal",
+    "identifiers": [
+      "issue",
+      "error",
+      "message",
+      "missing",
+      "two",
+      "sided",
+      "memory"
+    ],
+    "summary": "Improved error message when a two-sided memory is missing in a judgment.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::910::Fix printing of hypothesis about abstract statements": {
+    "kind": "internal",
+    "identifiers": [
+      "printing",
+      "hypothesis",
+      "about",
+      "abstract",
+      "statements"
+    ],
+    "summary": "Fixed incorrect pretty-printing of hypotheses about abstract statements.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::909::feat(unroll-for): propagate constants after unrolling": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "feat",
+      "unroll",
+      "propagate",
+      "constants",
+      "after",
+      "unrolling"
+    ],
+    "summary": "The `unroll` (for-loop unrolling) tactic now propagates constants after unrolling.",
+    "repair_hint": "If proofs using `unroll` on for-loops produce different goals than before, constant propagation is now applied automatically; subsequent simplification steps may need adjustment.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::911::[docker]: bump provers versions": {
+    "kind": "internal",
+    "identifiers": [
+      "docker",
+      "bump",
+      "provers",
+      "versions"
+    ],
+    "summary": "Docker build configuration was updated to bump prover versions.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::913::[ci] use the `main` build box in CI": {
+    "kind": "internal",
+    "identifiers": [
+      "use",
+      "main",
+      "build",
+      "box"
+    ],
+    "summary": "CI configuration updated to use the main build box.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::912::[runtest] fail when a dir fails to match": {
+    "kind": "internal",
+    "identifiers": [
+      "runtest",
+      "fail",
+      "dir",
+      "fails",
+      "match"
+    ],
+    "summary": "The runtest script now fails when a directory fails to match, improving test error reporting.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::892::PR: Allow symbolic assignments for cfold": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "symbolic",
+      "assignments",
+      "cfold"
+    ],
+    "summary": "The cfold tactic now supports symbolic assignments in addition to concrete ones.",
+    "repair_hint": "If cfold previously failed on symbolic assignments and now succeeds, or if behavior changed, try applying cfold where it was previously inapplicable.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::919::[parser]: support for hex literals": {
+    "kind": "syntax_change",
+    "identifiers": [
+      "parser",
+      "support",
+      "hex",
+      "literals"
+    ],
+    "summary": "The parser now supports hexadecimal integer literals.",
+    "repair_hint": "Hex literals can now be used directly in EasyCrypt source; no proof breakage expected, but if a proof used workarounds for hex values, those may now be simplified.",
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::915::Add proper error message on digest mismatch in require": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "proper",
+      "error",
+      "message",
+      "digest",
+      "mismatch",
+      "require"
+    ],
+    "summary": "A proper error message is now emitted when a digest mismatch occurs during a require.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::806::Feature exception": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "exception",
+      "Pervasive"
+    ],
+    "summary": "Exception handling support was added to EasyCrypt, touching the AST, type system, PHL tactics, and the Pervasive theory.",
+    "repair_hint": "If proofs involving procedure calls, consequence rules, or PHL tactics break, check whether the new exception-related constructs or changes to procedure semantics are the cause; review call, conseq, inline, and related tactics for updated signatures.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::924::Added lemmas proving consequences of a list concatenation being [].": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "lemmas",
+      "proving",
+      "consequences",
+      "list",
+      "concatenation",
+      "being",
+      "List"
+    ],
+    "summary": "New lemmas about list concatenation being empty were added to the List theory.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::927::Add check to prevent swapping of exception raises": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "check",
+      "prevent",
+      "swapping",
+      "exception",
+      "raises",
+      "swap"
+    ],
+    "summary": "A check was added to prevent the swap tactic from reordering exception-raising statements.",
+    "repair_hint": "If the swap tactic now fails where it previously succeeded, check whether the swapped statements involve exception raises; a different reordering or tactic may be needed.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::933::Allow memory preserving destruction of formulas to yield distinct types": {
+    "kind": "internal",
+    "identifiers": [
+      "memory",
+      "preserving",
+      "destruction",
+      "formulas",
+      "yield",
+      "distinct",
+      "types"
+    ],
+    "summary": "Fixed a bug allowing memory-preserving formula destruction to yield distinct types.",
+    "repair_hint": "If a proof that relied on formula destruction across different types now fails, this internal fix may have closed an unsound path; try restructuring the proof.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::929::Fixing two issues with the pretty printing of operators that are not applied to arguments": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "two",
+      "issues",
+      "pretty",
+      "printing",
+      "operators",
+      "are",
+      "applied",
+      "arguments"
+    ],
+    "summary": "Fixed two pretty-printing bugs for operators not applied to arguments.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::932::check for memory independence of list in `rewrite Pr[mu_has_le]`": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "check",
+      "memory",
+      "independence",
+      "list",
+      "rewrite",
+      "mu_has_le"
+    ],
+    "summary": "A memory-independence check for the list argument was added to the rewrite Pr[mu_has_le] step.",
+    "repair_hint": "If rewrite Pr[mu_has_le] now fails, ensure the list expression is memory-independent; refactor the proof to establish this independence before the rewrite.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::936::Fix English grammar in matching error messages.": {
+    "kind": "documentation",
+    "identifiers": [
+      "grammar",
+      "matching",
+      "error",
+      "messages"
+    ],
+    "summary": "English grammar in matching error messages was corrected.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::940::Rewriting in the pre-condition of PL logics": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "pre",
+      "condition",
+      "logics",
+      "rewrite"
+    ],
+    "summary": "Support for rewriting in the pre-condition of program logic goals was added.",
+    "repair_hint": "If rewriting in PHL pre-conditions previously failed, try using the new rewrite support; conversely, if proof scripts depended on rewrite not applying in pre-conditions, they may need adjustment.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::941::Fix upper bound on non-strict while": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "upper",
+      "bound",
+      "non",
+      "strict",
+      "while"
+    ],
+    "summary": "Fixed an incorrect upper bound computation for non-strict while loop termination.",
+    "repair_hint": "If while-loop proofs using non-strict termination bounds break or produce different goals, update the bound expressions to match the corrected computation.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::942::New lemmas for stdlib. BitChunking: chunk_nil, chun_exact; List: mkseq2; DList: dmap_dlist_partial_perm.": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "lemmas",
+      "stdlib",
+      "chunk_nil",
+      "chun_exact",
+      "mkseq2",
+      "dmap_dlist_partial_perm",
+      "chunk_exact",
+      "BitEncoding",
+      "List",
+      "DList"
+    ],
+    "summary": "New lemmas chunk_nil, chunk_exact, mkseq2, and dmap_dlist_partial_perm were added to the BitEncoding, List, and DList theories.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::943::Build docker test containers on release": {
+    "kind": "internal",
+    "identifiers": [
+      "docker",
+      "test",
+      "containers",
+      "release"
+    ],
+    "summary": "Docker test containers are now built on release in the CI workflow.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::833::Fix a regression in `ecall` from #789": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "regression",
+      "ecall",
+      "from"
+    ],
+    "summary": "Fixed a regression in the `ecall` tactic introduced by PR #789.",
+    "repair_hint": "If `ecall` fails or behaves unexpectedly, this fix may resolve it; try updating to the version containing this fix.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::832::Emit type check error when argument to sided `rnd` is present but unused": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "type",
+      "check",
+      "error",
+      "argument",
+      "sided",
+      "rnd",
+      "present",
+      "but",
+      "unused"
+    ],
+    "summary": "The sided `rnd` tactic now emits a type-check error when an argument is provided but not used.",
+    "repair_hint": "If a proof using sided `rnd` with an explicit argument now fails with a type-check error, remove the unused argument or correct it.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::839::fix outline error printing": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "outline",
+      "error",
+      "printing"
+    ],
+    "summary": "Fixed error message printing for the `outline` tactic.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::783::Inlined documentation": {
+    "kind": "documentation",
+    "identifiers": [
+      "documentation"
+    ],
+    "summary": "Added support for inlined documentation generation in EasyCrypt source files.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::837::fix handling of bounds in conseq equiv phoare": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "handling",
+      "bounds",
+      "conseq",
+      "equiv",
+      "phoare"
+    ],
+    "summary": "Fixed handling of bounds in `conseq` when used with equiv and phoare judgments.",
+    "repair_hint": "If `conseq` applied to equiv/phoare goals fails or produces incorrect subgoals regarding bounds, this fix may be relevant; check that bound arguments are correctly formed.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::848::Manually handle some cases where `t_mytrivial` is too weak": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "handle",
+      "cases",
+      "where",
+      "t_mytrivial",
+      "too",
+      "weak",
+      "conseq"
+    ],
+    "summary": "Manually handled additional cases in `conseq` phoare/hoare rules where the `t_mytrivial` discharger was too weak.",
+    "repair_hint": "If `conseq` leaves unexpected subgoals in phoare/hoare proofs, this fix may resolve them; try upgrading to the version containing this fix.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::849::reduce when needed in proc and call rules": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "reduce",
+      "needed",
+      "proc",
+      "call",
+      "rules",
+      "app",
+      "inline",
+      "rnd",
+      "rcond",
+      "outline",
+      "eager",
+      "eqobs"
+    ],
+    "summary": "Proc and call rules (and related PHL tactics) now perform reduction when needed to match goals involving operators.",
+    "repair_hint": "If PHL tactics like `proc`, `call`, `inline`, or `rnd` now succeed on goals involving operator definitions where they previously failed, or vice versa, this change in reduction behavior is the likely cause.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::851::Make casts from existing single sided formulas to two sided ones use a more robust pattern": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "casts",
+      "from",
+      "existing",
+      "single",
+      "sided",
+      "formulas",
+      "two",
+      "ones",
+      "use",
+      "more",
+      "robust",
+      "pattern",
+      "conseq",
+      "app"
+    ],
+    "summary": "Casting from single-sided to two-sided formulas in `conseq`/`app` now uses a more robust pattern.",
+    "repair_hint": "If `conseq` or `app` involving equiv/phoare goals behaves differently, this robustness fix may be the cause; check the structure of the formulas being cast.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::853::Remove dead-code in theory cloning code.": {
+    "kind": "internal",
+    "identifiers": [
+      "dead",
+      "code",
+      "theory",
+      "cloning",
+      "ecThCloning"
+    ],
+    "summary": "Removed dead code from the theory cloning implementation.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::852::Kill warnings + unify flags for ci/dev dune environments": {
+    "kind": "internal",
+    "identifiers": [
+      "warnings",
+      "unify",
+      "flags",
+      "dev",
+      "dune",
+      "environments"
+    ],
+    "summary": "Killed compiler warnings and unified dune build flags for CI and development environments.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::856::Also swap memory types when swapping memories": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "swap",
+      "memory",
+      "types",
+      "swapping",
+      "memories",
+      "symmetry"
+    ],
+    "summary": "Fixed the symmetry tactic to also swap memory types when swapping memories.",
+    "repair_hint": "If `symmetry` previously succeeded but now fails or produces different goals due to memory type mismatches, this bug fix is the likely cause.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::857::In matching, do not unify a memory with itself": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "matching",
+      "unify",
+      "memory",
+      "itself"
+    ],
+    "summary": "Fixed the matching engine to avoid unifying a memory variable with itself.",
+    "repair_hint": "If pattern matching in PHL tactics behaves differently (e.g., previously succeeds but now fails or vice versa), this fix to self-unification of memories may be the cause.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::858::Improve error message in top-assumption rewrite": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "error",
+      "message",
+      "top",
+      "assumption",
+      "rewrite"
+    ],
+    "summary": "Improved the error message produced when a top-assumption rewrite fails.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::860::When doing section-analysis, recurse in operators body": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "doing",
+      "section",
+      "analysis",
+      "recurse",
+      "operators",
+      "body"
+    ],
+    "summary": "Fixed section analysis to recurse into operator bodies when computing section dependencies.",
+    "repair_hint": "If a proof using sections fails because an operator used inside another operator is not recognized as a section dependency, this fix is the likely cause; ensure the EasyCrypt version includes this fix.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::866::When doing section-analysis, recurse in types body": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "doing",
+      "section",
+      "analysis",
+      "recurse",
+      "types",
+      "body"
+    ],
+    "summary": "Fixed section analysis to recurse into type bodies when computing section dependencies.",
+    "repair_hint": "If a proof using sections fails because a type defined in terms of another type is not recognized as a section dependency, this fix is the likely cause.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::862::Fix dependency analysis": {
+    "kind": "internal",
+    "identifiers": [
+      "dependency",
+      "analysis",
+      "ecCoreModules",
+      "ecSection"
+    ],
+    "summary": "Fixed a bug in the dependency analysis logic within the module and section system.",
+    "repair_hint": "If proofs involving modules or sections fail with unexpected dependency errors, this fix may resolve them.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::867::Build: unify release/dev warnings flags": {
+    "kind": "internal",
+    "identifiers": [
+      "unify",
+      "release",
+      "dev",
+      "warnings",
+      "flags"
+    ],
+    "summary": "Unified compiler warning flags between release and development builds.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::840::[docker] update dockerfiles, add formosa docker": {
+    "kind": "internal",
+    "identifiers": [
+      "docker",
+      "update",
+      "dockerfiles",
+      "formosa"
+    ],
+    "summary": "Updated Docker build files and added a Formosa-specific Docker image.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::559::[eco]: add a compilation trace (messages + goals)": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "eco",
+      "compilation",
+      "trace",
+      "messages",
+      "goals",
+      "ecEco"
+    ],
+    "summary": "Added a compilation trace feature to the eco mode that records messages and goals.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::869::Fixing the free memory of the second goal of `byehoare`": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "free",
+      "memory",
+      "second",
+      "goal",
+      "byehoare"
+    ],
+    "summary": "Fixed a bug where the free memory set of the second goal generated by `byehoare` was computed incorrectly.",
+    "repair_hint": "If `byehoare` goals have unexpected free-variable or memory issues, this fix may resolve them; check that the second goal's memory assumptions are now correct.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::787::New lazy/eager logic.": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "lazy",
+      "eager",
+      "logic",
+      "PROM",
+      "SDist"
+    ],
+    "summary": "Introduced a new lazy/eager logic, revising the eager tactic implementation and related theories.",
+    "repair_hint": "If proofs using `eager` tactics or the PROM/SDist theories break, inspect changes to the eager/lazy tactic syntax and semantics and update proof scripts accordingly.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::868::Refman skeleton.": {
+    "kind": "documentation",
+    "identifiers": [
+      "skeleton"
+    ],
+    "summary": "Created the skeleton structure for the EasyCrypt reference manual with Sphinx documentation infrastructure.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::811::Positivity check in type constructors": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "check",
+      "type",
+      "constructors",
+      "ecInductive",
+      "ecHiInductive",
+      "ecDecl"
+    ],
+    "summary": "Added positivity checking for type constructors in inductive type declarations.",
+    "repair_hint": "If a proof script defines an inductive type that was previously accepted but now fails, check whether the type constructor violates the positivity condition and revise the type definition.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::872::fix alpha-conversion problems in ehoare": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "alpha",
+      "conversion",
+      "problems",
+      "ehoare"
+    ],
+    "summary": "Fixed alpha-conversion bugs in the ehoare program logic tactics.",
+    "repair_hint": "If ehoare proofs involving variable binding or substitution fail, this fix may resolve alpha-conversion-related issues; re-run affected ehoare proof steps.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::876::Revert typeclass additions": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "typeclass",
+      "additions"
+    ],
+    "summary": "Reverted previously added typeclass features from the EasyCrypt source.",
+    "repair_hint": "If proof scripts relied on recently added typeclass syntax or functionality, those features have been removed and the scripts will need to be rewritten without them.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::870::Allow substitutions of locals using the same memory as that used by a `Pr`": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "substitutions",
+      "locals",
+      "using",
+      "same",
+      "memory",
+      "used",
+      "subst",
+      "Pr",
+      "KeyEncapsulationMechanisms",
+      "Dexcepted",
+      "Means"
+    ],
+    "summary": "Allowed the `subst` tactic to substitute local variables that share the memory used by a `Pr` expression, fixing and extending substitution in probabilistic contexts.",
+    "repair_hint": "If proofs using `subst` near `Pr` expressions changed behavior, check whether previously failing substitutions now succeed or whether previously succeeding ones behave differently due to this breaking change.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::875::[documentation]: document `if`": {
+    "kind": "documentation",
+    "identifiers": [
+      "documentation",
+      "document",
+      "if"
+    ],
+    "summary": "Added documentation for the `if` tactic to the reference manual.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::878::[seq]: remove bck/fwd option + cleanup": {
+    "kind": "syntax_change",
+    "identifiers": [
+      "seq",
+      "remove",
+      "bck",
+      "fwd",
+      "option",
+      "cleanup"
+    ],
+    "summary": "Removed the backward/forward (`bck`/`fwd`) option from the `seq` tactic and performed related cleanup.",
+    "repair_hint": "If proof scripts use `seq` with a `bck` or `fwd` option, that syntax has been removed and those arguments must be deleted or the tactic rewritten.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::882::proofnav: improve EasyCrypt error handling in Sphinx extension": {
+    "kind": "documentation",
+    "identifiers": [
+      "proofnav",
+      "error",
+      "handling",
+      "extension"
+    ],
+    "summary": "Improved EasyCrypt error handling in the Sphinx proofnav extension for the reference manual.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::883::ecproofs: add caching and script export for proof directives": {
+    "kind": "documentation",
+    "identifiers": [
+      "ecproofs",
+      "caching",
+      "script",
+      "export",
+      "proof",
+      "directives"
+    ],
+    "summary": "Added caching and script export functionality to the ecproofs Sphinx extension for proof directives.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::881::[documentation]: document the `splitwhile` tactic": {
+    "kind": "documentation",
+    "identifiers": [
+      "documentation",
+      "document",
+      "splitwhile",
+      "tactic"
+    ],
+    "summary": "Documentation was added for the `splitwhile` tactic.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::885::[Internal] Make `|-` and `-|` compose in different orders": {
+    "kind": "internal",
+    "identifiers": [
+      "compose",
+      "different",
+      "orders"
+    ],
+    "summary": "Internal change to make the `|-` and `-|` operators compose in different orders.",
+    "repair_hint": "If proof scripts using `|-` or `-|` composition break, try reordering the composition or checking updated operator associativity/semantics.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::842::Build docker images in CI": {
+    "kind": "internal",
+    "identifiers": [
+      "docker",
+      "images"
+    ],
+    "summary": "CI workflow was added to build Docker images automatically.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::889::[documentation]: tactic `swap`": {
+    "kind": "documentation",
+    "identifiers": [
+      "documentation",
+      "tactic",
+      "swap"
+    ],
+    "summary": "Documentation was added for the `swap` tactic.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::789::Making program logic formulas memory-agnostic": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "program",
+      "logic",
+      "formulas",
+      "memory",
+      "agnostic",
+      "ecCoreFol",
+      "ecFol",
+      "ecPhlApp",
+      "ecPhlCall",
+      "ecPhlConseq",
+      "ecPhlDeno",
+      "ecPhlFun",
+      "ecPhlRnd",
+      "ecPhlWhile",
+      "ecPhlEager",
+      "ecPhlFel",
+      "ecPhlPr",
+      "ecPhlTrans"
+    ],
+    "summary": "Program logic formulas were made memory-agnostic, changing how memories are represented and handled throughout the PHL infrastructure.",
+    "repair_hint": "Proofs using program logic judgments (hoare, equiv, bdhoare, phoare) may break due to changes in how memory arguments are encoded in formulas; check if memory variables or memory-indexed expressions need to be updated in goal statements and tactic arguments.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::816::Expose memory binding(s) in program logic statements": {
+    "kind": "syntax_change",
+    "identifiers": [
+      "memory",
+      "binding",
+      "program",
+      "logic",
+      "statements"
+    ],
+    "summary": "Memory bindings in program logic statements are now explicitly exposed in the syntax.",
+    "repair_hint": "If proof scripts writing or parsing program logic statements (hoare, equiv, etc.) fail to parse, check whether explicit memory binding syntax is now required or has changed form.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::817::address TODOs from memory softcoding PR": {
+    "kind": "internal",
+    "identifiers": [
+      "address",
+      "from",
+      "memory",
+      "softcoding",
+      "ecPhlConseq",
+      "ecPhlPr"
+    ],
+    "summary": "Addressed leftover TODOs from the memory softcoding PR (#789) in the AST and PHL consequence/probability modules.",
+    "repair_hint": "If proofs using conseq or probability-related tactics broke after PR #789, this fix may resolve them; re-run proofs against the updated version.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::820::Fix some regressions from PR #789": {
+    "kind": "internal",
+    "identifiers": [
+      "regressions",
+      "from",
+      "ecReduction",
+      "ecPhlDeno"
+    ],
+    "summary": "Fixed regressions introduced by PR #789 in reduction and denotational semantics modules.",
+    "repair_hint": "If proofs broken by PR #789 still fail, this regression fix may address reduction or deno-tactic failures; re-test after applying this patch.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::822::Removing spurious `print` statements in `theories`": {
+    "kind": "internal",
+    "identifiers": [
+      "spurious",
+      "print",
+      "statements",
+      "theories",
+      "MSet",
+      "SDist"
+    ],
+    "summary": "Removed spurious print statements from the MSet and SDist theory files.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::823::Feature: Adding statement level proc change": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "statement",
+      "level",
+      "proc",
+      "change",
+      "ecPhlRewrite",
+      "ecPhlRwPrgm"
+    ],
+    "summary": "Added a new statement-level procedure change tactic for rewriting programs at the statement level.",
+    "repair_hint": "Proofs that previously worked around the lack of statement-level proc change may now be expressible directly; if a related tactic name or syntax is not found, check for the new proc change tactic introduced here.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::824::Add lemmas for list count and perm_eq": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "lemmas",
+      "list",
+      "count",
+      "perm_eq",
+      "List"
+    ],
+    "summary": "New lemmas for list count and perm_eq were added to the List theory.",
+    "repair_hint": "If a proof needs facts about list count or perm_eq that were missing, these new lemmas may now provide them directly.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::826::Fix comparison of fixpoints": {
+    "kind": "internal",
+    "identifiers": [
+      "comparison",
+      "fixpoints",
+      "ecDecl",
+      "ecSubst",
+      "ecTheoryReplay"
+    ],
+    "summary": "Fixed a bug in the comparison of fixpoint declarations during theory replay and substitution.",
+    "repair_hint": "If proofs involving fixpoint definitions fail to check or replay across theory cloning/instantiation, this bug fix may resolve the issue.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::828::Ident printing fixes": {
+    "kind": "internal",
+    "identifiers": [
+      "printing",
+      "fixes",
+      "ecIdent",
+      "ecPrinting"
+    ],
+    "summary": "Fixed bugs in identifier printing in the environment and formula printing modules.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::831::Proc change multiline to range + deep code position": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "change",
+      "multiline",
+      "range",
+      "deep",
+      "code",
+      "position",
+      "ecPhlRewrite",
+      "ecPhlRwPrgm"
+    ],
+    "summary": "Extended the proc change tactic to support multiline ranges and deep code positions.",
+    "repair_hint": "If proc change tactic invocations with range or position arguments fail to parse or apply, check the updated syntax for specifying ranges and deep code positions.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::809::Library for keyed-hash functions": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "keyed",
+      "hash",
+      "functions",
+      "KeyedHashFunctions"
+    ],
+    "summary": "Added a new library for keyed-hash functions as a new theory file.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::810::Library for tweakable hash functions": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "tweakable",
+      "hash",
+      "functions",
+      "TweakableHashFunctions"
+    ],
+    "summary": "Added a new library for tweakable hash functions as a new theory file.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::821::recover UC example": {
+    "kind": "internal",
+    "identifiers": [
+      "recover",
+      "example",
+      "UC"
+    ],
+    "summary": "Recovered and updated the UC (Universal Composability) example proofs to work with current EasyCrypt.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::794::add Reflection theory": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "theory",
+      "Reflection",
+      "ModuleStructure"
+    ],
+    "summary": "A new Reflection theory was added to the modules library.",
+    "repair_hint": "If a proof relies on module reflection lemmas, check whether the new Reflection.eca theory provides the needed results.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::796::List: new lemmas: `nth0`, `nth1`, `map1`, `head_drop`": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "lemmas",
+      "nth0",
+      "nth1",
+      "map1",
+      "head_drop",
+      "List"
+    ],
+    "summary": "New lemmas nth0, nth1, map1, and head_drop were added to the List theory.",
+    "repair_hint": "If a proof needs facts about nth at index 0 or 1, map of a singleton, or head after drop, these new lemmas may be directly applicable.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::795::[tactic] Single sided match should work for arbitrary pre-conditions": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "tactic",
+      "sided",
+      "match",
+      "should",
+      "work",
+      "arbitrary",
+      "pre",
+      "conditions"
+    ],
+    "summary": "The single-sided match tactic was fixed to work correctly with arbitrary pre-conditions.",
+    "repair_hint": "If a proof using single-sided match was failing due to restrictive pre-condition requirements, it may now succeed without changes; if it was relying on old (buggy) behavior, it may need adjustment.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::800::[tactic] Actually improve one-sided match robustness": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "tactic",
+      "one",
+      "sided",
+      "match",
+      "robustness"
+    ],
+    "summary": "Further robustness improvements were made to the one-sided match tactic.",
+    "repair_hint": "If one-sided match proofs are failing or behaving unexpectedly, this fix may resolve issues; check whether match goals are now handled more generally.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::683::Rework import mechanism": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "import",
+      "mechanism",
+      "PolyReduce"
+    ],
+    "summary": "The import mechanism for theories and modules was reworked internally.",
+    "repair_hint": "If proofs fail due to names no longer being in scope or duplicate imports, check whether explicit import or qualified names are now required after this rework.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::781::extend results on ceil 'for free'": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "extend",
+      "results",
+      "ceil",
+      "free",
+      "Real"
+    ],
+    "summary": "Additional lemmas about the ceiling function were added to the Real theory.",
+    "repair_hint": "If a proof requires properties of ceil that were previously missing, check the updated Real theory for the new results.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::798::depext -> confirm level = unsafe-yes": {
+    "kind": "internal",
+    "identifiers": [
+      "depext",
+      "confirm",
+      "level",
+      "unsafe",
+      "yes"
+    ],
+    "summary": "CI configuration was updated to set depext confirmation level to unsafe-yes.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::724::remove alt-ergo from EasyCrypt TCB": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "remove",
+      "alt",
+      "ergo",
+      "from"
+    ],
+    "summary": "Alt-ergo was removed from the EasyCrypt trusted computing base, requiring proofs previously relying on it to use other solvers.",
+    "repair_hint": "If proofs are failing because alt-ergo is no longer available or trusted, replace alt-ergo calls with another SMT solver (e.g., Z3 or CVC4/CVC5) or add intermediate proof steps.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::797::EcRegexp: PCRE -> PCRE2": {
+    "kind": "internal",
+    "identifiers": [
+      "EcRegexp"
+    ],
+    "summary": "The internal regexp library was updated from PCRE to PCRE2.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::801::Introduce a system-wide, parts-oriented configuration file": {
+    "kind": "internal",
+    "identifiers": [
+      "system",
+      "wide",
+      "parts",
+      "oriented",
+      "configuration",
+      "file"
+    ],
+    "summary": "A system-wide, parts-oriented configuration file was introduced for EasyCrypt.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::802::OCaml 5 memory blowup workaround": {
+    "kind": "internal",
+    "identifiers": [
+      "memory",
+      "blowup",
+      "workaround",
+      "ecSmt"
+    ],
+    "summary": "A workaround for an OCaml 5 memory blowup bug in the SMT backend was applied.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::694::Rework stdlib clones.": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "stdlib",
+      "clones",
+      "Poly",
+      "PolyReduce"
+    ],
+    "summary": "The standard library clones in Poly.ec and PolyReduce.ec were reworked, which is a breaking change.",
+    "repair_hint": "If proofs importing or cloning Poly or PolyReduce fail, check for renamed or restructured clone instantiations and update clone arguments or qualified names accordingly.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::803::Give a proof to `witness_support`": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "proof",
+      "witness_support",
+      "Distr"
+    ],
+    "summary": "The lemma witness_support in Distr.ec was given a proof, replacing an axiom.",
+    "repair_hint": "If a proof depended on witness_support being an axiom (e.g., added as a local axiom), it should now use the proven lemma directly from Distr.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::804::add mu_has_le in rewrite Pr": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "mu_has_le",
+      "rewrite",
+      "rewrite Pr"
+    ],
+    "summary": "The rewrite Pr tactic was extended to support mu_has_le rewriting.",
+    "repair_hint": "If a proof needs to rewrite probability expressions using mu_has_le, the rewrite Pr tactic can now handle this directly.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::807::List: new lemmas: `subseq_catR`, `subseq_catL`, `subseq_consI`, `subseq_take`, `subseq_drop`, `subseq_drop_congr`": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "lemmas",
+      "subseq_catR",
+      "subseq_catL",
+      "subseq_consI",
+      "subseq_take",
+      "subseq_drop",
+      "subseq_drop_congr",
+      "List"
+    ],
+    "summary": "New subsequence-related lemmas were added to the List theory.",
+    "repair_hint": "If a proof requires subsequence facts about concatenation, cons, take, or drop, these new lemmas may be directly usable.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::808::Exit --help with non-error status": {
+    "kind": "internal",
+    "identifiers": [
+      "help",
+      "non",
+      "error",
+      "status"
+    ],
+    "summary": "The --help flag now exits with a non-error (zero) status code.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::815::New result: `List.sorted_range`": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "result",
+      "sorted_range",
+      "List.sorted_range"
+    ],
+    "summary": "New lemma `List.sorted_range` was added to the List theory.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::813::More results on `List.zip`": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "results",
+      "zip",
+      "List.zip"
+    ],
+    "summary": "Additional lemmas about `List.zip` were added to the List theory.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::814::More results on `BitEncoding.int2bs`": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "results",
+      "int2bs",
+      "BitEncoding.int2bs"
+    ],
+    "summary": "Additional lemmas about `BitEncoding.int2bs` were added to the BitEncoding theory.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::764::Keyword `global` for cloning theories": {
+    "kind": "syntax_change",
+    "identifiers": [
+      "global",
+      "cloning",
+      "theories"
+    ],
+    "summary": "A new `global` keyword was added for use when cloning theories.",
+    "repair_hint": "If a proof script uses `clone` and fails to parse, check whether the new `global` keyword conflicts with any identifiers or whether the clone syntax has changed.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::766::Fix unexpected failure of byupto": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "unexpected",
+      "failure",
+      "byupto"
+    ],
+    "summary": "A bug causing unexpected failures of the `byupto` tactic was fixed.",
+    "repair_hint": "If `byupto` was previously failing unexpectedly, retry it after updating; if it was being worked around, the workaround may no longer be needed.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::776::fix async while rule": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "async",
+      "while",
+      "rule",
+      "LoopTransform"
+    ],
+    "summary": "A bug in the async while rule was fixed, affecting the `LoopTransform` theory.",
+    "repair_hint": "If proofs using the async while rule or `LoopTransform` are failing, check whether the rule's preconditions or behavior have changed after this fix.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::773::[Theories, SplitRO] remove requirement of axiom `ofpairK`": {
+    "kind": "lemma_removed",
+    "identifiers": [
+      "remove",
+      "requirement",
+      "axiom",
+      "ofpairK",
+      "SplitRO"
+    ],
+    "summary": "The axiom `ofpairK` is no longer required by the `SplitRO` theory.",
+    "repair_hint": "If a proof instantiating `SplitRO` was providing the axiom `ofpairK`, that requirement has been removed and the proof may need to be updated accordingly.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::778::Update README": {
+    "kind": "documentation",
+    "identifiers": [],
+    "summary": "The README and INSTALL documentation files were updated.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::780::Fix #761: Sim deadcode conditions not strong enough.": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "deadcode",
+      "conditions",
+      "strong",
+      "enough",
+      "sim"
+    ],
+    "summary": "The dead-code conditions checked by the `sim` tactic were strengthened to fix incorrectly accepted goals.",
+    "repair_hint": "If `sim` now rejects a goal it previously accepted, the dead-code conditions may be stricter; check and strengthen the invariants or conditions supplied to `sim`.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::730::Type annotated getters/setters": {
+    "kind": "syntax_change",
+    "identifiers": [
+      "annotated",
+      "getters",
+      "setters"
+    ],
+    "summary": "Type annotations are now supported on record getters and setters.",
+    "repair_hint": "If type-checking of record access expressions fails, check whether type annotations on getters/setters are now required or interact differently with existing code.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::782::Fix bug in SMT translation (abstraction of non-translatable constructions)": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "bug",
+      "translation",
+      "abstraction",
+      "non",
+      "translatable",
+      "constructions"
+    ],
+    "summary": "A bug in the SMT translation involving abstraction of non-translatable constructions was fixed.",
+    "repair_hint": "If SMT-backed tactics (`smt`, `by smt`) are now failing or succeeding differently, this fix may have changed which goals are sent to the solver; try adjusting SMT hints or lemma instantiations.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::784::Fix indentation TOC": {
+    "kind": "documentation",
+    "identifiers": [
+      "indentation"
+    ],
+    "summary": "The indentation of the table of contents in README.md was fixed.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::786::fixes bug #785, add check that bad is only set to true once set": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "fixes",
+      "bug",
+      "check",
+      "bad",
+      "only",
+      "set",
+      "true",
+      "once",
+      "byupto"
+    ],
+    "summary": "A bug in `byupto` was fixed by adding a check that the `bad` event is only set to true once it has been set, making previously accepted arguments now rejected.",
+    "repair_hint": "If `byupto` now rejects a proof obligation it previously accepted, verify that the `bad` event in the upto argument is only set to true and never reset to false; adjust the proof accordingly.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::788::New lemma `mu1_le_eq_mu1` for Pr-rewrite.": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "lemma",
+      "mu1_le_eq_mu1",
+      "rewrite",
+      "Distr"
+    ],
+    "summary": "A new lemma `mu1_le_eq_mu1` was added to `Distr.ec` for use with the `Pr`-rewriting tactic.",
+    "repair_hint": "If a probability rewriting step is failing, try applying the new `mu1_le_eq_mu1` lemma.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::790::Add lemma Array.map_comp": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "lemma",
+      "map_comp",
+      "Array",
+      "Array.map_comp"
+    ],
+    "summary": "The lemma `Array.map_comp` was added to the `Array` theory.",
+    "repair_hint": "If a proof about composition of array maps was previously done manually, it can now use `Array.map_comp` directly.",
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::791::[tactic] Fix type unification in outline": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "tactic",
+      "type",
+      "unification",
+      "outline"
+    ],
+    "summary": "A type unification bug in the `outline` tactic was fixed.",
+    "repair_hint": "If `outline` was previously failing due to type unification errors, retry after this fix; if workarounds were added, they may no longer be needed.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::669::Add tactic for lossless while": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "tactic",
+      "lossless",
+      "while"
+    ],
+    "summary": "A new tactic for proving lossless while loops was added.",
+    "repair_hint": "If a proof of losslessness for a while loop is failing, check whether the new dedicated tactic can be applied directly.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::713::Extend `clear` tactic to allow clearing *all* unused items in the context recursively": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "clear",
+      "tactic",
+      "allow",
+      "clearing",
+      "all",
+      "unused",
+      "items",
+      "context",
+      "recursively"
+    ],
+    "summary": "The `clear` tactic was extended to support recursively clearing all unused items in the context.",
+    "repair_hint": "If a proof uses `clear` and now clears more hypotheses than expected (or accepts new forms like `clear *`), adjust subsequent tactic steps that rely on specific context contents.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::728::Improvements to module tweaks": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "module",
+      "tweaks"
+    ],
+    "summary": "Improvements were made to module tweaks, including parser and typing changes for fine-grained module definitions.",
+    "repair_hint": "If proofs involving module definitions or restrictions fail, check whether the module syntax or typing rules have changed and update module expressions accordingly.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::727::Reworked outline tactic": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "outline",
+      "tactic"
+    ],
+    "summary": "The `outline` tactic was reworked with breaking changes affecting its syntax and behavior.",
+    "repair_hint": "If proofs using `outline` fail, review the new `outline` tactic syntax and semantics and rewrite those tactic invocations accordingly.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::685::New vernacular command: theory aliases": {
+    "kind": "syntax_change",
+    "identifiers": [
+      "vernacular",
+      "command",
+      "theory",
+      "aliases"
+    ],
+    "summary": "A new vernacular command for theory aliases was added to EasyCrypt.",
+    "repair_hint": "This is a purely additive feature; if a proof fails, check whether existing theory names now conflict with alias names introduced in scope.",
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::737::Disambiguate precedence in `negbLR` and `negbRL` and add new lemmas for  left and right distributivity": {
+    "kind": "lemma_changed",
+    "identifiers": [
+      "precedence",
+      "negbLR",
+      "negbRL",
+      "lemmas",
+      "left",
+      "right",
+      "distributivity"
+    ],
+    "summary": "Precedence in `negbLR` and `negbRL` was disambiguated (breaking change) and new lemmas for left and right distributivity were added to Logic.",
+    "repair_hint": "If proofs using `negbLR` or `negbRL` fail or produce unexpected results, check whether the changed operator precedence affects how these lemmas are applied and add explicit parentheses or rewrite steps as needed.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::722::Multisets": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "MSet",
+      "FMap",
+      "FSet",
+      "List"
+    ],
+    "summary": "A new multiset library (`MSet`) was added and related theories (FMap, FSet, List, Logic) were updated.",
+    "repair_hint": "If proofs over related datatypes fail, check whether new lemmas or definitions in MSet, FMap, or FSet conflict with existing names in scope.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::751::reduce number of axioms in `Logic`": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "reduce",
+      "number",
+      "axioms",
+      "Logic"
+    ],
+    "summary": "The number of axioms in the `Logic` theory was reduced, turning some axioms into derived lemmas.",
+    "repair_hint": "If proofs that directly reference or rely on specific axiom names in `Logic` fail, check whether those axioms were removed or replaced by proved lemmas and update accordingly.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::721::Add list lemmas and shorten some other proofs using them": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "list",
+      "lemmas",
+      "shorten",
+      "other",
+      "proofs",
+      "using",
+      "them",
+      "List"
+    ],
+    "summary": "New list lemmas were added to the `List` theory and some existing proofs were shortened using them.",
+    "repair_hint": "If proofs over lists fail due to name conflicts with the newly added lemmas, rename local lemmas or adjust imports.",
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::757::stdlib: in Field, do not erase the unit predicate": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "stdlib",
+      "erase",
+      "unit",
+      "predicate",
+      "Field",
+      "Ring"
+    ],
+    "summary": "A bug was fixed in the `Field` stdlib so that the unit predicate is no longer erased.",
+    "repair_hint": "If proofs in algebraic theories that use the `Field` or `Ring` hierarchy fail, check whether the now-preserved unit predicate changes typeclass or instance resolution.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::723::Pretty printer: print terminator after module types": {
+    "kind": "internal",
+    "identifiers": [
+      "printer",
+      "print",
+      "terminator",
+      "after",
+      "module",
+      "types"
+    ],
+    "summary": "The pretty printer was fixed to print a terminator after module types.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::738::Fix return of properties with provided bit in KEM/PKE libraries": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "return",
+      "properties",
+      "provided",
+      "bit",
+      "libraries",
+      "KeyEncapsulationMechanisms",
+      "PublicKeyEncryption"
+    ],
+    "summary": "A bug was fixed in the KEM/PKE libraries so that properties with a provided bit are returned correctly.",
+    "repair_hint": "If proofs using the KEM or PKE crypto libraries fail, check whether the fixed return types or values of properties affect game-based proof steps.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::739::Fix HC collisions.": {
+    "kind": "internal",
+    "identifiers": [
+      "collisions"
+    ],
+    "summary": "Hash-consing (HC) collision bugs in the AST were fixed.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::743::Minor fixes for sim": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "fixes",
+      "sim"
+    ],
+    "summary": "Minor fixes were applied to the `sim` tactic to correct its behavior.",
+    "repair_hint": "If proofs using `sim` fail or behave differently, check whether the fixes changed which equivalences `sim` can close automatically and add missing side conditions or intermediate steps.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::734::Hi-level error message when `subst` fails": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "level",
+      "error",
+      "message",
+      "subst",
+      "fails"
+    ],
+    "summary": "Improved error messages are now produced when the `subst` tactic fails.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::748::Hi-level error message in clone (axiom <-)": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "level",
+      "error",
+      "message",
+      "clone",
+      "axiom"
+    ],
+    "summary": "Improved error messages are now produced when a `clone` command with an axiom override (`axiom <-`) fails.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::754::fix tactic ehoare-if": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "tactic",
+      "ehoare",
+      "ehoare_if"
+    ],
+    "summary": "Fixed a bug in the ehoare if-tactic that constitutes a breaking change to its prior behavior.",
+    "repair_hint": "If proofs using the `ehoare` if-tactic (e.g., `if`-rule applications in ehoare judgments) break, check whether the tactic's generated subgoals or their order have changed and adjust the proof accordingly.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::709::[internal] introduce general code position ranges for selecting code blocks.": {
+    "kind": "internal",
+    "identifiers": [
+      "internal",
+      "introduce",
+      "general",
+      "code",
+      "position",
+      "ranges",
+      "selecting",
+      "blocks"
+    ],
+    "summary": "Introduced a general mechanism for code position ranges to select code blocks in internal matching and typing infrastructure.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::731::remove duplicated code from EcAst": {
+    "kind": "internal",
+    "identifiers": [
+      "remove",
+      "duplicated",
+      "code",
+      "from",
+      "EcAst"
+    ],
+    "summary": "Removed duplicated code from the EcAst module as an internal cleanup.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::616::internals: user-defined rules can be headed by a projection": {
+    "kind": "internal",
+    "identifiers": [
+      "internals",
+      "user",
+      "defined",
+      "rules",
+      "can",
+      "headed",
+      "projection"
+    ],
+    "summary": "User-defined rewrite rules can now be headed by a projection operator.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::618::cloning: do not allow realizing a non-axiomatic lemma": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "cloning",
+      "allow",
+      "realizing",
+      "non",
+      "axiomatic",
+      "lemma"
+    ],
+    "summary": "Cloning no longer allows realizing a non-axiomatic lemma (bug fix enforcing correct clone semantics).",
+    "repair_hint": "If a clone block that realizes a lemma now fails, check whether the target lemma is truly an axiom; non-axiomatic lemmas can no longer be realized in a clone.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::623::user reduction: fix some incompleteness issues": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "user",
+      "reduction",
+      "incompleteness",
+      "issues"
+    ],
+    "summary": "Fixed incompleteness issues in user-defined reduction rules during call-by-value and general reduction.",
+    "repair_hint": "If proofs relying on user-defined reduction rules now succeed or fail differently, the fix to reduction completeness may have changed which terms are reduced automatically.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::622::pretty-printer/parser: improve reparsability of the pretty-printer output": {
+    "kind": "syntax_change",
+    "identifiers": [
+      "pretty",
+      "printer",
+      "parser",
+      "reparsability",
+      "output"
+    ],
+    "summary": "The pretty-printer output was improved so that it can be re-parsed correctly.",
+    "repair_hint": "If proof scripts depend on pretty-printed output (e.g., via print or display), formatting may have changed; check that any pasted pretty-printed terms still parse correctly.",
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::643::make runtest fail reasonably on bad config filename": {
+    "kind": "internal",
+    "identifiers": [
+      "make",
+      "runtest",
+      "fail",
+      "reasonably",
+      "bad",
+      "config",
+      "filename"
+    ],
+    "summary": "The runtest script now fails with a reasonable error message on a bad config filename.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::605::split SmtMap into SMT Array and finite map": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "split",
+      "into",
+      "finite",
+      "map",
+      "SmtMap",
+      "FMap"
+    ],
+    "summary": "SmtMap was split into a separate SMT Array theory and a finite map theory (FMap), breaking existing code that relied on the unified SmtMap.",
+    "repair_hint": "If proofs or theories importing SmtMap break, replace SmtMap imports with the appropriate new theory (FMap for finite maps or the new SMT Array theory) and update lemma references accordingly.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::651::Fix set_set_swap statement and proof.": {
+    "kind": "lemma_renamed",
+    "identifiers": [
+      "set_set_swap",
+      "statement",
+      "proof",
+      "Word"
+    ],
+    "summary": "The statement and proof of set_set_swap in Word.eca were fixed.",
+    "repair_hint": "If a proof using set_set_swap from Word.eca breaks, check that the lemma's statement matches the corrected version and update any proof steps that relied on the old (incorrect) statement.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::648::`proc rewrite` now supports the `/=` rule": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "proc",
+      "rewrite",
+      "now",
+      "supports",
+      "rule",
+      "proc rewrite"
+    ],
+    "summary": "The `proc rewrite` tactic now supports the `/=` simplification rule.",
+    "repair_hint": "If proc rewrite scripts fail, try appending /= to simplify after rewriting; existing uses should not break but new functionality is available.",
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::649::Propagate extended code positions to more tactics": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "extended",
+      "code",
+      "positions",
+      "more",
+      "tactics",
+      "app",
+      "wp",
+      "sp",
+      "rnd",
+      "inline",
+      "swap",
+      "rw",
+      "fel",
+      "outline"
+    ],
+    "summary": "Extended code positions (generalized position syntax) are now accepted by more PHL/PRHLL tactics.",
+    "repair_hint": "If tactics that previously accepted only simple code positions now behave differently with extended position syntax, update position arguments to match the new generalized format.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::650::The tactic `swap` now takes generalized code position.": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "tactic",
+      "swap",
+      "now",
+      "takes",
+      "generalized",
+      "code",
+      "position"
+    ],
+    "summary": "The `swap` tactic now accepts generalized code positions, which is a breaking change to its syntax.",
+    "repair_hint": "If swap invocations break, update the code position arguments to use the new generalized position syntax expected by swap.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::653::no user defined rule in op comparison": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "user",
+      "defined",
+      "rule",
+      "comparison"
+    ],
+    "summary": "User-defined rewrite rules are no longer applied during operator comparison in theory replay.",
+    "repair_hint": "If theory cloning or replay fails where it previously succeeded, check whether it was relying on user-defined rules being applied during operator comparison, and restructure accordingly.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::647::New tactic to alias a subexpression of an instruction": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "tactic",
+      "alias",
+      "subexpression",
+      "instruction"
+    ],
+    "summary": "A new tactic was added to alias (introduce a name for) a subexpression of a program instruction.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::655::lexer: do not lex decimal numbers when the parser won't accept them": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "lexer",
+      "lex",
+      "decimal",
+      "numbers",
+      "parser",
+      "won't",
+      "accept",
+      "them"
+    ],
+    "summary": "The lexer no longer tokenizes decimal numbers in positions where the parser would not accept them.",
+    "repair_hint": "If scripts involving decimal literals in unexpected positions now lex or parse differently, adjust the literal syntax to match what the parser expects.",
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::656::unroll for: constant-propagate the counter": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "unroll",
+      "constant",
+      "propagate",
+      "counter"
+    ],
+    "summary": "The `unroll for` tactic now constant-propagates the loop counter, which is a breaking change for proofs depending on the old behavior.",
+    "repair_hint": "If proofs using `unroll for` break, account for the fact that the loop counter is now automatically constant-propagated; goals or intermediate states after unrolling may look different.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::657::fix \"unroll for\" failure (InvalidCPos)": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "unroll",
+      "failure"
+    ],
+    "summary": "Fixed a bug where `unroll for` incorrectly raised an InvalidCPos error.",
+    "repair_hint": "If `unroll for` was previously failing with InvalidCPos, this bug fix should resolve it; no script changes should be needed.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::658::Fix deep code positions parsing": {
+    "kind": "syntax_change",
+    "identifiers": [
+      "deep",
+      "code",
+      "positions",
+      "parsing"
+    ],
+    "summary": "Fixed parsing of deep code positions in the EasyCrypt parser.",
+    "repair_hint": "If a proof using deep code positions (e.g., in inline or rw tactics with position specifiers) fails to parse, check that the position syntax is correct after this fix.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::654::Improve code positions (match + extended assignments)": {
+    "kind": "syntax_change",
+    "identifiers": [
+      "code",
+      "positions",
+      "match",
+      "extended",
+      "assignments",
+      "ecPhlInline"
+    ],
+    "summary": "Extended code position syntax to support match expressions and extended assignments.",
+    "repair_hint": "If a proof using code positions (e.g., for inline or rewriting) breaks, update position specifiers to use the new match/extended-assignment syntax.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::663::Fix include-path management regarding duplicate paths": {
+    "kind": "internal",
+    "identifiers": [
+      "include",
+      "path",
+      "management",
+      "regarding",
+      "duplicate",
+      "paths"
+    ],
+    "summary": "Fixed include-path management to properly handle duplicate paths in the loader.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::662::add alt-ergo 2.6 to the docker image": {
+    "kind": "internal",
+    "identifiers": [
+      "alt",
+      "ergo",
+      "docker",
+      "image"
+    ],
+    "summary": "Added alt-ergo 2.6 to the Docker build image.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::667::Track more precisely tuple to tuple assignments in sim": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "more",
+      "precisely",
+      "tuple",
+      "assignments",
+      "sim"
+    ],
+    "summary": "Improved the sim tactic to track tuple-to-tuple assignments more precisely.",
+    "repair_hint": "If a proof using the sim tactic on code with tuple assignments breaks or behaves differently, the more precise tracking may require adjusting the equivalence invariants or hints provided to sim.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::673::Fixing code blocks display in readme": {
+    "kind": "documentation",
+    "identifiers": [
+      "code",
+      "blocks",
+      "display",
+      "readme"
+    ],
+    "summary": "Fixed code block display formatting in the README.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::671::Merge typing of expressions and formulas": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "typing",
+      "expressions",
+      "formulas"
+    ],
+    "summary": "Merged the typing of expressions and formulas into a unified typing pass.",
+    "repair_hint": "If type-checking of expressions or formulas fails after this change, the merged typing may resolve ambiguities differently; try adding explicit type annotations.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::679::Some basic facts on polynomials + fix theory cloning": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "basic",
+      "facts",
+      "polynomials",
+      "theory",
+      "cloning",
+      "Poly"
+    ],
+    "summary": "Added basic facts on polynomials and fixed theory cloning in Poly.ec.",
+    "repair_hint": "If a proof cloning the Poly theory breaks, the fix to theory cloning may have changed what names are exported; check cloned identifiers.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::675::Tactic `split` with break position": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "split",
+      "break",
+      "position",
+      "Tactics"
+    ],
+    "summary": "Extended the split tactic to accept a break position argument.",
+    "repair_hint": "If a proof using split breaks, the tactic now accepts an optional position argument; existing uses should still work, but check for parsing ambiguities if split is applied with extra arguments.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::681::get rid of `axiomatized by` in favor of `[opaque]` with trivial lemma": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "get",
+      "rid",
+      "axiomatized",
+      "favor",
+      "opaque",
+      "trivial",
+      "lemma",
+      "axiomatized by",
+      "Group",
+      "IntDiv",
+      "DHIES",
+      "Array",
+      "FMap",
+      "FSet",
+      "Word",
+      "DList",
+      "Distr",
+      "Logic"
+    ],
+    "summary": "Replaced uses of 'axiomatized by' with '[opaque]' plus a trivial lemma across standard theories.",
+    "repair_hint": "If a proof relying on 'axiomatized by' definitions in standard theories (Group, FMap, FSet, Distr, Logic, etc.) breaks, replace those patterns with '[opaque]' operator declarations and corresponding trivial lemmas.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::665::Better operators overloading inference": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "operators",
+      "overloading",
+      "inference"
+    ],
+    "summary": "Improved operator overloading inference during typing.",
+    "repair_hint": "If overloaded operators are now resolved differently (e.g., a previously ambiguous operator now picks a different instance), add explicit type annotations or operator qualifications to disambiguate.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::664::PP: various fixes": {
+    "kind": "internal",
+    "identifiers": [
+      "various",
+      "fixes"
+    ],
+    "summary": "Applied various fixes to the pretty-printer.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::661::Fine Grained Module Definitions": {
+    "kind": "syntax_change",
+    "identifiers": [],
+    "summary": "Introduced fine-grained module definitions, extending the module definition syntax and typing.",
+    "repair_hint": "If module definitions or proofs about modules fail after this change, review module definition syntax for new fine-grained features and update accordingly.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::684::Exposed the tp_nothing typolicy of EcTyping": {
+    "kind": "internal",
+    "identifiers": [
+      "tp_nothing",
+      "typolicy"
+    ],
+    "summary": "Exposed the tp_nothing type policy from EcTyping in its public interface.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::678::More results on floor/ceil (isint)": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "results",
+      "floor",
+      "ceil",
+      "isint",
+      "RealLub",
+      "Real"
+    ],
+    "summary": "Added more lemmas about floor, ceil, and integer-valued reals (isint) to RealLub.ec and Real.ec.",
+    "repair_hint": "If a proof about floor/ceil or isint now finds conflicting or duplicate lemmas, check for name clashes with newly added results in RealLub and Real.",
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::686::Service commit (docker / nix / dune)": {
+    "kind": "internal",
+    "identifiers": [
+      "commit",
+      "docker",
+      "nix",
+      "dune"
+    ],
+    "summary": "Updated Docker, Nix, and Dune build/packaging configuration files.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::687::Service commit (expain flag for menhir)": {
+    "kind": "internal",
+    "identifiers": [
+      "commit",
+      "expain",
+      "flag",
+      "menhir"
+    ],
+    "summary": "Added the 'explain' flag for Menhir in the Dune build configuration.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::689::Better printing of hint DBs": {
+    "kind": "internal",
+    "identifiers": [
+      "printing",
+      "hint"
+    ],
+    "summary": "Improved the display/printing of hint databases in EasyCrypt's output.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::680::Rigid unification option for `hint solve/exact`": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "unification",
+      "option",
+      "hint",
+      "solve",
+      "exact",
+      "hint solve",
+      "hint exact"
+    ],
+    "summary": "Added a rigid unification option to the 'hint solve' and 'hint exact' hint database commands.",
+    "repair_hint": "If hint-based automation stops working or behaves differently, check whether the rigid unification option on hint DBs is now required or changes which hints fire.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::690::FMap: add lemmas on range after update": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "lemmas",
+      "range",
+      "after",
+      "update",
+      "FMap"
+    ],
+    "summary": "Added new lemmas about the range of a finite map after an update operation to FMap.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::677::Add PKE libraries (both standard model and ROM)": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "libraries",
+      "both",
+      "standard",
+      "model",
+      "PublicKeyEncryption",
+      "PublicKeyEncryptionROM"
+    ],
+    "summary": "Added new PKE (Public Key Encryption) libraries for both the standard model and the ROM.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::672::KEM libraries (non-ROM and ROM)": {
+    "kind": "lemma_added",
+    "identifiers": [
+      "libraries",
+      "non",
+      "KeyEncapsulationMechanisms",
+      "KeyEncapsulationMechanismsROM"
+    ],
+    "summary": "Added new KEM (Key Encapsulation Mechanism) libraries for both non-ROM and ROM settings.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::674::Upgrade to why3 1.8": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "why3"
+    ],
+    "summary": "Upgraded the Why3 backend dependency to version 1.8.",
+    "repair_hint": "If SMT/Why3 discharging of goals fails, check compatibility with Why3 1.8 and update prover configurations accordingly.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::693::[external CI] use dev branch for XSalsa checks": {
+    "kind": "internal",
+    "identifiers": [
+      "external",
+      "use",
+      "dev",
+      "branch",
+      "checks"
+    ],
+    "summary": "Updated external CI configuration to use the dev branch for XSalsa checks.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::692::Improve transitivity* and replace*": {
+    "kind": "tactic_change",
+    "identifiers": [
+      "transitivity",
+      "replace"
+    ],
+    "summary": "Improved the 'transitivity*' and 'replace*' tactics, with breaking changes to their behavior.",
+    "repair_hint": "If proofs using 'transitivity*' or 'replace*' break, check for updated argument syntax or changed side-condition obligations introduced by this improvement.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::695::Apply cloning substitution to datatype ctor types": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "cloning",
+      "substitution",
+      "datatype",
+      "ctor",
+      "types"
+    ],
+    "summary": "Fixed theory cloning to correctly apply substitutions to datatype constructor types.",
+    "repair_hint": "If a proof involving cloning a theory with datatypes breaks or produces unexpected types for constructors, this fix may have changed prior (incorrect) behavior that was being relied upon.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::706::nix: add a dependency to git so that dune-site works correctly": {
+    "kind": "internal",
+    "identifiers": [
+      "nix",
+      "dependency",
+      "git",
+      "dune",
+      "site",
+      "works",
+      "correctly"
+    ],
+    "summary": "Added git as a Nix dependency so that dune-site works correctly.",
+    "repair_hint": null,
+    "relevance": "low"
+  },
+  "EasyCrypt/easycrypt::708::In matching, forbid the capture of all variables": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "matching",
+      "forbid",
+      "capture",
+      "all",
+      "variables"
+    ],
+    "summary": "Fixed a bug in pattern matching to forbid the capture of all variables, preventing unsound matches.",
+    "repair_hint": "If a proof that previously relied on a pattern match silently capturing all variables now fails, the match pattern needs to be made more explicit.",
+    "relevance": "high"
+  },
+  "EasyCrypt/easycrypt::707::New code-position variants: ^()<-, and ^(x)<- to match tuples.": {
+    "kind": "syntax_change",
+    "identifiers": [
+      "code",
+      "position",
+      "variants",
+      "match",
+      "tuples"
+    ],
+    "summary": "Added new code-position syntax variants '^()<-' and '^(x)<-' for matching tuple assignment positions.",
+    "repair_hint": "If code-position expressions in tactics fail to parse, check whether the new tuple-matching position syntax is required or has changed how existing positions are parsed.",
+    "relevance": "medium"
+  },
+  "EasyCrypt/easycrypt::691::revert subtype theory + syntactic sugar for cloning it": {
+    "kind": "mechanism_change",
+    "identifiers": [
+      "revert",
+      "subtype",
+      "theory",
+      "syntactic",
+      "sugar",
+      "cloning",
+      "Subtype",
+      "ZModP",
+      "Word",
+      "Quotient"
+    ],
+    "summary": "Reworked the Subtype theory and introduced syntactic sugar for cloning it, affecting several dependent theories.",
+    "repair_hint": "If proofs using the Subtype theory, ZModP, Word, or Quotient break, check for updated cloning syntax or changed lemma names/structure in the refactored Subtype theory.",
+    "relevance": "high"
+  }
+}

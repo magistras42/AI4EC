@@ -222,5 +222,11 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# Agent experiment output (run logs, working copies, caches)
-output/
+# Agent experiment output (run logs, working copies, caches). Anchored to
+# the specific directory the agent actually writes to
+# (integration/agent/config.py: DEFAULT_OUTPUT_DIR = REPO_ROOT / "integration" / "output")
+# -- an earlier unanchored `output/` pattern here matched ANY directory
+# named "output" anywhere in the repo, which unintentionally also hid the
+# real, committable proof_corpus/output/ (changelog.yaml, repair_doc
+# sources, exposure_results.json, ladder.md).
+/integration/output/

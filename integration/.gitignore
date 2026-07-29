@@ -219,5 +219,9 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# Agent experiment output (run logs, working copies, caches)
-output/
+# Agent experiment output (run logs, working copies, caches) --
+# integration/agent/config.py: DEFAULT_OUTPUT_DIR = REPO_ROOT / "integration" / "output".
+# Anchored (not bare `output/`) so this only matches that one directory, not
+# any future output/ directory elsewhere under integration/ (same latent bug
+# already found and fixed in the root .gitignore for proof_corpus/output/).
+/output/
