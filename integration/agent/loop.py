@@ -268,6 +268,7 @@ def run_agent(
             failed_tactics=errors.get(goal),
             proof_tail=proof.tail(config.proof_tail_lines),
             repair_hint=config.repair_hint,
+            changelog_hints=config.changelog_hints,
             informal_proof=config.informal_proof,
             informal_proof_is_formal=config.informal_proof_is_formal,
             lookup_notes=lookup_notes,

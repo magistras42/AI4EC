@@ -71,12 +71,33 @@ class BrokenFormalConfig:
 
 
 @dataclass(frozen=True)
+class ReplayBootstrapConfig:
+    """Marker config for specs that replay the corpus's own ORIGINAL tactic
+    script one tactic at a time (via ProofFile.append_tactic + validate_file,
+    see integration.experiment.repair_bootstrap) instead of admitting
+    everything and asking the solver to reconstruct the proof from scratch
+    (contrast with BrokenFormalConfig above). Preserves whatever prefix of
+    the original script still applies against the current EasyCrypt build;
+    the solver only picks up at the first tactic that no longer does.
+
+    source_ec_version/target_ec_version are caller-supplied (no
+    auto-detection, matching the shannon-prover repair-hints design this
+    mode ports from) -- used to scope proof_corpus/output/changelog.yaml
+    matching once a failure is hit.
+    """
+
+    source_ec_version: str
+    target_ec_version: str
+
+
+@dataclass(frozen=True)
 class ExperimentSpec:
     name: str
     corpus: CorpusProvider
     mutations: MutationStrategy | None = None
     informal: InformalConfig | None = None
     broken_formal: BrokenFormalConfig | None = None
+    replay_bootstrap: ReplayBootstrapConfig | None = None
 
 
 class ExperimentSpecRegistry:

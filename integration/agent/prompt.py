@@ -426,6 +426,7 @@ def build_prompt(
     proof_tail: str,
     fewshot: str | None = None,
     repair_hint: str | None = None,
+    changelog_hints: str | None = None,
     informal_proof: str | None = None,
     informal_proof_is_formal: bool = False,
     lookup_notes: list[str] | None = None,
@@ -484,6 +485,14 @@ def build_prompt(
             [
                 "## Repair hint (reference broken proof)",
                 repair_hint,
+                "",
+            ]
+        )
+    if changelog_hints:
+        sections.extend(
+            [
+                "## Known EasyCrypt library changes",
+                changelog_hints,
                 "",
             ]
         )

@@ -10,6 +10,7 @@ from integration.experiment.protocols import (
     BrokenFormalConfig,
     ExperimentSpec,
     ExperimentSpecRegistry,
+    ReplayBootstrapConfig,
 )
 
 SPECS = ExperimentSpecRegistry()
@@ -43,6 +44,25 @@ def register_default_specs(data_dir) -> None:
                 corpus=ElGamalCorpus(data_dir=data),
                 mutations=None,
                 broken_formal=BrokenFormalConfig(),
+            )
+        )
+    if "elgamal-changelog-repair" not in list(SPECS.names()):
+        # Same corpus as elgamal-broken-repair, but replays the original
+        # tactic script tactic-by-tactic (preserving whatever prefix still
+        # applies) instead of admitting everything and reconstructing from
+        # scratch -- see integration/experiment/repair_bootstrap.py. Version
+        # pair is a broad illustrative default spanning proof_corpus's full
+        # cataloged changelog range (r2022.04-r2026.07); narrow it once the
+        # corpus's actual EC version at authoring time is known.
+        SPECS.register(
+            ExperimentSpec(
+                name="elgamal-changelog-repair",
+                corpus=ElGamalCorpus(data_dir=data),
+                mutations=None,
+                replay_bootstrap=ReplayBootstrapConfig(
+                    source_ec_version="r2022.04",
+                    target_ec_version="r2026.07",
+                ),
             )
         )
 

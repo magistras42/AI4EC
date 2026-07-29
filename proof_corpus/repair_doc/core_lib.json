@@ -1,0 +1,7 @@
+{
+  "path": "theories/core/Core.ec",
+  "confidence": "verified_current_source (whole file, 329 lines)",
+  "caveat": "No true git-diff was possible. This is a structural snapshot of the file's CURRENT (main-branch) content plus any changelog-confirmed version deltas.",
+  "current_content_summary": "Builds directly on Pervasive+Logic: pair projection lemmas (fst_pair/snd_pair/pairS); option lemmas (oget_none/oget_some, some_oget, someI, none_omap, ogetI -- oget_some/oget_none are registered as a `hint simplify` pair); function-equality lemmas (frefl/fsym/ftrans for ==, f2refl/f2sym/f2trans for ===, rel_ext); composition lemmas (comp_eqE, comp_idfunL/R -- also hint-simplify); a `fixfinfun`/`swap_codom` pair used to reason about functions with finite support; a large block connecting cancel/pcancel/injective/bijective (can_pcan, pcan_inj, can_inj, canLR/canRL, inj_eq, can_eq, can2_eq, inj_comp, can_comp, bij_inj, bij_comp, inv_inj/inv_bij/inv_eq, etc.); pred_ext (predicate extensionality) and the (<=)/(<) subpred/proper-subpred relations with subpred_eqP/subpred_asym/subpred_trans; and predicate-algebra lemmas (predIC, predIT/predTI, predCI/predCU, subpredUl/Ur, predIsubpredl/r). Ends with choicebW, a case-split principle for choiceb.",
+  "version_diffs_found": "None found by name in the scanned changelog window."
+}

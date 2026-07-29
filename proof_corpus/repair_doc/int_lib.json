@@ -1,0 +1,8 @@
+{
+  "path": "theories/datatypes/Int.ec",
+  "confidence": "verified_current_source (whole file, 388 lines)",
+  "caveat": "No true git-diff was possible. This is a structural snapshot of the file's CURRENT (main-branch) content plus any changelog-confirmed version deltas.",
+  "current_content_summary": "The user-facing integer theory, built on CoreInt (see that entry): re-exposes <, <=, +, unary -, *, and |_| as abbrevs over CoreInt's primitives, and derives binary - as x + (-y). Provides the standard ring/order lemma set (addzA/addzC/addz0/mulzA/mulzC/mulzDl/mulzDr, lez_trans/ltz_trans/lez_anti/lez_total, subz*, oppz*, and the usual monotonicity lemmas for + and < / <=); several induction schemes beyond the base intind (natind/natcase for non-negative integers, ge0ind/ge0case, intwlog/intswlog for 'without loss of generality' arguments, sintind for strong/well-founded induction); b2i (bool-to-{0,1} coercion) with its algebra; the IterOp theory (iteri/iter/iterop -- n-fold function iteration, exported); odd (parity) with oddD/oddM; the (soon-to-be-removed, per an inline comment) fold operator built on iter; and min/max with their standard lemmas.",
+  "requires": "CoreInt.",
+  "version_diffs_found": "None found by name in the scanned changelog window."
+}

@@ -1,0 +1,11 @@
+{
+  "path": "theories/datatypes/SmtMap.ec",
+  "confidence": "verified_current_source (whole file, 102 lines)",
+  "caveat": "No true git-diff was possible. This is a structural snapshot of the file's CURRENT (main-branch) content plus any changelog-confirmed version deltas. What follows instead is (a) an accurate structural snapshot of the file's CURRENT (main-branch) content, fetched directly from the URL given, and (b) every version-specific change to this library that could be confirmed from the EasyCrypt Releases changelog (r2022.04-r2026.07). Use (a) to fix a reference to something that no longer exists under its old name/path; use (b) to know when a change happened.",
+  "current_content_summary": "POST-SPLIT content (see version_diffs_found): this file is now a SMALL (102-line) theory of TOTAL maps ('a,'b) map (every key has a value; from CoreMap), providing: tofun/offun (isomorphism between ('a,'b) map and 'a -> 'b functions), get/set notations, cst (constant map), map (functorial map), eq_except, and merge (pointwise combination of two maps via a 3-argument function). It requires only AllCore and CoreMap.",
+  "import_repair_note": "MAJOR STRUCTURAL CHANGE, r2025.02 (#605, 'split SmtMap into SMT Array and finite map'): prior to this release, SmtMap was evidently a larger theory that also covered finite-domain map material (the kind of thing FMap.ec now provides on its own, built ON TOP OF this slimmed-down SmtMap). A proof written against a pre-r2025.02 EasyCrypt that does `require import SmtMap` expecting finite-map operations (dom, fdom, filter with a 'finite support' notion, etc.) will need to switch those specific references to FMap instead -- SmtMap.ec itself no longer has them. Anything using only total-map operations (get/set/cst/map/eq_except/merge) should be unaffected by name, though it's worth double-checking against this current (102-line) file since the surrounding theory may have been reorganized around it.",
+  "requires": "AllCore, CoreMap.",
+  "version_diffs_found": [
+    "r2025.02: MAJOR -- 'split SmtMap into SMT Array and finite map' (#605)."
+  ]
+}

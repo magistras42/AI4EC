@@ -87,6 +87,12 @@ class AgentConfig:
     proof_tail_lines: int = 20
     log_file: Path | None = None
     repair_hint: str | None = None
+    # Changelog/repair_doc facts for the specific tactic that broke, set by
+    # integration/experiment/repair_bootstrap.py when a version-drift-shaped
+    # failure occurs during replay. Distinct from repair_hint (the mutated
+    # broken tactic script shown as a reference) -- this is dated,
+    # sourced library-change evidence, not a reference proof.
+    changelog_hints: str | None = None
     informal_proof: str | None = None
     # When True, `informal_proof` holds a genuinely broken *formal* EasyCrypt
     # tactic script (e.g. the elgamal-broken-repair spec), not a writer-LLM

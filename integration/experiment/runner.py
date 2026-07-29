@@ -409,6 +409,14 @@ def run_trial(
         return run_informal_trial(trial_id, case, spec, config, rng, trial_dir)
     if spec.broken_formal is not None:
         return run_broken_formal_trial(trial_id, case, config, trial_dir)
+    if spec.replay_bootstrap is not None:
+        # Deferred import: repair_bootstrap.py imports TrialResult/_cost_for_usage
+        # from this module, so a top-level import here would be circular.
+        from integration.experiment.repair_bootstrap import run_replay_bootstrap_trial
+
+        return run_replay_bootstrap_trial(
+            trial_id, case, config, spec.replay_bootstrap, trial_dir,
+        )
 
     usage = TokenUsage()
     agent_config = replace(config.agent, usage_tracker=usage)
