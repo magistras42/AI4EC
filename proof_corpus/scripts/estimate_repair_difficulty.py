@@ -88,7 +88,9 @@ def _nearest_lemma_name(text: str, pos: int) -> str | None:
     """Best-effort: find the 'lemma <name>' immediately preceding pos."""
     preceding = text[:pos]
     m = None
-    for m in re.finditer(r"\blemma\s+([A-Za-z_][A-Za-z0-9_']*)", preceding):
+    # (?:nosmt\s+)? -- without it, `lemma nosmt foo` extracts "nosmt" as
+    # the lemma name and --lemma foo can never match.
+    for m in re.finditer(r"\blemma\s+(?:nosmt\s+)?([A-Za-z_][A-Za-z0-9_']*)", preceding):
         pass  # keep the LAST match before pos
     return m.group(1) if m else None
 
