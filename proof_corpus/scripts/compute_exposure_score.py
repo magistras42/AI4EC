@@ -83,7 +83,7 @@ import math
 import re
 import subprocess
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import yaml
@@ -435,14 +435,23 @@ def detect_git_commit_date_version(repo_path: Path, releases_by_date: list[dict]
     commit_date = run_git(repo_path, ["log", "-1", "--format=%aI"])
     if not commit_date:
         return None
+    commit_dt = parse_iso(commit_date)
 
-    # latest release published on or before the commit date
+    # Latest release published on or before the commit date. Two fixes over
+    # the original loop: (a) releases lacking published_at sort FIRST (the
+    # sort key is `or ""`), and the old `else: break` aborted the whole scan
+    # on the first one -- misclassifying every date-fallback repo as
+    # predating the changelog and handing it the scaled penalty; skip such
+    # entries instead. (b) git %aI carries the author's local UTC offset
+    # while GitHub release dates are Z-normalized, so comparing the raw ISO
+    # strings misorders timestamps near release boundaries -- compare parsed
+    # datetimes instead.
     candidate = None
     for rel in releases_by_date:  # sorted ascending by published_at
-        if rel.get("published_at") and rel["published_at"] <= commit_date:
+        if not rel.get("published_at"):
+            continue
+        if parse_iso(rel["published_at"]) <= commit_dt:
             candidate = rel
-        else:
-            break
     if candidate is None:
         return {"version": None, "confidence": "high", "method": "git_commit_date_predates_changelog",
                 "commit_date": commit_date,
@@ -583,7 +592,30 @@ def detect_source_version(repo_path: Path, changelog: dict, easycrypt_repo: Path
 
 # --- automation reliance -----------------------------------------------------
 
+def iter_proof_bodies(text: str):
+    """Yield each proof body in comment-stripped text: explicit
+    proof...qed/abort/admit blocks plus inline 'lemma ... by tac.' bodies
+    that don't fall inside one. Mirrors extract_lemma_depths' block logic so
+    every proof-text consumer counts over the same spans."""
+    spans = []
+    for m in PROOF_BLOCK_RE.finditer(text):
+        spans.append(m.span())
+        yield m.group(1)
+    for m in INLINE_BY_RE.finditer(text):
+        if any(start <= m.start() < end for start, end in spans):
+            continue
+        yield m.group(1)
+
+
 def compute_automation_ratio(repo_path: Path, exclude_dirs: set[str] | None = None) -> dict:
+    """Fragile-tactic reliance measured over PROOF BODIES ONLY. Scanning the
+    whole file (as this previously did) let the token list's if/while match
+    program keywords inside module/game definitions and exists match the
+    quantifier in lemma statements, inflating the denominator with non-proof
+    text -- which deflated the ratio most for program-heavy repos and made
+    this disagree with estimate_repair_difficulty.py's per-lemma counting
+    (already body-scoped). Inside a proof body, if/while/exists are
+    legitimate tactic tokens, so the token list itself is unchanged."""
     fragile_count = 0
     total_count = 0
     for path in iter_ec_files(repo_path, exclude_dirs):
@@ -591,11 +623,11 @@ def compute_automation_ratio(repo_path: Path, exclude_dirs: set[str] | None = No
             text = path.read_text(errors="ignore")
         except OSError:
             continue
-        text = strip_comments(text)
-        for m in TACTIC_TOKEN_RE.finditer(text):
-            total_count += 1
-            if m.group(1) in FRAGILE_TACTICS:
-                fragile_count += 1
+        for body in iter_proof_bodies(strip_comments(text)):
+            for m in TACTIC_TOKEN_RE.finditer(body):
+                total_count += 1
+                if m.group(1) in FRAGILE_TACTICS:
+                    fragile_count += 1
     ratio = (fragile_count / total_count) if total_count else 0.0
     return {"fragile_tactic_count": fragile_count, "total_tactic_count": total_count, "ratio": ratio}
 
@@ -854,7 +886,10 @@ def read_csv_pairs(csv_path: Path) -> list[tuple[str, str]]:
 # --- per-repo scoring (used for both single-repo and batch/CSV modes) -------
 
 def parse_iso(s: str) -> datetime:
-    return datetime.fromisoformat(s.replace("Z", "+00:00"))
+    dt = datetime.fromisoformat(s.replace("Z", "+00:00"))
+    if dt.tzinfo is None:  # naive timestamp in the changelog -- assume UTC so
+        dt = dt.replace(tzinfo=timezone.utc)  # aware/naive compares can't raise
+    return dt
 
 
 def score_repo(repo_path: Path, changelog: dict, releases_by_date: list[dict], target_version: str,
