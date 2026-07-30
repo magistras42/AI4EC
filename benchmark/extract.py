@@ -38,7 +38,8 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _iter_ec_files(repo_root: Path) -> list[Path]:
+def iter_ec_files(repo_root: Path) -> list[Path]:
+    """Every .ec file under a clone root, sorted, with .git pruned."""
     files: list[Path] = []
     for path in repo_root.rglob("*.ec"):
         if ".git" in path.parts:
@@ -73,7 +74,7 @@ def run_extract(paths: BenchmarkPaths, *, force: bool = False) -> list[Extracted
             continue
 
         repo_count = 0
-        for ec_path in _iter_ec_files(clone_path):
+        for ec_path in iter_ec_files(clone_path):
             rel = ec_path.relative_to(clone_path)
             dest = paths.data_dir / slug / rel
             _copy_ec(ec_path, dest)

@@ -1,0 +1,5 @@
+{
+  "EasyCrypt-easycrypt": {
+    "skip": "upstream EasyCrypt itself; its theories ship with the toolchain and its tests/ tree is deliberately full of failing cases"
+  }
+}

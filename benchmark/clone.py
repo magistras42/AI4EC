@@ -40,14 +40,16 @@ def _head_commit(repo_path: Path) -> str | None:
     return result.stdout.strip() or None
 
 
-def _clone_repo(url: str, dest: Path) -> None:
+def _clone_repo(url: str, dest: Path, *, recurse_submodules: bool = False) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.run(
-        ["git", "clone", "--depth", "1", url, str(dest)],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    cmd = ["git", "clone", "--depth", "1"]
+    if recurse_submodules:
+        # Several listed repos vendor Jasmin or EasyCrypt as submodules; without
+        # them their `require`s cannot resolve and the build stage reports
+        # failures that are artifacts of the clone, not of the proofs.
+        cmd += ["--recurse-submodules", "--shallow-submodules"]
+    cmd += [url, str(dest)]
+    subprocess.run(cmd, check=True, capture_output=True, text=True)
 
 
 def run_clone(
@@ -56,6 +58,7 @@ def run_clone(
     force_refresh: bool = False,
     limit: int | None = None,
     only: set[str] | None = None,
+    recurse_submodules: bool = False,
 ) -> list[CloneRecord]:
     entries, skipped = parse_repositories(paths.repos_file)
     if only is not None:
@@ -68,7 +71,12 @@ def run_clone(
 
     for entry in entries:
         dest = paths.clone_dir / entry.slug
-        record = _clone_one(entry, dest, force_refresh=force_refresh)
+        record = _clone_one(
+            entry,
+            dest,
+            force_refresh=force_refresh,
+            recurse_submodules=recurse_submodules,
+        )
         records.append(record)
         _print_clone_status(entry.slug, record)
 
@@ -104,7 +112,13 @@ def _print_clone_status(slug: str, record: CloneRecord) -> None:
     print(f"[{record.status}] {slug}")
 
 
-def _clone_one(entry: RepoEntry, dest: Path, *, force_refresh: bool) -> CloneRecord:
+def _clone_one(
+    entry: RepoEntry,
+    dest: Path,
+    *,
+    force_refresh: bool,
+    recurse_submodules: bool = False,
+) -> CloneRecord:
     rel_path = str(dest.relative_to(dest.parent.parent))
 
     if dest.exists() and _is_git_repo(dest):
@@ -125,7 +139,7 @@ def _clone_one(entry: RepoEntry, dest: Path, *, force_refresh: bool) -> CloneRec
         shutil.rmtree(dest)
 
     try:
-        _clone_repo(entry.url, dest)
+        _clone_repo(entry.url, dest, recurse_submodules=recurse_submodules)
     except subprocess.CalledProcessError as exc:
         stderr = (exc.stderr or "").strip()
         return CloneRecord(
