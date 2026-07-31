@@ -1,4 +1,0 @@
-(install
-  (section (site (easycrypt theories)))
-  (files (glob_files_rec *.{ec,eca})))
-

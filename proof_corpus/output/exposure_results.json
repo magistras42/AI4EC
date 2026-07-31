@@ -40,26 +40,26 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 983,
-      "total_tactic_count": 3778,
-      "ratio": 0.2601905770248809,
+      "fragile_tactic_count": 962,
+      "total_tactic_count": 3564,
+      "ratio": 0.26992143658810325,
       "multiplier": 1.0,
-      "amplified_total": 297.78
+      "amplified_total": 300.08
     },
     "proof_complexity": {
-      "lemma_count": 58,
-      "mean_depth": 38.12,
-      "top_fraction_mean_depth": 141.33,
+      "lemma_count": 56,
+      "mean_depth": 72.93,
+      "top_fraction_mean_depth": 280.21,
       "long_lemma_count": 15,
-      "depth_complexity": 100.05,
-      "complexity_score": 126.08
+      "depth_complexity": 197.3,
+      "complexity_score": 250.56
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 297.78
+    "total_exposure_score": 300.08
   },
   {
     "name": "EvoCrypt",
@@ -86,55 +86,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 454.8,
       "by_kind": {
-        "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
+        "lemma_removed": {
+          "count": 3,
+          "score": 8.8
         },
         "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 3,
+          "score": 6.6
+        },
+        "mechanism_change": {
+          "count": 66,
+          "score": 216.0
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 83,
+          "score": 165.3000000000001
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 37,
+          "score": 14.499999999999991
         },
-        "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+        "syntax_change": {
+          "count": 19,
+          "score": 43.599999999999994
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 1103,
-      "total_tactic_count": 4769,
-      "ratio": 0.23128538477668276,
+      "fragile_tactic_count": 1080,
+      "total_tactic_count": 4358,
+      "ratio": 0.24782010096374485,
       "multiplier": 1.0,
-      "amplified_total": 470.47
+      "amplified_total": 567.51
     },
     "proof_complexity": {
-      "lemma_count": 197,
-      "mean_depth": 16.5,
-      "top_fraction_mean_depth": 59.52,
-      "long_lemma_count": 35,
-      "depth_complexity": 42.31,
-      "complexity_score": 52.1
+      "lemma_count": 192,
+      "mean_depth": 28.14,
+      "top_fraction_mean_depth": 101.17,
+      "long_lemma_count": 47,
+      "depth_complexity": 71.95,
+      "complexity_score": 89.79
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 470.47
+    "total_exposure_score": 567.51
   },
   {
     "name": "Formosa Dilithium",
@@ -163,55 +163,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 1015,
-      "total_tactic_count": 5337,
-      "ratio": 0.1901817500468428,
+      "fragile_tactic_count": 1014,
+      "total_tactic_count": 5202,
+      "ratio": 0.19492502883506344,
       "multiplier": 1.0,
-      "amplified_total": 454.77
+      "amplified_total": 853.53
     },
     "proof_complexity": {
-      "lemma_count": 452,
-      "mean_depth": 6.61,
-      "top_fraction_mean_depth": 18.96,
-      "long_lemma_count": 45,
-      "depth_complexity": 14.02,
-      "complexity_score": 16.69
+      "lemma_count": 450,
+      "mean_depth": 12.04,
+      "top_fraction_mean_depth": 35.44,
+      "long_lemma_count": 102,
+      "depth_complexity": 26.08,
+      "complexity_score": 31.16
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 454.77
+    "total_exposure_score": 853.53
   },
   {
     "name": "Formosa Keccak",
@@ -252,26 +252,26 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 2135,
-      "total_tactic_count": 8988,
-      "ratio": 0.23753894080996885,
+      "fragile_tactic_count": 1923,
+      "total_tactic_count": 8092,
+      "ratio": 0.23764211566979734,
       "multiplier": 1.0,
-      "amplified_total": 213.85
+      "amplified_total": 213.86
     },
     "proof_complexity": {
-      "lemma_count": 261,
-      "mean_depth": 13.57,
-      "top_fraction_mean_depth": 44.3,
-      "long_lemma_count": 24,
-      "depth_complexity": 32.01,
-      "complexity_score": 39.61
+      "lemma_count": 255,
+      "mean_depth": 18.72,
+      "top_fraction_mean_depth": 59.0,
+      "long_lemma_count": 64,
+      "depth_complexity": 42.89,
+      "complexity_score": 53.08
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 213.85
+    "total_exposure_score": 213.86
   },
   {
     "name": "Formosa SLHDSA",
@@ -309,19 +309,19 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 1925,
-      "total_tactic_count": 13524,
-      "ratio": 0.14233954451345757,
+      "fragile_tactic_count": 1922,
+      "total_tactic_count": 13413,
+      "ratio": 0.14329381942891226,
       "multiplier": 1.0,
-      "amplified_total": 69.57
+      "amplified_total": 69.63
     },
     "proof_complexity": {
-      "lemma_count": 308,
-      "mean_depth": 26.34,
-      "top_fraction_mean_depth": 90.1,
-      "long_lemma_count": 98,
-      "depth_complexity": 64.6,
-      "complexity_score": 73.8
+      "lemma_count": 307,
+      "mean_depth": 49.03,
+      "top_fraction_mean_depth": 166.9,
+      "long_lemma_count": 130,
+      "depth_complexity": 119.75,
+      "complexity_score": 136.91
     },
     "smt_solver_info": [
       {
@@ -344,7 +344,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 69.57
+    "total_exposure_score": 69.63
   },
   {
     "name": "Formosa XMSS",
@@ -382,26 +382,26 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 3981,
-      "total_tactic_count": 23906,
-      "ratio": 0.16652723165732453,
+      "fragile_tactic_count": 3818,
+      "total_tactic_count": 23005,
+      "ratio": 0.16596392088676376,
       "multiplier": 1.0,
-      "amplified_total": 71.04
+      "amplified_total": 71.01
     },
     "proof_complexity": {
-      "lemma_count": 638,
-      "mean_depth": 22.57,
-      "top_fraction_mean_depth": 77.47,
-      "long_lemma_count": 169,
-      "depth_complexity": 55.51,
-      "complexity_score": 64.75
+      "lemma_count": 632,
+      "mean_depth": 40.65,
+      "top_fraction_mean_depth": 139.11,
+      "long_lemma_count": 238,
+      "depth_complexity": 99.72,
+      "complexity_score": 116.27
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 71.04
+    "total_exposure_score": 71.01
   },
   {
     "name": "Formosa MLKEM",
@@ -440,19 +440,19 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 11479,
-      "total_tactic_count": 62185,
-      "ratio": 0.18459435555198198,
+      "fragile_tactic_count": 11384,
+      "total_tactic_count": 61645,
+      "ratio": 0.1846702895611972,
       "multiplier": 1.0,
-      "amplified_total": 126.04
+      "amplified_total": 126.05
     },
     "proof_complexity": {
-      "lemma_count": 1934,
-      "mean_depth": 14.46,
-      "top_fraction_mean_depth": 47.48,
-      "long_lemma_count": 388,
-      "depth_complexity": 34.27,
-      "complexity_score": 40.59
+      "lemma_count": 1920,
+      "mean_depth": 24.44,
+      "top_fraction_mean_depth": 79.31,
+      "long_lemma_count": 575,
+      "depth_complexity": 57.37,
+      "complexity_score": 67.96
     },
     "smt_solver_info": [
       {
@@ -495,7 +495,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 126.04
+    "total_exposure_score": 126.05
   },
   {
     "name": "Formosa Arch-Specs",
@@ -560,58 +560,56 @@
     "repo_path": "/home/m8simmon/cs846/AI4EC/proof_corpus/eval/Formosa-MLDSA-Correctness",
     "target_version": "r2026.07",
     "detected_source_version": {
-      "version": "r2026.03",
-      "confidence": "high",
-      "method": "submodule_pin_resolved",
-      "detail": "sha=cd6faa0ef208935347915e16bb29e9edb1e64ac1, describe=r2026.03-63-gcd6faa0e"
+      "version": "r2026.06",
+      "confidence": "medium",
+      "method": "git_commit_date",
+      "detail": "last commit 2026-06-18T23:05:15+01:00, nearest preceding release r2026.06"
     },
     "releases_crossed": [
-      "r2026.05",
-      "r2026.06",
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 140.2,
+      "total": 60.9,
       "by_kind": {
+        "mechanism_change": {
+          "count": 13,
+          "score": 39.5
+        },
         "tactic_change": {
-          "count": 23,
-          "score": 47.09999999999999
+          "count": 8,
+          "score": 16.8
         },
         "lemma_added": {
-          "count": 7,
-          "score": 4.0
+          "count": 3,
+          "score": 2.2
         },
         "syntax_change": {
-          "count": 6,
-          "score": 13.600000000000001
-        },
-        "mechanism_change": {
-          "count": 24,
-          "score": 75.5
+          "count": 1,
+          "score": 2.4
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 1960,
-      "total_tactic_count": 10849,
-      "ratio": 0.18066181214858512,
+      "fragile_tactic_count": 1946,
+      "total_tactic_count": 10694,
+      "ratio": 0.18197119880306714,
       "multiplier": 1.0,
-      "amplified_total": 165.53
+      "amplified_total": 71.98
     },
     "proof_complexity": {
       "lemma_count": 538,
-      "mean_depth": 10.3,
-      "top_fraction_mean_depth": 33.23,
-      "long_lemma_count": 81,
-      "depth_complexity": 24.06,
-      "complexity_score": 28.4
+      "mean_depth": 18.57,
+      "top_fraction_mean_depth": 59.73,
+      "long_lemma_count": 137,
+      "depth_complexity": 43.27,
+      "complexity_score": 51.14
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 165.53
+    "total_exposure_score": 71.98
   },
   {
     "name": "Formosa 25519",
@@ -649,19 +647,19 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 599,
-      "total_tactic_count": 3814,
-      "ratio": 0.15705296276874672,
+      "fragile_tactic_count": 465,
+      "total_tactic_count": 3124,
+      "ratio": 0.14884763124199743,
       "multiplier": 1.0,
-      "amplified_total": 70.46
+      "amplified_total": 69.96
     },
     "proof_complexity": {
-      "lemma_count": 280,
-      "mean_depth": 11.8,
-      "top_fraction_mean_depth": 34.01,
-      "long_lemma_count": 47,
-      "depth_complexity": 25.13,
-      "complexity_score": 29.07
+      "lemma_count": 246,
+      "mean_depth": 12.57,
+      "top_fraction_mean_depth": 34.63,
+      "long_lemma_count": 43,
+      "depth_complexity": 25.81,
+      "complexity_score": 29.65
     },
     "smt_solver_info": [
       {
@@ -689,7 +687,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 70.46
+    "total_exposure_score": 69.96
   },
   {
     "name": "Formosa Crypto-Specs",
@@ -730,19 +728,19 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 1226,
-      "total_tactic_count": 9043,
-      "ratio": 0.13557447749640605,
+      "fragile_tactic_count": 1225,
+      "total_tactic_count": 9001,
+      "ratio": 0.13609598933451839,
       "multiplier": 1.0,
-      "amplified_total": 196.23
+      "amplified_total": 196.32
     },
     "proof_complexity": {
-      "lemma_count": 758,
-      "mean_depth": 6.95,
-      "top_fraction_mean_depth": 21.35,
-      "long_lemma_count": 70,
-      "depth_complexity": 15.59,
-      "complexity_score": 17.71
+      "lemma_count": 755,
+      "mean_depth": 13.09,
+      "top_fraction_mean_depth": 41.02,
+      "long_lemma_count": 133,
+      "depth_complexity": 29.85,
+      "complexity_score": 33.91
     },
     "smt_solver_info": [
       {
@@ -760,7 +758,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 196.23
+    "total_exposure_score": 196.32
   },
   {
     "name": "Formosa Jasmin Tutorial",
@@ -800,19 +798,19 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 174,
-      "total_tactic_count": 2709,
-      "ratio": 0.06423034330011074,
+      "fragile_tactic_count": 172,
+      "total_tactic_count": 2657,
+      "ratio": 0.064734663153933,
       "multiplier": 1.0,
-      "amplified_total": 149.21
+      "amplified_total": 149.28
     },
     "proof_complexity": {
-      "lemma_count": 603,
-      "mean_depth": 2.36,
-      "top_fraction_mean_depth": 5.72,
-      "long_lemma_count": 5,
-      "depth_complexity": 4.37,
-      "complexity_score": 4.65
+      "lemma_count": 599,
+      "mean_depth": 4.85,
+      "top_fraction_mean_depth": 10.95,
+      "long_lemma_count": 26,
+      "depth_complexity": 8.51,
+      "complexity_score": 9.06
     },
     "smt_solver_info": [
       {
@@ -840,7 +838,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 149.21
+    "total_exposure_score": 149.28
   },
   {
     "name": "Formosa Libjade",
@@ -878,19 +876,19 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 579,
-      "total_tactic_count": 3924,
-      "ratio": 0.14755351681957188,
+      "fragile_tactic_count": 577,
+      "total_tactic_count": 3882,
+      "ratio": 0.14863472436888203,
       "multiplier": 1.0,
-      "amplified_total": 69.89
+      "amplified_total": 69.95
     },
     "proof_complexity": {
-      "lemma_count": 329,
-      "mean_depth": 5.94,
-      "top_fraction_mean_depth": 18.2,
-      "long_lemma_count": 32,
-      "depth_complexity": 13.3,
-      "complexity_score": 15.26
+      "lemma_count": 326,
+      "mean_depth": 12.21,
+      "top_fraction_mean_depth": 36.98,
+      "long_lemma_count": 69,
+      "depth_complexity": 27.07,
+      "complexity_score": 31.09
     },
     "smt_solver_info": [
       {
@@ -918,7 +916,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 69.89
+    "total_exposure_score": 69.95
   },
   {
     "name": "Formosa X-Wing",
@@ -945,48 +943,48 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 454.8,
       "by_kind": {
-        "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
+        "lemma_removed": {
+          "count": 3,
+          "score": 8.8
         },
         "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 3,
+          "score": 6.6
+        },
+        "mechanism_change": {
+          "count": 66,
+          "score": 216.0
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 83,
+          "score": 165.3000000000001
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 37,
+          "score": 14.499999999999991
         },
-        "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+        "syntax_change": {
+          "count": 19,
+          "score": 43.599999999999994
         }
       }
     },
     "automation_reliance": {
       "fragile_tactic_count": 383,
-      "total_tactic_count": 1663,
-      "ratio": 0.23030667468430546,
+      "total_tactic_count": 1660,
+      "ratio": 0.23072289156626505,
       "multiplier": 1.0,
-      "amplified_total": 470.1
+      "amplified_total": 559.73
     },
     "proof_complexity": {
       "lemma_count": 31,
-      "mean_depth": 14.84,
-      "top_fraction_mean_depth": 30.5,
-      "long_lemma_count": 10,
-      "depth_complexity": 24.24,
-      "complexity_score": 29.82
+      "mean_depth": 45.65,
+      "top_fraction_mean_depth": 101.62,
+      "long_lemma_count": 25,
+      "depth_complexity": 79.23,
+      "complexity_score": 97.51
     },
     "smt_solver_info": [
       {
@@ -1009,7 +1007,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 470.1
+    "total_exposure_score": 559.73
   },
   {
     "name": "Formosa libjbn",
@@ -1038,55 +1036,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 307,
-      "total_tactic_count": 2366,
-      "ratio": 0.1297548605240913,
+      "fragile_tactic_count": 302,
+      "total_tactic_count": 2321,
+      "ratio": 0.13011632916846186,
       "multiplier": 1.0,
-      "amplified_total": 431.68
+      "amplified_total": 807.24
     },
     "proof_complexity": {
-      "lemma_count": 174,
-      "mean_depth": 8.34,
-      "top_fraction_mean_depth": 24.43,
-      "long_lemma_count": 29,
-      "depth_complexity": 18.0,
-      "complexity_score": 20.33
+      "lemma_count": 168,
+      "mean_depth": 16.24,
+      "top_fraction_mean_depth": 45.9,
+      "long_lemma_count": 51,
+      "depth_complexity": 34.04,
+      "complexity_score": 38.47
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 431.68
+    "total_exposure_score": 807.24
   },
   {
     "name": "Jasmin-Zk",
@@ -1115,55 +1113,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 5644,
-      "total_tactic_count": 26827,
-      "ratio": 0.21038505982778544,
+      "fragile_tactic_count": 5622,
+      "total_tactic_count": 26635,
+      "ratio": 0.21107565233715037,
       "multiplier": 1.0,
-      "amplified_total": 462.49
+      "amplified_total": 865.07
     },
     "proof_complexity": {
-      "lemma_count": 1000,
-      "mean_depth": 13.88,
-      "top_fraction_mean_depth": 47.8,
-      "long_lemma_count": 220,
-      "depth_complexity": 34.24,
-      "complexity_score": 41.44
+      "lemma_count": 989,
+      "mean_depth": 17.59,
+      "top_fraction_mean_depth": 55.48,
+      "long_lemma_count": 259,
+      "depth_complexity": 40.33,
+      "complexity_score": 48.84
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 462.49
+    "total_exposure_score": 865.07
   },
   {
     "name": "Asymmetric Ladder",
@@ -1206,25 +1204,25 @@
     },
     "automation_reliance": {
       "fragile_tactic_count": 5,
-      "total_tactic_count": 338,
-      "ratio": 0.014792899408284023,
+      "total_tactic_count": 316,
+      "ratio": 0.015822784810126583,
       "multiplier": 1.0,
-      "amplified_total": 226.2
+      "amplified_total": 226.43
     },
     "proof_complexity": {
       "lemma_count": 26,
-      "mean_depth": 6.58,
-      "top_fraction_mean_depth": 14.86,
-      "long_lemma_count": 2,
-      "depth_complexity": 11.55,
-      "complexity_score": 11.72
+      "mean_depth": 11.85,
+      "top_fraction_mean_depth": 23.14,
+      "long_lemma_count": 6,
+      "depth_complexity": 18.62,
+      "complexity_score": 18.92
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 226.2
+    "total_exposure_score": 226.43
   },
   {
     "name": "Zksync-Verification",
@@ -1251,55 +1249,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 454.8,
       "by_kind": {
-        "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
+        "lemma_removed": {
+          "count": 3,
+          "score": 8.8
         },
         "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 3,
+          "score": 6.6
+        },
+        "mechanism_change": {
+          "count": 66,
+          "score": 216.0
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 83,
+          "score": 165.3000000000001
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 37,
+          "score": 14.499999999999991
         },
-        "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+        "syntax_change": {
+          "count": 19,
+          "score": 43.599999999999994
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 2472,
-      "total_tactic_count": 50098,
-      "ratio": 0.04934328715717194,
+      "fragile_tactic_count": 2458,
+      "total_tactic_count": 49930,
+      "ratio": 0.04922892048868416,
       "multiplier": 1.0,
-      "amplified_total": 400.95
+      "amplified_total": 477.19
     },
     "proof_complexity": {
-      "lemma_count": 962,
-      "mean_depth": 35.38,
-      "top_fraction_mean_depth": 135.42,
-      "long_lemma_count": 131,
-      "depth_complexity": 95.4,
-      "complexity_score": 100.11
+      "lemma_count": 953,
+      "mean_depth": 72.2,
+      "top_fraction_mean_depth": 276.13,
+      "long_lemma_count": 171,
+      "depth_complexity": 194.56,
+      "complexity_score": 204.13
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 400.95
+    "total_exposure_score": 477.19
   },
   {
     "name": "Probabilistic Or",
@@ -1338,26 +1336,26 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 37,
-      "total_tactic_count": 158,
-      "ratio": 0.23417721518987342,
+      "fragile_tactic_count": 36,
+      "total_tactic_count": 152,
+      "ratio": 0.23684210526315788,
       "multiplier": 1.0,
-      "amplified_total": 131.32
+      "amplified_total": 131.6
     },
     "proof_complexity": {
       "lemma_count": 14,
-      "mean_depth": 8.57,
-      "top_fraction_mean_depth": 22.25,
-      "long_lemma_count": 3,
-      "depth_complexity": 16.78,
-      "complexity_score": 20.71
+      "mean_depth": 10.71,
+      "top_fraction_mean_depth": 28.25,
+      "long_lemma_count": 4,
+      "depth_complexity": 21.24,
+      "complexity_score": 26.27
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 131.32
+    "total_exposure_score": 131.6
   },
   {
     "name": "PCR",
@@ -1396,18 +1394,18 @@
     },
     "automation_reliance": {
       "fragile_tactic_count": 750,
-      "total_tactic_count": 3334,
-      "ratio": 0.22495500899820037,
+      "total_tactic_count": 3274,
+      "ratio": 0.22907758094074526,
       "multiplier": 1.0,
-      "amplified_total": 74.6
+      "amplified_total": 74.85
     },
     "proof_complexity": {
-      "lemma_count": 257,
-      "mean_depth": 7.56,
-      "top_fraction_mean_depth": 22.15,
-      "long_lemma_count": 35,
-      "depth_complexity": 16.32,
-      "complexity_score": 19.99
+      "lemma_count": 255,
+      "mean_depth": 12.74,
+      "top_fraction_mean_depth": 38.02,
+      "long_lemma_count": 58,
+      "depth_complexity": 27.9,
+      "complexity_score": 34.3
     },
     "smt_solver_info": [
       {
@@ -1420,7 +1418,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 74.6
+    "total_exposure_score": 74.85
   },
   {
     "name": "Saber",
@@ -1449,55 +1447,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
     "automation_reliance": {
       "fragile_tactic_count": 118,
-      "total_tactic_count": 1667,
-      "ratio": 0.07078584283143372,
+      "total_tactic_count": 1665,
+      "ratio": 0.07087087087087086,
       "multiplier": 1.0,
-      "amplified_total": 409.15
+      "amplified_total": 764.92
     },
     "proof_complexity": {
       "lemma_count": 262,
-      "mean_depth": 3.47,
-      "top_fraction_mean_depth": 8.79,
-      "long_lemma_count": 7,
-      "depth_complexity": 6.66,
-      "complexity_score": 7.13
+      "mean_depth": 7.57,
+      "top_fraction_mean_depth": 18.89,
+      "long_lemma_count": 31,
+      "depth_complexity": 14.36,
+      "complexity_score": 15.38
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 409.15
+    "total_exposure_score": 764.92
   },
   {
     "name": "ZK in EC",
@@ -1526,48 +1524,48 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 2590,
-      "total_tactic_count": 10941,
-      "ratio": 0.236724248240563,
+      "fragile_tactic_count": 2584,
+      "total_tactic_count": 10898,
+      "ratio": 0.23710772618829143,
       "multiplier": 1.0,
-      "amplified_total": 472.55
+      "amplified_total": 883.67
     },
     "proof_complexity": {
       "lemma_count": 192,
-      "mean_depth": 35.4,
-      "top_fraction_mean_depth": 92.44,
-      "long_lemma_count": 122,
-      "depth_complexity": 69.62,
-      "complexity_score": 86.1
+      "mean_depth": 37.48,
+      "top_fraction_mean_depth": 95.21,
+      "long_lemma_count": 125,
+      "depth_complexity": 72.12,
+      "complexity_score": 89.22
     },
     "smt_solver_info": [
       {
@@ -1595,7 +1593,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 472.55
+    "total_exposure_score": 883.67
   },
   {
     "name": "Easy Schnorr",
@@ -1626,55 +1624,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 1210.8,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
+          "count": 172,
+          "score": 564.5
         },
         "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 64,
+          "score": 156.40000000000015
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 161,
+          "score": 334.5000000000007
+        },
+        "lemma_renamed": {
+          "count": 15,
+          "score": 38.99999999999999
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 193,
+          "score": 85.99999999999986
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 10,
+          "score": 30.4
         }
       }
     },
     "automation_reliance": {
       "fragile_tactic_count": 85,
-      "total_tactic_count": 276,
-      "ratio": 0.3079710144927536,
+      "total_tactic_count": 272,
+      "ratio": 0.3125,
       "multiplier": 1.0,
-      "amplified_total": 499.78
+      "amplified_total": 1589.17
     },
     "proof_complexity": {
       "lemma_count": 10,
-      "mean_depth": 21.9,
-      "top_fraction_mean_depth": 33.33,
+      "mean_depth": 27.1,
+      "top_fraction_mean_depth": 45.0,
       "long_lemma_count": 7,
-      "depth_complexity": 28.76,
-      "complexity_score": 37.62
+      "depth_complexity": 37.84,
+      "complexity_score": 49.67
     },
     "smt_solver_info": [],
     "predates_changelog": true,
     "predates_changelog_days": 858,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 40.0,
-    "total_exposure_score": 539.78
+    "total_exposure_score": 1629.17
   },
   {
     "name": "Xwing Benchmarks",
@@ -1703,55 +1701,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 579,
-      "total_tactic_count": 3924,
-      "ratio": 0.14755351681957188,
+      "fragile_tactic_count": 577,
+      "total_tactic_count": 3882,
+      "ratio": 0.14863472436888203,
       "multiplier": 1.0,
-      "amplified_total": 438.48
+      "amplified_total": 820.47
     },
     "proof_complexity": {
-      "lemma_count": 329,
-      "mean_depth": 5.94,
-      "top_fraction_mean_depth": 18.2,
-      "long_lemma_count": 32,
-      "depth_complexity": 13.3,
-      "complexity_score": 15.26
+      "lemma_count": 326,
+      "mean_depth": 12.21,
+      "top_fraction_mean_depth": 36.98,
+      "long_lemma_count": 69,
+      "depth_complexity": 27.07,
+      "complexity_score": 31.09
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 438.48
+    "total_exposure_score": 820.47
   },
   {
     "name": "FV-XMSS-EC",
@@ -1793,18 +1791,18 @@
     },
     "automation_reliance": {
       "fragile_tactic_count": 1038,
-      "total_tactic_count": 8201,
-      "ratio": 0.12656993049628093,
+      "total_tactic_count": 7875,
+      "ratio": 0.13180952380952382,
       "multiplier": 1.0,
-      "amplified_total": 194.67
+      "amplified_total": 195.58
     },
     "proof_complexity": {
-      "lemma_count": 281,
-      "mean_depth": 15.36,
-      "top_fraction_mean_depth": 48.77,
-      "long_lemma_count": 63,
-      "depth_complexity": 35.41,
-      "complexity_score": 39.89
+      "lemma_count": 280,
+      "mean_depth": 31.63,
+      "top_fraction_mean_depth": 103.19,
+      "long_lemma_count": 99,
+      "depth_complexity": 74.56,
+      "complexity_score": 84.39
     },
     "smt_solver_info": [
       {
@@ -1842,7 +1840,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 194.67
+    "total_exposure_score": 195.58
   },
   {
     "name": "AutoCrypt",
@@ -1873,55 +1871,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 1210.8,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
+          "count": 172,
+          "score": 564.5
         },
         "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 64,
+          "score": 156.40000000000015
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 161,
+          "score": 334.5000000000007
+        },
+        "lemma_renamed": {
+          "count": 15,
+          "score": 38.99999999999999
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 193,
+          "score": 85.99999999999986
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 10,
+          "score": 30.4
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 24,
-      "total_tactic_count": 406,
-      "ratio": 0.059113300492610835,
+      "fragile_tactic_count": 21,
+      "total_tactic_count": 340,
+      "ratio": 0.061764705882352944,
       "multiplier": 1.0,
-      "amplified_total": 404.69
+      "amplified_total": 1285.58
     },
     "proof_complexity": {
-      "lemma_count": 1,
-      "mean_depth": 235.0,
-      "top_fraction_mean_depth": 235.0,
-      "long_lemma_count": 1,
-      "depth_complexity": 235.0,
-      "complexity_score": 248.89
+      "lemma_count": 0,
+      "mean_depth": 0.0,
+      "top_fraction_mean_depth": 0.0,
+      "long_lemma_count": 0,
+      "depth_complexity": 0.0,
+      "complexity_score": 0.0
     },
     "smt_solver_info": [],
     "predates_changelog": true,
     "predates_changelog_days": 3130,
     "version_unknown": false,
-    "unresolved_version_penalty_applied": 40.0,
-    "total_exposure_score": 444.69
+    "unresolved_version_penalty_applied": 4.0,
+    "total_exposure_score": 1289.58
   },
   {
     "name": "Algorithmic Bounds",
@@ -1960,19 +1958,19 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 669,
-      "total_tactic_count": 7369,
-      "ratio": 0.09078572397883024,
+      "fragile_tactic_count": 667,
+      "total_tactic_count": 7274,
+      "ratio": 0.09169645312070387,
       "multiplier": 1.0,
-      "amplified_total": 116.06
+      "amplified_total": 116.16
     },
     "proof_complexity": {
-      "lemma_count": 795,
-      "mean_depth": 7.71,
-      "top_fraction_mean_depth": 21.71,
-      "long_lemma_count": 106,
-      "depth_complexity": 16.11,
-      "complexity_score": 17.57
+      "lemma_count": 793,
+      "mean_depth": 10.53,
+      "top_fraction_mean_depth": 29.47,
+      "long_lemma_count": 159,
+      "depth_complexity": 21.9,
+      "complexity_score": 23.9
     },
     "smt_solver_info": [
       {
@@ -1985,7 +1983,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 116.06
+    "total_exposure_score": 116.16
   },
   {
     "name": "Rewinding",
@@ -2014,48 +2012,48 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 1573,
-      "total_tactic_count": 7808,
-      "ratio": 0.20146004098360656,
+      "fragile_tactic_count": 1570,
+      "total_tactic_count": 7723,
+      "ratio": 0.20328887737925677,
       "multiplier": 1.0,
-      "amplified_total": 459.08
+      "amplified_total": 859.51
     },
     "proof_complexity": {
       "lemma_count": 182,
-      "mean_depth": 34.93,
-      "top_fraction_mean_depth": 94.24,
-      "long_lemma_count": 110,
-      "depth_complexity": 70.51,
-      "complexity_score": 84.72
+      "mean_depth": 34.98,
+      "top_fraction_mean_depth": 93.54,
+      "long_lemma_count": 111,
+      "depth_complexity": 70.12,
+      "complexity_score": 84.37
     },
     "smt_solver_info": [
       {
@@ -2083,7 +2081,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 459.08
+    "total_exposure_score": 859.51
   },
   {
     "name": "XMSS-Jasmin",
@@ -2132,19 +2130,19 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 1692,
-      "total_tactic_count": 9046,
-      "ratio": 0.18704399734689364,
+      "fragile_tactic_count": 1684,
+      "total_tactic_count": 8975,
+      "ratio": 0.18763231197771588,
       "multiplier": 1.0,
-      "amplified_total": 335.81
+      "amplified_total": 335.98
     },
     "proof_complexity": {
-      "lemma_count": 171,
-      "mean_depth": 34.77,
-      "top_fraction_mean_depth": 120.67,
-      "long_lemma_count": 64,
-      "depth_complexity": 86.31,
-      "complexity_score": 102.46
+      "lemma_count": 170,
+      "mean_depth": 61.11,
+      "top_fraction_mean_depth": 214.93,
+      "long_lemma_count": 73,
+      "depth_complexity": 153.4,
+      "complexity_score": 182.18
     },
     "smt_solver_info": [
       {
@@ -2197,7 +2195,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 335.81
+    "total_exposure_score": 335.98
   },
   {
     "name": "Random Password Generator",
@@ -2228,55 +2226,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 1210.8,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
+          "count": 172,
+          "score": 564.5
         },
         "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 64,
+          "score": 156.40000000000015
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 161,
+          "score": 334.5000000000007
+        },
+        "lemma_renamed": {
+          "count": 15,
+          "score": 38.99999999999999
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 193,
+          "score": 85.99999999999986
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 10,
+          "score": 30.4
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 654,
-      "total_tactic_count": 3585,
-      "ratio": 0.18242677824267783,
+      "fragile_tactic_count": 648,
+      "total_tactic_count": 3542,
+      "ratio": 0.18294748729531338,
       "multiplier": 1.0,
-      "amplified_total": 451.81
+      "amplified_total": 1432.31
     },
     "proof_complexity": {
       "lemma_count": 72,
-      "mean_depth": 26.39,
-      "top_fraction_mean_depth": 86.33,
-      "long_lemma_count": 19,
-      "depth_complexity": 62.36,
-      "complexity_score": 73.73
+      "mean_depth": 29.31,
+      "top_fraction_mean_depth": 95.11,
+      "long_lemma_count": 22,
+      "depth_complexity": 68.79,
+      "complexity_score": 81.37
     },
     "smt_solver_info": [],
     "predates_changelog": true,
     "predates_changelog_days": 93,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 40.0,
-    "total_exposure_score": 491.81
+    "total_exposure_score": 1472.31
   },
   {
     "name": "EasyUC",
@@ -2314,26 +2312,26 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 23885,
-      "total_tactic_count": 56296,
-      "ratio": 0.4242752593434702,
+      "fragile_tactic_count": 23873,
+      "total_tactic_count": 55551,
+      "ratio": 0.4297492394376339,
       "multiplier": 1.0,
-      "amplified_total": 86.74
+      "amplified_total": 87.07
     },
     "proof_complexity": {
-      "lemma_count": 2295,
-      "mean_depth": 18.92,
-      "top_fraction_mean_depth": 69.45,
-      "long_lemma_count": 344,
-      "depth_complexity": 49.24,
-      "complexity_score": 70.13
+      "lemma_count": 2292,
+      "mean_depth": 33.2,
+      "top_fraction_mean_depth": 123.68,
+      "long_lemma_count": 397,
+      "depth_complexity": 87.49,
+      "complexity_score": 125.09
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 86.74
+    "total_exposure_score": 87.07
   },
   {
     "name": "Decomposition-Zk",
@@ -2371,19 +2369,19 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 927,
-      "total_tactic_count": 2862,
-      "ratio": 0.3238993710691824,
+      "fragile_tactic_count": 926,
+      "total_tactic_count": 2843,
+      "ratio": 0.3257122757650369,
       "multiplier": 1.0,
-      "amplified_total": 80.63
+      "amplified_total": 80.74
     },
     "proof_complexity": {
       "lemma_count": 58,
-      "mean_depth": 44.76,
-      "top_fraction_mean_depth": 145.73,
-      "long_lemma_count": 22,
-      "depth_complexity": 105.34,
-      "complexity_score": 139.46
+      "mean_depth": 53.48,
+      "top_fraction_mean_depth": 172.93,
+      "long_lemma_count": 26,
+      "depth_complexity": 125.15,
+      "complexity_score": 165.92
     },
     "smt_solver_info": [
       {
@@ -2406,7 +2404,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 80.63
+    "total_exposure_score": 80.74
   },
   {
     "name": "Zkp-Xpln",
@@ -2433,55 +2431,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 454.8,
       "by_kind": {
-        "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
+        "lemma_removed": {
+          "count": 3,
+          "score": 8.8
         },
         "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 3,
+          "score": 6.6
+        },
+        "mechanism_change": {
+          "count": 66,
+          "score": 216.0
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 83,
+          "score": 165.3000000000001
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 37,
+          "score": 14.499999999999991
         },
-        "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+        "syntax_change": {
+          "count": 19,
+          "score": 43.599999999999994
         }
       }
     },
     "automation_reliance": {
       "fragile_tactic_count": 1393,
-      "total_tactic_count": 7015,
-      "ratio": 0.19857448325017818,
+      "total_tactic_count": 6948,
+      "ratio": 0.20048934945308003,
       "multiplier": 1.0,
-      "amplified_total": 457.98
+      "amplified_total": 545.98
     },
     "proof_complexity": {
       "lemma_count": 167,
-      "mean_depth": 38.96,
-      "top_fraction_mean_depth": 133.93,
-      "long_lemma_count": 62,
-      "depth_complexity": 95.94,
-      "complexity_score": 114.99
+      "mean_depth": 41.71,
+      "top_fraction_mean_depth": 143.6,
+      "long_lemma_count": 67,
+      "depth_complexity": 102.84,
+      "complexity_score": 123.46
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 457.98
+    "total_exposure_score": 545.98
   },
   {
     "name": "Minivoting",
@@ -2512,55 +2510,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 1210.8,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
+          "count": 172,
+          "score": 564.5
         },
         "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 64,
+          "score": 156.40000000000015
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 161,
+          "score": 334.5000000000007
+        },
+        "lemma_renamed": {
+          "count": 15,
+          "score": 38.99999999999999
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 193,
+          "score": 85.99999999999986
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 10,
+          "score": 30.4
         }
       }
     },
     "automation_reliance": {
       "fragile_tactic_count": 1407,
-      "total_tactic_count": 5547,
-      "ratio": 0.253650621957815,
+      "total_tactic_count": 5452,
+      "ratio": 0.25807043286867204,
       "multiplier": 1.0,
-      "amplified_total": 479.02
+      "amplified_total": 1523.27
     },
     "proof_complexity": {
       "lemma_count": 351,
-      "mean_depth": 9.92,
-      "top_fraction_mean_depth": 31.64,
-      "long_lemma_count": 43,
-      "depth_complexity": 22.95,
-      "complexity_score": 28.77
+      "mean_depth": 20.23,
+      "top_fraction_mean_depth": 64.2,
+      "long_lemma_count": 88,
+      "depth_complexity": 46.61,
+      "complexity_score": 58.64
     },
     "smt_solver_info": [],
     "predates_changelog": true,
     "predates_changelog_days": 1884,
     "version_unknown": false,
-    "unresolved_version_penalty_applied": 38.36,
-    "total_exposure_score": 517.38
+    "unresolved_version_penalty_applied": 40.0,
+    "total_exposure_score": 1563.27
   },
   {
     "name": "Helios",
@@ -2591,55 +2589,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 1210.8,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
+          "count": 172,
+          "score": 564.5
         },
         "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 64,
+          "score": 156.40000000000015
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 161,
+          "score": 334.5000000000007
+        },
+        "lemma_renamed": {
+          "count": 15,
+          "score": 38.99999999999999
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 193,
+          "score": 85.99999999999986
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 10,
+          "score": 30.4
         }
       }
     },
     "automation_reliance": {
       "fragile_tactic_count": 1407,
-      "total_tactic_count": 5547,
-      "ratio": 0.253650621957815,
+      "total_tactic_count": 5452,
+      "ratio": 0.25807043286867204,
       "multiplier": 1.0,
-      "amplified_total": 479.02
+      "amplified_total": 1523.27
     },
     "proof_complexity": {
       "lemma_count": 351,
-      "mean_depth": 9.92,
-      "top_fraction_mean_depth": 31.64,
-      "long_lemma_count": 43,
-      "depth_complexity": 22.95,
-      "complexity_score": 28.77
+      "mean_depth": 20.23,
+      "top_fraction_mean_depth": 64.2,
+      "long_lemma_count": 88,
+      "depth_complexity": 46.61,
+      "complexity_score": 58.64
     },
     "smt_solver_info": [],
     "predates_changelog": true,
     "predates_changelog_days": 1884,
     "version_unknown": false,
-    "unresolved_version_penalty_applied": 38.36,
-    "total_exposure_score": 517.38
+    "unresolved_version_penalty_applied": 40.0,
+    "total_exposure_score": 1563.27
   },
   {
     "name": "Yao",
@@ -2670,55 +2668,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 1210.8,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
+          "count": 172,
+          "score": 564.5
         },
         "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 64,
+          "score": 156.40000000000015
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 161,
+          "score": 334.5000000000007
+        },
+        "lemma_renamed": {
+          "count": 15,
+          "score": 38.99999999999999
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 193,
+          "score": 85.99999999999986
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 10,
+          "score": 30.4
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 1440,
-      "total_tactic_count": 9604,
-      "ratio": 0.1499375260308205,
+      "fragile_tactic_count": 1432,
+      "total_tactic_count": 9472,
+      "ratio": 0.15118243243243243,
       "multiplier": 1.0,
-      "amplified_total": 439.39
+      "amplified_total": 1393.85
     },
     "proof_complexity": {
-      "lemma_count": 313,
-      "mean_depth": 26.56,
-      "top_fraction_mean_depth": 89.2,
-      "long_lemma_count": 102,
-      "depth_complexity": 64.14,
-      "complexity_score": 73.76
+      "lemma_count": 311,
+      "mean_depth": 46.86,
+      "top_fraction_mean_depth": 155.51,
+      "long_lemma_count": 143,
+      "depth_complexity": 112.05,
+      "complexity_score": 128.99
     },
     "smt_solver_info": [],
     "predates_changelog": true,
     "predates_changelog_days": 1868,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 40.0,
-    "total_exposure_score": 479.39
+    "total_exposure_score": 1433.85
   },
   {
     "name": "QSSM-RS",
@@ -2757,26 +2755,26 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 272,
-      "total_tactic_count": 7821,
-      "ratio": 0.03477816136043984,
+      "fragile_tactic_count": 268,
+      "total_tactic_count": 7736,
+      "ratio": 0.03464322647362978,
       "multiplier": 1.0,
-      "amplified_total": 110.1
+      "amplified_total": 110.09
     },
     "proof_complexity": {
-      "lemma_count": 1412,
-      "mean_depth": 5.15,
-      "top_fraction_mean_depth": 13.21,
-      "long_lemma_count": 87,
-      "depth_complexity": 9.98,
-      "complexity_score": 10.33
+      "lemma_count": 1409,
+      "mean_depth": 6.73,
+      "top_fraction_mean_depth": 17.36,
+      "long_lemma_count": 134,
+      "depth_complexity": 13.11,
+      "complexity_score": 13.57
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 110.1
+    "total_exposure_score": 110.09
   },
   {
     "name": "DualKey-MLWR",
@@ -2818,26 +2816,26 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 482,
-      "total_tactic_count": 2762,
-      "ratio": 0.17451122375090514,
+      "fragile_tactic_count": 462,
+      "total_tactic_count": 2494,
+      "ratio": 0.18524458700882118,
       "multiplier": 1.0,
-      "amplified_total": 261.8
+      "amplified_total": 264.19
     },
     "proof_complexity": {
-      "lemma_count": 496,
-      "mean_depth": 4.05,
-      "top_fraction_mean_depth": 10.95,
-      "long_lemma_count": 26,
-      "depth_complexity": 8.19,
-      "complexity_score": 9.62
+      "lemma_count": 492,
+      "mean_depth": 5.31,
+      "top_fraction_mean_depth": 14.22,
+      "long_lemma_count": 43,
+      "depth_complexity": 10.66,
+      "complexity_score": 12.63
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 261.8
+    "total_exposure_score": 264.19
   },
   {
     "name": "Solberg Defense",
@@ -2868,55 +2866,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 1210.8,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
+          "count": 172,
+          "score": 564.5
         },
         "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 64,
+          "score": 156.40000000000015
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 161,
+          "score": 334.5000000000007
+        },
+        "lemma_renamed": {
+          "count": 15,
+          "score": 38.99999999999999
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 193,
+          "score": 85.99999999999986
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 10,
+          "score": 30.4
         }
       }
     },
     "automation_reliance": {
       "fragile_tactic_count": 336,
-      "total_tactic_count": 1340,
-      "ratio": 0.2507462686567164,
+      "total_tactic_count": 1336,
+      "ratio": 0.25149700598802394,
       "multiplier": 1.0,
-      "amplified_total": 477.91
+      "amplified_total": 1515.31
     },
     "proof_complexity": {
       "lemma_count": 102,
-      "mean_depth": 8.35,
-      "top_fraction_mean_depth": 26.54,
-      "long_lemma_count": 19,
-      "depth_complexity": 19.26,
-      "complexity_score": 24.09
+      "mean_depth": 11.39,
+      "top_fraction_mean_depth": 35.58,
+      "long_lemma_count": 27,
+      "depth_complexity": 25.9,
+      "complexity_score": 32.42
     },
     "smt_solver_info": [],
     "predates_changelog": true,
     "predates_changelog_days": 1218,
     "version_unknown": false,
-    "unresolved_version_penalty_applied": 32.12,
-    "total_exposure_score": 510.03
+    "unresolved_version_penalty_applied": 40.0,
+    "total_exposure_score": 1555.31
   },
   {
     "name": "MPCEC",
@@ -2945,55 +2943,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 475,
-      "total_tactic_count": 2387,
-      "ratio": 0.1989945538332635,
+      "fragile_tactic_count": 471,
+      "total_tactic_count": 2343,
+      "ratio": 0.20102432778489115,
       "multiplier": 1.0,
-      "amplified_total": 458.14
+      "amplified_total": 857.89
     },
     "proof_complexity": {
-      "lemma_count": 127,
-      "mean_depth": 9.8,
-      "top_fraction_mean_depth": 30.97,
-      "long_lemma_count": 23,
-      "depth_complexity": 22.5,
-      "complexity_score": 26.98
+      "lemma_count": 124,
+      "mean_depth": 16.33,
+      "top_fraction_mean_depth": 50.32,
+      "long_lemma_count": 34,
+      "depth_complexity": 36.73,
+      "complexity_score": 44.11
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 458.14
+    "total_exposure_score": 857.89
   },
   {
     "name": "Cryptolib",
@@ -3024,31 +3022,31 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 1210.8,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
+          "count": 172,
+          "score": 564.5
         },
         "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 64,
+          "score": 156.40000000000015
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 161,
+          "score": 334.5000000000007
+        },
+        "lemma_renamed": {
+          "count": 15,
+          "score": 38.99999999999999
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 193,
+          "score": 85.99999999999986
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 10,
+          "score": 30.4
         }
       }
     },
@@ -3057,7 +3055,7 @@
       "total_tactic_count": 2103,
       "ratio": 0.0,
       "multiplier": 1.0,
-      "amplified_total": 382.1
+      "amplified_total": 1210.8
     },
     "proof_complexity": {
       "lemma_count": 0,
@@ -3072,7 +3070,7 @@
     "predates_changelog_days": 42,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 4.0,
-    "total_exposure_score": 386.1
+    "total_exposure_score": 1214.8
   },
   {
     "name": "SpaceWallet",
@@ -3099,55 +3097,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 454.8,
       "by_kind": {
-        "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
+        "lemma_removed": {
+          "count": 3,
+          "score": 8.8
         },
         "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 3,
+          "score": 6.6
+        },
+        "mechanism_change": {
+          "count": 66,
+          "score": 216.0
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 83,
+          "score": 165.3000000000001
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 37,
+          "score": 14.499999999999991
         },
-        "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+        "syntax_change": {
+          "count": 19,
+          "score": 43.599999999999994
         }
       }
     },
     "automation_reliance": {
       "fragile_tactic_count": 544,
-      "total_tactic_count": 1834,
-      "ratio": 0.2966194111232279,
+      "total_tactic_count": 1777,
+      "ratio": 0.3061339335959482,
       "multiplier": 1.0,
-      "amplified_total": 495.44
+      "amplified_total": 594.03
     },
     "proof_complexity": {
       "lemma_count": 12,
-      "mean_depth": 75.58,
-      "top_fraction_mean_depth": 296.67,
+      "mean_depth": 97.25,
+      "top_fraction_mean_depth": 377.67,
       "long_lemma_count": 1,
-      "depth_complexity": 208.23,
-      "complexity_score": 270.0
+      "depth_complexity": 265.5,
+      "complexity_score": 346.78
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 495.44
+    "total_exposure_score": 594.03
   },
   {
     "name": "Frodo-EC",
@@ -3174,48 +3172,48 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 454.8,
       "by_kind": {
-        "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
+        "lemma_removed": {
+          "count": 3,
+          "score": 8.8
         },
         "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 3,
+          "score": 6.6
+        },
+        "mechanism_change": {
+          "count": 66,
+          "score": 216.0
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 83,
+          "score": 165.3000000000001
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 37,
+          "score": 14.499999999999991
         },
-        "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+        "syntax_change": {
+          "count": 19,
+          "score": 43.599999999999994
         }
       }
     },
     "automation_reliance": {
       "fragile_tactic_count": 72,
-      "total_tactic_count": 570,
-      "ratio": 0.12631578947368421,
+      "total_tactic_count": 569,
+      "ratio": 0.1265377855887522,
       "multiplier": 1.0,
-      "amplified_total": 430.37
+      "amplified_total": 512.35
     },
     "proof_complexity": {
       "lemma_count": 28,
-      "mean_depth": 11.32,
-      "top_fraction_mean_depth": 28.86,
-      "long_lemma_count": 8,
-      "depth_complexity": 21.84,
-      "complexity_score": 24.6
+      "mean_depth": 21.68,
+      "top_fraction_mean_depth": 61.29,
+      "long_lemma_count": 11,
+      "depth_complexity": 45.44,
+      "complexity_score": 51.19
     },
     "smt_solver_info": [
       {
@@ -3238,7 +3236,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 430.37
+    "total_exposure_score": 512.35
   },
   {
     "name": "Modelling PQC EC",
@@ -3267,55 +3265,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
     "automation_reliance": {
       "fragile_tactic_count": 100,
-      "total_tactic_count": 768,
-      "ratio": 0.13020833333333334,
+      "total_tactic_count": 764,
+      "ratio": 0.13089005235602094,
       "multiplier": 1.0,
-      "amplified_total": 431.85
+      "amplified_total": 807.79
     },
     "proof_complexity": {
       "lemma_count": 76,
-      "mean_depth": 7.66,
-      "top_fraction_mean_depth": 19.89,
-      "long_lemma_count": 8,
-      "depth_complexity": 15.0,
-      "complexity_score": 16.95
+      "mean_depth": 9.46,
+      "top_fraction_mean_depth": 24.58,
+      "long_lemma_count": 9,
+      "depth_complexity": 18.53,
+      "complexity_score": 20.96
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 431.85
+    "total_exposure_score": 807.79
   },
   {
     "name": "EzRSA",
@@ -3344,55 +3342,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 28,
-      "total_tactic_count": 139,
-      "ratio": 0.2014388489208633,
+      "fragile_tactic_count": 21,
+      "total_tactic_count": 107,
+      "ratio": 0.19626168224299065,
       "multiplier": 1.0,
-      "amplified_total": 459.07
+      "amplified_total": 854.49
     },
     "proof_complexity": {
       "lemma_count": 3,
-      "mean_depth": 17.67,
-      "top_fraction_mean_depth": 26.0,
+      "mean_depth": 17.33,
+      "top_fraction_mean_depth": 23.0,
       "long_lemma_count": 2,
-      "depth_complexity": 22.67,
-      "complexity_score": 27.23
+      "depth_complexity": 20.73,
+      "complexity_score": 24.8
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 459.07
+    "total_exposure_score": 854.49
   },
   {
     "name": "CS591 Project",
@@ -3423,55 +3421,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 1210.8,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
+          "count": 172,
+          "score": 564.5
         },
         "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 64,
+          "score": 156.40000000000015
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 161,
+          "score": 334.5000000000007
+        },
+        "lemma_renamed": {
+          "count": 15,
+          "score": 38.99999999999999
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 193,
+          "score": 85.99999999999986
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 10,
+          "score": 30.4
         }
       }
     },
     "automation_reliance": {
       "fragile_tactic_count": 22,
-      "total_tactic_count": 177,
-      "ratio": 0.12429378531073447,
+      "total_tactic_count": 161,
+      "ratio": 0.13664596273291926,
       "multiplier": 1.0,
-      "amplified_total": 429.59
+      "amplified_total": 1376.25
     },
     "proof_complexity": {
       "lemma_count": 27,
-      "mean_depth": 3.56,
-      "top_fraction_mean_depth": 10.0,
+      "mean_depth": 4.33,
+      "top_fraction_mean_depth": 12.0,
       "long_lemma_count": 2,
-      "depth_complexity": 7.42,
-      "complexity_score": 8.34
+      "depth_complexity": 8.93,
+      "complexity_score": 10.15
     },
     "smt_solver_info": [],
     "predates_changelog": true,
     "predates_changelog_days": 720,
     "version_unknown": false,
-    "unresolved_version_penalty_applied": 11.12,
-    "total_exposure_score": 440.71
+    "unresolved_version_penalty_applied": 13.53,
+    "total_exposure_score": 1389.78
   },
   {
     "name": "Mystery Thesis",
@@ -3500,31 +3498,31 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
@@ -3533,7 +3531,7 @@
       "total_tactic_count": 148,
       "ratio": 0.20945945945945946,
       "multiplier": 1.0,
-      "amplified_total": 462.13
+      "amplified_total": 863.92
     },
     "proof_complexity": {
       "lemma_count": 4,
@@ -3548,7 +3546,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 462.13
+    "total_exposure_score": 863.92
   },
   {
     "name": "EasyPIR",
@@ -3575,55 +3573,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 454.8,
       "by_kind": {
-        "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
+        "lemma_removed": {
+          "count": 3,
+          "score": 8.8
         },
         "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 3,
+          "score": 6.6
+        },
+        "mechanism_change": {
+          "count": 66,
+          "score": 216.0
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 83,
+          "score": 165.3000000000001
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 37,
+          "score": 14.499999999999991
         },
-        "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+        "syntax_change": {
+          "count": 19,
+          "score": 43.599999999999994
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 14,
-      "total_tactic_count": 151,
-      "ratio": 0.09271523178807947,
+      "fragile_tactic_count": 8,
+      "total_tactic_count": 124,
+      "ratio": 0.06451612903225806,
       "multiplier": 1.0,
-      "amplified_total": 417.53
+      "amplified_total": 484.14
     },
     "proof_complexity": {
       "lemma_count": 7,
-      "mean_depth": 6.14,
-      "top_fraction_mean_depth": 9.0,
-      "long_lemma_count": 0,
-      "depth_complexity": 7.86,
-      "complexity_score": 8.59
+      "mean_depth": 12.0,
+      "top_fraction_mean_depth": 19.0,
+      "long_lemma_count": 1,
+      "depth_complexity": 16.2,
+      "complexity_score": 17.25
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 417.53
+    "total_exposure_score": 484.14
   },
   {
     "name": "Meijers Dissertation",
@@ -3664,26 +3662,26 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 7068,
-      "total_tactic_count": 45761,
-      "ratio": 0.15445466663752977,
+      "fragile_tactic_count": 7049,
+      "total_tactic_count": 44868,
+      "ratio": 0.15710528661852546,
       "multiplier": 1.0,
-      "amplified_total": 199.49
+      "amplified_total": 199.95
     },
     "proof_complexity": {
-      "lemma_count": 1227,
-      "mean_depth": 21.87,
-      "top_fraction_mean_depth": 74.28,
-      "long_lemma_count": 329,
-      "depth_complexity": 53.31,
-      "complexity_score": 61.55
+      "lemma_count": 1219,
+      "mean_depth": 41.33,
+      "top_fraction_mean_depth": 140.56,
+      "long_lemma_count": 469,
+      "depth_complexity": 100.87,
+      "complexity_score": 116.71
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 199.49
+    "total_exposure_score": 199.95
   },
   {
     "name": "Evoting Thesis",
@@ -3723,25 +3721,25 @@
     },
     "automation_reliance": {
       "fragile_tactic_count": 4,
-      "total_tactic_count": 165,
-      "ratio": 0.024242424242424242,
+      "total_tactic_count": 160,
+      "ratio": 0.025,
       "multiplier": 1.0,
-      "amplified_total": 108.98
+      "amplified_total": 109.06
     },
     "proof_complexity": {
       "lemma_count": 2,
-      "mean_depth": 61.5,
-      "top_fraction_mean_depth": 62.0,
+      "mean_depth": 78.0,
+      "top_fraction_mean_depth": 78.0,
       "long_lemma_count": 2,
-      "depth_complexity": 61.8,
-      "complexity_score": 63.3
+      "depth_complexity": 78.0,
+      "complexity_score": 79.95
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 108.98
+    "total_exposure_score": 109.06
   },
   {
     "name": "KZG PCS",
@@ -3791,18 +3789,18 @@
     },
     "automation_reliance": {
       "fragile_tactic_count": 1384,
-      "total_tactic_count": 5165,
-      "ratio": 0.26795740561471443,
+      "total_tactic_count": 5087,
+      "ratio": 0.2720660507175152,
       "multiplier": 1.0,
-      "amplified_total": 358.71
+      "amplified_total": 359.87
     },
     "proof_complexity": {
       "lemma_count": 195,
-      "mean_depth": 23.82,
-      "top_fraction_mean_depth": 67.14,
-      "long_lemma_count": 72,
-      "depth_complexity": 49.81,
-      "complexity_score": 63.16
+      "mean_depth": 24.72,
+      "top_fraction_mean_depth": 69.29,
+      "long_lemma_count": 75,
+      "depth_complexity": 51.46,
+      "complexity_score": 65.46
     },
     "smt_solver_info": [
       {
@@ -3865,7 +3863,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 358.71
+    "total_exposure_score": 359.87
   },
   {
     "name": "Commit Non Malleability EC",
@@ -3894,48 +3892,48 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
     "automation_reliance": {
       "fragile_tactic_count": 632,
-      "total_tactic_count": 3381,
-      "ratio": 0.18692694469091983,
+      "total_tactic_count": 3376,
+      "ratio": 0.1872037914691943,
       "multiplier": 1.0,
-      "amplified_total": 453.52
+      "amplified_total": 848.02
     },
     "proof_complexity": {
       "lemma_count": 184,
-      "mean_depth": 20.11,
-      "top_fraction_mean_depth": 55.02,
-      "long_lemma_count": 78,
-      "depth_complexity": 41.06,
-      "complexity_score": 48.73
+      "mean_depth": 21.55,
+      "top_fraction_mean_depth": 58.13,
+      "long_lemma_count": 80,
+      "depth_complexity": 43.5,
+      "complexity_score": 51.64
     },
     "smt_solver_info": [
       {
@@ -3963,7 +3961,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 453.52
+    "total_exposure_score": 848.02
   },
   {
     "name": "OSKGO Thesis",
@@ -3992,55 +3990,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
     "automation_reliance": {
       "fragile_tactic_count": 135,
-      "total_tactic_count": 1026,
-      "ratio": 0.13157894736842105,
+      "total_tactic_count": 1022,
+      "ratio": 0.13209393346379647,
       "multiplier": 1.0,
-      "amplified_total": 432.38
+      "amplified_total": 808.65
     },
     "proof_complexity": {
       "lemma_count": 95,
-      "mean_depth": 7.33,
-      "top_fraction_mean_depth": 22.42,
-      "long_lemma_count": 9,
-      "depth_complexity": 16.38,
-      "complexity_score": 18.54
+      "mean_depth": 11.31,
+      "top_fraction_mean_depth": 32.75,
+      "long_lemma_count": 18,
+      "depth_complexity": 24.17,
+      "complexity_score": 27.37
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 432.38
+    "total_exposure_score": 808.65
   },
   {
     "name": "EasyCrypt Iceberg",
@@ -4081,26 +4079,26 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 1929,
-      "total_tactic_count": 13584,
-      "ratio": 0.1420053003533569,
+      "fragile_tactic_count": 1923,
+      "total_tactic_count": 13445,
+      "ratio": 0.14302714763852734,
       "multiplier": 1.0,
-      "amplified_total": 197.34
+      "amplified_total": 197.52
     },
     "proof_complexity": {
-      "lemma_count": 314,
-      "mean_depth": 25.94,
-      "top_fraction_mean_depth": 88.34,
-      "long_lemma_count": 98,
-      "depth_complexity": 63.38,
-      "complexity_score": 72.38
+      "lemma_count": 312,
+      "mean_depth": 48.36,
+      "top_fraction_mean_depth": 165.38,
+      "long_lemma_count": 131,
+      "depth_complexity": 118.57,
+      "complexity_score": 135.53
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 197.34
+    "total_exposure_score": 197.52
   },
   {
     "name": "Shipovnik Verification",
@@ -4127,31 +4125,31 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 454.8,
       "by_kind": {
-        "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
+        "lemma_removed": {
+          "count": 3,
+          "score": 8.8
         },
         "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 3,
+          "score": 6.6
+        },
+        "mechanism_change": {
+          "count": 66,
+          "score": 216.0
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 83,
+          "score": 165.3000000000001
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 37,
+          "score": 14.499999999999991
         },
-        "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+        "syntax_change": {
+          "count": 19,
+          "score": 43.599999999999994
         }
       }
     },
@@ -4160,7 +4158,7 @@
       "total_tactic_count": 16,
       "ratio": 0.0,
       "multiplier": 1.0,
-      "amplified_total": 382.1
+      "amplified_total": 454.8
     },
     "proof_complexity": {
       "lemma_count": 0,
@@ -4175,7 +4173,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 382.1
+    "total_exposure_score": 454.8
   },
   {
     "name": "Comparison Non Malleability Unsat",
@@ -4204,31 +4202,31 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
@@ -4237,15 +4235,15 @@
       "total_tactic_count": 616,
       "ratio": 0.09090909090909091,
       "multiplier": 1.0,
-      "amplified_total": 416.84
+      "amplified_total": 779.24
     },
     "proof_complexity": {
       "lemma_count": 26,
-      "mean_depth": 30.88,
-      "top_fraction_mean_depth": 69.29,
+      "mean_depth": 31.23,
+      "top_fraction_mean_depth": 70.0,
       "long_lemma_count": 17,
-      "depth_complexity": 53.93,
-      "complexity_score": 58.83
+      "depth_complexity": 54.49,
+      "complexity_score": 59.45
     },
     "smt_solver_info": [
       {
@@ -4273,7 +4271,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 416.84
+    "total_exposure_score": 779.24
   },
   {
     "name": "EC Final Project",
@@ -4302,55 +4300,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
     "automation_reliance": {
       "fragile_tactic_count": 165,
-      "total_tactic_count": 793,
-      "ratio": 0.2080706179066835,
+      "total_tactic_count": 751,
+      "ratio": 0.2197070572569907,
       "multiplier": 1.0,
-      "amplified_total": 461.6
+      "amplified_total": 871.24
     },
     "proof_complexity": {
       "lemma_count": 28,
-      "mean_depth": 22.61,
-      "top_fraction_mean_depth": 70.14,
-      "long_lemma_count": 9,
-      "depth_complexity": 51.13,
-      "complexity_score": 61.77
+      "mean_depth": 28.82,
+      "top_fraction_mean_depth": 86.14,
+      "long_lemma_count": 11,
+      "depth_complexity": 63.21,
+      "complexity_score": 77.1
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 461.6
+    "total_exposure_score": 871.24
   },
   {
     "name": "Guessing Game",
@@ -4389,19 +4387,19 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 1054,
-      "total_tactic_count": 2502,
-      "ratio": 0.4212629896083134,
+      "fragile_tactic_count": 1050,
+      "total_tactic_count": 2470,
+      "ratio": 0.4251012145748988,
       "multiplier": 1.0,
-      "amplified_total": 151.22
+      "amplified_total": 151.63
     },
     "proof_complexity": {
       "lemma_count": 114,
-      "mean_depth": 15.85,
-      "top_fraction_mean_depth": 55.38,
-      "long_lemma_count": 11,
-      "depth_complexity": 39.57,
-      "complexity_score": 56.24
+      "mean_depth": 26.68,
+      "top_fraction_mean_depth": 93.34,
+      "long_lemma_count": 27,
+      "depth_complexity": 66.68,
+      "complexity_score": 95.03
     },
     "smt_solver_info": [
       {
@@ -4414,7 +4412,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 151.22
+    "total_exposure_score": 151.63
   },
   {
     "name": "BLT Signatures",
@@ -4443,48 +4441,48 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 912,
-      "total_tactic_count": 4302,
-      "ratio": 0.21199442119944212,
+      "fragile_tactic_count": 905,
+      "total_tactic_count": 4267,
+      "ratio": 0.21209280524958987,
       "multiplier": 1.0,
-      "amplified_total": 463.1
+      "amplified_total": 865.8
     },
     "proof_complexity": {
-      "lemma_count": 234,
-      "mean_depth": 17.34,
-      "top_fraction_mean_depth": 50.07,
+      "lemma_count": 232,
+      "mean_depth": 17.53,
+      "top_fraction_mean_depth": 50.78,
       "long_lemma_count": 76,
-      "depth_complexity": 36.98,
-      "complexity_score": 44.81
+      "depth_complexity": 37.48,
+      "complexity_score": 45.42
     },
     "smt_solver_info": [
       {
@@ -4512,7 +4510,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 463.1
+    "total_exposure_score": 865.8
   },
   {
     "name": "Above Threshold",
@@ -4543,55 +4541,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 1210.8,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
+          "count": 172,
+          "score": 564.5
         },
         "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 64,
+          "score": 156.40000000000015
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 161,
+          "score": 334.5000000000007
+        },
+        "lemma_renamed": {
+          "count": 15,
+          "score": 38.99999999999999
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 193,
+          "score": 85.99999999999986
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 10,
+          "score": 30.4
         }
       }
     },
     "automation_reliance": {
       "fragile_tactic_count": 153,
-      "total_tactic_count": 399,
-      "ratio": 0.38345864661654133,
+      "total_tactic_count": 373,
+      "ratio": 0.4101876675603217,
       "multiplier": 1.0,
-      "amplified_total": 528.62
+      "amplified_total": 1707.46
     },
     "proof_complexity": {
       "lemma_count": 39,
-      "mean_depth": 9.21,
-      "top_fraction_mean_depth": 25.1,
+      "mean_depth": 10.15,
+      "top_fraction_mean_depth": 28.6,
       "long_lemma_count": 10,
-      "depth_complexity": 18.74,
-      "complexity_score": 25.93
+      "depth_complexity": 21.22,
+      "complexity_score": 29.93
     },
     "smt_solver_info": [],
     "predates_changelog": true,
     "predates_changelog_days": 721,
     "version_unknown": false,
-    "unresolved_version_penalty_applied": 34.57,
-    "total_exposure_score": 563.19
+    "unresolved_version_penalty_applied": 39.91,
+    "total_exposure_score": 1747.37
   },
   {
     "name": "Sphincs",
@@ -4633,19 +4631,19 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 91,
-      "total_tactic_count": 241,
-      "ratio": 0.3775933609958506,
+      "fragile_tactic_count": 90,
+      "total_tactic_count": 236,
+      "ratio": 0.3813559322033898,
       "multiplier": 1.0,
-      "amplified_total": 307.07
+      "amplified_total": 307.9
     },
     "proof_complexity": {
-      "lemma_count": 6,
-      "mean_depth": 37.5,
-      "top_fraction_mean_depth": 99.5,
+      "lemma_count": 5,
+      "mean_depth": 55.4,
+      "top_fraction_mean_depth": 128.0,
       "long_lemma_count": 2,
-      "depth_complexity": 74.7,
-      "complexity_score": 102.91
+      "depth_complexity": 98.96,
+      "complexity_score": 136.7
     },
     "smt_solver_info": [
       {
@@ -4668,7 +4666,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 307.07
+    "total_exposure_score": 307.9
   },
   {
     "name": "EasyCrypt Examples",
@@ -4706,26 +4704,26 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 223,
-      "total_tactic_count": 1181,
-      "ratio": 0.18882303132938189,
+      "fragile_tactic_count": 206,
+      "total_tactic_count": 1125,
+      "ratio": 0.1831111111111111,
       "multiplier": 1.0,
-      "amplified_total": 72.4
+      "amplified_total": 72.05
     },
     "proof_complexity": {
-      "lemma_count": 149,
-      "mean_depth": 6.84,
-      "top_fraction_mean_depth": 23.11,
-      "long_lemma_count": 17,
-      "depth_complexity": 16.6,
-      "complexity_score": 19.73
+      "lemma_count": 148,
+      "mean_depth": 9.52,
+      "top_fraction_mean_depth": 28.73,
+      "long_lemma_count": 22,
+      "depth_complexity": 21.05,
+      "complexity_score": 24.9
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 72.4
+    "total_exposure_score": 72.05
   },
   {
     "name": "LQ-1",
@@ -4766,18 +4764,18 @@
     },
     "automation_reliance": {
       "fragile_tactic_count": 53,
-      "total_tactic_count": 164,
-      "ratio": 0.3231707317073171,
+      "total_tactic_count": 161,
+      "ratio": 0.32919254658385094,
       "multiplier": 1.0,
-      "amplified_total": 185.51
+      "amplified_total": 186.35
     },
     "proof_complexity": {
       "lemma_count": 25,
-      "mean_depth": 4.56,
-      "top_fraction_mean_depth": 10.0,
+      "mean_depth": 5.36,
+      "top_fraction_mean_depth": 12.57,
       "long_lemma_count": 1,
-      "depth_complexity": 7.82,
-      "complexity_score": 10.35
+      "depth_complexity": 9.69,
+      "complexity_score": 12.88
     },
     "smt_solver_info": [
       {
@@ -4805,7 +4803,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 185.51
+    "total_exposure_score": 186.35
   },
   {
     "name": "Uvoting",
@@ -4836,55 +4834,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 1210.8,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
+          "count": 172,
+          "score": 564.5
         },
         "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 64,
+          "score": 156.40000000000015
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 161,
+          "score": 334.5000000000007
+        },
+        "lemma_renamed": {
+          "count": 15,
+          "score": 38.99999999999999
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 193,
+          "score": 85.99999999999986
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 10,
+          "score": 30.4
         }
       }
     },
     "automation_reliance": {
       "fragile_tactic_count": 119,
-      "total_tactic_count": 1010,
-      "ratio": 0.11782178217821782,
+      "total_tactic_count": 995,
+      "ratio": 0.11959798994974874,
       "multiplier": 1.0,
-      "amplified_total": 427.12
+      "amplified_total": 1355.61
     },
     "proof_complexity": {
       "lemma_count": 8,
-      "mean_depth": 104.5,
-      "top_fraction_mean_depth": 269.5,
+      "mean_depth": 140.12,
+      "top_fraction_mean_depth": 366.5,
       "long_lemma_count": 5,
-      "depth_complexity": 203.5,
-      "complexity_score": 227.48
+      "depth_complexity": 275.95,
+      "complexity_score": 308.95
     },
     "smt_solver_info": [],
     "predates_changelog": true,
     "predates_changelog_days": 1376,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 40.0,
-    "total_exposure_score": 467.12
+    "total_exposure_score": 1395.61
   },
   {
     "name": "FV Sphincs",
@@ -4925,19 +4923,19 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 1927,
-      "total_tactic_count": 13576,
-      "ratio": 0.14194166175604006,
+      "fragile_tactic_count": 1921,
+      "total_tactic_count": 13437,
+      "ratio": 0.14296345910545508,
       "multiplier": 1.0,
-      "amplified_total": 197.33
+      "amplified_total": 197.5
     },
     "proof_complexity": {
-      "lemma_count": 309,
-      "mean_depth": 26.34,
-      "top_fraction_mean_depth": 89.24,
-      "long_lemma_count": 98,
-      "depth_complexity": 64.08,
-      "complexity_score": 73.18
+      "lemma_count": 307,
+      "mean_depth": 49.12,
+      "top_fraction_mean_depth": 167.08,
+      "long_lemma_count": 131,
+      "depth_complexity": 119.89,
+      "complexity_score": 137.04
     },
     "smt_solver_info": [
       {
@@ -4975,7 +4973,7 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 197.33
+    "total_exposure_score": 197.5
   },
   {
     "name": "ElGamal",
@@ -5006,55 +5004,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 1210.8,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
+          "count": 172,
+          "score": 564.5
         },
         "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 64,
+          "score": 156.40000000000015
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 161,
+          "score": 334.5000000000007
+        },
+        "lemma_renamed": {
+          "count": 15,
+          "score": 38.99999999999999
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 193,
+          "score": 85.99999999999986
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 10,
+          "score": 30.4
         }
       }
     },
     "automation_reliance": {
       "fragile_tactic_count": 162,
-      "total_tactic_count": 869,
-      "ratio": 0.18642117376294592,
+      "total_tactic_count": 850,
+      "ratio": 0.19058823529411764,
       "multiplier": 1.0,
-      "amplified_total": 453.33
+      "amplified_total": 1441.56
     },
     "proof_complexity": {
       "lemma_count": 69,
-      "mean_depth": 8.75,
-      "top_fraction_mean_depth": 26.44,
-      "long_lemma_count": 14,
-      "depth_complexity": 19.37,
-      "complexity_score": 22.98
+      "mean_depth": 13.58,
+      "top_fraction_mean_depth": 40.28,
+      "long_lemma_count": 19,
+      "depth_complexity": 29.6,
+      "complexity_score": 35.24
     },
     "smt_solver_info": [],
     "predates_changelog": true,
     "predates_changelog_days": 716,
     "version_unknown": false,
-    "unresolved_version_penalty_applied": 30.64,
-    "total_exposure_score": 483.97
+    "unresolved_version_penalty_applied": 40.0,
+    "total_exposure_score": 1481.56
   },
   {
     "name": "Old Formosa Libjc",
@@ -5085,55 +5083,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 1210.8,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
+          "count": 172,
+          "score": 564.5
         },
         "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 64,
+          "score": 156.40000000000015
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 161,
+          "score": 334.5000000000007
+        },
+        "lemma_renamed": {
+          "count": 15,
+          "score": 38.99999999999999
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 193,
+          "score": 85.99999999999986
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 10,
+          "score": 30.4
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 1761,
-      "total_tactic_count": 12587,
-      "ratio": 0.13990625248272026,
+      "fragile_tactic_count": 1745,
+      "total_tactic_count": 12408,
+      "ratio": 0.14063507414571244,
       "multiplier": 1.0,
-      "amplified_total": 435.56
+      "amplified_total": 1381.08
     },
     "proof_complexity": {
-      "lemma_count": 819,
-      "mean_depth": 7.83,
-      "top_fraction_mean_depth": 23.6,
-      "long_lemma_count": 103,
-      "depth_complexity": 17.29,
-      "complexity_score": 19.71
+      "lemma_count": 798,
+      "mean_depth": 16.02,
+      "top_fraction_mean_depth": 48.15,
+      "long_lemma_count": 203,
+      "depth_complexity": 35.3,
+      "complexity_score": 40.26
     },
     "smt_solver_info": [],
     "predates_changelog": true,
     "predates_changelog_days": 914,
     "version_unknown": false,
-    "unresolved_version_penalty_applied": 26.28,
-    "total_exposure_score": 461.84
+    "unresolved_version_penalty_applied": 40.0,
+    "total_exposure_score": 1421.08
   },
   {
     "name": "SRI High Assurance Crypto",
@@ -5160,55 +5158,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 454.8,
       "by_kind": {
-        "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
+        "lemma_removed": {
+          "count": 3,
+          "score": 8.8
         },
         "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 3,
+          "score": 6.6
+        },
+        "mechanism_change": {
+          "count": 66,
+          "score": 216.0
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 83,
+          "score": 165.3000000000001
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 37,
+          "score": 14.499999999999991
         },
-        "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+        "syntax_change": {
+          "count": 19,
+          "score": 43.599999999999994
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 6099,
-      "total_tactic_count": 51255,
-      "ratio": 0.11899326894937079,
+      "fragile_tactic_count": 5902,
+      "total_tactic_count": 49404,
+      "ratio": 0.11946401101125415,
       "multiplier": 1.0,
-      "amplified_total": 427.57
+      "amplified_total": 509.13
     },
     "proof_complexity": {
-      "lemma_count": 1978,
-      "mean_depth": 8.75,
-      "top_fraction_mean_depth": 30.3,
-      "long_lemma_count": 157,
-      "depth_complexity": 21.68,
-      "complexity_score": 24.26
+      "lemma_count": 1920,
+      "mean_depth": 17.06,
+      "top_fraction_mean_depth": 57.81,
+      "long_lemma_count": 292,
+      "depth_complexity": 41.51,
+      "complexity_score": 46.47
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 427.57
+    "total_exposure_score": 509.13
   },
   {
     "name": "EasyCrypt",
@@ -5227,19 +5225,19 @@
       "by_kind": {}
     },
     "automation_reliance": {
-      "fragile_tactic_count": 3723,
-      "total_tactic_count": 39042,
-      "ratio": 0.09535884432149992,
+      "fragile_tactic_count": 3699,
+      "total_tactic_count": 38531,
+      "ratio": 0.0960006228750876,
       "multiplier": 1.0,
       "amplified_total": 0.0
     },
     "proof_complexity": {
-      "lemma_count": 5749,
-      "mean_depth": 3.49,
-      "top_fraction_mean_depth": 9.9,
-      "long_lemma_count": 230,
-      "depth_complexity": 7.34,
-      "complexity_score": 8.04
+      "lemma_count": 5738,
+      "mean_depth": 7.57,
+      "top_fraction_mean_depth": 21.31,
+      "long_lemma_count": 608,
+      "depth_complexity": 15.81,
+      "complexity_score": 17.33
     },
     "smt_solver_info": [
       {
@@ -5348,55 +5346,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 497,
-      "total_tactic_count": 5689,
-      "ratio": 0.08736157496923888,
+      "fragile_tactic_count": 495,
+      "total_tactic_count": 5518,
+      "ratio": 0.08970641536788691,
       "multiplier": 1.0,
-      "amplified_total": 415.48
+      "amplified_total": 778.38
     },
     "proof_complexity": {
-      "lemma_count": 1210,
-      "mean_depth": 2.41,
-      "top_fraction_mean_depth": 6.14,
-      "long_lemma_count": 16,
-      "depth_complexity": 4.64,
-      "complexity_score": 5.05
+      "lemma_count": 1202,
+      "mean_depth": 4.97,
+      "top_fraction_mean_depth": 12.49,
+      "long_lemma_count": 65,
+      "depth_complexity": 9.48,
+      "complexity_score": 10.33
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 415.48
+    "total_exposure_score": 778.38
   },
   {
     "name": "Formal Methods S&P",
@@ -5425,55 +5423,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 140,
-      "total_tactic_count": 647,
-      "ratio": 0.21638330757341576,
+      "fragile_tactic_count": 110,
+      "total_tactic_count": 437,
+      "ratio": 0.2517162471395881,
       "multiplier": 1.0,
-      "amplified_total": 464.78
+      "amplified_total": 894.1
     },
     "proof_complexity": {
-      "lemma_count": 34,
-      "mean_depth": 13.59,
-      "top_fraction_mean_depth": 35.44,
-      "long_lemma_count": 10,
-      "depth_complexity": 26.7,
-      "complexity_score": 32.48
+      "lemma_count": 30,
+      "mean_depth": 14.73,
+      "top_fraction_mean_depth": 35.38,
+      "long_lemma_count": 11,
+      "depth_complexity": 27.12,
+      "complexity_score": 33.94
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 464.78
+    "total_exposure_score": 894.1
   },
   {
     "name": "EasyTeach",
@@ -5504,55 +5502,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 1210.8,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
+          "count": 172,
+          "score": 564.5
         },
         "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
+          "count": 64,
+          "score": 156.40000000000015
         },
         "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 161,
+          "score": 334.5000000000007
+        },
+        "lemma_renamed": {
+          "count": 15,
+          "score": 38.99999999999999
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 193,
+          "score": 85.99999999999986
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 10,
+          "score": 30.4
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 9843,
-      "total_tactic_count": 19878,
-      "ratio": 0.49517054029580443,
+      "fragile_tactic_count": 9842,
+      "total_tactic_count": 19773,
+      "ratio": 0.497749456329338,
       "multiplier": 1.0,
-      "amplified_total": 571.3
+      "amplified_total": 1813.48
     },
     "proof_complexity": {
       "lemma_count": 744,
-      "mean_depth": 21.87,
-      "top_fraction_mean_depth": 81.74,
-      "long_lemma_count": 97,
-      "depth_complexity": 57.79,
-      "complexity_score": 86.41
+      "mean_depth": 39.28,
+      "top_fraction_mean_depth": 148.63,
+      "long_lemma_count": 133,
+      "depth_complexity": 104.89,
+      "complexity_score": 157.1
     },
     "smt_solver_info": [],
     "predates_changelog": true,
     "predates_changelog_days": 664,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 40.0,
-    "total_exposure_score": 611.3
+    "total_exposure_score": 1853.48
   },
   {
     "name": "EasyTeach Alley",
@@ -5594,26 +5592,26 @@
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 180,
-      "total_tactic_count": 1071,
-      "ratio": 0.16806722689075632,
+      "fragile_tactic_count": 178,
+      "total_tactic_count": 1043,
+      "ratio": 0.17066155321188878,
       "multiplier": 1.0,
-      "amplified_total": 260.36
+      "amplified_total": 260.94
     },
     "proof_complexity": {
-      "lemma_count": 121,
-      "mean_depth": 5.26,
-      "top_fraction_mean_depth": 14.77,
-      "long_lemma_count": 13,
-      "depth_complexity": 10.97,
-      "complexity_score": 12.81
+      "lemma_count": 120,
+      "mean_depth": 9.23,
+      "top_fraction_mean_depth": 26.2,
+      "long_lemma_count": 19,
+      "depth_complexity": 19.41,
+      "complexity_score": 22.73
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 260.36
+    "total_exposure_score": 260.94
   },
   {
     "name": "The Joy of EasyCrypt",
@@ -5642,55 +5640,55 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
     "automation_reliance": {
-      "fragile_tactic_count": 64,
-      "total_tactic_count": 491,
-      "ratio": 0.13034623217922606,
+      "fragile_tactic_count": 42,
+      "total_tactic_count": 238,
+      "ratio": 0.17647058823529413,
       "multiplier": 1.0,
-      "amplified_total": 431.91
+      "amplified_total": 840.35
     },
     "proof_complexity": {
       "lemma_count": 39,
-      "mean_depth": 8.56,
-      "top_fraction_mean_depth": 18.5,
-      "long_lemma_count": 7,
-      "depth_complexity": 14.53,
-      "complexity_score": 16.42
+      "mean_depth": 4.9,
+      "top_fraction_mean_depth": 8.6,
+      "long_lemma_count": 0,
+      "depth_complexity": 7.12,
+      "complexity_score": 8.38
     },
     "smt_solver_info": [],
     "predates_changelog": false,
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 431.91
+    "total_exposure_score": 840.35
   },
   {
     "name": "Acc sElect",
@@ -5719,48 +5717,48 @@
       "r2026.07"
     ],
     "breaking_change_score": {
-      "total": 382.1,
+      "total": 714.3,
       "by_kind": {
         "mechanism_change": {
-          "count": 57,
-          "score": 183.5
-        },
-        "syntax_change": {
-          "count": 18,
-          "score": 41.199999999999996
-        },
-        "lemma_renamed": {
-          "count": 1,
-          "score": 1.7999999999999998
-        },
-        "tactic_change": {
-          "count": 70,
-          "score": 142.49999999999997
+          "count": 106,
+          "score": 347.0
         },
         "lemma_added": {
-          "count": 29,
-          "score": 10.699999999999996
+          "count": 82,
+          "score": 38.000000000000064
+        },
+        "tactic_change": {
+          "count": 108,
+          "score": 225.90000000000032
         },
         "lemma_removed": {
-          "count": 1,
-          "score": 2.4
+          "count": 5,
+          "score": 15.200000000000001
+        },
+        "syntax_change": {
+          "count": 32,
+          "score": 76.80000000000001
+        },
+        "lemma_renamed": {
+          "count": 5,
+          "score": 11.399999999999999
         }
       }
     },
     "automation_reliance": {
       "fragile_tactic_count": 544,
-      "total_tactic_count": 1834,
-      "ratio": 0.2966194111232279,
+      "total_tactic_count": 1777,
+      "ratio": 0.3061339335959482,
       "multiplier": 1.0,
-      "amplified_total": 495.44
+      "amplified_total": 932.97
     },
     "proof_complexity": {
       "lemma_count": 12,
-      "mean_depth": 75.58,
-      "top_fraction_mean_depth": 296.67,
+      "mean_depth": 97.25,
+      "top_fraction_mean_depth": 377.67,
       "long_lemma_count": 1,
-      "depth_complexity": 208.23,
-      "complexity_score": 270.0
+      "depth_complexity": 265.5,
+      "complexity_score": 346.78
     },
     "smt_solver_info": [
       {
@@ -5783,6 +5781,6 @@
     "predates_changelog_days": null,
     "version_unknown": false,
     "unresolved_version_penalty_applied": 0.0,
-    "total_exposure_score": 495.44
+    "total_exposure_score": 932.97
   }
 ]

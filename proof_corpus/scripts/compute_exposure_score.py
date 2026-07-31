@@ -496,6 +496,53 @@ def collect_repo_tokens(repo_path: Path, exclude_dirs: set[str] | None = None) -
     return tokens
 
 
+def load_any_changelog(path: str) -> dict:
+    """Load either changelog format and return a dict with a `releases` list.
+
+    Accepts `changelog_index.json` (the flat, typed, pre-indexed format from
+    build_changelog_index.py, whose releases reference entries by key) and the
+    legacy nested `changelog.yaml`. The index's richer per-entry fields flow
+    straight through to `changelog_entry_names`, which is the whole point of
+    accepting it here.
+    """
+    with open(path, encoding="utf-8") as handle:
+        text = handle.read()
+    data = json.loads(text) if path.endswith(".json") else yaml.safe_load(text)
+    if not isinstance(data, dict):
+        raise ValueError(f"{path}: expected a mapping at the top level")
+
+    if str(data.get("schema") or "").startswith("ai4ec.changelog-index/"):
+        by_key = {entry["key"]: entry for entry in data.get("entries") or []}
+        for release in data.get("releases") or []:
+            release["entries"] = [
+                by_key[key] for key in release.get("entry_keys") or [] if key in by_key
+            ]
+    return data
+
+
+def changelog_entry_names(entry: dict) -> set[str]:
+    """The names an entry can be matched against repo source tokens.
+
+    Prefers the resolved buckets an indexed changelog carries
+    (``proof_corpus/scripts/build_changelog_index.py``): those are the names
+    that were checked against real EasyCrypt declarations, the tactic
+    vocabulary, or the PR's own changed files. Falls back to the legacy
+    untyped ``identifiers`` list only when no resolved bucket exists.
+
+    This matters because ``identifiers`` is ~85% English prose: words like
+    ``use``, ``from``, ``list``, ``type`` and ``code`` appear in essentially
+    every ``.ec`` file, so matching on them made the version bracket below
+    fire on noise and systematically pulled version estimates toward whatever
+    release happened to contain an entry with a common word in its title.
+    """
+    resolved: set[str] = set()
+    for field in ("symbols", "tactics", "theories_touched", "theories_mentioned"):
+        resolved.update(str(name) for name in (entry.get(field) or []))
+    if resolved:
+        return resolved
+    return {str(i) for i in (entry.get("identifiers") or [])}
+
+
 def detect_content_bracket_version(repo_tokens: set[str], releases_by_date: list[dict]) -> dict:
     """Infer a plausible [lower_bound, upper_bound) version bracket from
     which changelog-tracked identifiers actually appear in the repo's
@@ -506,7 +553,7 @@ def detect_content_bracket_version(repo_tokens: set[str], releases_by_date: list
 
     for rel in releases_by_date:
         for entry in rel.get("entries", []):
-            ids = {str(i) for i in (entry.get("identifiers") or [])}
+            ids = changelog_entry_names(entry)
             if not ids & repo_tokens:
                 continue
             kind = entry.get("kind")
@@ -980,7 +1027,11 @@ def main() -> None:
                      help="directory name to use for --repo-url (default: derived from the URL); ignored with --csv/--repo-path")
     ap.add_argument("--eval-dir", default="eval", help="base folder repos are cloned into (default: ./eval)")
     ap.add_argument("--force", action="store_true", help="re-clone even if the target directory already exists")
-    ap.add_argument("--changelog", required=True, help="path to changelog.yaml from process_changelog.py")
+    ap.add_argument(
+        "--changelog", required=True,
+        help="path to changelog_index.json (preferred, from build_changelog_index.py) "
+             "or the legacy changelog.yaml from process_changelog.py",
+    )
     ap.add_argument("--target-version", required=True)
     ap.add_argument("--source-version", default=None,
                      help="override version detection with a known value (applied to every repo if using --csv)")
@@ -1017,8 +1068,7 @@ def main() -> None:
     if args.exclude_dirs:
         exclude_dirs |= {d.strip() for d in args.exclude_dirs.split(",") if d.strip()}
 
-    with open(args.changelog, encoding="utf-8") as f:
-        changelog = yaml.safe_load(f)
+    changelog = load_any_changelog(args.changelog)
     releases_by_date = sorted(changelog["releases"], key=lambda r: r.get("published_at") or "")
 
     if args.repo_path:

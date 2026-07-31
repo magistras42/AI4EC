@@ -31,6 +31,7 @@ from pathlib import Path
 from integration.agent import run_agent
 from integration.agent.config import AgentConfig
 from integration.agent.easycrypt import fetch_goal_and_premises, has_open_goals, validate_file
+from integration.agent.import_repair import format_for_prompt, repair_imports
 from integration.agent.proof_file import ProofFile, create_working_copy
 from integration.agent.repair_hints import get_repair_hints_text
 from integration.experiment.config import ExperimentConfig
@@ -84,6 +85,33 @@ def run_replay_bootstrap_trial(
     original_path.write_bytes(case.file.read_bytes())
 
     goal_result = fetch_goal_and_premises(case.file, case.proof_start_line, agent_config)
+    import_repair_summary: str | None = None
+    if goal_result.returncode != 0 or not has_open_goals(goal_result.stdout):
+        # An unreachable goal is very often not a proof problem at all: the
+        # file failed to LOAD, because a `require import` no longer resolves or
+        # the file uses syntax modern EasyCrypt no longer parses. Previously
+        # every such case was discarded here as `goal_unreachable`, which threw
+        # away exactly the trials the changelog knowledge base is best at.
+        # Try a verified, line-preserving import repair before giving up.
+        repair = repair_imports(
+            case.file,
+            agent_config,
+            source_version=replay_config.source_ec_version,
+            target_version=replay_config.target_ec_version,
+            work_path=trial_dir / "import_repaired.ec",
+        )
+        (trial_dir / "import_repair.json").write_text(
+            json.dumps(repair.to_dict(), indent=2), encoding="utf-8",
+        )
+        if repair.changed and repair.improved:
+            # Line-preserving by construction, so case.proof_start_line and
+            # every other recorded line number still point at the right thing.
+            case.file.write_text(repair.text, encoding="utf-8")
+            import_repair_summary = format_for_prompt(repair) or None
+            goal_result = fetch_goal_and_premises(
+                case.file, case.proof_start_line, agent_config
+            )
+
     if goal_result.returncode != 0 or not has_open_goals(goal_result.stdout):
         return TrialResult(
             trial_id=trial_id,
@@ -95,6 +123,7 @@ def run_replay_bootstrap_trial(
             reason="SKIPPED",
             message=(
                 "Target goal unreachable even after admitting prior lemmas "
+                "and attempting import repair "
                 f"(stderr: {goal_result.stderr.strip()[:300]})"
             ),
             duration_s=0.0,
@@ -182,6 +211,17 @@ def run_replay_bootstrap_trial(
         json.dumps({"changelog_hop_matched_version": matched_version}, indent=2),
         encoding="utf-8",
     )
+
+    # The solver is proving against a file this harness edited, so it has to be
+    # told what changed -- otherwise a tactic referencing a renamed symbol looks
+    # inexplicably wrong. Prepended to the same prompt section as the changelog
+    # facts, since it is the same kind of evidence (a dated library change),
+    # just one that has already been acted on.
+    if import_repair_summary:
+        changelog_hints = (
+            f"{import_repair_summary}\n\n{changelog_hints}"
+            if changelog_hints else import_repair_summary
+        )
 
     trial_agent_config = replace(
         agent_config,

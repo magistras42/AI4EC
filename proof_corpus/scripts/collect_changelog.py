@@ -51,9 +51,11 @@ import argparse
 import json
 import os
 import re
+import subprocess
 import sys
 import time
 from datetime import datetime, timezone
+from pathlib import Path
 
 import requests
 
@@ -154,6 +156,161 @@ def fetch_pr_details(session: requests.Session, repo: str, pr_numbers: list[str]
     return details
 
 
+# --- git-log source ---------------------------------------------------------
+#
+# EasyCrypt's GitHub release bodies are empty before r2025.02 (r2022.04 is one
+# sentence; r2023.09 and r2024.01 are literally 0 bytes). The releases-only
+# pipeline therefore has NOTHING for that span, which is exactly where the
+# corpus lives -- 18% of the tracked repos predate the changelog entirely and
+# 44% span 13+ releases. This source fills those gaps from the repository
+# itself: `git log <prev-tag>..<tag>`, which reaches back as far as the history
+# does, independent of whether anyone wrote release notes.
+
+# ASCII unit/record separators: commit subjects and bodies contain newlines,
+# tabs, pipes and commas, so any printable delimiter is unsafe.
+_GIT_FIELD_SEP = "\x1f"
+_GIT_RECORD_SEP = "\x1e"
+_GIT_LOG_FORMAT = _GIT_FIELD_SEP.join(["%H", "%s", "%an", "%aI", "%b"]) + _GIT_RECORD_SEP
+
+# Default path filter. Library and engine changes are what break proofs; docs,
+# CI config and test scaffolding are pure noise at repair time and would
+# multiply the classification cost for nothing.
+DEFAULT_GIT_LOG_PATHS = ["theories/", "src/", "libs/"]
+
+
+def git(repo: Path, args: list[str]) -> str | None:
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(repo), *args],
+            capture_output=True, text=True, timeout=120,
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
+        print(f"  ! git {' '.join(args[:2])} failed: {exc}", file=sys.stderr)
+        return None
+    if result.returncode != 0:
+        return None
+    return result.stdout
+
+
+def commits_between(
+    repo: Path, since_tag: str | None, until_tag: str, paths: list[str],
+) -> list[dict]:
+    """Return the non-merge commits in ``(since_tag, until_tag]``.
+
+    ``since_tag=None`` means "everything reachable from until_tag", used for
+    the oldest cataloged release, where there is no previous tag to bound it.
+    Merges are excluded: their subjects are "Merge pull request #N from ..."
+    boilerplate that carries no information the merged commits don't.
+    """
+    rev_range = f"{since_tag}..{until_tag}" if since_tag else until_tag
+    args = ["log", "--no-merges", f"--format={_GIT_LOG_FORMAT}", rev_range]
+    if paths:
+        args += ["--", *paths]
+    out = git(repo, args)
+    if out is None:
+        return []
+
+    commits = []
+    for record in out.split(_GIT_RECORD_SEP):
+        record = record.strip("\n")
+        if not record.strip():
+            continue
+        fields = record.split(_GIT_FIELD_SEP)
+        if len(fields) < 4:
+            continue
+        sha, subject, author, date = fields[0], fields[1], fields[2], fields[3]
+        body = fields[4] if len(fields) > 4 else ""
+        commits.append({
+            "sha": sha,
+            "short_sha": sha[:9],
+            "title": subject.strip(),
+            "author": author.strip(),
+            "date": date.strip(),
+            "body": body.strip(),
+        })
+    return commits
+
+
+def commit_changed_files(repo: Path, sha: str, limit: int) -> list[str]:
+    out = git(repo, ["show", "--name-only", "--format=", sha])
+    if not out:
+        return []
+    files = [line.strip() for line in out.splitlines() if line.strip()]
+    return files[:limit]
+
+
+def resolve_tag_order(repo: Path, tags: list[str]) -> list[str]:
+    """Order `tags` oldest-first by their commit date, keeping only tags the
+    clone actually has. The fork carries the `-premises` patch on top of
+    upstream and does not necessarily have upstream's tags, so a missing tag
+    is expected and reported rather than fatal."""
+    dated = []
+    missing = []
+    for tag in tags:
+        out = git(repo, ["log", "-1", "--format=%aI", tag])
+        if out is None or not out.strip():
+            missing.append(tag)
+            continue
+        dated.append((out.strip(), tag))
+    if missing:
+        print(
+            f"  ! clone has no such tag(s): {', '.join(missing)}. "
+            f"Fetch them with: git -C {repo} fetch "
+            f"https://github.com/EasyCrypt/easycrypt.git 'refs/tags/*:refs/tags/*'",
+            file=sys.stderr,
+        )
+    dated.sort()
+    return [tag for _date, tag in dated]
+
+
+def attach_git_log(
+    out_releases: list[dict],
+    repo: Path,
+    *,
+    only_empty: bool,
+    paths: list[str],
+    max_files: int,
+    max_commits: int,
+) -> int:
+    """Attach commit-derived entries to releases, in place.
+
+    With ``only_empty`` (the default) this touches just the releases whose
+    notes yielded no bullets -- the point is to fill holes, not to duplicate
+    well-documented releases with a second, noisier view of the same changes.
+    """
+    by_tag = {str(rel.get("tag_name")): rel for rel in out_releases}
+    ordered = resolve_tag_order(repo, list(by_tag))
+    if not ordered:
+        print("  ! no usable tags in the clone; skipping git-log source", file=sys.stderr)
+        return 0
+
+    filled = 0
+    for position, tag in enumerate(ordered):
+        release = by_tag[tag]
+        if only_empty and release.get("bullet_count"):
+            continue
+        previous = ordered[position - 1] if position > 0 else None
+        commits = commits_between(repo, previous, tag, paths)
+        if len(commits) > max_commits:
+            print(
+                f"  ! {tag}: {len(commits)} commits exceeds --git-log-max-commits="
+                f"{max_commits}; keeping the {max_commits} most recent",
+                file=sys.stderr,
+            )
+            commits = commits[:max_commits]
+        for commit in commits:
+            commit["changed_files"] = commit_changed_files(repo, commit["sha"], max_files)
+        release["commits"] = commits
+        release["commit_range"] = f"{previous or '(root)'}..{tag}"
+        if commits:
+            filled += 1
+        print(
+            f"  {tag}: {len(commits)} commit(s) from {release['commit_range']}",
+            file=sys.stderr,
+        )
+    return filled
+
+
 def slice_by_tag(releases: list[dict], since: str | None, until: str | None) -> list[dict]:
     """Keep releases in (since, until] by tag_name, if provided. Assumes the
     API's default newest-first order; falls back to returning everything if
@@ -174,6 +331,26 @@ def main() -> None:
     ap.add_argument("--until", default=None, help="newest tag to include")
     ap.add_argument("--with-pr-details", action="store_true",
                      help="also fetch per-PR title/labels/changed files (slower, more API calls)")
+    ap.add_argument(
+        "--git-log", type=Path, default=None, metavar="EC_REPO",
+        help="path to an EasyCrypt clone WITH release tags; derive entries from "
+             "`git log <prev-tag>..<tag>` for releases whose notes are empty "
+             "(EasyCrypt's are, before r2025.02)",
+    )
+    ap.add_argument(
+        "--git-log-all-releases", action="store_true",
+        help="with --git-log, derive commits for EVERY release, not only the "
+             "ones with empty notes (noisier and much more to classify)",
+    )
+    ap.add_argument(
+        "--git-log-paths", default=",".join(DEFAULT_GIT_LOG_PATHS),
+        help="comma-separated path prefixes to keep (empty string = no filter). "
+             f"Default: {','.join(DEFAULT_GIT_LOG_PATHS)}",
+    )
+    ap.add_argument("--git-log-max-files", type=int, default=60,
+                    help="cap changed_files recorded per commit")
+    ap.add_argument("--git-log-max-commits", type=int, default=400,
+                    help="cap commits recorded per release range")
     args = ap.parse_args()
 
     session = requests.Session()
@@ -188,6 +365,7 @@ def main() -> None:
     print(f"Got {len(releases)} releases after slicing.", file=sys.stderr)
 
     out_releases = []
+    empty_tags = []
     for rel in releases:
         entry = {
             "tag_name": rel.get("tag_name"),
@@ -196,21 +374,92 @@ def main() -> None:
             "html_url": rel.get("html_url"),
             "body": rel.get("body") or "",
         }
+        pr_numbers = extract_pr_numbers(entry["body"])
+        # Record what we found even when --with-pr-details is off, so a caller
+        # can tell "this release genuinely has no notes" from "we never looked".
+        entry["body_chars"] = len(entry["body"])
+        entry["bullet_count"] = len(pr_numbers)
+        if not pr_numbers:
+            empty_tags.append(str(entry["tag_name"]))
         if args.with_pr_details:
-            pr_numbers = extract_pr_numbers(entry["body"])
             print(f"  fetching {len(pr_numbers)} PR(s) for {entry['tag_name']} ...", file=sys.stderr)
             entry["pr_details"] = fetch_pr_details(session, args.repo, pr_numbers)
         out_releases.append(entry)
 
+    git_log_filled = 0
+    if args.git_log is not None:
+        if not (args.git_log / ".git").exists() and not (args.git_log / "HEAD").exists():
+            print(
+                f"error: --git-log {args.git_log} is not a git repository",
+                file=sys.stderr,
+            )
+            sys.exit(2)
+        paths = [p.strip() for p in args.git_log_paths.split(",") if p.strip()]
+        print(
+            f"Deriving commit entries from {args.git_log} "
+            f"({'all releases' if args.git_log_all_releases else 'releases with empty notes'}"
+            f"{', paths: ' + ', '.join(paths) if paths else ', all paths'}) ...",
+            file=sys.stderr,
+        )
+        git_log_filled = attach_git_log(
+            out_releases,
+            args.git_log,
+            only_empty=not args.git_log_all_releases,
+            paths=paths,
+            max_files=args.git_log_max_files,
+            max_commits=args.git_log_max_commits,
+        )
+
+    still_empty = [
+        tag for tag in empty_tags
+        if not (by_tag_commits := [
+            r for r in out_releases
+            if str(r.get("tag_name")) == tag and r.get("commits")
+        ])
+    ]
     output = {
         "repo": args.repo,
         "fetched_at": datetime.now(timezone.utc).isoformat(),
         "releases": out_releases,
+        "coverage": {
+            "releases_fetched": len(out_releases),
+            "releases_with_notes": len(out_releases) - len(empty_tags),
+            "releases_without_notes": empty_tags,
+            "releases_filled_from_git_log": git_log_filled,
+            "releases_still_without_entries": still_empty,
+        },
     }
 
     with open(args.out, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
     print(f"Wrote {args.out}", file=sys.stderr)
+
+    if empty_tags and git_log_filled:
+        print(
+            f"note: {len(empty_tags)} release(s) had no parseable notes "
+            f"({', '.join(empty_tags)}); {git_log_filled} were filled from git log.",
+            file=sys.stderr,
+        )
+    if still_empty:
+        # EasyCrypt's own releases r2022.04 .. r2024.09 ship empty or one-line
+        # bodies, so the notes-derived changelog has nothing for them. Say so at
+        # collection time: downstream, "no entries in this range" is otherwise
+        # indistinguishable from "nothing changed in this range", and a repair
+        # run spanning those releases will silently find no evidence.
+        hint = (
+            "         Pass --git-log <path-to-easycrypt-clone> to derive entries "
+            "from commits instead."
+            if args.git_log is None
+            else "         Even git log produced nothing for these (check the "
+                 "clone has the tags and the path filter is not too narrow)."
+        )
+        print(
+            f"warning: {len(still_empty)} release(s) have no entries at all: "
+            f"{', '.join(still_empty)}.\n"
+            f"         That is missing data, not evidence that nothing changed.\n"
+            f"{hint}",
+            file=sys.stderr,
+        )
 
 
 if __name__ == "__main__":
