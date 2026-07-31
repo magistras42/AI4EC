@@ -1,7 +1,11 @@
 # AI4EC Proof-Repair Handoff
 
-**Branch:** `shannon-llm-integration` · **As of:** 2026-07-30 · **Audience:** engineers
+**Branch:** `shannon-llm-integration` · **As of:** 2026-07-31 · **Audience:** engineers
 picking up EasyCrypt proof-repair work (`integration/`, `proof_corpus/`).
+
+Companion docs: [`proof_corpus/README.md`](../proof_corpus/README.md) (build
+order and query APIs) and [`BRANCH_SUMMARY.md`](BRANCH_SUMMARY.md) (what this
+branch adds over `llm-integration`, and the bugs it fixed).
 
 This document is written to be pasted into (or referenced by) future task
 instructions. It describes **what exists today**, **what is verified broken**,
@@ -45,25 +49,42 @@ Plus `integration/extern/easycrypt` — a git submodule pointing at
 patched `llm` subcommand. **The entire harness depends on this fork**; stock
 EasyCrypt will not work.
 
-### 0.1 Status as of 2026-07-30
+### 0.1 Status as of 2026-07-31
 
-| Capability | State |
+**Read the second table before trusting the first.** Everything marked ✅ below
+is built, tested, and measurable in isolation — and none of it is currently
+reached by a CLI-launched experiment.
+
+| Knowledge base / mechanics | State |
 |---|---|
 | Changelog coverage | ✅ **14/14 releases**, 913 classified entries (was 10/14, 276) |
 | Symbol → theory resolution | ✅ 6325 symbols across 128 theories |
 | Machine-readable theory deps | ✅ `import_repair_note` on 18/18 libraries |
 | Library history mined from git | ✅ 16 theories, per-release symbol churn |
-| **Pre-proof import repair** | ✅ Built and measured — §4 |
-| Hints threaded per-step | ❌ Still frozen at bootstrap — §7 W3 |
-| Import-repair audit artifact | ✅ Per-trial `import_repair.json` written; ❌ never aggregated — §7 W8 |
-| Version detection | ❌ Still hardcoded `r2022.04`/`r2026.07` — §7 W6 |
-| Repair-specific metrics | ❌ Nothing reported — §7 W8 |
-| **`replay_bootstrap` reaching the runner** | ❌ **Broken** — §6.2, and it is the first thing to fix |
+| **Pre-proof import repair** | ✅ Built and measured on ElGamal — §4 |
+| Corpus exposure ladder | ✅ Rescored 2026-07-31 against the full changelog |
+| Tests | ✅ 199 passing (+2 pre-existing failures in `test_goal_state.py`) |
 
-The single highest-leverage next action is **§7 W1**: `replay_bootstrap` is
-silently dropped by `_build_spec`, so the CLI falls back to mutation mode and
-none of the repair machinery above actually runs in an experiment. Everything
-else in this document is downstream of that.
+| Wiring — how any of it reaches a model | State |
+|---|---|
+| `replay_bootstrap` surviving the CLI rebuild | 🔴 **Broken** — §6.2 |
+| Retrieval reaching the prompt | 🔴 Blocked: `changelog_hints` has one producer, inside `replay_bootstrap` — §6.2 |
+| `import_repair` in the interactive agent loop | 🔴 Not wired — `loop.py`/`prompt.py` never call it — §6.2 |
+| `_experiment_mode` labelling replay runs | 🟠 Returns `"mutation"` — §6.5 |
+| Hints threaded per-step | 🟠 Frozen at bootstrap — §7 W3 |
+| Import-repair audit artifact | ✅ Per-trial `import_repair.json`; ❌ never aggregated — §7 W8 |
+| Version detection | ❌ Hardcoded `r2022.04`/`r2026.07` — §7 W6 |
+| Repair-specific metrics | ❌ Nothing reported — §7 W8 |
+
+**The single highest-leverage next action is §7 W1.** One dropped dataclass
+field in `_build_spec` is what stands between a fully-built knowledge base and
+a model that has never seen it. Until that lands, no amount of additional
+mining changes any experimental result — see §6.2 for the full blast radius.
+
+Working entry points in the meantime are the standalone CLIs
+(`python3 -m integration.agent.import_repair …`,
+`proof_corpus/scripts/retrieve_entries.py …`) — see
+[`proof_corpus/README.md`](../proof_corpus/README.md).
 
 ---
 
@@ -626,6 +647,50 @@ Fix: add `replay_bootstrap=spec.replay_bootstrap` to both constructors. Better:
 stop enumerating fields — use `dataclasses.replace(spec, corpus=...)` so a
 fifth mode can never be dropped the same way.
 
+#### Why this one dropped field disables the *entire* knowledge base
+
+This is easy to under-read as "one experiment mode is broken." It is broader
+than that, because **`AgentConfig.changelog_hints` has exactly one producer in
+the whole codebase**:
+
+```
+integration/agent/config.py:95            declares the field (default None)
+integration/experiment/repair_bootstrap.py:229   the ONLY place that sets it
+integration/agent/loop.py:271             reads it → prompt.py:491 renders it
+```
+
+The two other `AgentConfig` construction sites — the single-file agent CLI
+([`agent/__main__.py:49`](../integration/agent/__main__.py#L49)) and the
+experiment runner ([`experiment/__main__.py:213`](../integration/experiment/__main__.py#L213))
+— never set it. `repair_bootstrap.py` runs only in `replay_bootstrap` mode.
+
+So when §6.2 drops that mode, nothing populates `changelog_hints`, and the
+following are all unreachable in any CLI-launched run:
+
+| Asset | Reached via | Status in a CLI run |
+|---|---|---|
+| `changelog_index.json` (913 entries) | `get_repair_hints_text` | ❌ never queried |
+| `repair_docs_index.json` `symbol_index` (6325 symbols) | `resolve_symbol_theories` | ❌ never queried |
+| `repair_doc/*.json` notes | `get_repair_doc_snippets` | ❌ never queried |
+| `ec_migrations.toml` (15 rules) | `repair_imports` | ❌ never invoked |
+
+Every artifact in `proof_corpus/` is therefore **built, tested, and currently
+unread by any experiment.** That is the real cost of §6.2, and it is why W1
+outranks everything else in §7 regardless of how much more evidence gets mined.
+
+Verified:
+
+```
+spec                        registry  _build_spec  _with_sandbox  _experiment_mode
+elgamal-changelog-repair    True      False        False          'mutation'
+```
+
+Separately: **`import_repair` is not wired into the interactive agent loop at
+all.** `loop.py` and `prompt.py` contain no reference to it; the only production
+caller is `repair_bootstrap.py`. A single-file `python3 -m integration.agent
+FILE.ec` run on a file that fails to load will still fail to load. Wiring it
+there is a second, independent piece of work from W1.
+
 ### 6.3 ✅ ~~`format_repair_hints_for_prompt` discards most of the retrieved evidence~~ — FIXED 2026-07-30
 
 It used to render only `- [{version}] {title}: {hint}` and
@@ -718,7 +783,12 @@ The EasyCrypt binary **is** built. Set up a venv before claiming a test passes.
 Do these in order. W1–W3 are small and unblock measurement; W4–W5 are the real
 import-repair capability; W6+ is research infrastructure.
 
-### W1 — Fix the wiring (hours, no design work)
+### W1 — ⭐ Fix the wiring (hours, no design work) — **DO THIS FIRST**
+
+Not a polish item. Until it lands, the 913-entry changelog, the 6325-symbol
+index, the 18 library notes and all 15 migration rules are unread by any
+experiment (§6.2). No other roadmap item changes a measured result before this
+one does.
 
 1. `__main__.py`: carry `replay_bootstrap` through `_build_spec` and
    `_with_sandbox_dir` — preferably via `dataclasses.replace`. (§6.2)
@@ -727,11 +797,19 @@ import-repair capability; W6+ is research infrastructure.
    the CLI rebuild, for **all** registered specs. That is the regression that
    should have caught §6.2.
 4. Stand up a venv from `requirements-agent.txt`; make `pytest integration/tests`
-   green and record the command in the README.
+   green and record the command in the README. (Today: 199 pass, 2 pre-existing
+   failures in `test_goal_state.py`, and `test_premises.py` needs `hypothesis`.)
 
 **Definition of done:** a real `--spec elgamal-changelog-repair` run produces
-trials whose `bootstrap_result.json` shows a nonzero `accepted_count` and whose
-`summary.json` says `mode: replay_bootstrap`.
+trials whose `bootstrap_result.json` shows a nonzero `accepted_count`, whose
+`summary.json` says `mode: replay_bootstrap`, **and whose prompt log contains a
+non-empty `## Known EasyCrypt library changes` section** — the last one is what
+proves the knowledge base actually reached the model, which is the property
+§6.2 silently broke.
+
+**Adjacent, separate work:** wire `import_repair` into the interactive agent
+loop as well. It is currently called only from `repair_bootstrap.py`, so
+`python3 -m integration.agent FILE.ec` on an unloadable file still just fails.
 
 ### W2 — ✅ Render all the evidence we already retrieve — DONE 2026-07-30
 
