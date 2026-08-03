@@ -1,0 +1,15 @@
+{
+  "Type variables: <none> ------------------------------------------------------------------------ cancel log gen": [
+    [
+      "[critical] [/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_003/agent_work.agent.ec: line 68 (0-15)] cannot prove goal (strict)\n[hint] The SMT backend could not close this goal automatically. This usually means the goal is nonlinear (e.g. products, squares, exponents, or logs), involves a type the solver does not handle well, or simply needs a named lemma hint. Try: (1) supply a hint \u2014 smt(lemma_name). (2) if the goal is still in Hoare/program-logic form (you see 'pre =' and 'post ='), apply 'wp.' then 'skip.' first, then retry smt(). (3) if the goal is already ambient but busy, try 'progress.' / 'simplify.' once, then retry smt() or a rewrite. (4) introduce an intermediate fact with 'have h : ... by smt(). smt(h).'",
+      "smt(gen_log)."
+    ]
+  ],
+  "__recent__": [
+    [
+      "Type variables: <none> ------------------------------------------------------------------------ cancel log gen",
+      "[critical] [/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_003/agent_work.agent.ec: line 68 (0-15)] cannot prove goal (strict)\n[hint] The SMT backend could not close this goal automatically. This usually means the goal is nonlinear (e.g. products, squares, exponents, or logs), involves a type the solver does not handle well, or simply needs a named lemma hint. Try: (1) supply a hint \u2014 smt(lemma_name). (2) if the goal is still in Hoare/program-logic form (you see 'pre =' and 'post ='), apply 'wp.' then 'skip.' first, then retry smt(). (3) if the goal is already ambient but busy, try 'progress.' / 'simplify.' once, then retry smt() or a rewrite. (4) introduce an intermediate fact with 'have h : ... by smt(). smt(h).'",
+      "smt(gen_log)."
+    ]
+  ]
+}

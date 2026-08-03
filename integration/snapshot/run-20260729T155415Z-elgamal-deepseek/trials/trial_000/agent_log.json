@@ -1,0 +1,96 @@
+{
+  "source": "/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_000/agent_start.ec",
+  "work_copy": "/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_000/agent_work.agent.ec",
+  "events": [
+    {
+      "time": "2026-07-29T15:55:11.328997+00:00",
+      "event": "startup",
+      "source": "/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_000/agent_start.ec",
+      "work_copy": "/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_000/agent_work.agent.ec",
+      "goal": "Current goal\n\nType variables: <none>\n\ng1: unit\ng2: unit\n------------------------------------------------------------------------\ng1 = g2",
+      "premise_count": 2581,
+      "cursor_upto": 198
+    },
+    {
+      "time": "2026-07-29T15:55:21.998653+00:00",
+      "event": "iteration",
+      "step": 1,
+      "goal": "Current goal\n\nType variables: <none>\n\ng1: unit\ng2: unit\n------------------------------------------------------------------------\ng1 = g2",
+      "top_premises": {
+        "Tactics.unitW": "[Tactics] lemma unitW: forall (P : unit -> bool), P tt => forall (x : unit), P x.",
+        "StdBigop.Bigint.Num.Domain.unitP": "[StdBigop.Bigint.Num.Domain] lemma unitP: forall (x y : int), y * x = 1 => x = 1 \\/ x = -1.",
+        "StdBigop.Bigint.Num.Domain.unitrV": "[StdBigop.Bigint.Num.Domain] lemma unitrV: forall (x : int), x = 1 \\/ x = -1 <=> x = 1 \\/ x = -1.",
+        "Tactics.and3_s2": "[Tactics] lemma and3_s2: forall (b1 b2 b3 : bool), b2 => b1 && b3 => b1 && b2 && b3.",
+        "MUnit.dunit1E": "[MUnit] lemma dunit1E: forall (x y : 'a), mu1 (dunit x) y = b2r (x = y).",
+        "StdBigop.Bigreal.Num.Domain.unitrMr": "[StdBigop.Bigreal.Num.Domain] lemma unitrMr: forall (x y : real), x <> 0%r => x * y <> 0%r <=> y <> 0%r.",
+        "RField.unitrMl": "[RField] lemma unitrMl: forall (x y : real), y <> 0%r => x * y <> 0%r <=> x <> 0%r.",
+        "RField.unitrMr": "[RField] lemma unitrMr: forall (x y : real), x <> 0%r => x * y <> 0%r <=> y <> 0%r.",
+        "List.catsI": "[List] lemma catsI: forall (s t1 t2 : 'a list), ++ s t1 = ++ s t2 => t1 = t2.",
+        "IntOrder.Domain.unitrV": "[IntOrder.Domain] lemma unitrV: forall (x : int), x = 1 \\/ x = -1 <=> x = 1 \\/ x = -1."
+      },
+      "ranked_scores": [
+        [
+          "Tactics.unitW",
+          0.6396950748351357
+        ],
+        [
+          "StdBigop.Bigint.Num.Domain.unitP",
+          0.6216073893065364
+        ],
+        [
+          "StdBigop.Bigint.Num.Domain.unitrV",
+          0.6205533277302145
+        ],
+        [
+          "Tactics.and3_s2",
+          0.6189946489808021
+        ],
+        [
+          "MUnit.dunit1E",
+          0.6187593047009571
+        ],
+        [
+          "StdBigop.Bigreal.Num.Domain.unitrMr",
+          0.6159782269088068
+        ],
+        [
+          "RField.unitrMl",
+          0.6155502168559984
+        ],
+        [
+          "RField.unitrMr",
+          0.6155502030652725
+        ],
+        [
+          "List.catsI",
+          0.6154066731707407
+        ],
+        [
+          "IntOrder.Domain.unitrV",
+          0.6152795988883559
+        ]
+      ],
+      "action": "tactic",
+      "tactic": "trivial.",
+      "outcome": "complete",
+      "error": null,
+      "content": "{\"action\": \"tactic\", \"tactic\": \"trivial.\", \"name\": \"\", \"query\": \"\", \"count\": \"\"}"
+    },
+    {
+      "time": "2026-07-29T15:55:21.999173+00:00",
+      "event": "finish",
+      "reason": "COMPLETE",
+      "message": "Proof complete",
+      "steps": 1,
+      "token_usage": {
+        "calls": 1,
+        "prompt_tokens": 6815,
+        "completion_tokens": 28,
+        "total_tokens": 6843,
+        "cached_prompt_tokens": 0,
+        "cache_miss_prompt_tokens": 6815,
+        "reasoning_tokens": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "Type variables: <none> Adv(RO0 : RO) : ADV{-RO, -Adv2LCDHAdv} &m: {} ------------------------------------------------------------------------ (forall (RO0 <: RO{-Adv}), islossless RO0.f => islossless Adv(RO0).choose) => (forall (RO0 <: RO{-Adv}), islossless RO0.f => islossless Adv(RO0).guess) => `|Pr[INDCPA(HEG, Adv).main() @ &m : res] - 1%r / 2%r| <= Pr[LCDH(Adv2LCDHAdv(Adv)).main() @ &m : res]": [
+    [
+      "[warning] [/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_002/agent_work.agent.ec:362] global axiom Adv_choose_ll in section\n[warning] [/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_002/agent_work.agent.ec:366] global axiom Adv_guess_ll in section\n[critical] [/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_002/agent_work.agent.ec: line 828 (24-37)] expecting a `memory', not a `formula'",
+      "apply (INDCPA_Sec Adv Adv_choose_ll Adv_guess_ll &m)."
+    ],
+    [
+      "[warning] [/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_002/agent_work.agent.ec:362] global axiom Adv_choose_ll in section\n[warning] [/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_002/agent_work.agent.ec:366] global axiom Adv_guess_ll in section\n[critical] [/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_002/agent_work.agent.ec: line 828 (20-22)] expecting a `module', not a `formula'",
+      "apply (INDCPA_Sec &m)."
+    ]
+  ],
+  "__recent__": [
+    [
+      "Type variables: <none> Adv(RO0 : RO) : ADV{-RO, -Adv2LCDHAdv} &m: {} ------------------------------------------------------------------------ (forall (RO0 <: RO{-Adv}), islossless RO0.f => islossless Adv(RO0).choose) => (forall (RO0 <: RO{-Adv}), islossless RO0.f => islossless Adv(RO0).guess) => `|Pr[INDCPA(HEG, Adv).main() @ &m : res] - 1%r / 2%r| <= Pr[LCDH(Adv2LCDHAdv(Adv)).main() @ &m : res]",
+      "[warning] [/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_002/agent_work.agent.ec:362] global axiom Adv_choose_ll in section\n[warning] [/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_002/agent_work.agent.ec:366] global axiom Adv_guess_ll in section\n[critical] [/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_002/agent_work.agent.ec: line 828 (24-37)] expecting a `memory', not a `formula'",
+      "apply (INDCPA_Sec Adv Adv_choose_ll Adv_guess_ll &m)."
+    ],
+    [
+      "Type variables: <none> Adv(RO0 : RO) : ADV{-RO, -Adv2LCDHAdv} &m: {} ------------------------------------------------------------------------ (forall (RO0 <: RO{-Adv}), islossless RO0.f => islossless Adv(RO0).choose) => (forall (RO0 <: RO{-Adv}), islossless RO0.f => islossless Adv(RO0).guess) => `|Pr[INDCPA(HEG, Adv).main() @ &m : res] - 1%r / 2%r| <= Pr[LCDH(Adv2LCDHAdv(Adv)).main() @ &m : res]",
+      "[warning] [/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_002/agent_work.agent.ec:362] global axiom Adv_choose_ll in section\n[warning] [/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_002/agent_work.agent.ec:366] global axiom Adv_guess_ll in section\n[critical] [/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_002/agent_work.agent.ec: line 828 (20-22)] expecting a `module', not a `formula'",
+      "apply (INDCPA_Sec &m)."
+    ]
+  ]
+}

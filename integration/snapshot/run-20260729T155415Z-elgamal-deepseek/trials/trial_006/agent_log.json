@@ -1,0 +1,551 @@
+{
+  "source": "/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_006/agent_start.ec",
+  "work_copy": "/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_006/agent_work.agent.ec",
+  "events": [
+    {
+      "time": "2026-07-29T16:31:14.800303+00:00",
+      "event": "startup",
+      "source": "/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_006/agent_start.ec",
+      "work_copy": "/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_006/agent_work.agent.ec",
+      "goal": "Current goal\n\nType variables: <none>\n\n------------------------------------------------------------------------\npre = true\n\n    RO_track.f \n    [=] 1%r\n\npost = true",
+      "premise_count": 2583,
+      "cursor_upto": 771
+    },
+    {
+      "time": "2026-07-29T16:31:23.360524+00:00",
+      "event": "iteration",
+      "step": 1,
+      "goal": "Current goal\n\nType variables: <none>\n\n------------------------------------------------------------------------\npre = true\n\n    RO_track.f \n    [=] 1%r\n\npost = true",
+      "top_premises": {
+        "RField.invr_out": "[RField] lemma invr_out: forall (x : real), ! x <> 0%r => inv x = x.",
+        "RField.div1r": "[RField] lemma div1r: forall (x : real), 1%r / x = inv x.",
+        "RField.sub0r": "[RField] lemma sub0r: forall (x : real), 0%r - x = -x.",
+        "Tactics.trueI": "[Tactics] lemma trueI: true.",
+        "RealOrder.normrZ": "[RealOrder] lemma normrZ: forall (x y : real), 0%r <= x => `|x * y| = x * `|y|.",
+        "RField.mulN1r": "[RField] lemma mulN1r: forall (x : real), (- 1%r) * x = -x.",
+        "RealOrder.ger_addr": "[RealOrder] lemma ger_addr: forall (x y : real), y + x <= x <=> y <= 0%r.",
+        "Number.RealField.ler_pemulr": "[Number.RealField] lemma ler_pemulr: forall (x y : t), zeror <= y => oner <= x => y <= y * x.",
+        "RealOrder.ler_nimulr": "[RealOrder] lemma ler_nimulr: forall (x y : real), y <= 0%r => x <= 1%r => y <= y * x.",
+        "RField.mulf_neq0": "[RField] lemma mulf_neq0: forall (x y : real), x <> 0%r => y <> 0%r => x * y <> 0%r."
+      },
+      "ranked_scores": [
+        [
+          "RField.invr_out",
+          0.6165323566695575
+        ],
+        [
+          "RField.div1r",
+          0.6163747277766911
+        ],
+        [
+          "RField.sub0r",
+          0.6155334684525816
+        ],
+        [
+          "Tactics.trueI",
+          0.6148864040230301
+        ],
+        [
+          "RealOrder.normrZ",
+          0.6146559404222545
+        ],
+        [
+          "RField.mulN1r",
+          0.6141915847969044
+        ],
+        [
+          "RealOrder.ger_addr",
+          0.6140297068051308
+        ],
+        [
+          "Number.RealField.ler_pemulr",
+          0.6111727696339265
+        ],
+        [
+          "RealOrder.ler_nimulr",
+          0.6110718646677442
+        ],
+        [
+          "RField.mulf_neq0",
+          0.6107733848807586
+        ]
+      ],
+      "action": "tactic",
+      "tactic": "proc.",
+      "outcome": "accepted",
+      "error": null,
+      "content": "{\"action\": \"tactic\", \"tactic\": \"proc.\", \"name\": \"\", \"query\": \"\", \"count\": \"\"}"
+    },
+    {
+      "time": "2026-07-29T16:31:37.062398+00:00",
+      "event": "iteration",
+      "step": 2,
+      "goal": "Current goal\n\nType variables: <none>\n\n------------------------------------------------------------------------\nContext : hr: {x : group, y : text}\nBound   : [=] 1%r\n\npre = true\n\n(1--)  if (x = RO_track.bad_grp) {          \n(1.1)    RO_track.badHappened <- true       \n(1--)  }                                    \n(2--)  if (x \\notin RO_track.mp) {          \n(2.1)    y <$ dtext                         \n(2.2)    RO_track.mp <- RO_track.mp.[x <- y]\n(2--)  }                                    \n\npost = true",
+      "top_premises": {
+        "RealOrder.gtr_addr": "[RealOrder] lemma gtr_addr: forall (x y : real), y + x < x <=> y < 0%r.",
+        "RealOrder.gtr_addl": "[RealOrder] lemma gtr_addl: forall (x y : real), x + y < x <=> y < 0%r.",
+        "RealExp.log_ge0": "[RealExp] lemma log_ge0: forall (b x : real), 1%r <= b => 1%r <= x => 0%r <= log b x.",
+        "Tactics.eq_iff_imp": "[Tactics] lemma eq_iff_imp: forall (x y : bool), x <=> y => x = y.",
+        "RealOrder.ger_addr": "[RealOrder] lemma ger_addr: forall (x y : real), y + x <= x <=> y <= 0%r.",
+        "RField.unitrMr": "[RField] lemma unitrMr: forall (x y : real), x <> 0%r => x * y <> 0%r <=> y <> 0%r.",
+        "StdBigop.Bigreal.Num.Domain.unitrMr": "[StdBigop.Bigreal.Num.Domain] lemma unitrMr: forall (x y : real), x <> 0%r => x * y <> 0%r <=> y <> 0%r.",
+        "RealOrder.normrZ": "[RealOrder] lemma normrZ: forall (x y : real), 0%r <= x => `|x * y| = x * `|y|.",
+        "RealOrder.gtr_nmulr": "[RealOrder] lemma gtr_nmulr: forall (x y : real), y < 0%r => y * x < y = 1%r < x.",
+        "RealOrder.gtr_pmulr": "[RealOrder] lemma gtr_pmulr: forall (x y : real), 0%r < y => y * x < y <=> x < 1%r."
+      },
+      "ranked_scores": [
+        [
+          "RealOrder.gtr_addr",
+          0.6451036541080485
+        ],
+        [
+          "RealOrder.gtr_addl",
+          0.6447458653145726
+        ],
+        [
+          "RealExp.log_ge0",
+          0.6439736754135386
+        ],
+        [
+          "Tactics.eq_iff_imp",
+          0.6438250532865539
+        ],
+        [
+          "RealOrder.ger_addr",
+          0.6425125397992653
+        ],
+        [
+          "RField.unitrMr",
+          0.6402314397616755
+        ],
+        [
+          "StdBigop.Bigreal.Num.Domain.unitrMr",
+          0.640103906418222
+        ],
+        [
+          "RealOrder.normrZ",
+          0.6394769532694702
+        ],
+        [
+          "RealOrder.gtr_nmulr",
+          0.6380458710526482
+        ],
+        [
+          "RealOrder.gtr_pmulr",
+          0.6375797619639342
+        ]
+      ],
+      "action": "tactic",
+      "tactic": "if.",
+      "outcome": "accepted",
+      "error": null,
+      "content": "{\"action\": \"tactic\", \"tactic\": \"if.\", \"name\": \"\", \"query\": \"\", \"count\": \"\"}"
+    },
+    {
+      "time": "2026-07-29T16:31:54.957693+00:00",
+      "event": "iteration",
+      "step": 3,
+      "goal": "Current goal\n\nType variables: <none>\n\n------------------------------------------------------------------------\nContext : hr: {x : group, y : text}\nBound   : [=] 1%r\n\npre = true\n\n(1--)  if (x = RO_track.bad_grp) {          \n(1.1)    RO_track.badHappened <- true       \n(1--)  }                                    \n(2--)  if (x \\notin RO_track.mp) {          \n(2.1)    y <$ dtext                         \n(2.2)    RO_track.mp <- RO_track.mp.[x <- y]\n(2--)  }                                    \n\npost = true",
+      "top_premises": {
+        "RealOrder.gtr_addr": "[RealOrder] lemma gtr_addr: forall (x y : real), y + x < x <=> y < 0%r.",
+        "RealOrder.gtr_addl": "[RealOrder] lemma gtr_addl: forall (x y : real), x + y < x <=> y < 0%r.",
+        "RealExp.log_ge0": "[RealExp] lemma log_ge0: forall (b x : real), 1%r <= b => 1%r <= x => 0%r <= log b x.",
+        "Tactics.eq_iff_imp": "[Tactics] lemma eq_iff_imp: forall (x y : bool), x <=> y => x = y.",
+        "RealOrder.ger_addr": "[RealOrder] lemma ger_addr: forall (x y : real), y + x <= x <=> y <= 0%r.",
+        "RField.unitrMr": "[RField] lemma unitrMr: forall (x y : real), x <> 0%r => x * y <> 0%r <=> y <> 0%r.",
+        "StdBigop.Bigreal.Num.Domain.unitrMr": "[StdBigop.Bigreal.Num.Domain] lemma unitrMr: forall (x y : real), x <> 0%r => x * y <> 0%r <=> y <> 0%r.",
+        "RealOrder.normrZ": "[RealOrder] lemma normrZ: forall (x y : real), 0%r <= x => `|x * y| = x * `|y|.",
+        "RealOrder.gtr_nmulr": "[RealOrder] lemma gtr_nmulr: forall (x y : real), y < 0%r => y * x < y = 1%r < x.",
+        "RealOrder.gtr_pmulr": "[RealOrder] lemma gtr_pmulr: forall (x y : real), 0%r < y => y * x < y <=> x < 1%r."
+      },
+      "ranked_scores": [
+        [
+          "RealOrder.gtr_addr",
+          0.6451036541080485
+        ],
+        [
+          "RealOrder.gtr_addl",
+          0.6447458653145726
+        ],
+        [
+          "RealExp.log_ge0",
+          0.6439736754135386
+        ],
+        [
+          "Tactics.eq_iff_imp",
+          0.6438250532865539
+        ],
+        [
+          "RealOrder.ger_addr",
+          0.6425125397992653
+        ],
+        [
+          "RField.unitrMr",
+          0.6402314397616755
+        ],
+        [
+          "StdBigop.Bigreal.Num.Domain.unitrMr",
+          0.640103906418222
+        ],
+        [
+          "RealOrder.normrZ",
+          0.6394769532694702
+        ],
+        [
+          "RealOrder.gtr_nmulr",
+          0.6380458710526482
+        ],
+        [
+          "RealOrder.gtr_pmulr",
+          0.6375797619639342
+        ]
+      ],
+      "action": "tactic",
+      "tactic": "sp; if.",
+      "outcome": "accepted",
+      "error": null,
+      "content": "{\"action\": \"tactic\", \"tactic\": \"sp; if.\", \"name\": \"\", \"query\": \"\", \"count\": \"\"}"
+    },
+    {
+      "time": "2026-07-29T16:32:13.446441+00:00",
+      "event": "iteration",
+      "step": 4,
+      "goal": "Current goal (remaining: 2)\n\nType variables: <none>\n\n------------------------------------------------------------------------\nContext : hr: {x : group, y : text}\nBound   : [=] 1%r\n\npre = true /\\ x = RO_track.bad_grp\n\n(1--)  RO_track.badHappened <- true         \n(2--)  if (x \\notin RO_track.mp) {          \n(2.1)    y <$ dtext                         \n(2.2)    RO_track.mp <- RO_track.mp.[x <- y]\n(2--)  }                                    \n\npost = true\n\n\n\n  Goal #2\n  ------------------------------------------------------------------------\n  Context : hr: {x : group, y : text}\nBound   : [=] 1%r\n\npre = true /\\ x <> RO_track.bad_grp\n\n(1--)  if (x \\notin RO_track.mp) {          \n(1.1)    y <$ dtext                         \n(1.2)    RO_track.mp <- RO_track.mp.[x <- y]\n(1--)  }                                    \n\npost = true",
+      "top_premises": {
+        "Number.RealField.ler_opp2": "[Number.RealField] lemma ler_opp2: forall (x y : t), -x <= -y <=> y <= x.",
+        "Number.RealField.ltr_opp2": "[Number.RealField] lemma ltr_opp2: forall (x y : t), -x < -y <=> y < x.",
+        "Tactics.eq_iff_imp": "[Tactics] lemma eq_iff_imp: forall (x y : bool), x <=> y => x = y.",
+        "Number.RealField.gtr_pmulr": "[Number.RealField] lemma gtr_pmulr: forall (x y : t), zeror < y => y * x < y <=> x < oner.",
+        "RealExp.log_ge0": "[RealExp] lemma log_ge0: forall (b x : real), 1%r <= b => 1%r <= x => 0%r <= log b x.",
+        "RField.unitrMr": "[RField] lemma unitrMr: forall (x y : real), x <> 0%r => x * y <> 0%r <=> y <> 0%r.",
+        "Number.RealField.gtr_nmulr": "[Number.RealField] lemma gtr_nmulr: forall (x y : t), y < zeror => y * x < y = oner < x.",
+        "Number.RealField.ler_norm_sub": "[Number.RealField] lemma ler_norm_sub: forall (x y : t), `|x - y| <= `|x| + `|y|.",
+        "RealOrder.ler_opp2": "[RealOrder] lemma ler_opp2: forall (x y : real), -x <= -y <=> y <= x.",
+        "Number.RealField.ger_addr": "[Number.RealField] lemma ger_addr: forall (x y : t), y + x <= x <=> y <= zeror."
+      },
+      "ranked_scores": [
+        [
+          "Number.RealField.ler_opp2",
+          0.6346412849280111
+        ],
+        [
+          "Number.RealField.ltr_opp2",
+          0.6285305411193276
+        ],
+        [
+          "Tactics.eq_iff_imp",
+          0.6264215774797467
+        ],
+        [
+          "Number.RealField.gtr_pmulr",
+          0.6245405684362253
+        ],
+        [
+          "RealExp.log_ge0",
+          0.6243533834252413
+        ],
+        [
+          "RField.unitrMr",
+          0.6233284278768754
+        ],
+        [
+          "Number.RealField.gtr_nmulr",
+          0.6231709033985574
+        ],
+        [
+          "Number.RealField.ler_norm_sub",
+          0.6231119828129068
+        ],
+        [
+          "RealOrder.ler_opp2",
+          0.6228975327609775
+        ],
+        [
+          "Number.RealField.ger_addr",
+          0.6226361226804901
+        ]
+      ],
+      "action": "tactic",
+      "tactic": "auto; progress; by rewrite dtext_ll.",
+      "outcome": "accepted",
+      "error": null,
+      "content": "{\"action\": \"tactic\", \"tactic\": \"auto; progress; by rewrite dtext_ll.\", \"name\": \"\", \"query\": \"\", \"count\": \"\"}"
+    },
+    {
+      "time": "2026-07-29T16:32:37.679628+00:00",
+      "event": "iteration",
+      "step": 5,
+      "goal": "Current goal (remaining: 3)\n\nType variables: <none>\n\n------------------------------------------------------------------------\nContext : hr: {x : group, y : text}\nBound   : [=] 1%r\n\npre =\n  (RO_track.badHappened = true /\\ true /\\ x = RO_track.bad_grp) /\\\n  (x \\notin RO_track.mp)\n\n(1)  y <$ dtext                         \n(2)  RO_track.mp <- RO_track.mp.[x <- y]\n\npost = true\n\n\n\n  Goal #2\n  ------------------------------------------------------------------------\n  Context : hr: {x : group, y : text}\nBound   : [=] 1%r\n\npre =\n  (RO_track.badHappened = true /\\ true /\\ x = RO_track.bad_grp) /\\\n  ! (x \\notin RO_track.mp)\n\n\npost = true\n\n\n  Goal #3\n  ------------------------------------------------------------------------\n  Context : hr: {x : group, y : text}\nBound   : [=] 1%r\n\npre = true /\\ x <> RO_track.bad_grp\n\n(1--)  if (x \\notin RO_track.mp) {          \n(1.1)    y <$ dtext                         \n(1.2)    RO_track.mp <- RO_track.mp.[x <- y]\n(1--)  }                                    \n\npost = true",
+      "top_premises": {
+        "Number.RealField.ler_norm_sub": "[Number.RealField] lemma ler_norm_sub: forall (x y : t), `|x - y| <= `|x| + `|y|.",
+        "Number.RealField.gtr_pmulr": "[Number.RealField] lemma gtr_pmulr: forall (x y : t), zeror < y => y * x < y <=> x < oner.",
+        "Number.RealField.ler_opp2": "[Number.RealField] lemma ler_opp2: forall (x y : t), -x <= -y <=> y <= x.",
+        "Number.RealField.ger_addr": "[Number.RealField] lemma ger_addr: forall (x y : t), y + x <= x <=> y <= zeror.",
+        "Number.RealField.ler_sub_dist": "[Number.RealField] lemma ler_sub_dist: forall (x y : t), `|x| - `|y| <= `|x - y|.",
+        "RealExp.log_ge0": "[RealExp] lemma log_ge0: forall (b x : real), 1%r <= b => 1%r <= x => 0%r <= log b x.",
+        "Number.RealField.ler_sub_norm_add": "[Number.RealField] lemma ler_sub_norm_add: forall (x y : t), `|x| - `|y| <= `|x + y|.",
+        "Number.RealField.ger_nmulr": "[Number.RealField] lemma ger_nmulr: forall (x y : t), y < zeror => y * x <= y = oner <= x.",
+        "Number.RealField.ger_addl": "[Number.RealField] lemma ger_addl: forall (x y : t), x + y <= x <=> y <= zeror.",
+        "Number.RealField.gtr_nmulr": "[Number.RealField] lemma gtr_nmulr: forall (x y : t), y < zeror => y * x < y = oner < x."
+      },
+      "ranked_scores": [
+        [
+          "Number.RealField.ler_norm_sub",
+          0.6139774043995255
+        ],
+        [
+          "Number.RealField.gtr_pmulr",
+          0.6103172087782192
+        ],
+        [
+          "Number.RealField.ler_opp2",
+          0.6101626295780606
+        ],
+        [
+          "Number.RealField.ger_addr",
+          0.6095292488445198
+        ],
+        [
+          "Number.RealField.ler_sub_dist",
+          0.6086472737092234
+        ],
+        [
+          "RealExp.log_ge0",
+          0.6084508921411929
+        ],
+        [
+          "Number.RealField.ler_sub_norm_add",
+          0.6075202371574795
+        ],
+        [
+          "Number.RealField.ger_nmulr",
+          0.6070812646212591
+        ],
+        [
+          "Number.RealField.ger_addl",
+          0.6070397704750263
+        ],
+        [
+          "Number.RealField.gtr_nmulr",
+          0.6070139232837077
+        ]
+      ],
+      "action": "tactic",
+      "tactic": "auto.",
+      "outcome": "accepted",
+      "error": null,
+      "content": "We have three subgoals. Goal #1 has pre/post with two assignments, so we need to finish with program-logic tactics: `wp.` then `skip.` then ambient. Goal #2 is ambient (no statements, just pre/post with empty program). Goal #3 has an `if` statement, so we need to handle it with `if.` or `sp; if.` etc.\n\nLooking at the proof script tail, after `auto; progress; by rewrite dtext_ll.` we are at the three subgoals. The next step in the script is `auto.` but that was already used. The script continues with `if.` then `auto; progress; by rewrite dtext_ll.` then `auto.` then `qed.` Wait, the script tail shows:\n\n```\nauto; progress; by rewrite dtext_ll.\nauto.\nif.\nauto; progress; by rewrite dtext_ll.\nauto.\n```\n\nBut we are currently at the three subgoals after the first `auto; progress; by rewrite dtext_ll.` The next line in the script is `auto.` which would apply to all three subgoals. However, Goal #1 and #3 are program-logic goals, so `auto.` might not be appropriate directly. But `auto.` in EasyCrypt can sometimes handle program-logic goals by applying `wp`, `skip`, etc. Let's check: Goal #1 has two assignments, `auto.` might reduce them. Goal #2 is ambient, `auto.` might close it. Goal #3 has an `if` statement, `auto.` might not handle it.\n\nGiven the script, the next tactic is `auto.` Let's try it.{\"action\": \"tactic\", \"tactic\": \"auto.\", \"name\": \"\", \"query\": \"\", \"count\": \"\"}"
+    },
+    {
+      "time": "2026-07-29T16:32:56.606094+00:00",
+      "event": "iteration",
+      "step": 6,
+      "goal": "Current goal (remaining: 2)\n\nType variables: <none>\n\n------------------------------------------------------------------------\nContext : hr: {x : group, y : text}\nBound   : [=] 1%r\n\npre =\n  (RO_track.badHappened = true /\\ true /\\ x = RO_track.bad_grp) /\\\n  ! (x \\notin RO_track.mp)\n\n\npost = true\n\n\n\n  Goal #2\n  ------------------------------------------------------------------------\n  Context : hr: {x : group, y : text}\nBound   : [=] 1%r\n\npre = true /\\ x <> RO_track.bad_grp\n\n(1--)  if (x \\notin RO_track.mp) {          \n(1.1)    y <$ dtext                         \n(1.2)    RO_track.mp <- RO_track.mp.[x <- y]\n(1--)  }                                    \n\npost = true",
+      "top_premises": {
+        "Number.RealField.ler_opp2": "[Number.RealField] lemma ler_opp2: forall (x y : t), -x <= -y <=> y <= x.",
+        "Tactics.eq_iff_imp": "[Tactics] lemma eq_iff_imp: forall (x y : bool), x <=> y => x = y.",
+        "Number.RealField.ltr_opp2": "[Number.RealField] lemma ltr_opp2: forall (x y : t), -x < -y <=> y < x.",
+        "RealExp.log_ge0": "[RealExp] lemma log_ge0: forall (b x : real), 1%r <= b => 1%r <= x => 0%r <= log b x.",
+        "Number.RealField.gtr_pmulr": "[Number.RealField] lemma gtr_pmulr: forall (x y : t), zeror < y => y * x < y <=> x < oner.",
+        "RealOrder.ler_opp2": "[RealOrder] lemma ler_opp2: forall (x y : real), -x <= -y <=> y <= x.",
+        "Number.RealField.ler_norm_sub": "[Number.RealField] lemma ler_norm_sub: forall (x y : t), `|x - y| <= `|x| + `|y|.",
+        "RealOrder.normrZ": "[RealOrder] lemma normrZ: forall (x y : real), 0%r <= x => `|x * y| = x * `|y|.",
+        "Number.RealField.ler_pemulr": "[Number.RealField] lemma ler_pemulr: forall (x y : t), zeror <= y => oner <= x => y <= y * x.",
+        "Number.RealField.gtr_nmulr": "[Number.RealField] lemma gtr_nmulr: forall (x y : t), y < zeror => y * x < y = oner < x."
+      },
+      "ranked_scores": [
+        [
+          "Number.RealField.ler_opp2",
+          0.6349634922056029
+        ],
+        [
+          "Tactics.eq_iff_imp",
+          0.629207405652588
+        ],
+        [
+          "Number.RealField.ltr_opp2",
+          0.6285631319364803
+        ],
+        [
+          "RealExp.log_ge0",
+          0.6254983586423092
+        ],
+        [
+          "Number.RealField.gtr_pmulr",
+          0.6247442578934904
+        ],
+        [
+          "RealOrder.ler_opp2",
+          0.6247328867514694
+        ],
+        [
+          "Number.RealField.ler_norm_sub",
+          0.6234600069062354
+        ],
+        [
+          "RealOrder.normrZ",
+          0.6226135373264414
+        ],
+        [
+          "Number.RealField.ler_pemulr",
+          0.6224741961371206
+        ],
+        [
+          "Number.RealField.gtr_nmulr",
+          0.6208705604769136
+        ]
+      ],
+      "action": "tactic",
+      "tactic": "if.",
+      "outcome": "accepted",
+      "error": null,
+      "content": "{\"action\": \"tactic\", \"tactic\": \"if.\", \"name\": \"\", \"query\": \"\", \"count\": \"\"}"
+    },
+    {
+      "time": "2026-07-29T16:33:15.817329+00:00",
+      "event": "iteration",
+      "step": 7,
+      "goal": "Current goal\n\nType variables: <none>\n\n------------------------------------------------------------------------\nContext : hr: {x : group, y : text}\nBound   : [=] 1%r\n\npre = true /\\ x <> RO_track.bad_grp\n\n(1--)  if (x \\notin RO_track.mp) {          \n(1.1)    y <$ dtext                         \n(1.2)    RO_track.mp <- RO_track.mp.[x <- y]\n(1--)  }                                    \n\npost = true",
+      "top_premises": {
+        "RealExp.log_ge0": "[RealExp] lemma log_ge0: forall (b x : real), 1%r <= b => 1%r <= x => 0%r <= log b x.",
+        "RealOrder.gtr_addr": "[RealOrder] lemma gtr_addr: forall (x y : real), y + x < x <=> y < 0%r.",
+        "RealOrder.gtr_addl": "[RealOrder] lemma gtr_addl: forall (x y : real), x + y < x <=> y < 0%r.",
+        "RealOrder.ger_addr": "[RealOrder] lemma ger_addr: forall (x y : real), y + x <= x <=> y <= 0%r.",
+        "RealOrder.gtr_pmulr": "[RealOrder] lemma gtr_pmulr: forall (x y : real), 0%r < y => y * x < y <=> x < 1%r.",
+        "RealOrder.gtr_nmull": "[RealOrder] lemma gtr_nmull: forall (x y : real), y < 0%r => x * y < y = 1%r < x.",
+        "RealOrder.gtr_nmulr": "[RealOrder] lemma gtr_nmulr: forall (x y : real), y < 0%r => y * x < y = 1%r < x.",
+        "RealOrder.gtr_pmull": "[RealOrder] lemma gtr_pmull: forall (x y : real), 0%r < y => x * y < y <=> x < 1%r.",
+        "RealOrder.normrZ": "[RealOrder] lemma normrZ: forall (x y : real), 0%r <= x => `|x * y| = x * `|y|.",
+        "Number.RealField.gtr_addl": "[Number.RealField] lemma gtr_addl: forall (x y : t), x + y < x <=> y < zeror."
+      },
+      "ranked_scores": [
+        [
+          "RealExp.log_ge0",
+          0.6522042999749392
+        ],
+        [
+          "RealOrder.gtr_addr",
+          0.6494520432666522
+        ],
+        [
+          "RealOrder.gtr_addl",
+          0.6489310989501861
+        ],
+        [
+          "RealOrder.ger_addr",
+          0.6444825106637934
+        ],
+        [
+          "RealOrder.gtr_pmulr",
+          0.6434183364261247
+        ],
+        [
+          "RealOrder.gtr_nmull",
+          0.6431813600949859
+        ],
+        [
+          "RealOrder.gtr_nmulr",
+          0.6428253523945809
+        ],
+        [
+          "RealOrder.gtr_pmull",
+          0.6421347428342827
+        ],
+        [
+          "RealOrder.normrZ",
+          0.6418634320406882
+        ],
+        [
+          "Number.RealField.gtr_addl",
+          0.6409727718946255
+        ]
+      ],
+      "action": "tactic",
+      "tactic": "auto; progress; by rewrite dtext_ll.",
+      "outcome": "accepted",
+      "error": null,
+      "content": "{\"action\": \"tactic\", \"tactic\": \"auto; progress; by rewrite dtext_ll.\", \"name\": \"\", \"query\": \"\", \"count\": \"\"}"
+    },
+    {
+      "time": "2026-07-29T16:33:33.835737+00:00",
+      "event": "iteration",
+      "step": 8,
+      "goal": "Current goal (remaining: 2)\n\nType variables: <none>\n\n------------------------------------------------------------------------\nContext : hr: {x : group, y : text}\nBound   : [=] 1%r\n\npre = (true /\\ x <> RO_track.bad_grp) /\\ (x \\notin RO_track.mp)\n\n(1)  y <$ dtext                         \n(2)  RO_track.mp <- RO_track.mp.[x <- y]\n\npost = true\n\n\n\n  Goal #2\n  ------------------------------------------------------------------------\n  Context : hr: {x : group, y : text}\nBound   : [=] 1%r\n\npre = (true /\\ x <> RO_track.bad_grp) /\\ ! (x \\notin RO_track.mp)\n\n\npost = true",
+      "top_premises": {
+        "Number.RealField.ler_opp2": "[Number.RealField] lemma ler_opp2: forall (x y : t), -x <= -y <=> y <= x.",
+        "Number.RealField.gtr_pmulr": "[Number.RealField] lemma gtr_pmulr: forall (x y : t), zeror < y => y * x < y <=> x < oner.",
+        "RealExp.log_ge0": "[RealExp] lemma log_ge0: forall (b x : real), 1%r <= b => 1%r <= x => 0%r <= log b x.",
+        "RealOrder.normrZ": "[RealOrder] lemma normrZ: forall (x y : real), 0%r <= x => `|x * y| = x * `|y|.",
+        "Number.RealField.ltr_opp2": "[Number.RealField] lemma ltr_opp2: forall (x y : t), -x < -y <=> y < x.",
+        "Number.RealField.ger_addr": "[Number.RealField] lemma ger_addr: forall (x y : t), y + x <= x <=> y <= zeror.",
+        "Number.RealField.gtr_nmulr": "[Number.RealField] lemma gtr_nmulr: forall (x y : t), y < zeror => y * x < y = oner < x.",
+        "Number.RealField.ler_pemulr": "[Number.RealField] lemma ler_pemulr: forall (x y : t), zeror <= y => oner <= x => y <= y * x.",
+        "Number.RealField.gtr_addl": "[Number.RealField] lemma gtr_addl: forall (x y : t), x + y < x <=> y < zeror.",
+        "Tactics.eq_iff_imp": "[Tactics] lemma eq_iff_imp: forall (x y : bool), x <=> y => x = y."
+      },
+      "ranked_scores": [
+        [
+          "Number.RealField.ler_opp2",
+          0.6385735426248138
+        ],
+        [
+          "Number.RealField.gtr_pmulr",
+          0.6358101630581392
+        ],
+        [
+          "RealExp.log_ge0",
+          0.634312164593522
+        ],
+        [
+          "RealOrder.normrZ",
+          0.6340415111987623
+        ],
+        [
+          "Number.RealField.ltr_opp2",
+          0.6327607091618271
+        ],
+        [
+          "Number.RealField.ger_addr",
+          0.6313885365154059
+        ],
+        [
+          "Number.RealField.gtr_nmulr",
+          0.6312466940858275
+        ],
+        [
+          "Number.RealField.ler_pemulr",
+          0.63091520849865
+        ],
+        [
+          "Number.RealField.gtr_addl",
+          0.6305737989831217
+        ],
+        [
+          "Tactics.eq_iff_imp",
+          0.6304524478369282
+        ]
+      ],
+      "action": "tactic",
+      "tactic": "auto.",
+      "outcome": "complete",
+      "error": null,
+      "content": "{\"action\": \"tactic\", \"tactic\": \"auto.\", \"name\": \"\", \"query\": \"\", \"count\": \"\"}"
+    },
+    {
+      "time": "2026-07-29T16:33:33.836709+00:00",
+      "event": "finish",
+      "reason": "COMPLETE",
+      "message": "Proof complete",
+      "steps": 8,
+      "token_usage": {
+        "calls": 8,
+        "prompt_tokens": 55341,
+        "completion_tokens": 606,
+        "total_tokens": 55947,
+        "cached_prompt_tokens": 33664,
+        "cache_miss_prompt_tokens": 21677,
+        "reasoning_tokens": 0
+      }
+    }
+  ]
+}

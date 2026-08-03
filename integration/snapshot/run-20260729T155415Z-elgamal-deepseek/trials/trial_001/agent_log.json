@@ -1,0 +1,96 @@
+{
+  "source": "/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_001/agent_start.ec",
+  "work_copy": "/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_001/agent_work.agent.ec",
+  "events": [
+    {
+      "time": "2026-07-29T15:56:08.975058+00:00",
+      "event": "startup",
+      "source": "/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_001/agent_start.ec",
+      "work_copy": "/Users/k323lee/git/AI4EC/integration/output/experiments/run-20260729T155415Z/trials/trial_001/agent_work.agent.ec",
+      "goal": "Current goal\n\nType variables: <none>\n\n&m: {}\n------------------------------------------------------------------------\n`|Pr[INDCPA(HEG, Adv).main() @ &m : res] - 1%r / 2%r| <=\nPr[LCDH(Adv2LCDHAdv(Adv)).main() @ &m : res]",
+      "premise_count": 2585,
+      "cursor_upto": 811
+    },
+    {
+      "time": "2026-07-29T15:56:20.226208+00:00",
+      "event": "iteration",
+      "step": 1,
+      "goal": "Current goal\n\nType variables: <none>\n\n&m: {}\n------------------------------------------------------------------------\n`|Pr[INDCPA(HEG, Adv).main() @ &m : res] - 1%r / 2%r| <=\nPr[LCDH(Adv2LCDHAdv(Adv)).main() @ &m : res]",
+      "top_premises": {
+        "IntDiv.dvdNdiv": "[IntDiv] lemma dvdNdiv: forall (x y : int), x <> 0 => x %| y => (-y) %/ x = - y %/ x.",
+        "Tactics.eq_iff_imp": "[Tactics] lemma eq_iff_imp: forall (x y : bool), x <=> y => x = y.",
+        "Tactics.orW": "[Tactics] lemma orW: forall (a b c : bool), (a => c) => (b => c) => a \\/ b => c.",
+        "IntDiv.Gauss_dvdl": "[IntDiv] lemma Gauss_dvdl: forall (a b c : int), coprime a c => a %| b * c <=> a %| b.",
+        "IntDiv.Gauss_dvdr": "[IntDiv] lemma Gauss_dvdr: forall (a b c : int), coprime a b => a %| b * c <=> a %| c.",
+        "IntOrder.ler_opp2": "[IntOrder] lemma ler_opp2: forall (x y : int), -x <= -y <=> y <= x.",
+        "IntDiv.dvdzE": "[IntDiv] lemma dvdzE: forall (d m : int), d %| m <=> m %% d = 0.",
+        "IntOrder.Domain.unitrV": "[IntOrder.Domain] lemma unitrV: forall (x : int), x = 1 \\/ x = -1 <=> x = 1 \\/ x = -1.",
+        "IntDiv.b2i_mod2": "[IntDiv] lemma b2i_mod2: forall (i : int), b2i (i %% 2 <> 0) = i %% 2.",
+        "IntDiv.dvdz_gcd": "[IntDiv] lemma dvdz_gcd: forall (a b c : int), a %| b => a %| c => a %| gcd b c."
+      },
+      "ranked_scores": [
+        [
+          "IntDiv.dvdNdiv",
+          0.6203186937102915
+        ],
+        [
+          "Tactics.eq_iff_imp",
+          0.6146984083087065
+        ],
+        [
+          "Tactics.orW",
+          0.6072743752640515
+        ],
+        [
+          "IntDiv.Gauss_dvdl",
+          0.6052302649835866
+        ],
+        [
+          "IntDiv.Gauss_dvdr",
+          0.603477109094247
+        ],
+        [
+          "IntOrder.ler_opp2",
+          0.6020856031740704
+        ],
+        [
+          "IntDiv.dvdzE",
+          0.6019838846310555
+        ],
+        [
+          "IntOrder.Domain.unitrV",
+          0.6016642710221226
+        ],
+        [
+          "IntDiv.b2i_mod2",
+          0.6011779102991825
+        ],
+        [
+          "IntDiv.dvdz_gcd",
+          0.6009285871838855
+        ]
+      ],
+      "action": "tactic",
+      "tactic": "rewrite -(G3_true &m) -(G2_G3 &m) (INDCPA_HEG_G1 &m) (G1_G2 &m)//.",
+      "outcome": "complete",
+      "error": null,
+      "content": "{\"action\": \"tactic\", \"tactic\": \"rewrite -(G3_true &m) -(G2_G3 &m) (INDCPA_HEG_G1 &m) (G1_G2 &m)//.\", \"name\": \"\", \"query\": \"\", \"count\": \"\"}"
+    },
+    {
+      "time": "2026-07-29T15:56:20.226689+00:00",
+      "event": "finish",
+      "reason": "COMPLETE",
+      "message": "Proof complete",
+      "steps": 1,
+      "token_usage": {
+        "calls": 1,
+        "prompt_tokens": 6791,
+        "completion_tokens": 61,
+        "total_tokens": 6852,
+        "cached_prompt_tokens": 0,
+        "cache_miss_prompt_tokens": 6791,
+        "reasoning_tokens": 0
+      }
+    }
+  ]
+}
