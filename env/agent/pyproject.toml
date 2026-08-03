@@ -1,0 +1,17 @@
+[project]
+name = "ai4ec-agent"
+version = "0.1.0"
+description = "Reproducible environment for AI4EC agent notebooks"
+requires-python = ">=3.11"
+dependencies = [
+    "openai>=1.0.0",
+    "numpy>=1.24.0",
+    "ipykernel>=6.29.0",
+    "pytest>=7.0.0",
+]
+
+[tool.uv]
+# Make the project root importable so `from integration...` works in notebooks.
+# Run notebooks from the project root or set PYTHONPATH accordingly.
+
+[tool.uv.sources]

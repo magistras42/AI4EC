@@ -319,6 +319,7 @@ def run_informal_trial(
 def run_broken_formal_trial(
     trial_id: int,
     case: ProofCase,
+    spec: ExperimentSpec,
     config: ExperimentConfig,
     trial_dir: Path,
 ) -> TrialResult:
@@ -366,6 +367,25 @@ def run_broken_formal_trial(
         broken_proof_text + "\n", encoding="utf-8"
     )
 
+    # Compat migration mode: generate version-aware changelog hints.
+    migration_hints: str | None = None
+    broken_formal_cfg = spec.broken_formal
+    if broken_formal_cfg and broken_formal_cfg.source_version:
+        from integration.agent.migration import build_migration_hints
+
+        full_file_text = "\n".join(lines)
+        migration_hints = build_migration_hints(
+            broken_proof_text=broken_proof_text,
+            source_version=broken_formal_cfg.source_version,
+            target_version=broken_formal_cfg.target_version,
+            max_entries=broken_formal_cfg.migration_max_entries,
+            full_file_text=full_file_text,
+        )
+        if migration_hints:
+            (trial_dir / "migration_hints.md").write_text(
+                migration_hints + "\n", encoding="utf-8"
+            )
+
     start_lines = strip_tactics(lines, case.tactic_lines)
     agent_start = trial_dir / "agent_start.ec"
     apply_lines(agent_start, start_lines)
@@ -375,6 +395,7 @@ def run_broken_formal_trial(
         repair_hint=None,
         informal_proof=broken_proof_text,
         informal_proof_is_formal=True,
+        migration_hints=migration_hints,
         premises_override=None,
         stuck_limit=config.stuck_limit,
         log_file=trial_dir / "agent_log.json",
@@ -428,7 +449,7 @@ def run_trial(
     if spec.informal is not None:
         return run_informal_trial(trial_id, case, spec, config, rng, trial_dir)
     if spec.broken_formal is not None:
-        return run_broken_formal_trial(trial_id, case, config, trial_dir)
+        return run_broken_formal_trial(trial_id, case, spec, config, trial_dir)
 
     usage = TokenUsage()
     agent_config = replace(config.agent, usage_tracker=usage)

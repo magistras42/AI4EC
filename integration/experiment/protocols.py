@@ -67,7 +67,24 @@ class BrokenFormalConfig:
     :mod:`integration.experiment.corpora.elgamal`). Deliberately has no
     red-herring/writer knobs: this mode never curates a lemma manifest, so
     the solver ranks premises against the full ambient catalog, same as
-    `joy-tactic-repair`."""
+    `joy-tactic-repair`.
+
+    When ``source_version`` is set, the runner activates **compat migration
+    mode**: it filters the structured EasyCrypt changelog for breaking
+    changes relevant to the proof and injects them into the solver prompt as
+    additional guidance.
+    """
+
+    # The EasyCrypt release the proof was last known to compile against.
+    # Use "pre-r2022.04" for repos that predate the first formal release.
+    # When None, compat migration hints are not injected.
+    source_version: str | None = None
+
+    # Target EasyCrypt version (default: latest known in changelog).
+    target_version: str = "r2026.07"
+
+    # Max changelog entries to inject into the prompt.
+    migration_max_entries: int = 30
 
 
 @dataclass(frozen=True)

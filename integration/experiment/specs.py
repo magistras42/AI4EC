@@ -42,7 +42,9 @@ def register_default_specs(data_dir) -> None:
                 name="elgamal-broken-repair",
                 corpus=ElGamalCorpus(data_dir=data),
                 mutations=None,
-                broken_formal=BrokenFormalConfig(),
+                broken_formal=BrokenFormalConfig(
+                    source_version="pre-r2022.04",
+                ),
             )
         )
 

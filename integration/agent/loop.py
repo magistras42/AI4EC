@@ -270,6 +270,7 @@ def run_agent(
             repair_hint=config.repair_hint,
             informal_proof=config.informal_proof,
             informal_proof_is_formal=config.informal_proof_is_formal,
+            migration_hints=config.migration_hints,
             lookup_notes=lookup_notes,
             enable_lemma_lookup=enable_lookup,
             past_steps=(

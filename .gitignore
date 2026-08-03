@@ -157,11 +157,12 @@ activemq-data/
 .env
 .envrc
 .venv
-env/
 venv/
-ENV/
 env.bak/
 venv.bak/
+
+# env/ subdirectories: track pyproject.toml + uv.lock, ignore .venv
+env/*/.venv/
 
 # Spyder project settings
 .spyderproject

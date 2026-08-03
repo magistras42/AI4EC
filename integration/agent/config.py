@@ -92,6 +92,11 @@ class AgentConfig:
     # tactic script (e.g. the elgamal-broken-repair spec), not a writer-LLM
     # natural-language paraphrase. Only changes the prompt section heading.
     informal_proof_is_formal: bool = False
+    # Compat migration hints: a pre-rendered markdown block of relevant
+    # changelog entries for proofs crossing EasyCrypt versions. Built by
+    # integration.agent.migration and injected by the runner in broken-formal
+    # mode when BrokenFormalConfig.source_version is set.
+    migration_hints: str | None = None
     premises_override: dict[str, str] | None = None
     lemma_search_top_k: int = 5
     # Cap consecutive lookup/search actions; warn on the penultimate call.

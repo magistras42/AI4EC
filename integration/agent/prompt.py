@@ -465,6 +465,7 @@ def build_prompt(
     repair_hint: str | None = None,
     informal_proof: str | None = None,
     informal_proof_is_formal: bool = False,
+    migration_hints: str | None = None,
     lookup_notes: list[str] | None = None,
     enable_lemma_lookup: bool = False,
     past_steps: list[dict[str, Any]] | None = None,
@@ -521,6 +522,14 @@ def build_prompt(
             [
                 "## Repair hint (reference broken proof)",
                 repair_hint,
+                "",
+            ]
+        )
+    if migration_hints:
+        sections.extend(
+            [
+                "## Version migration guide (compatibility changes)",
+                migration_hints,
                 "",
             ]
         )

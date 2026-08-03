@@ -33,3 +33,11 @@ or `--thinking adaptive` to enable thinking after recent failures.
 They must run it in their own terminal and answer the confirmation prompt personally.
 
 Embeddings still use local LM Studio (`--lm-studio-url` / `LM_STUDIO_BASE_URL`); only solver/writer chat goes to DeepSeek when `--deepseek` is set.
+
+## Notebook environments
+
+Each notebook declares the kernel it needs. Environments are defined under
+`env/<name>/` with a git-tracked `pyproject.toml` + `uv.lock`.
+
+See [`docs/notebook_environments.md`](docs/notebook_environments.md) for the
+full standard: how to create, register, and document environments.
