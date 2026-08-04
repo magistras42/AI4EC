@@ -25,6 +25,7 @@ from .easycrypt import (
     tactic_discharged_proof,
     validate_file,
 )
+from .ec_errors import strip_warning_lines
 from .embeddings import EmbeddingClient, rank_by_cosine, top_premises
 from .error_history import ErrorHistory
 from .lemma_search import (
@@ -35,6 +36,7 @@ from .lemma_search import (
 from .llm import (
     LlmClient,
     LlmFormatError,
+    LlmProviderError,
     LookupLemmaAction,
     SearchLemmasAction,
     TacticAction,
@@ -160,6 +162,11 @@ class ExitReason(Enum):
     MAX_STEPS = auto()
     LLM_ERROR = auto()
     STUCK = auto()
+    # Run-level USD ceiling reached (see integration/agent/budget.py). Distinct
+    # from MAX_STEPS: the proof was not necessarily hard, we simply stopped
+    # paying. Reported separately so it is never miscounted as a failure to
+    # repair.
+    BUDGET_EXHAUSTED = auto()
 
 
 @dataclass
@@ -195,10 +202,29 @@ def run_agent(
         else None
     )
 
+    # Pre-proof import/syntax repair. Without this, a single-file run against a
+    # legacy proof dies in _startup with a raw loader error: no goal is ever
+    # reachable, so the solver never runs and none of the changelog evidence
+    # gets a chance to help. Operates on the WORKING COPY, never on `source`.
+    import_repair_summary = _maybe_repair_imports(proof, config, run_log)
+
     startup = _startup(proof, config, run_log)
     if startup is not None:
         _log_finish(run_log, startup)
         return startup
+
+    # The import-repair summary is the same kind of evidence as a changelog
+    # hint (a dated library change), differing only in that it has already
+    # been acted on -- so it rides in the same prompt section rather than
+    # opening a second one. Prepended: what the harness already changed is
+    # more immediately relevant than what merely might be relevant.
+    changelog_hints = config.changelog_hints
+    if import_repair_summary:
+        changelog_hints = (
+            f"{import_repair_summary}\n\n{changelog_hints}"
+            if changelog_hints
+            else import_repair_summary
+        )
 
     premise_index, premises_catalog, lookup_catalog = _build_premise_index(
         proof, config
@@ -219,6 +245,13 @@ def run_agent(
     lookup_notes: list[str] = []
     lemma_search_index: dict[str, np.ndarray] | None = None
     trajectory: list[dict] = []
+    # Releases whose changelog entries have already been shown for this run.
+    # Threaded through every refresh so the hop advances instead of looping.
+    consumed_versions: set[str] = set()
+    # Consecutive provider failures (no usable reply). Tracked apart from
+    # stuck_counter so infrastructure trouble is never mistaken for the
+    # model being unable to make progress. Reset by any usable reply.
+    provider_failures = 0
     seen_proof_states: set[str] = set()
     stuck_counter = 0
     continuous_searches = 0
@@ -268,9 +301,10 @@ def run_agent(
             failed_tactics=errors.get(goal),
             proof_tail=proof.tail(config.proof_tail_lines),
             repair_hint=config.repair_hint,
-            changelog_hints=config.changelog_hints,
+            changelog_hints=changelog_hints,
             informal_proof=config.informal_proof,
             informal_proof_is_formal=config.informal_proof_is_formal,
+            informal_proof_heading=config.informal_proof_heading,
             lookup_notes=lookup_notes,
             enable_lemma_lookup=enable_lookup,
             past_steps=(
@@ -282,22 +316,69 @@ def run_agent(
             recent_failures=errors.recent_other(goal),
         )
 
+        # Checked BEFORE the call, not after: the budget is updated when a
+        # response arrives, so this is the point at which we can decline to
+        # start the next one. Spend can still overshoot the cap by at most the
+        # single call already in flight when the ceiling was crossed.
+        if config.spend_budget is not None and config.spend_budget.exhausted:
+            result = AgentResult(
+                reason=ExitReason.BUDGET_EXHAUSTED,
+                message=(
+                    "Stopped: run spend cap reached — "
+                    f"{config.spend_budget.status()}"
+                ),
+                steps=step - 1,
+                work_copy=work_copy,
+            )
+            logger.info("Budget exhausted: %s", config.spend_budget.status())
+            _log_finish(run_log, result)
+            return result
+
         try:
             thinking = resolve_thinking_for_step(config, trajectory)
             decision = llm.decide(prompt, thinking=thinking)
         except LlmFormatError as exc:
-            # Treat malformed/empty replies like a failed tactic: keep going
-            # with feedback instead of aborting the whole trial.
-            error_msg = f"{_MALFORMED_REPLY_HINT} Parser detail: {exc}"
-            errors.add(goal, error_msg, _MALFORMED_REPLY_LABEL)
-            logger.info("Recoverable LLM format error: %s", exc)
-            stuck_counter = _increment_stuck(config, stuck_counter)
+            # Two very different things arrive here. LlmProviderError means the
+            # provider produced NOTHING usable -- no choices, or the output
+            # budget was spent reasoning before an answer was written. That is
+            # infrastructure and says nothing about whether the model can prove
+            # the goal, so it must NOT advance the stuck counter: measured
+            # across four DeepSeek trials, 79 of 85 recoverable errors were
+            # this, and counting them made budget exhaustion indistinguishable
+            # from a model that could not make progress (one trial exited STUCK
+            # at 20 "unproductive" iterations, 14 of which were empty replies).
+            provider_side = isinstance(exc, LlmProviderError)
+            if provider_side:
+                provider_failures += 1
+                logger.info(
+                    "Provider produced no usable reply (%d in a row): %s",
+                    provider_failures,
+                    exc,
+                )
+                # `provider_error` is deliberately NOT in
+                # THINKING_FAILURE_OUTCOMES. It used to be recorded as
+                # `format_error`, which IS, so under --thinking adaptive a
+                # budget-exhaustion error switched thinking ON for the next
+                # step -- feeding the exact condition that caused it.
+                outcome = "provider_error"
+                error_msg = f"Provider produced no usable reply: {exc}"
+            else:
+                provider_failures = 0
+                outcome = "format_error"
+                error_msg = f"{_MALFORMED_REPLY_HINT} Parser detail: {exc}"
+                # Only a genuinely malformed ANSWER belongs in the per-goal
+                # failure memory; a provider failure would pollute it with a
+                # non-tactic the model never actually chose.
+                errors.add(goal, error_msg, _MALFORMED_REPLY_LABEL)
+                logger.info("Recoverable LLM format error: %s", exc)
+                stuck_counter = _increment_stuck(config, stuck_counter)
+
             trajectory.append(
                 _step_record(
                     step,
                     goal,
                     action="error",
-                    outcome="format_error",
+                    outcome=outcome,
                     error=error_msg,
                 )
             )
@@ -308,9 +389,26 @@ def run_agent(
                     top_premises=top,
                     ranked_scores=ranked,
                     action="error",
-                    outcome="format_error",
+                    outcome=outcome,
                     error=error_msg,
                 )
+
+            # Provider failures still need a bound, or a persistently broken
+            # endpoint spins until max_steps burning paid calls.
+            limit = config.max_consecutive_provider_failures
+            if provider_side and limit is not None and provider_failures >= limit:
+                result = AgentResult(
+                    reason=ExitReason.LLM_ERROR,
+                    message=(
+                        f"Provider produced no usable reply {provider_failures} "
+                        f"times in a row (limit {limit}). Last error: {exc}"
+                    ),
+                    steps=step - 1,
+                    work_copy=work_copy,
+                )
+                _log_finish(run_log, result)
+                return result
+
             if _check_stuck(config, stuck_counter, run_log, work_copy, step):
                 return _stuck_result(
                     config, source, work_copy, step, run_log, llm, trajectory
@@ -705,7 +803,9 @@ def run_agent(
             validation = validate_file(work_copy, config)
             if validation.returncode != 0:
                 proof.remove_lines(inserted_line)
-                error_msg = validation.stderr.strip() or validation.stdout.strip()
+                error_msg = strip_warning_lines(
+                    validation.stderr.strip() or validation.stdout.strip()
+                )
                 diagnostic = _probe_prefix_subgoal(proof, action.tactic, config)
                 error_msg = _enrich_error(
                     error_msg, action.tactic, goal, diagnostic=diagnostic
@@ -738,6 +838,25 @@ def run_agent(
                         thought=thought,
                         content=raw_content,
                     )
+                # W3: re-aim the changelog evidence at the failure that just
+                # happened, instead of leaving the model with hints fetched
+                # once at bootstrap for a tactic it has long since moved past.
+                # `consumed_versions` makes each new failure hop to the NEXT
+                # release with a hit rather than re-surfacing the same one, so
+                # a symbol renamed twice across a long span is presented in the
+                # order a human porting release-by-release would meet it.
+                refreshed, hop = _refresh_changelog_hints(
+                    config,
+                    failing_tactic=action.tactic,
+                    error_text=error_msg,
+                    consumed_versions=consumed_versions,
+                    run_log=run_log,
+                )
+                if refreshed is not None:
+                    changelog_hints = refreshed
+                if hop is not None:
+                    consumed_versions.add(hop)
+
                 identical = _identical_fail_stuck_result(
                     config,
                     errors,
@@ -1141,7 +1260,11 @@ def _probe_prefix_subgoal(
             inserted_lines.append(inserted)
             validation = validate_file(proof.path, config)
             if validation.returncode != 0:
-                err = (
+                # Warnings must go before the first-line pick, not after: this
+                # takes line 0 as "the reason", and EasyCrypt prints its
+                # file-level warnings first, so an unfiltered message reported
+                # a warning as the cause of the failure.
+                err = strip_warning_lines(
                     validation.stderr.strip() or validation.stdout.strip() or "failed"
                 )
                 # Keep the message short; the outer enrich already has the
@@ -1434,6 +1557,176 @@ def _log_finish(run_log: AgentRunLog | None, result: AgentResult) -> None:
         message=result.message,
         steps=result.steps,
     )
+
+
+def _oldest_cataloged_release() -> str:
+    """Oldest release the changelog covers; "" when it cannot be read.
+
+    Used to express "source version unknown, consider every release" without
+    tripping retrieve_entries' unknown-version warning on every lookup.
+    """
+    try:
+        from .repair_hints import _load_retrieve_entries_module, resolve_changelog_path
+
+        module = _load_retrieve_entries_module()
+        changelog = module.load_changelog(str(resolve_changelog_path()))
+        releases = [
+            r.get("version") for r in changelog.get("releases", []) if r.get("version")
+        ]
+        return releases[0] if releases else ""
+    except Exception:
+        return ""
+
+
+def _refresh_changelog_hints(
+    config: AgentConfig,
+    *,
+    failing_tactic: str,
+    error_text: str,
+    consumed_versions: set[str],
+    run_log: AgentRunLog | None,
+) -> tuple[str | None, str | None]:
+    """Re-fetch changelog/repair_doc hints for the failure that just occurred.
+
+    Roadmap item W3. Returns ``(hint_text, matched_version)``; ``(None, None)``
+    when live hints are off or nothing new matched, in which case the caller
+    keeps whatever block it already had rather than blanking the section.
+
+    Opt-in via ``AgentConfig.live_changelog_hints`` because every refresh is a
+    retrieval pass over the changelog index, and only version-drift experiments
+    have any use for it -- a mutation trial's failures are synthetic and have
+    no release to hop to.
+
+    Never raises: ``get_repair_hints_text`` is documented to degrade to notes
+    rather than exceptions, and a retrieval problem must not end a proof run.
+    """
+    if not config.live_changelog_hints:
+        return (None, None)
+    if not config.target_ec_version:
+        return (None, None)
+
+    from .ec_errors import classify_error
+    from .repair_hints import get_repair_hints_text
+
+    # Steer retrieval by what actually broke: a tactic failure pulls tactic
+    # changelog entries, an unresolved theory pulls import evidence.
+    error_kind = classify_error(error_text).kind
+
+    try:
+        text, notes, matched_version = get_repair_hints_text(
+            failing_tactic_text=failing_tactic,
+            ec_error_text=error_text,
+            error_kind=error_kind,
+            # A source of None means "unknown, consider everything" -- the same
+            # fail-open convention releases_in_range already uses.
+            source_ec_version=config.source_ec_version or _oldest_cataloged_release(),
+            target_ec_version=config.target_ec_version,
+            already_consumed_versions=consumed_versions,
+        )
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.warning("Live changelog hint refresh failed: %s", exc)
+        return (None, None)
+
+    if run_log is not None and (text or notes):
+        run_log.record(
+            "changelog_hint_refresh",
+            error_kind=error_kind,
+            matched_version=matched_version,
+            consumed_versions=sorted(consumed_versions),
+            notes=notes,
+            has_text=bool(text),
+        )
+    if not text:
+        return (None, matched_version)
+    return (text, matched_version)
+
+
+def _maybe_repair_imports(
+    proof: ProofFile,
+    config: AgentConfig,
+    run_log: AgentRunLog | None,
+) -> str | None:
+    """Repair the working copy's imports when it will not load.
+
+    Returns a prompt-ready summary of what was rewritten, or None when no
+    repair was attempted or kept. The solver has to be told: it is proving
+    against a file the harness edited, so a tactic referencing a symbol that
+    moved theories would otherwise look inexplicably wrong.
+
+    Never raises. Import repair is an optimization over failing anyway -- if
+    the manifest is missing or malformed, the run proceeds to _startup and
+    reports the original loader error, which is strictly better than replacing
+    a real EasyCrypt diagnostic with an ImportRepairUnavailable traceback.
+    """
+    if not config.import_repair:
+        return None
+
+    # Deferred: import_repair pulls in the manifest parser and tomllib, which
+    # a plain LM Studio run has no reason to load.
+    from .ec_errors import classify_error
+    from .ec_version import resolve_version_window
+    from .import_repair import ImportRepairUnavailable, format_for_prompt, repair_imports
+
+    probe = validate_file(proof.path, config)
+    if probe.returncode == 0:
+        return None
+
+    error_text = probe.stderr.strip() or probe.stdout.strip()
+    classified = classify_error(error_text)
+    if classified.is_in_proof:
+        # The file loads; a TACTIC is broken. That is the solver's job, and
+        # rewriting imports here would be churn against a healthy header.
+        logger.info(
+            "Skipping import repair: %s at line %s is a proof-level failure",
+            classified.kind,
+            classified.line,
+        )
+        return None
+
+    try:
+        source_version, target_version, provenance = resolve_version_window(
+            corpus_path=proof.path,
+            easycrypt_bin=config.easycrypt_bin,
+            source_override=config.source_ec_version,
+            target_override=config.target_ec_version,
+        )
+        result = repair_imports(
+            proof.path,
+            config,
+            source_version=source_version,
+            target_version=target_version,
+            work_path=proof.path.with_suffix(".import_repair.ec"),
+        )
+    except (ImportRepairUnavailable, OSError) as exc:
+        logger.warning("Import repair unavailable: %s", exc)
+        return None
+
+    if run_log is not None:
+        run_log.record(
+            "import_repair",
+            classified=classified.as_dict(),
+            versions=provenance,
+            result=result.to_dict(),
+        )
+
+    if not (result.changed and result.improved):
+        logger.info(
+            "Import repair made no verified progress (first error line %s -> %s)",
+            result.error_line_before,
+            result.error_line_after,
+        )
+        return None
+
+    # Every migration action is line-preserving (apply_actions asserts it), so
+    # promoting the repaired text cannot invalidate recorded line numbers.
+    proof.path.write_text(result.text, encoding="utf-8")
+    logger.info(
+        "Import repair applied %d migration(s); first error line %s -> %s",
+        sum(1 for a in result.applied if a.kept),
+        result.error_line_before,
+        result.error_line_after,
+    )
+    return format_for_prompt(result) or None
 
 
 def _startup(
