@@ -80,14 +80,28 @@ class ReplayBootstrapConfig:
     the original script still applies against the current EasyCrypt build;
     the solver only picks up at the first tactic that no longer does.
 
-    source_ec_version/target_ec_version are caller-supplied (no
-    auto-detection, matching the shannon-prover repair-hints design this
-    mode ports from) -- used to scope proof_corpus/output/changelog.yaml
-    matching once a failure is hit.
+    source_ec_version/target_ec_version scope which changelog releases and
+    migration rules apply once a failure is hit.
+
+    Both default to ``None``, meaning **detect** (see
+    ``integration/agent/ec_version.py``, roadmap W6). They were previously
+    required and hardcoded to the full cataloged span r2022.04-r2026.07 with
+    a comment admitting it was "a broad illustrative default"; that default
+    named a target one release NEWER than the fork actually built in this
+    tree, so rules pinned to it were considered against a binary that does
+    not contain them. A value supplied here still wins over detection --
+    detection only fills in what the spec deliberately left open.
     """
 
-    source_ec_version: str
-    target_ec_version: str
+    source_ec_version: str | None = None
+    target_ec_version: str | None = None
+    # Show the solver the ORIGINAL tactics from the break onward, as a labelled
+    # stale reference. Without this the mode discards them entirely: the model
+    # resumes from the replayed prefix and never sees where the 2020 author was
+    # heading, so it reconstructs the remaining structure from scratch. Measured
+    # on one run, 46 original tactics across three lemmas were withheld this
+    # way. Set False for the A/B arm that reproduces the old behaviour.
+    show_remaining_original: bool = True
 
 
 @dataclass(frozen=True)

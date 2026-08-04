@@ -257,9 +257,13 @@ def test_confirm_deepseek_usage_accepts_only_exact_yes():
     )
 
 
-@patch("integration.experiment.__main__.confirm_deepseek_usage", return_value=False)
+@patch(
+    "integration.experiment.__main__._embeddings_endpoint_status",
+    return_value=(True, "stubbed"),
+)
+@patch("integration.experiment.__main__.confirm_paid_provider_usage", return_value=False)
 @patch("integration.experiment.__main__.run_experiment")
-def test_cli_deepseek_aborts_when_user_declines(mock_run, _confirm, monkeypatch, tmp_path):
+def test_cli_deepseek_aborts_when_user_declines(mock_run, _confirm, _preflight, monkeypatch, tmp_path):
     monkeypatch.setenv("DEEPSEEK_API_KEY", "sk-test")
     from integration.experiment.__main__ import main
 
@@ -279,9 +283,13 @@ def test_cli_deepseek_aborts_when_user_declines(mock_run, _confirm, monkeypatch,
     mock_run.assert_not_called()
 
 
-@patch("integration.experiment.__main__.confirm_deepseek_usage", return_value=True)
+@patch(
+    "integration.experiment.__main__._embeddings_endpoint_status",
+    return_value=(True, "stubbed"),
+)
+@patch("integration.experiment.__main__.confirm_paid_provider_usage", return_value=True)
 @patch("integration.experiment.__main__.run_experiment")
-def test_cli_deepseek_runs_after_confirmation(mock_run, _confirm, monkeypatch, tmp_path):
+def test_cli_deepseek_runs_after_confirmation(mock_run, _confirm, _preflight, monkeypatch, tmp_path):
     monkeypatch.setenv("DEEPSEEK_API_KEY", "sk-test")
     from integration.experiment.runner import ExperimentResult
 

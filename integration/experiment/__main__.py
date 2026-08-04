@@ -8,17 +8,27 @@ import sys
 from dataclasses import replace as dc_replace
 from pathlib import Path
 
+from integration.agent.budget import BudgetUnavailable, SpendBudget
 from integration.agent.config import (
+    LLM_PROVIDER_ANTHROPIC,
+    LLM_PROVIDER_DEEPSEEK,
+    LLM_PROVIDER_LM_STUDIO,
+    PAID_LLM_PROVIDERS,
+    REASONING_EFFORTS_BY_PROVIDER,
     AgentConfig,
+    apply_anthropic_provider,
     apply_deepseek_provider,
+    configured_thinking,
     deepseek_api_key,
+    validate_anthropic_thinking_effort,
+    validate_reasoning_effort,
 )
 from integration.experiment.config import ExperimentConfig
 from integration.experiment.corpora.elgamal import ElGamalCorpus
 from integration.experiment.corpora.joy import JoyCorpus
-from integration.experiment.deepseek_confirm import (
+from integration.experiment.paid_confirm import (
     AGENT_NEVER_CONFIRM_NOTICE,
-    confirm_deepseek_usage,
+    confirm_paid_provider_usage,
 )
 from integration.experiment.protocols import ExperimentSpec
 from integration.experiment.run_flags import write_run_flags
@@ -26,48 +36,81 @@ from integration.experiment.runner import run_experiment
 from integration.experiment.specs import SPECS, register_default_specs
 
 
+def _embeddings_endpoint_status(agent: AgentConfig) -> tuple[bool, str]:
+    """Is the LM Studio embeddings endpoint reachable, and does it serve a model?
+
+    Returns ``(ok, detail)``. Only a connectivity probe -- it deliberately does
+    not embed anything, so it costs nothing and cannot be confused for real
+    work. A server that answers but exposes no embedding model is reported as
+    a distinct failure, because that is the confusing case: the URL is right
+    and the run would still die later.
+    """
+    try:
+        from openai import OpenAI
+
+        client = OpenAI(
+            base_url=agent.lm_studio_base_url,
+            api_key=agent.llm_api_key or "lm-studio",
+            timeout=10,
+        )
+        models = client.models.list()
+    except Exception as exc:
+        return False, f"{type(exc).__name__}: {str(exc)[:200]}"
+
+    available = [m.id for m in (models.data or [])]
+    if not available:
+        return False, "endpoint responded but serves no models"
+    if agent.embed_model and agent.embed_model not in available:
+        return False, (
+            f"requested --embed-model {agent.embed_model!r} is not loaded "
+            f"(available: {', '.join(available[:5])})"
+        )
+    if not agent.embed_model and not any("embed" in m.lower() for m in available):
+        return False, (
+            "no model with 'embed' in its id is loaded, and --embed-model was "
+            f"not given (available: {', '.join(available[:5])})"
+        )
+    return True, f"{len(available)} model(s) available"
+
+
+def _rebuilt_corpus(corpus, data_dir: Path, sandbox_dir: Path | None):
+    """Rebuild a corpus provider against the CLI's --data-dir / sandbox path.
+
+    Returns the original object for corpus types that take neither, so an
+    unknown provider passes through rather than being silently dropped.
+    """
+    kwargs = {"data_dir": data_dir}
+    if sandbox_dir is not None:
+        kwargs["sandbox_dir"] = sandbox_dir
+    if isinstance(corpus, JoyCorpus):
+        return JoyCorpus(**kwargs)
+    if isinstance(corpus, ElGamalCorpus):
+        return ElGamalCorpus(**kwargs)
+    return corpus
+
+
 def _build_spec(name: str, data_dir: Path) -> ExperimentSpec:
     register_default_specs(data_dir)
-    if name in list(SPECS.names()):
-        spec = SPECS.get(name)
-        if isinstance(spec.corpus, JoyCorpus):
-            spec = ExperimentSpec(
-                name=spec.name,
-                corpus=JoyCorpus(data_dir=data_dir),
-                mutations=spec.mutations,
-                informal=spec.informal,
-                broken_formal=spec.broken_formal,
-            )
-        elif isinstance(spec.corpus, ElGamalCorpus):
-            spec = ExperimentSpec(
-                name=spec.name,
-                corpus=ElGamalCorpus(data_dir=data_dir),
-                mutations=spec.mutations,
-                informal=spec.informal,
-                broken_formal=spec.broken_formal,
-            )
-        return spec
-    raise KeyError(name)
+    if name not in list(SPECS.names()):
+        raise KeyError(name)
+    spec = SPECS.get(name)
+    # dataclasses.replace, NOT a field-by-field ExperimentSpec(...) rebuild.
+    # The enumerated form silently dropped `replay_bootstrap` when that mode
+    # was added (docs/PROOF_REPAIR_HANDOFF.md 6.2): every CLI-launched
+    # `--spec elgamal-changelog-repair` run fell through to the mutation path
+    # with no mode config at all, so nothing ever populated
+    # AgentConfig.changelog_hints and the entire proof_corpus knowledge base
+    # was unreachable from any experiment. `replace` copies every field by
+    # construction, so a fifth mode cannot be lost the same way.
+    return dc_replace(spec, corpus=_rebuilt_corpus(spec.corpus, data_dir, None))
 
 
 def _with_sandbox_dir(spec: ExperimentSpec, data_dir: Path, sandbox_dir: Path) -> ExperimentSpec:
-    if isinstance(spec.corpus, JoyCorpus):
-        return ExperimentSpec(
-            name=spec.name,
-            corpus=JoyCorpus(data_dir=data_dir, sandbox_dir=sandbox_dir),
-            mutations=spec.mutations,
-            informal=spec.informal,
-            broken_formal=spec.broken_formal,
-        )
-    if isinstance(spec.corpus, ElGamalCorpus):
-        return ExperimentSpec(
-            name=spec.name,
-            corpus=ElGamalCorpus(data_dir=data_dir, sandbox_dir=sandbox_dir),
-            mutations=spec.mutations,
-            informal=spec.informal,
-            broken_formal=spec.broken_formal,
-        )
-    return spec
+    # Same reasoning as _build_spec: only the corpus is rebuilt; every other
+    # field rides along untouched.
+    return dc_replace(
+        spec, corpus=_rebuilt_corpus(spec.corpus, data_dir, sandbox_dir)
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -104,10 +147,23 @@ def main(argv: list[str] | None = None) -> int:
         help="LM Studio base URL (embeddings always use this endpoint)",
     )
     run_p.add_argument(
+        "--provider",
+        choices=(LLM_PROVIDER_LM_STUDIO, LLM_PROVIDER_DEEPSEEK, LLM_PROVIDER_ANTHROPIC),
+        default=None,
+        help=(
+            "Chat provider for the solver/writer LLM. "
+            f"{LLM_PROVIDER_LM_STUDIO} (default) runs a local OpenAI-compatible "
+            f"server such as LM Studio; {LLM_PROVIDER_DEEPSEEK} and "
+            f"{LLM_PROVIDER_ANTHROPIC} are paid hosted APIs and prompt for "
+            "human confirmation before any billable call. Embeddings always "
+            "stay on LM Studio. " + AGENT_NEVER_CONFIRM_NOTICE
+        ),
+    )
+    run_p.add_argument(
         "--deepseek",
         action="store_true",
         help=(
-            "Route solver/writer chat completions through the DeepSeek API "
+            "Deprecated alias for --provider deepseek "
             "(requires DEEPSEEK_API_KEY). Prompts for human confirmation before "
             "any paid calls. "
             + AGENT_NEVER_CONFIRM_NOTICE
@@ -143,12 +199,25 @@ def main(argv: list[str] | None = None) -> int:
     )
     run_p.add_argument(
         "--reasoning-effort",
-        choices=("high", "max"),
+        choices=("low", "medium", "high", "xhigh", "max"),
         default=None,
         help=(
-            "DeepSeek reasoning effort when thinking is enabled "
-            "(official values: high, max). Also applies when adaptive "
-            "thinking turns thinking on. Ignored when thinking stays disabled."
+            "Reasoning effort. Accepted values differ by provider and are "
+            "validated after parsing: DeepSeek takes high|max (and only when "
+            "thinking is enabled); Anthropic takes the full "
+            "low|medium|high|xhigh|max ladder and applies it to adaptive "
+            "thinking. Default for Anthropic: high."
+        ),
+    )
+    run_p.add_argument(
+        "--max-spend-usd",
+        type=float,
+        default=None,
+        help=(
+            "Stop the run once estimated spend reaches this many USD "
+            "(paid providers only). Checked before each chat call, so actual "
+            "spend can overshoot by at most one call. Refused when the model "
+            "has no published rates, rather than silently not enforcing."
         ),
     )
     run_p.add_argument("--top-k", type=int, default=10, help="Premises to include")
@@ -235,10 +304,24 @@ def main(argv: list[str] | None = None) -> int:
     if args.llm_max_tokens is not None:
         agent.llm_max_tokens = args.llm_max_tokens
 
-    if args.deepseek:
+    # --deepseek is the historical spelling of --provider deepseek. Honour both,
+    # but refuse a request that names two different providers rather than
+    # silently picking one and billing the wrong API.
+    if args.deepseek and args.provider not in (None, LLM_PROVIDER_DEEPSEEK):
+        print(
+            f"error: --deepseek conflicts with --provider {args.provider}",
+            file=sys.stderr,
+        )
+        return 1
+    provider = args.provider or (
+        LLM_PROVIDER_DEEPSEEK if args.deepseek else LLM_PROVIDER_LM_STUDIO
+    )
+
+    if provider == LLM_PROVIDER_DEEPSEEK:
         if not deepseek_api_key(agent):
             print(
-                "error: --deepseek requires DEEPSEEK_API_KEY in the environment",
+                "error: --provider deepseek requires DEEPSEEK_API_KEY in the "
+                "environment",
                 file=sys.stderr,
             )
             return 1
@@ -255,19 +338,76 @@ def main(argv: list[str] | None = None) -> int:
                 "warning: --reasoning-effort is ignored when thinking is disabled",
                 file=sys.stderr,
             )
-    elif args.llm_model:
-        agent.llm_model = args.llm_model
-    elif (
-        args.thinking is not None
-        or args.reasoning_effort is not None
-        or args.thinking_failure_window is not None
-    ):
-        print(
-            "error: --thinking / --reasoning-effort / "
-            "--thinking-failure-window require --deepseek",
-            file=sys.stderr,
+    elif provider == LLM_PROVIDER_ANTHROPIC:
+        # No API-key precondition on purpose: the Anthropic SDK also resolves
+        # ANTHROPIC_AUTH_TOKEN and `ant auth login` profiles, so demanding an
+        # env var here would refuse to start on a correctly-authenticated box.
+        # A genuinely missing credential surfaces as an auth error on the
+        # first call, after the human has confirmed the spend.
+        apply_anthropic_provider(
+            agent,
+            model=args.llm_model,
+            thinking=args.thinking,
+            reasoning_effort=args.reasoning_effort,
         )
-        return 1
+        if args.thinking_failure_window is not None:
+            agent.thinking_failure_window = args.thinking_failure_window
+    else:
+        if args.llm_model:
+            agent.llm_model = args.llm_model
+        if (
+            args.thinking is not None
+            or args.reasoning_effort is not None
+            or args.thinking_failure_window is not None
+        ):
+            print(
+                "error: --thinking / --reasoning-effort / "
+                "--thinking-failure-window require a hosted provider "
+                "(--provider deepseek or --provider anthropic)",
+                file=sys.stderr,
+            )
+            return 1
+
+    if args.max_spend_usd is not None:
+        if provider not in PAID_LLM_PROVIDERS:
+            print(
+                f"error: --max-spend-usd is meaningless for provider {provider} "
+                "(local models are free); omit it",
+                file=sys.stderr,
+            )
+            return 1
+        try:
+            agent.spend_budget = SpendBudget(
+                limit_usd=args.max_spend_usd,
+                provider=provider,
+                model=agent.llm_model,
+            )
+        except BudgetUnavailable as exc:
+            # Refusing beats pretending: a cap that cannot be priced would
+            # otherwise let the run proceed uncapped while the user believed
+            # it was bounded.
+            print(f"error: {exc}", file=sys.stderr)
+            return 1
+
+    # Validate provider-specific combinations up front: a bad effort level or
+    # a disabled-thinking/high-effort pairing is a 400 mid-trial otherwise,
+    # after EasyCrypt time has already been spent.
+    if provider in PAID_LLM_PROVIDERS:
+        try:
+            if agent.llm_reasoning_effort is not None:
+                validate_reasoning_effort(provider, agent.llm_reasoning_effort)
+            if provider == LLM_PROVIDER_ANTHROPIC:
+                validate_anthropic_thinking_effort(
+                    configured_thinking(agent), agent.llm_reasoning_effort
+                )
+        except ValueError as exc:
+            allowed = REASONING_EFFORTS_BY_PROVIDER.get(provider, ())
+            print(
+                f"error: {exc}"
+                + (f" (allowed: {', '.join(allowed)})" if allowed else ""),
+                file=sys.stderr,
+            )
+            return 1
 
     exp_config = ExperimentConfig(
         spec_name=args.spec,
@@ -291,21 +431,43 @@ def main(argv: list[str] | None = None) -> int:
         if args.writer_temperature is not None:
             overrides["writer_temperature"] = args.writer_temperature
         if overrides:
-            spec = ExperimentSpec(
-                name=spec.name,
-                corpus=spec.corpus,
-                mutations=spec.mutations,
-                informal=dc_replace(spec.informal, **overrides),
+            # dc_replace for the same reason as _build_spec: the enumerated
+            # form here dropped broken_formal and replay_bootstrap.
+            spec = dc_replace(
+                spec, informal=dc_replace(spec.informal, **overrides)
             )
 
-    if args.deepseek:
-        confirmed = confirm_deepseek_usage(
+    if provider in PAID_LLM_PROVIDERS:
+        # Embeddings always run on LM Studio, whatever the chat provider is.
+        # Check that endpoint BEFORE asking anyone to authorize spend: an
+        # unreachable embedder fails in _build_premise_index, i.e. after the
+        # human has confirmed and after EasyCrypt has already done work. Being
+        # asked to approve money for a run that cannot start is the worst
+        # possible ordering.
+        reachable, detail = _embeddings_endpoint_status(agent)
+        if not reachable:
+            print(
+                f"error: embeddings endpoint unreachable at {agent.lm_studio_base_url}\n"
+                f"       {detail}\n"
+                "       Embeddings always use LM Studio, even with "
+                f"--provider {provider} (Anthropic has no embeddings API).\n"
+                "       Start LM Studio with an embedding model loaded, or point\n"
+                "       --lm-studio-url at another OpenAI-compatible endpoint.\n"
+                "       No paid call was made.",
+                file=sys.stderr,
+            )
+            return 1
+
+        confirmed = confirm_paid_provider_usage(
             config=agent,
             trials=args.trials,
             informal=spec.informal is not None,
         )
         if not confirmed:
-            print("Aborted: DeepSeek API usage was not confirmed.", file=sys.stderr)
+            print(
+                f"Aborted: {provider} API usage was not confirmed.",
+                file=sys.stderr,
+            )
             return 2
 
     # Record the invocation after confirmation so aborted DeepSeek prompts do

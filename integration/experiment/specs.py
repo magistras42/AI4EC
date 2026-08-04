@@ -50,19 +50,21 @@ def register_default_specs(data_dir) -> None:
         # Same corpus as elgamal-broken-repair, but replays the original
         # tactic script tactic-by-tactic (preserving whatever prefix still
         # applies) instead of admitting everything and reconstructing from
-        # scratch -- see integration/experiment/repair_bootstrap.py. Version
-        # pair is a broad illustrative default spanning proof_corpus's full
-        # cataloged changelog range (r2022.04-r2026.07); narrow it once the
-        # corpus's actual EC version at authoring time is known.
+        # scratch -- see integration/experiment/repair_bootstrap.py.
+        #
+        # Both version endpoints are left unset so they are DETECTED per trial
+        # (integration/agent/ec_version.py). The target is genuinely knowable
+        # -- ask the installed fork's source tree -- and the previous
+        # hardcoded r2026.07 was one release ahead of what is actually built
+        # here. The source is not knowable for this 2020-era corpus and
+        # detection reports that honestly rather than guessing, which leaves
+        # the range fail-open exactly as before.
         SPECS.register(
             ExperimentSpec(
                 name="elgamal-changelog-repair",
                 corpus=ElGamalCorpus(data_dir=data),
                 mutations=None,
-                replay_bootstrap=ReplayBootstrapConfig(
-                    source_ec_version="r2022.04",
-                    target_ec_version="r2026.07",
-                ),
+                replay_bootstrap=ReplayBootstrapConfig(),
             )
         )
 

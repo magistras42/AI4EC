@@ -219,7 +219,7 @@ def test_agent_does_not_complete_after_proc_alone(
     calls = {"n": 0}
 
     class FakeLlm:
-        def decide(self, prompt):
+        def decide(self, prompt, **_kwargs):
             from integration.agent.llm import LlmDecision, TacticAction
 
             prompts.append(prompt)
@@ -281,7 +281,7 @@ def test_agent_completes_full_hoare_proof(tmp_path, easycrypt_bin, monkeypatch):
     tactic_index = {"i": 0}
 
     class FakeLlm:
-        def decide(self, _prompt):
+        def decide(self, _prompt, **_kwargs):
             from integration.agent.llm import LlmDecision, TacticAction
 
             idx = tactic_index["i"]

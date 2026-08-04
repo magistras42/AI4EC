@@ -67,9 +67,15 @@ def test_build_run_flags_payload_handles_null_argv(tmp_path: Path):
     assert payload["flags"]["trials"] == 1
 
 
-@patch("integration.experiment.__main__.confirm_deepseek_usage", return_value=True)
+@patch(
+    "integration.experiment.__main__._embeddings_endpoint_status",
+    return_value=(True, "stubbed"),
+)
+@patch("integration.experiment.__main__.confirm_paid_provider_usage", return_value=True)
 @patch("integration.experiment.__main__.run_experiment")
-def test_cli_writes_run_flags_before_experiment(mock_run, _confirm, monkeypatch, tmp_path):
+def test_cli_writes_run_flags_before_experiment(
+    mock_run, _confirm, _preflight, monkeypatch, tmp_path
+):
     monkeypatch.setenv("DEEPSEEK_API_KEY", "sk-test")
     out = tmp_path / "out"
     mock_run.return_value = ExperimentResult(
@@ -113,10 +119,14 @@ def test_cli_writes_run_flags_before_experiment(mock_run, _confirm, monkeypatch,
     assert payload["resolved"]["embed_model"] == "mock-embed"
 
 
-@patch("integration.experiment.__main__.confirm_deepseek_usage", return_value=False)
+@patch(
+    "integration.experiment.__main__._embeddings_endpoint_status",
+    return_value=(True, "stubbed"),
+)
+@patch("integration.experiment.__main__.confirm_paid_provider_usage", return_value=False)
 @patch("integration.experiment.__main__.run_experiment")
 def test_cli_does_not_write_run_flags_when_deepseek_declined(
-    mock_run, _confirm, monkeypatch, tmp_path
+    mock_run, _confirm, _preflight, monkeypatch, tmp_path
 ):
     monkeypatch.setenv("DEEPSEEK_API_KEY", "sk-test")
     out = tmp_path / "out"

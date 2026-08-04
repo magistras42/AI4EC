@@ -31,6 +31,8 @@ from pathlib import Path
 from integration.agent import run_agent
 from integration.agent.config import AgentConfig
 from integration.agent.easycrypt import fetch_goal_and_premises, has_open_goals, validate_file
+from integration.agent.ec_errors import classify_error
+from integration.agent.ec_version import resolve_version_window
 from integration.agent.import_repair import format_for_prompt, repair_imports
 from integration.agent.proof_file import ProofFile, create_working_copy
 from integration.agent.repair_hints import get_repair_hints_text
@@ -41,6 +43,34 @@ from integration.experiment.runner import TrialResult, TokenUsage, _cost_for_usa
 
 
 _TACTIC_SPLIT_RE = re.compile(r"\.\s")
+
+
+def _cataloged_releases() -> list[str] | None:
+    """Release tags the changelog actually has entries for.
+
+    Version detection snaps onto this list so it can never report a release
+    the knowledge base cannot reason about -- the vendored fork carries tags
+    (r2026.06, r2026.07, ...) that the catalog may not cover. Returns None if
+    proof_corpus is unreachable, which leaves detection unsnapped rather than
+    failing the trial: repair hints are supplementary context, never a
+    precondition.
+    """
+    try:
+        from integration.agent.repair_hints import (
+            _load_retrieve_entries_module,
+            resolve_changelog_path,
+        )
+
+        module = _load_retrieve_entries_module()
+        changelog = module.load_changelog(str(resolve_changelog_path()))
+        versions = [
+            release.get("version")
+            for release in changelog.get("releases", [])
+            if release.get("version")
+        ]
+        return versions or None
+    except Exception:
+        return None
 
 
 def _original_tactics(case: ProofCase, lines: list[str]) -> list[str]:
@@ -60,6 +90,16 @@ def _original_tactics(case: ProofCase, lines: list[str]) -> list[str]:
         if part:
             tactics.append(part + ".")
     return tactics
+
+
+def _oldest_cataloged_release() -> str:
+    """Oldest release the changelog covers, for an unknown source version.
+
+    Falls back to an empty string only when proof_corpus is unreachable, in
+    which case retrieve_entries fails open on its own.
+    """
+    releases = _cataloged_releases()
+    return releases[0] if releases else ""
 
 
 def run_replay_bootstrap_trial(
@@ -84,6 +124,23 @@ def run_replay_bootstrap_trial(
     original_path = trial_dir / "original.ec"
     original_path.write_bytes(case.file.read_bytes())
 
+    # W6: the spec's version pair is a declared default, not ground truth. The
+    # target is genuinely knowable (ask the installed binary's source tree) and
+    # was previously hardcoded one release AHEAD of the build actually
+    # installed here; the source usually is not knowable and stays fail-open.
+    # Detection only fills in what the spec left unset, so an explicitly
+    # narrowed spec still wins.
+    source_version, target_version, version_provenance = resolve_version_window(
+        corpus_path=case.file,
+        easycrypt_bin=agent_config.easycrypt_bin,
+        source_override=replay_config.source_ec_version,
+        target_override=replay_config.target_ec_version,
+        known_versions=_cataloged_releases(),
+    )
+    (trial_dir / "ec_versions.json").write_text(
+        json.dumps(version_provenance, indent=2), encoding="utf-8",
+    )
+
     goal_result = fetch_goal_and_premises(case.file, case.proof_start_line, agent_config)
     import_repair_summary: str | None = None
     if goal_result.returncode != 0 or not has_open_goals(goal_result.stdout):
@@ -96,8 +153,8 @@ def run_replay_bootstrap_trial(
         repair = repair_imports(
             case.file,
             agent_config,
-            source_version=replay_config.source_ec_version,
-            target_version=replay_config.target_ec_version,
+            source_version=source_version,
+            target_version=target_version,
             work_path=trial_dir / "import_repaired.ec",
         )
         (trial_dir / "import_repair.json").write_text(
@@ -192,11 +249,20 @@ def run_replay_bootstrap_trial(
             estimated_cost=_cost_for_usage(usage, agent_config),
         )
 
+    # Classify before retrieving: the bootstrap's first failure is just as
+    # likely to be proof-level as import-level, and the two want different
+    # evidence (integration/agent/ec_errors.py).
+    failure_kind = classify_error(raw_error).kind
     changelog_hints, hint_notes, matched_version = get_repair_hints_text(
         failing_tactic_text=failed_tactic,
         ec_error_text=raw_error,
-        source_ec_version=replay_config.source_ec_version,
-        target_ec_version=replay_config.target_ec_version,
+        error_kind=failure_kind,
+        # An undetected source means "consider every release". Spell that as
+        # the OLDEST cataloged release rather than an empty string: both fail
+        # open to the full range, but the empty string does it by tripping
+        # retrieve_entries' unknown-version warning on every single lookup.
+        source_ec_version=source_version or _oldest_cataloged_release(),
+        target_ec_version=target_version or "",
     )
     if hint_notes:
         (trial_dir / "repair_hints_notes.json").write_text(
@@ -208,7 +274,13 @@ def run_replay_bootstrap_trial(
     # release would pass {matched_version} in already_consumed_versions on
     # its own get_repair_hints_text call.
     (trial_dir / "repair_hints_hop.json").write_text(
-        json.dumps({"changelog_hop_matched_version": matched_version}, indent=2),
+        json.dumps(
+            {
+                "changelog_hop_matched_version": matched_version,
+                "failure_kind": failure_kind,
+            },
+            indent=2,
+        ),
         encoding="utf-8",
     )
 
@@ -223,17 +295,53 @@ def run_replay_bootstrap_trial(
             if changelog_hints else import_repair_summary
         )
 
+    # Persist the rendered block verbatim. It is both the audit record of what
+    # the model was actually told and the input `repair_metrics.hint_uptake`
+    # scores accepted tactics against -- reconstructing it later from the
+    # changelog would not reproduce what this trial really saw.
+    if changelog_hints:
+        (trial_dir / "changelog_hints.txt").write_text(
+            changelog_hints, encoding="utf-8"
+        )
+
+    # The original proof from the break onward. `tactics[accepted_count]` is the
+    # step that just failed; everything after it was never reached and is
+    # therefore UNTESTED against the current build, not known-broken -- the
+    # heading says exactly that, because telling the model these "do not
+    # compile" would invite it to discard the structure it most needs.
+    remaining_original = tactics[accepted_count:]
+    remaining_text: str | None = None
+    if replay_config.show_remaining_original and remaining_original:
+        remaining_text = "\n".join(remaining_original)
+        (trial_dir / "informal_proof.md").write_text(
+            remaining_text + "\n", encoding="utf-8"
+        )
+
     trial_agent_config = replace(
         agent_config,
         repair_hint=None,
         changelog_hints=changelog_hints or None,
-        informal_proof=None,
+        informal_proof=remaining_text,
+        informal_proof_is_formal=True,
+        informal_proof_heading=(
+            "## Original proof from this point (reference — the FIRST line "
+            "below is the tactic that just failed against the current "
+            "EasyCrypt; the lines after it were never reached, so they are "
+            "untested rather than known-broken. Use them for intended "
+            "structure and invariants; adapt rather than paste)"
+        ),
         premises_override=None,
         stuck_limit=config.stuck_limit,
         log_file=trial_dir / "agent_log.json",
         output_dir=trial_dir,
         right_fix=None,
         retrospective_file=trial_dir / "timeout_retrospective.json",
+        # W3: let the loop re-aim the changelog block at each NEW failure and
+        # hop past releases already shown, rather than proving the rest of the
+        # script against hints fetched for the first broken tactic only.
+        live_changelog_hints=True,
+        source_ec_version=source_version,
+        target_ec_version=target_version,
     )
 
     # work_copy already exists (holds the replayed-so-far prefix), so

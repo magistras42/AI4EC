@@ -85,7 +85,8 @@ def test_load_index_entries_filters_by_slug_file_and_kind(tmp_path):
     assert [e.name for e in entries] == ["first", "target"]
 
 
-def test_elgamal_corpus_load_cases_ports_syntax_and_admits_priors(tmp_path):
+def test_elgamal_corpus_load_cases_admits_priors(tmp_path):
+    """Prior-lemma admitting, under the DEFAULT (raw, unported) sandboxes."""
     data_dir = _write_fixture_corpus(tmp_path)
     corpus = ElGamalCorpus(data_dir=data_dir, sandbox_dir=tmp_path / "sandboxes")
 
@@ -95,10 +96,11 @@ def test_elgamal_corpus_load_cases_ports_syntax_and_admits_priors(tmp_path):
     target = next(c for c in cases if c.name == "target")
     text = target.file.read_text(encoding="utf-8")
 
-    # Syntax was ported.
-    assert "proc *" not in text
-    assert "declare module Adv <: ADV{RO}." in text
-    assert "old_mem_restr" in text
+    # Default is now port_legacy_syntax=False: the 2020 syntax is handed to the
+    # harness untouched so integration/agent/import_repair.py does the porting
+    # from ec_migrations.toml, verified against EasyCrypt. See the corpus
+    # docstring for the measurement behind this default.
+    assert "proc *" in text, "default must NOT pre-port; import_repair does it"
 
     # "first" (the only prior) is admitted; "target"'s own tactic is intact.
     lines = text.splitlines()
@@ -110,6 +112,44 @@ def test_elgamal_corpus_load_cases_ports_syntax_and_admits_priors(tmp_path):
     first_text = first.file.read_text(encoding="utf-8")
     assert "trivial." in first_text
     assert "admit." not in first_text
+
+
+def test_elgamal_corpus_can_still_pre_port_on_request(tmp_path):
+    """`port_legacy_syntax=True` restores the offline port.
+
+    Retained so a run can isolate tactic-level repair from import-level
+    repair, and so the behaviour every prior experiment used stays
+    reproducible.
+    """
+    data_dir = _write_fixture_corpus(tmp_path)
+    corpus = ElGamalCorpus(
+        data_dir=data_dir,
+        sandbox_dir=tmp_path / "sandboxes",
+        port_legacy_syntax=True,
+    )
+    target = next(c for c in corpus.load_cases() if c.name == "target")
+    text = target.file.read_text(encoding="utf-8")
+
+    assert "proc *" not in text
+    assert "declare module Adv <: ADV{RO}." in text
+    assert "old_mem_restr" in text
+
+
+def test_pre_porting_preserves_line_numbers(tmp_path):
+    """Both modes must agree on line count -- ProofCase records absolute lines."""
+    data_dir = _write_fixture_corpus(tmp_path)
+    raw = ElGamalCorpus(data_dir=data_dir, sandbox_dir=tmp_path / "raw")
+    ported = ElGamalCorpus(
+        data_dir=data_dir, sandbox_dir=tmp_path / "ported", port_legacy_syntax=True
+    )
+    raw_case = next(c for c in raw.load_cases() if c.name == "target")
+    ported_case = next(c for c in ported.load_cases() if c.name == "target")
+
+    assert raw_case.proof_start_line == ported_case.proof_start_line
+    assert raw_case.tactic_lines == ported_case.tactic_lines
+    assert len(raw_case.file.read_text().splitlines()) == len(
+        ported_case.file.read_text().splitlines()
+    )
 
 
 def test_elgamal_corpus_sample_cases_with_replacement(tmp_path):

@@ -34,6 +34,7 @@ from integration.experiment.proof_extract import (
     strip_tactics,
 )
 from integration.experiment.protocols import ExperimentSpec, ProofCase
+from integration.experiment.repair_metrics import aggregate_repair_metrics
 from integration.experiment.verify import is_proof_complete, is_proof_incomplete
 
 logger = logging.getLogger(__name__)
@@ -92,6 +93,15 @@ class ExperimentResult:
     # Totals divided by `trials_run`, for comparing run economy across models.
     token_usage_per_trial: dict[str, float] = field(default_factory=dict)
     estimated_cost: dict | None = None
+    # Repair-specific outcomes aggregated from per-trial artifacts (W8).
+    # Empty for modes that write none, so mutation/informal summaries stay
+    # unchanged rather than gaining a block of nulls.
+    repair_metrics: dict = field(default_factory=dict)
+    # Spend cap state, when --max-spend-usd was given. `budget_stopped`
+    # says whether the run ended early because of it, which a reader must
+    # know before interpreting the success rate.
+    budget: dict | None = None
+    budget_stopped: bool = False
 
 
 class EventLog:
@@ -143,10 +153,20 @@ def is_proof_incomplete_from_lines(
 
 
 def _experiment_mode(spec: ExperimentSpec) -> str:
+    """Mode label for summary.json / events.jsonl.
+
+    Branch order MUST match run_trial's dispatch order, or summary.json
+    mislabels the run. Every mode-marker field needs a branch here: a
+    replay_bootstrap spec used to fall through to "mutation" while
+    TrialResult.mode said "replay_bootstrap", so the two disagreed and any
+    results table built from summary.json was silently wrong.
+    """
     if spec.informal is not None:
         return "informal"
     if spec.broken_formal is not None:
         return "broken_formal"
+    if spec.replay_bootstrap is not None:
+        return "replay_bootstrap"
     return "mutation"
 
 
@@ -519,15 +539,57 @@ def run_experiment(spec: ExperimentSpec, config: ExperimentConfig) -> Experiment
         seed=config.seed,
     )
 
-    cases = spec.corpus.sample_cases(config.trials, rng)
+    if config.sort_by_difficulty:
+        # Deterministic shortest-first, so a bounded run spends its budget on
+        # the cases most likely to be completable and two runs are comparable
+        # without relying on a shared seed.
+        cases = sorted(spec.corpus.load_cases(), key=lambda c: len(c.tactic_lines))
+        cases = cases[: config.trials]
+    else:
+        cases = spec.corpus.sample_cases(config.trials, rng)
     trial_results: list[TrialResult] = []
     successes = stuck = max_steps = errors = skipped = 0
     total_usage = TokenUsage()
 
+    budget = config.agent.spend_budget
+    budget_stopped = False
+
     for i, case in enumerate(cases):
+        # Stop launching NEW trials once the cap is reached. A trial that has
+        # already begun finishes its current step and exits on its own budget
+        # check, so partial work is still recorded rather than discarded.
+        if budget is not None and budget.exhausted:
+            budget_stopped = True
+            logger.info(
+                "Spend cap reached before trial %d; %d trial(s) not started (%s)",
+                i,
+                len(cases) - i,
+                budget.status(),
+            )
+            events.record(
+                "budget_exhausted",
+                trials_not_started=len(cases) - i,
+                budget=budget.as_dict(),
+            )
+            break
+
         trial_dir = config.output_dir / "trials" / f"trial_{i:03d}"
-        logger.info("Trial %d: %s", i, case.name)
-        trial = run_trial(i, case, spec, config, rng, trial_dir)
+        # Scale the step allowance to the proof's own length when asked. The
+        # agent config is replaced rather than mutated so the run-level config
+        # (and the shared spend budget it carries) is untouched.
+        trial_config = config
+        if config.adaptive_steps_multiplier is not None:
+            steps = config.steps_for_case(len(case.tactic_lines))
+            trial_config = replace(
+                config, agent=replace(config.agent, max_steps=steps)
+            )
+            logger.info(
+                "Trial %d: %s (%d tactic lines -> %d step budget)",
+                i, case.name, len(case.tactic_lines), steps,
+            )
+        else:
+            logger.info("Trial %d: %s", i, case.name)
+        trial = run_trial(i, case, spec, trial_config, rng, trial_dir)
         trial_results.append(trial)
         total_usage.merge(trial.token_usage)
         events.record("trial_finish", **asdict(trial))
@@ -542,12 +604,23 @@ def run_experiment(spec: ExperimentSpec, config: ExperimentConfig) -> Experiment
             stuck += 1
         elif trial.reason == ExitReason.MAX_STEPS.name:
             max_steps += 1
+        elif trial.reason == ExitReason.BUDGET_EXHAUSTED.name:
+            # Not an error and not a failure to repair -- we simply stopped
+            # paying. Counting it as either would corrupt the success rate.
+            budget_stopped = True
         else:
             errors += 1
 
-    trials_run = len(cases) - skipped
+    trials_run = len(trial_results) - skipped
     estimated_cost = _cost_for_usage(total_usage, config.agent)
     cost_usd = estimated_cost["usd"] if estimated_cost is not None else None
+    # Derived purely by reading artifacts the trials already wrote, so a
+    # failure here must not lose an otherwise-complete experiment.
+    try:
+        repair_metrics = aggregate_repair_metrics(config.output_dir)
+    except Exception:  # pragma: no cover - defensive
+        logger.exception("Failed to aggregate repair metrics")
+        repair_metrics = {}
     result = ExperimentResult(
         spec_name=spec.name,
         mode=_experiment_mode(spec),
@@ -565,6 +638,9 @@ def run_experiment(spec: ExperimentSpec, config: ExperimentConfig) -> Experiment
             total_usage, trials_run, cost_usd=cost_usd
         ),
         estimated_cost=estimated_cost,
+        repair_metrics=repair_metrics,
+        budget=budget.as_dict() if budget is not None else None,
+        budget_stopped=budget_stopped,
     )
     _write_summary(config.output_dir / "summary.json", result)
     events.record(

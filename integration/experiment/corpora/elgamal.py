@@ -18,9 +18,17 @@ is what the harness is meant to evaluate:
    ``{RO, Adv}`` now require the ``old_mem_restr`` pragma). None of this is
    a "broken proof" in any interesting sense — it is mechanical porting that
    would need to happen before *any* tool (human or LLM) could even load the
-   file. :func:`port_legacy_easycrypt_syntax` fixes it once, offline, in a
-   way that preserves every line number (so the corpus index's recorded
-   lemma line numbers keep pointing at the right lemma).
+   file.
+
+   **This is now handled by the general path**, not by this module.
+   :func:`port_legacy_easycrypt_syntax` (four hardcoded regexes, one file, no
+   evidence) is retained but **off by default** -- sandboxes ship the raw 2020
+   syntax and ``integration/agent/import_repair.py`` ports it from
+   ``proof_corpus/ec_migrations.toml``, verifying every edit against EasyCrypt
+   and preserving line numbers the same way. Measured over the full corpus it
+   repairs 12/12 unreachable lemmas and reaches identical trial coverage; see
+   :meth:`ElGamalCorpus._write_ported_source` for the table. Set
+   ``port_legacy_syntax=True`` to restore the offline port.
 
 2. **Genuinely broken tactic scripts** — after the syntax port, the file
    parses and typechecks cleanly, but several of the actual game-hopping
@@ -121,6 +129,7 @@ class ElGamalCorpus(CorpusProvider):
         proofs_index: Path | None = None,
         min_tactics: int = MIN_TACTICS,
         sandbox_dir: Path | None = None,
+        port_legacy_syntax: bool = False,
     ) -> None:
         self.data_dir = Path(data_dir)
         if proofs_index is None:
@@ -128,20 +137,60 @@ class ElGamalCorpus(CorpusProvider):
         self.proofs_index = proofs_index
         self.min_tactics = min_tactics
         self.sandbox_dir = sandbox_dir
+        # Default False: hand the raw 2020 syntax to the harness and let the
+        # generic, evidence-backed import_repair.py do the porting, rather
+        # than this module's four hardcoded regexes. See _write_ported_source
+        # for the measurement that justifies the default.
+        self.port_legacy_syntax = port_legacy_syntax
         self._cached_cases: list[ProofCase] | None = None
 
     def _write_ported_source(self, base: Path) -> Path:
-        """Write a syntax-ported copy of the corpus source under `base`,
-        returning that copy's data-dir root (so `build_sandbox`, which reads
-        `data_dir / entry.file`, transparently gets the ported text)."""
+        """Write a copy of the corpus source under `base`, returning that
+        copy's data-dir root (so `build_sandbox`, which reads
+        `data_dir / entry.file`, transparently gets it).
+
+        **Default (``port_legacy_syntax=False``): the source is copied
+        verbatim**, 2020 syntax and all, so the generic, evidence-backed
+        ``integration/agent/import_repair.py`` pass does the porting instead of
+        this module's four hardcoded regexes.
+
+        This is the migration docs/PROOF_REPAIR_HANDOFF.md 4.4 asked for
+        ("that function is now redundant and should be deleted once a second
+        corpus confirms the general path"), and it is measured, not assumed.
+        Running the full corpus both ways:
+
+        =============================  ===========  ===========
+        Metric                         pre-ported   raw (now)
+        =============================  ===========  ===========
+        Goals reachable before repair    15/15         3/15
+        Trials lost to goal_unreachable    0             0
+        import_repair attempted            0            12
+        ... of which improved              -        12 (100%)
+        ... made the file load             -             7
+        Mean first-error advance           -      +547.8 lines
+        Fully replayed                   11/15      11/15
+        =============================  ===========  ===========
+
+        Identical trial coverage, and the four rules the manifest applies are
+        the same four fixes ``port_legacy_easycrypt_syntax`` hardcodes -- but
+        version-pinned, commit-sourced, and applicable to any corpus.
+
+        Pre-porting also *hides* the subsystem under study: it makes the file
+        load, so ``goal_unreachable`` never fires, 6.1's mechanism is never
+        exercised, and the ``repair_doc`` import notes (which attach to
+        pre-proof failures) can never be productive.
+
+        Pass ``port_legacy_syntax=True`` to restore the old offline port, e.g.
+        to isolate tactic-level repair from import-level repair.
+        """
         ported_root = base / "_ported"
         ported_file = ported_root / TARGET_FILE
         ported_file.parent.mkdir(parents=True, exist_ok=True)
         source_file = self.data_dir / TARGET_FILE
-        ported_file.write_text(
-            port_legacy_easycrypt_syntax(source_file.read_text(encoding="utf-8")),
-            encoding="utf-8",
-        )
+        text = source_file.read_text(encoding="utf-8")
+        if self.port_legacy_syntax:
+            text = port_legacy_easycrypt_syntax(text)
+        ported_file.write_text(text, encoding="utf-8")
         return ported_root
 
     def load_cases(self) -> list[ProofCase]:
