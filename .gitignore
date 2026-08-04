@@ -230,3 +230,39 @@ __marimo__/
 # real, committable proof_corpus/output/ (changelog.yaml, repair_doc
 # sources, exposure_results.json, ladder.md).
 /integration/output/
+
+# Local scratch notes, vendored/reference checkouts, and course documents --
+# not source, not meant for the repo. Anchored to their exact locations so
+# these rules don't accidentally over-match a same-named file/dir elsewhere.
+/NOTES.md
+/easycrypt/
+/proof_corpus/NOTES.md
+/proof_corpus/easycrypt/
+/proof_corpus/eval/
+# compute_exposure_score.py clones into ./eval/<name> relative to the CWD, so
+# running it from the repo root (rather than proof_corpus/) lands 376 MB of
+# corpus clones here. Ignore both locations.
+/eval/
+/proposal.pdf
+/refman/
+# --- Secrets -----------------------------------------------------------------
+# `.env` is listed above, but only as an exact name: `.env.local`,
+# `.env.production` and friends were NOT covered. Credentials must never be
+# committable by accident, so match the variants and the usual key/credential
+# filenames too. `.env.example` is deliberately re-included -- a committed
+# template with placeholder values is useful and contains no secret.
+.env.*
+!.env.example
+!.env.template
+*.pem
+*.key
+!**/*.public.key
+id_rsa
+id_ecdsa
+id_ed25519
+secrets.json
+secrets.yaml
+secrets.yml
+credentials.json
+.anthropic.json
+.deepseek.json
