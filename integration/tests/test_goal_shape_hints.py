@@ -179,3 +179,105 @@ def test_hints_are_still_produced_for_most_goals(records):
 def test_hint_generation_never_raises_on_real_goals(records):
     for r in records:
         format_active_goal_shape_hints(r["goal"])
+
+
+# --- multi-goal dumps --------------------------------------------------------
+#
+# EasyCrypt prints every open goal, active one first, the rest under `Goal #N`.
+# A tactic applies to the active goal alone. Measured over one run: 90% of
+# prompts carried more than one subgoal and 70% of the goal text was inactive.
+
+MULTI_GOAL = """\
+Current goal (remaining: 2)
+
+Type variables: <none>
+
+&m: {}
+------------------------------------------------------------------------
+forall (x : int), 0 <= x => x + 1 <> 0
+
+
+  Goal #2
+  ------------------------------------------------------------------------
+  &1 (left ) : {a : int}
+&2 (right) : {a : int}
+
+pre = ={a}
+
+    (1)  x <- a          (1)  x <- a
+    (2)  y <$ dt         (2)  y <$ dt
+
+post = ={x, y}
+"""
+
+
+def test_active_goal_is_extracted_without_the_inactive_ones():
+    from integration.agent.prompt import active_goal_text
+
+    active = active_goal_text(MULTI_GOAL)
+    assert "forall (x : int)" in active
+    assert "Goal #2" not in active
+    assert "y <$ dt" not in active
+
+
+def test_subgoal_count_comes_from_the_remaining_header():
+    from integration.agent.prompt import count_subgoals
+
+    assert count_subgoals(MULTI_GOAL) == 2
+    assert count_subgoals("Current goal\n\nfoo") == 1
+    assert count_subgoals("") == 0
+
+
+def test_inactive_program_does_not_make_an_ambient_goal_look_program_logic():
+    """The regression that mattered: goal #2 has a program, the active one does not."""
+    hints = format_active_goal_shape_hints(MULTI_GOAL)
+    assert "AMBIENT-LOGIC" in hints
+    assert "PROGRAM-LOGIC" not in hints
+
+
+def test_instruction_counts_are_never_taken_from_an_inactive_goal():
+    """`seq N M` uses these numbers directly; fabricated ones are worse than none."""
+    hints = format_active_goal_shape_hints(MULTI_GOAL)
+    assert "Instruction counts" not in hints
+
+
+def test_the_model_is_told_which_goal_is_active():
+    hints = format_active_goal_shape_hints(MULTI_GOAL)
+    assert "2 open goals" in hints
+    assert "ACTIVE" in hints
+
+
+def test_single_goal_dumps_are_unchanged_and_say_nothing_about_subgoals():
+    single = """\
+Current goal
+
+&m: {}
+------------------------------------------------------------------------
+pre = ={a}
+
+    (1)  x <- a          (1)  x <- a
+
+post = ={x}
+"""
+    hints = format_active_goal_shape_hints(single)
+    assert "PROGRAM-LOGIC" in hints
+    assert "open goals" not in hints
+    assert "Instruction counts" in hints
+
+
+def test_goal_section_labels_and_separates_the_dumps():
+    from integration.agent.prompt import _goal_section
+
+    rendered = "\n".join(_goal_section(MULTI_GOAL))
+    assert "ACTIVE (1 of 2 open)" in rendered
+    assert "Other open goals (1)" in rendered
+    # Context is kept, not discarded -- it just stops being mistaken for active.
+    assert "y <$ dt" in rendered
+
+
+def test_goal_section_leaves_a_single_goal_alone():
+    from integration.agent.prompt import _goal_section
+
+    rendered = _goal_section("Current goal\n\npre = ={a}\n\npost = ={x}")
+    assert rendered[0] == "## Current goal"
+    assert "ACTIVE" not in "\n".join(rendered)

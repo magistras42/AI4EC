@@ -221,6 +221,35 @@ def goal_is_implication_before_hl(goal: str) -> bool:
     return bool(_IMPL_BEFORE_HL_RE.search(compact))
 
 
+_SUBGOAL_HEADER_RE = re.compile(r"^[ \t]*Goal #(\d+)\s*$", re.MULTILINE)
+_REMAINING_RE = re.compile(r"remaining:\s*(\d+)")
+
+
+def count_subgoals(goal: str) -> int:
+    """How many goals EasyCrypt says are open, per the ``(remaining: N)`` header."""
+    match = _REMAINING_RE.search(goal or "")
+    if match:
+        return int(match.group(1))
+    return 1 if (goal or "").strip() else 0
+
+
+def active_goal_text(goal: str) -> str:
+    """Return ONLY the active (first) subgoal from an EasyCrypt goal dump.
+
+    EasyCrypt prints every open goal, the active one first and the rest under
+    ``Goal #2``, ``Goal #3``, ... A tactic applies to the active goal alone,
+    but every shape heuristic here used to run over the whole dump, so it
+    described a blend of goals that does not exist. Measured over one run:
+    90% of prompts carried more than one subgoal, 70% of the goal text was
+    inactive, and 38% of prompts got different advice once scoped -- including
+    fabricated ``seq`` instruction counts lifted from a *different* subgoal
+    and handed to the model for a goal with no program in it at all.
+    """
+    text = goal or ""
+    match = _SUBGOAL_HEADER_RE.search(text)
+    return text[: match.start()].rstrip() if match else text
+
+
 def _program_statement_block(goal: str) -> str:
     """Extract the statement region between pre= and post= when present.
 
@@ -363,6 +392,36 @@ def _side_is_empty(side: str) -> bool:
     return not compact
 
 
+def _goal_section(goal: str) -> list[str]:
+    """Render the goal, naming which part a tactic will actually act on.
+
+    A bare ``(remaining: 3)`` header followed by three undifferentiated dumps
+    does not say which goal is active, and the model was observed choosing
+    tactics that fit an inactive one. The active goal is kept first and
+    labelled; the rest stay for context, explicitly marked as not actionable.
+    """
+    text = goal or ""
+    subgoals = count_subgoals(text)
+    if subgoals <= 1:
+        return ["## Current goal", text, ""]
+
+    active = active_goal_text(text)
+    rest = text[len(active) :].lstrip("\n")
+    return [
+        f"## Current goal — ACTIVE (1 of {subgoals} open)",
+        "Your tactic applies to THIS goal only.",
+        "",
+        active,
+        "",
+        f"## Other open goals ({subgoals - 1}) — context only, not actionable yet",
+        "Do not pick a tactic to fit these; they become active only after the "
+        "goal above is discharged.",
+        "",
+        rest,
+        "",
+    ]
+
+
 def format_active_goal_shape_hints(goal: str) -> str:
     """Proactive, shape-conditioned hints for the current EasyCrypt goal.
 
@@ -372,11 +431,25 @@ def format_active_goal_shape_hints(goal: str) -> str:
     if not (goal or "").strip():
         return ""
 
+    # Every heuristic below must see the ACTIVE goal only. Reading the whole
+    # dump blends open goals together and invents a shape that is not there.
+    subgoals = count_subgoals(goal)
+    goal = active_goal_text(goal)
+    if not goal.strip():
+        return ""
+
     bullets: list[str] = [
         "These hints are selected from the *current* goal text. Prefer them "
         "over generic trial-and-error; a matching tactic now beats failing "
         "first and reading an error hint later.",
     ]
+    if subgoals > 1:
+        bullets.append(
+            f"There are {subgoals} open goals. Everything below describes the "
+            "ACTIVE goal (the first one) -- the only goal your tactic will "
+            "apply to. The others are shown for context; do not choose a "
+            "tactic to fit them."
+        )
 
     if goal_is_implication_before_hl(goal):
         bullets.append(
@@ -642,9 +715,7 @@ def build_prompt(
             "## Few-shot examples",
             fewshot or load_fewshot_examples(),
             "",
-            "## Current goal",
-            goal,
-            "",
+            *_goal_section(goal),
         ]
     )
     active_hints = format_active_goal_shape_hints(goal)
