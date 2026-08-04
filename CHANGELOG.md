@@ -2,6 +2,395 @@
 
 All notable changes to this project are recorded here, grouped by the date they were implemented.
 
+## 2026-08-04
+
+### EasyCrypt warnings were drowning the only feedback signal the agent gets
+
+EasyCrypt reprints every file-level warning on every invocation, so the same
+two notices (`global axiom Adv_choose_ll in section` and its twin) rode along
+with each tactic failure: **106 of 193 error lines, 41% of all error text.**
+
+The sharp consequence was not verbosity. `loop.py` takes **line 0** of the
+message as "the reason" when reporting a failed compound tactic -- and
+EasyCrypt prints warnings first, so in **53 of 53** captured failures that
+line was a warning rather than the failure. The agent's diagnostic named the
+wrong thing every single time.
+
+`ec_errors.strip_warning_lines` now removes them, applied at the two sites
+where error text reaches the model. Output consisting only of warnings is
+returned unchanged (something beats nothing), and error *classification* is
+unaffected -- verified over all 53 blobs.
+
+### `\/` in a tactic was silently corrupting the tactic
+
+`\/` is a **legal** JSON escape meaning `/`. So a reply carrying EasyCrypt's
+disjunction parsed cleanly and yielded the wrong tactic -- `smt(a \/ b).`
+decoded to `smt(a / b).`, sent to EasyCrypt with nothing raised anywhere. The
+existing repair pass ran only as a fallback *after* `json.loads` failed, so it
+never saw this case: nothing ever failed.
+
+Two further fixes in the same parser:
+
+- The repair now runs **first** rather than as a fallback, which is what makes
+  the case above reachable. It is idempotent, so well-formed replies are
+  unaffected.
+- **Raw control characters** inside strings are escaped instead of rejected. A
+  multi-line tactic (`proc.\nwp.\nskip.`) is natural to write and is illegal
+  JSON; it was being thrown away entirely.
+
+Found by testing the parser directly against realistic EasyCrypt replies, not
+from the run logs -- a silent corruption leaves no trace in them by
+construction.
+
+### The `format_error` spike was not a parser bug
+
+51 of the 52 `format_error` outcomes in `run-20260803T211932Z` were empty
+replies with `finish_reason='length'` -- the thinking-budget exhaustion already
+fixed via the truncation retry and the `LlmProviderError` reclassification;
+that run predates both. Exactly **one** was genuinely malformed JSON. The
+parser fixes above are real, but they are not what caused those 52, and no
+claim is made here that they would have.
+
+### Repo hygiene
+
+Added a root `pytest.ini`. There was none, so a bare `pytest` descended into
+`proof_corpus/eval/Cryptolib` -- vendored third-party suites with their own
+config that fail to collect without generated vectors -- reporting 4 collection
+errors unrelated to this project. `testpaths` is now pinned and the
+`integration` marker registered.
+
+## 2026-08-03
+
+### The prompt was misreading program-logic goals (45% of failures)
+
+Classifying all 134 tactic failures pointed away from the knowledge base:
+`rnd` (31), `seq` (15) and `skip` (14) were **45%** of them, and each fails
+because the model cannot see the shape of the remaining program -- instruction
+counts per side, and what the last instruction is.
+
+`format_active_goal_shape_hints` was actively making that worse. Three parsing
+defects in `_program_statement_block`, each independently sufficient to make a
+non-empty program look empty:
+
+1. **Only ONE line after `pre =` was dropped**, so a multi-line precondition
+   leaked in and was mistaken for statements. Since a precondition of plain
+   equalities contains no instruction markers, the leaked text read as "no
+   code".
+2. **`<$` (random sampling) matched no statement pattern at all.** A goal whose
+   remaining code was a sampling therefore read as empty -- and `rnd`, the
+   tactic for samplings, was the single largest failure bucket.
+3. **`[programs are in sync]`** -- EasyCrypt's way of saying both sides hold
+   IDENTICAL remaining code -- was read as an absent statement list, i.e.
+   emptiness.
+
+The result was the advice *"little or no code left ... Apply `skip.`"*, emitted
+**121 times** across the measured runs, with the chosen tactic then failing in
+53 of those. In 2 of the 53 the failure was `skip` reporting `left instruction
+list is not empty` -- the goal directly contradicting the prompt. The other 51
+failed on other tactics (`rnd`, `seq`) and are only circumstantially linked to
+the bad advice.
+
+Now: statements are extracted by recognising instruction forms (`<$`, `<-`,
+`<@`, `while`, `if`, an `(N)` index, or a closed procedure header) rather than
+by line position; `[programs are in sync]` produces an explicit do-NOT-skip
+bullet; and program-logic goals gain structured facts -- per-side instruction
+counts (for `seq N M`) and the last instruction's kind (for `rnd`/`wp`/`call`).
+
+Measured over 390 real goal/outcome records captured from the DeepSeek runs and
+checked in as `integration/tests/fixtures/goals/elgamal_goals.json`:
+
+| | before | after |
+|---|---:|---:|
+| records advised to `skip.` | 121 | **57** |
+| ...where the chosen tactic then failed | 53 | **27** |
+| ...directly contradicted by `left instruction list is not empty` | 2 | **0** |
+| distinct goals given instruction counts | 0 | **43** |
+
+A caveat on reading this table: only the third row is direct evidence that the
+advice was wrong, and it covers just 2 records. The 53 -> 27 row is the weaker
+claim -- most of those failures were `rnd`/`seq` tactics whose connection to the
+`skip` advice is circumstantial. What is established is that the parser no
+longer reports emptiness for programs that demonstrably have instructions; that
+repair performance improves is *not* established and needs a run.
+
+The advice is retained where it is correct -- an empty program still gets it,
+now with a caveat naming the exact error to expect if statements are present
+but unprinted. A first attempt removed the false advice *and* the true advice;
+the test for a genuinely empty program caught it.
+
+### Thinking was eating the whole output budget (the dominant failure mode)
+
+Across four DeepSeek trials, **79 of 85** recoverable format errors were the
+same thing: `finish_reason='length'` with an EMPTY visible reply. The model
+spent the entire 16,384-token output budget on hidden reasoning and never wrote
+the JSON action. Mean output was 12.3k tokens per call against that cap, so
+calls were routinely hitting the ceiling. 36-70% of every trial's iterations
+were lost this way -- far more than any prompt or retrieval change was worth.
+
+Two things were wrong. The harness told the model to "escape your backslashes",
+which is nonsense advice for a reply that contains nothing; only **2 of 85**
+errors were genuine escaping problems. And a wasted call still advanced the
+stuck counter, so budget exhaustion looked like the model being stuck.
+
+`_decide_json` now detects a truncated empty reply (`length` on
+OpenAI-compatible providers, `max_tokens` on Anthropic) and retries once with
+thinking **disabled**, which guarantees the budget goes to the answer. If that
+still comes back empty the message says to raise `--llm-max-tokens` instead of
+blaming formatting.
+
+This also invalidates the earlier claim in this file that backslash escaping
+explained arm B's zero-accepted result -- it did not; budget exhaustion did.
+
+### A malformed provider response no longer kills a trial
+
+DeepSeek intermittently returns HTTP 200 with **no `choices`** in the body
+(more often with thinking on). `response.choices[0]` then raised `TypeError`,
+which is not an `LlmFormatError`, so `loop.py`'s catch-all converted a
+transient hiccup into a terminal `ExitReason.LLM_ERROR`.
+
+Found by running experiments, not by reading code: it destroyed **4 of 7**
+completed trials across an A/B, discarding 70 and 31 iterations of real
+progress, and one arm died after only 4 iterations. Two of three comparisons
+in that experiment are unusable as a result -- a completed run against a
+crash-truncated one is not a comparison.
+
+`OpenAICompatBackend.complete` now raises `LlmFormatError` for a missing/empty
+`choices` and for a choice with no message, which the loop already handles by
+recording a format error and retrying the step. The exposure predates the
+backend refactor -- `response.choices[0]` was always unguarded -- but thinking
+modes surface it far more often, alongside the `finish_reason='length'`
+empty-content replies seen in the same runs.
+
+### The replay-bootstrap solver sees the rest of the original proof
+
+`run_replay_bootstrap_trial` discarded every original tactic after the break:
+the solver resumed from the replayed prefix and never saw where the 2020 author
+was heading. Measured on one run, **46 original tactics across three lemmas**
+were withheld. It now passes them as `informal_proof` (and writes
+`informal_proof.md`, which this mode never produced), behind
+`ReplayBootstrapConfig.show_remaining_original` for A/B work.
+
+The generic "Broken formal proof -- it does NOT compile" heading would be
+**false** here: only the first remaining tactic is known-broken, the rest were
+never reached and are untested. Saying otherwise invites the model to discard
+the structure it most needs, so `build_prompt` gained an optional
+`informal_proof_heading` and this mode supplies an accurate one.
+
+First measured effect, on `INDCPA_Security`: the 2020 proof passed two
+liveness axioms modern EasyCrypt no longer takes,
+`apply (INDCPA_Sec Adv Adv_choose_ll Adv_guess_ll &m).` Shown that as a stale
+reference the model submitted `apply (INDCPA_Sec Adv &m).` -- dropping the
+obsolete arguments -- and EasyCrypt accepted it (`validate_file` returncode 0).
+Without the reference the same lemma ran 10 iterations and was never solved.
+That is **n=1 on the easiest lemma**, where the reference was a single line
+containing the answer modulo two arguments; the two lemmas that would have
+tested it properly both hit the crash above and are being re-run.
+
+### `port_legacy_easycrypt_syntax` is off by default; import repair does the porting
+
+`ElGamalCorpus(port_legacy_syntax=...)` now defaults to **False**. Sandboxes
+ship the raw 2020 syntax and `integration/agent/import_repair.py` ports it from
+`proof_corpus/ec_migrations.toml`, verifying every edit against EasyCrypt.
+
+This is the migration handoff 4.4 asked for, and it is measured rather than
+assumed. Full corpus, both ways:
+
+| | pre-ported | raw (new default) |
+|---|---|---|
+| Goals reachable before repair | 15/15 | 3/15 |
+| Trials lost to `goal_unreachable` | 0 | **0** |
+| `import_repair` attempted | 0 | 12 |
+| ...improved | — | **12 (100%)** |
+| ...made the file load | — | 7 |
+| Mean first-error-line advance | — | **+547.8** |
+| Fully replayed | 11/15 | 11/15 |
+
+Identical trial coverage. The four rules the manifest applies
+(`smtmap-symbols-moved-to-fmap-r2025.02`, `proc-star-removed`,
+`declare-module-ascription`, `old-module-restriction-sets`) are the same four
+fixes the hardcoded function performed -- but version-pinned, commit-sourced,
+and applicable to any corpus rather than to one file.
+
+Pre-porting was also **hiding the subsystem under study**: it made the file
+load, so `goal_unreachable` never fired, 6.1's mechanism was never exercised in
+any run, and the `repair_doc` import notes -- which attach only to pre-proof
+failures -- consumed 66% of every hint block while being structurally unable to
+help. Both are now reachable.
+
+`port_legacy_syntax=True` still works, for isolating tactic-level repair from
+import-level repair and for reproducing prior experiments.
+
+### The two long-standing `test_goal_state.py` failures were stale test doubles
+
+Diagnosed rather than kept as a footnote. Both fakes in that file declared
+`decide(self, prompt)`, but `LlmClient.decide` grew a `thinking=` keyword when
+adaptive thinking landed. The loop's call therefore raised `TypeError`, which
+surfaced as `ExitReason.LLM_ERROR` -- so
+`test_agent_completes_full_hoare_proof` saw `LLM_ERROR` instead of `COMPLETE`,
+and `test_agent_does_not_complete_after_proc_alone` recorded **zero** fake
+calls (`assert 0 >= 2`). Every other fake in the suite already absorbed the
+kwarg with `**_kwargs`; these two were missed.
+
+Confirmed identical at `HEAD` in a clean worktree before touching them, so they
+predate this branch's work. Fixed by adding `**_kwargs` to both. The suite is
+now **fully green** -- there are no known-failing tests.
+
+### Retrieval is steered by the classified error kind
+
+The DeepSeek run made the gap concrete: all three broken ElGamal lemmas failed
+on program logic (`seq`, `rnd`, `wp`) and **every** hint surfaced was about the
+SmtMap->FMap import split. Confident, long, and unable to fix the failure.
+
+`get_repair_hints_text` now takes an `error_kind` from `ec_errors.classify_error`
+and routes on it. Proof-level failures query the changelog index's `by_tactic`
+bucket (new `get_tactic_change_hints_by_release`) and suppress the
+`repair_doc` library notes, whose load-bearing field is literally
+`import_repair_note`. Load failures keep the existing import-shaped path
+unchanged. `error_kind=None` preserves the old undirected behaviour.
+
+Measured on the real `seq 1 1 : ...` failure from trial 0:
+
+| | Retrieved | Block size |
+|---|---|---|
+| Before | r2023.09 glob-unsoundness, operator-unfolding, section entries | 4,559 chars |
+| After | **r2026.02 `[seq]: remove bck/fwd option + cleanup`** | 458 chars |
+
+Both call sites classify before retrieving, and `repair_hints_hop.json` now
+records the `failure_kind` alongside the release it hopped to.
+
+### Notebook, plus the experiment knobs it needs
+
+`notebooks/elgamal_repair_experiment.ipynb`, adapted from the `elgamal-broken-repair`
+notebook on another branch. It defaults to this branch's
+`elgamal-changelog-repair` spec, switches provider in one line, and separates
+**model repairs from zero-LLM replays** — the distinction `successes` hides.
+
+Three `ExperimentConfig` fields the notebook depends on did not exist here and
+were added: `sort_by_difficulty` (deterministic shortest-first, so runs are
+comparable without a shared seed), `adaptive_steps_multiplier` /
+`min_adaptive_steps` (step budget scaled to each proof's own tactic count
+instead of one flat `--max-steps`), and `cost_limit_usd`, which builds the
+`SpendBudget` added above.
+
+### `hint_uptake` was measuring nothing
+
+`_accepted_tactics` read a top-level `"iterations"` key. `AgentRunLog` writes
+`{"source", "work_copy", "events": [...]}` with per-step records tagged
+`{"event": "iteration"}`, so the lookup always returned `[]` and the metric was
+pinned at 0.0 by construction — reporting a finding where it had measured
+nothing. Fixed, with the methodological guard that matters more: a 0 rate over
+0 accepted tactics means *not measurable*, not *hints ignored*, so the
+aggregate now carries `trials_with_accepted_tactics` and
+`rate_among_scorable` (`None` when nothing qualifies).
+
+### A run-level spend cap (`--max-spend-usd`)
+
+Spend could previously be bounded only indirectly -- `--trials` x `--max-steps`
+caps call *count*, `--llm-max-tokens` caps each call's output -- and the cost
+estimate was computed only after the run had finished. "Try this for about a
+dollar" was not expressible.
+
+`integration/agent/budget.py` adds `SpendBudget`: one mutable object shared by
+every trial in a run (unlike `TokenUsage`, which the runner rebuilds per trial
+for per-trial reporting), priced with the same `pricing.py` tables that produce
+`estimated_cost`. The loop checks it *before* each chat call and exits with the
+new `ExitReason.BUDGET_EXHAUSTED`; `run_experiment` stops launching further
+trials and records `budget` / `budget_stopped` in `summary.json`. A
+budget-stopped trial is counted as neither a success nor an error, so it cannot
+corrupt the success rate.
+
+Two limits are documented rather than papered over: the cap is checked after
+usage is known, so actual spend can **overshoot by at most one call**; and a cap
+requested for a model with no published rates is **refused outright** rather
+than silently not enforced, because a budget that quietly does nothing is worse
+than no budget.
+
+The confirmation banner now shows the cap (or states that none is set).
+
+### The knowledge base now reaches the model (roadmap W1)
+
+`_build_spec` and `_with_sandbox_dir` rebuilt `ExperimentSpec` field-by-field
+to inject `--data-dir`/sandbox paths, and never copied `replay_bootstrap`.
+It fell back to its dataclass default of `None`, so `run_trial` saw every mode
+field unset and dispatched `--spec elgamal-changelog-repair` down the
+**mutation** path with `spec.mutations = None`. Because
+`repair_bootstrap.py` is the only producer of `AgentConfig.changelog_hints`,
+that one dropped field made the entire `proof_corpus/` knowledge base — 913
+changelog entries, the 6325-symbol index, 18 library notes, 15 migration rules
+— unreachable from any CLI-launched experiment.
+
+Both rebuilds now use `dataclasses.replace`, so a sixth mode cannot be lost the
+same way. `_experiment_mode` gained its missing `replay_bootstrap` branch
+(`summary.json` had been labelling these runs `"mutation"` while
+`TrialResult.mode` said otherwise). `test_cli_spec_rebuild.py` asserts over
+`dataclasses.fields` that every field of every registered spec survives both
+rebuilds — the regression that should have caught this.
+
+Verified end to end on ElGamal: 6/6 solver prompts now contain a populated
+`## Known EasyCrypt library changes` section.
+
+### Three interchangeable solver providers, including Claude
+
+`llm.py` split along a `ChatBackend` protocol at the transport boundary only.
+`OpenAICompatBackend` serves LM Studio (local Gemma et al.) and DeepSeek;
+the new `AnthropicBackend` serves Claude via the Messages API. Reply parsing,
+action-JSON extraction, the `/\`-escape repair and tactic salvage are
+provider-independent and stayed in one place; `loop.py` is provider-blind.
+
+Anthropic is not an OpenAI base-URL swap: system prompt is a top-level
+parameter, thinking/effort are first-class request fields, and Opus 5 rejects
+`temperature`/`top_p`/`top_k` outright. Requests stream and reassemble via
+`get_final_message()` so a minutes-long adaptive-thinking step cannot die to an
+idle-connection timeout. Defaults: `claude-opus-5`, adaptive thinking with
+summarized display, effort `high`.
+
+`--provider {lm_studio,deepseek,anthropic}` on both CLIs (`--deepseek` kept as
+an alias). The DeepSeek confirmation gate generalized to
+`paid_confirm.py` and now covers Claude too, with published per-token rates in
+the banner. **AGENTS.md's rule is unchanged and now provider-independent: an
+agent must never answer that prompt.** Invalid combinations (Claude's
+disabled-thinking above `high` effort; DeepSeek given `xhigh`) are rejected at
+startup rather than as a 400 mid-trial.
+
+### Version endpoints detected instead of hardcoded (W6)
+
+`ec_version.py`. The spec hardcoded `r2022.04` → `r2026.07`, self-described as
+"a broad illustrative default". The target is genuinely knowable and that value
+was **wrong**: `ec.exe` has no `--version`, but `git describe --tags` on the
+tree it was built from reports `r2026.06-6-g07e77d8c`, so the pinned target
+named a release one ahead of the binary actually installed. Detection snaps
+onto cataloged releases only, and reports method/confidence rather than a bare
+string — a parsed `git describe` and a date-bracket guess must not reach the
+model with equal authority. The 2020-era ElGamal source stays honestly
+undetected (fail-open), which is the same convention `releases_in_range` uses.
+
+### Error classification, live hint hops, import repair in the agent loop
+
+- **`ec_errors.py` (W4 step 1)** — classifies failures by kind, handling both
+  EasyCrypt location formats. The load-vs-proof boundary is now explicit:
+  ElGamal line 108 is `unknown_theory` (import repair's job), line 453 is
+  `tactic_error` (the solver's).
+- **W3** — changelog hints are re-fetched on each tactic failure, threading
+  `consumed_versions` so successive failures hop to the next release rather
+  than re-surfacing the one already shown. Opt-in via
+  `live_changelog_hints`; only version-drift experiments enable it.
+- **`import_repair` in `loop.py`** — a single-file `python3 -m integration.agent
+  FILE.ec` run on an unloadable file previously just failed. Now gated behind
+  `--import-repair`, skipped when the classifier says the failure is
+  proof-level, and its summary is prepended to the same prompt section.
+
+### Repair outcomes are finally reported (W8)
+
+`repair_metrics.py` aggregates per-trial artifacts into `summary.json`:
+replayed-fraction distribution, the zero-LLM `fully_replayed` rate,
+import-repair attempt/success and first-error-line advance, changelog hop
+distribution, and hint uptake (whether a hinted identifier appears in a tactic
+EasyCrypt accepted). Pure derivation from files trials already wrote, so it can
+re-score a finished run. Measured on ElGamal: **3/6 fully replayed**, mean
+replayed fraction **0.67**.
+
+Tests: 364 passing (was 277), same 2 pre-existing `test_goal_state.py` failures.
+
 ## 2026-07-31
 
 ### Downstream artifacts rebuilt after the classification pass
@@ -23,9 +412,12 @@ under-weighting the oldest, most-broken repos — exactly the population this
 project exists to repair. Any corpus selection made off the previous ladder is
 suspect.
 
-`repair_docs_index.json` and `ec_migrations.toml` regenerate byte-identically
-apart from their `generated_at` stamps — they derive from theory sources and
-git history, not the changelog, so the classification pass does not touch them.
+`repair_docs_index.json` and `ec_migrations.toml` regenerated byte-identically
+apart from their `generated_at` stamps. Both *do* read `changelog_index.json`
+(for per-theory "what changed" enrichment and rule provenance respectively), so
+they must still be rebuilt **after** it — they were, which is why the content
+did not move. Run order is documented in the new
+[`proof_corpus/README.md`](proof_corpus/README.md).
 
 ### Doc corrections
 
