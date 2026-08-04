@@ -323,11 +323,11 @@ python3 -m integration.experiment run --spec elgamal-changelog-repair \
   --provider anthropic --trials 6 --stuck-limit 10 --max-steps 25 --seed 7 \
   --reasoning-effort high
 
-# DeepSeek
+# DeepSeek. Leave thinking adaptive and give it budget -- see the note below.
 export DEEPSEEK_API_KEY=...
 python3 -m integration.experiment run --spec elgamal-changelog-repair \
   --provider deepseek --trials 10 --stuck-limit 20 --max-steps 200 \
-  --llm-model deepseek-v4-flash --thinking disabled \
+  --llm-model deepseek-v4-flash --thinking adaptive --llm-max-tokens 32768 \
   --embed-model <local-embed-model>
 
 # Local model (Gemma et al. via LM Studio) — free, no confirmation
@@ -338,6 +338,35 @@ python3 -m integration.experiment run --spec elgamal-changelog-repair \
 
 Embeddings always use LM Studio regardless of provider, so a local embedding
 server is needed in all three cases.
+
+### Do not turn thinking off to avoid truncation
+
+An earlier version of this file recommended `--thinking disabled` for DeepSeek.
+That was wrong, and the runs already on disk say so. Three proofs ran under
+both settings with the same model:
+
+| Proof | `disabled` | `adaptive` |
+|---|---|---|
+| INDCPA_HEG_G1 | 9 calls, **0** accepted, STUCK | 70 calls, **18** accepted |
+| G2_G3 | 8 calls, **0** accepted, STUCK | 42 calls, **10** accepted |
+| G1_G2_eq | 6 calls, **1** accepted, STUCK | 4 calls, **2** accepted |
+
+Adaptive accepted **43%** of productive calls against **4%** disabled (32/74 vs
+1/23); Anthropic at `high` effort, also a thinking mode, scored 52%. Every
+thinking-disabled trial went STUCK having accepted almost nothing.
+
+The reasoning error behind the bad advice is worth naming, because it is easy
+to repeat: truncation was the metric under investigation, so the recommendation
+optimised for *that* rather than for accepted tactics, and proposed removing
+the capability generating the truncations. Truncation is a **budget** problem.
+Mean output was ~13.2k tokens against a 16,384 cap -- 82% of the ceiling -- so
+calls hit it routinely. Raise `--llm-max-tokens` to 32768 and leave thinking on;
+the truncation retry then acts as a backstop rather than a routine cost.
+
+Sample sizes are small (74 productive calls vs 23) and run-to-run variance
+under identical config has reached 11 vs 1 accepted (§9.1), so treat 43% vs 4%
+as "clearly better", not as a precise effect size. The direction is not in
+doubt: three matched proofs, all agreeing.
 
 Comparison is then a direct read of `summary.json`: `successes`/`stuck`,
 `repair_metrics.hint_uptake.rate`, `token_usage_per_trial`, and

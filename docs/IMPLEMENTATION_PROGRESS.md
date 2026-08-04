@@ -348,11 +348,12 @@ python3 -m integration.experiment run --spec elgamal-changelog-repair \
   --provider anthropic --trials 6 --stuck-limit 10 --max-steps 25 --seed 7 \
   --reasoning-effort high
 
-# DeepSeek (unchanged)
+# DeepSeek. Thinking stays ON; truncation is fixed with budget, not by
+# disabling it -- see "Do not turn thinking off" in ELGAMAL_E2E_RESULTS.md.
 export DEEPSEEK_API_KEY=...
 python3 -m integration.experiment run --spec elgamal-changelog-repair \
   --provider deepseek --trials 10 --stuck-limit 20 --max-steps 200 \
-  --llm-model deepseek-v4-flash --thinking disabled \
+  --llm-model deepseek-v4-flash --thinking adaptive --llm-max-tokens 32768 \
   --embed-model <local-embed-model>
 ```
 

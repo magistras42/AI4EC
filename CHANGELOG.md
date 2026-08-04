@@ -4,6 +4,32 @@ All notable changes to this project are recorded here, grouped by the date they 
 
 ## 2026-08-04
 
+### Correction: do not disable thinking to avoid truncation
+
+This file and the docs previously recommended `--thinking disabled` for
+DeepSeek. That recommendation was wrong and the runs already on disk refute it.
+Three proofs ran under both settings with the same model:
+
+| Proof | `disabled` | `adaptive` |
+|---|---|---|
+| INDCPA_HEG_G1 | 9 calls, 0 accepted, STUCK | 70 calls, **18** accepted |
+| G2_G3 | 8 calls, 0 accepted, STUCK | 42 calls, **10** accepted |
+| G1_G2_eq | 6 calls, 1 accepted, STUCK | 4 calls, **2** accepted |
+
+Adaptive accepted **43%** of productive calls against **4%** disabled (32/74 vs
+1/23). Anthropic at `high` effort, also a thinking mode, scored 52%.
+
+The mistake is worth recording because it is a cheap one to repeat: truncation
+was the metric under active investigation, so the recommendation optimised for
+truncation rather than for accepted tactics, and proposed removing the very
+capability producing the truncations. Truncation is a **budget** problem -- mean
+output was ~13.2k tokens against a 16,384 cap, 82% of the ceiling.
+
+The notebook now uses `LLM_MAX_TOKENS = 32768` with thinking left adaptive, and
+the example commands in both docs are corrected. Samples are small (74
+productive calls vs 23) and run-to-run variance under identical config has
+reached 11 vs 1 accepted, so the direction is solid but the effect size is not.
+
 ### EasyCrypt warnings were drowning the only feedback signal the agent gets
 
 EasyCrypt reprints every file-level warning on every invocation, so the same
@@ -137,6 +163,10 @@ OpenAI-compatible providers, `max_tokens` on Anthropic) and retries once with
 thinking **disabled**, which guarantees the budget goes to the answer. If that
 still comes back empty the message says to raise `--llm-max-tokens` instead of
 blaming formatting.
+
+> **The retry is a backstop, not a recommended configuration.** Disabling
+> thinking as a *default* is measurably wrong -- see the 2026-08-04 entry.
+> The right fix for routine truncation is a bigger output budget.
 
 This also invalidates the earlier claim in this file that backslash escaping
 explained arm B's zero-accepted result -- it did not; budget exhaustion did.
