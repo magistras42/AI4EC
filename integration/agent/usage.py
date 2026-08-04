@@ -21,6 +21,11 @@ class TokenUsage:
     cache_miss_prompt_tokens: int = 0
     # Reasoning tokens billed as output by thinking models, when reported.
     reasoning_tokens: int = 0
+    # Subset of prompt_tokens WRITTEN to the cache. Anthropic bills these at a
+    # premium over a plain miss (1.25x base input for the 5-minute TTL), so
+    # they are tracked apart from cache_miss_prompt_tokens rather than folded
+    # in. DeepSeek has no equivalent and leaves this at 0.
+    cache_write_prompt_tokens: int = 0
 
     def record(self, response) -> None:
         """Accumulate an OpenAI-compatible response's ``usage`` block."""
@@ -45,6 +50,33 @@ class TokenUsage:
         if details is not None:
             self.reasoning_tokens += _as_int(getattr(details, "reasoning_tokens", 0))
 
+    def record_anthropic(self, message) -> None:
+        """Accumulate an Anthropic Messages API ``usage`` block.
+
+        Anthropic's counters partition the prompt differently from OpenAI's:
+        ``input_tokens`` is only the UNCACHED remainder, with cache reads and
+        cache writes reported alongside it rather than inside it. Summing all
+        three is what makes ``prompt_tokens`` mean the same thing here as it
+        does for the OpenAI-compatible providers -- reading ``input_tokens``
+        alone would under-report the prompt by the entire cached prefix.
+        """
+        self.calls += 1
+        usage = getattr(message, "usage", None)
+        if usage is None:
+            return
+        uncached = _as_int(getattr(usage, "input_tokens", 0))
+        cache_read = _as_int(getattr(usage, "cache_read_input_tokens", 0))
+        cache_write = _as_int(getattr(usage, "cache_creation_input_tokens", 0))
+        completion = _as_int(getattr(usage, "output_tokens", 0))
+        prompt = uncached + cache_read + cache_write
+
+        self.prompt_tokens += prompt
+        self.completion_tokens += completion
+        self.total_tokens += prompt + completion
+        self.cached_prompt_tokens += cache_read
+        self.cache_miss_prompt_tokens += uncached
+        self.cache_write_prompt_tokens += cache_write
+
     def merge(self, other: "TokenUsage") -> None:
         self.calls += other.calls
         self.prompt_tokens += other.prompt_tokens
@@ -53,6 +85,7 @@ class TokenUsage:
         self.cached_prompt_tokens += other.cached_prompt_tokens
         self.cache_miss_prompt_tokens += other.cache_miss_prompt_tokens
         self.reasoning_tokens += other.reasoning_tokens
+        self.cache_write_prompt_tokens += other.cache_write_prompt_tokens
 
     def as_dict(self) -> dict[str, int]:
         return asdict(self)

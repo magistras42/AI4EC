@@ -29,9 +29,46 @@ NO_MORE_GOALS = "No more goals"
 
 LLM_PROVIDER_LM_STUDIO = "lm_studio"
 LLM_PROVIDER_DEEPSEEK = "deepseek"
+LLM_PROVIDER_ANTHROPIC = "anthropic"
+
+# Every provider the solver/writer chat path can be pointed at. LM Studio is
+# the local default (Gemma et al. via an OpenAI-compatible server); DeepSeek
+# and Anthropic are hosted and paid. Embeddings ALWAYS stay on LM Studio
+# regardless of this choice -- neither hosted provider is used for them.
+LLM_PROVIDERS = (
+    LLM_PROVIDER_LM_STUDIO,
+    LLM_PROVIDER_DEEPSEEK,
+    LLM_PROVIDER_ANTHROPIC,
+)
+
+# Providers that spend real money, and therefore require the interactive
+# human confirmation in integration/experiment/paid_confirm.py. See AGENTS.md:
+# agents must never answer that prompt on the user's behalf.
+PAID_LLM_PROVIDERS = frozenset({LLM_PROVIDER_DEEPSEEK, LLM_PROVIDER_ANTHROPIC})
+
 DEFAULT_DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 DEFAULT_DEEPSEEK_MODEL = "deepseek-v4-flash"
 DEFAULT_DEEPSEEK_THINKING = "disabled"
+
+DEFAULT_ANTHROPIC_MODEL = "claude-opus-5"
+# Claude Opus 5 thinks by default; `adaptive` is the explicit spelling of that
+# default and lets Claude choose depth per request. Unlike DeepSeek (where
+# thinking defaults off because V4 burns the output budget on trivial
+# tactic-selection steps), adaptive thinking is the recommended mode here and
+# is what the effort knob is designed to modulate.
+DEFAULT_ANTHROPIC_THINKING = "adaptive"
+DEFAULT_ANTHROPIC_EFFORT = "high"
+
+# Effort levels each provider accepts. DeepSeek V4 documents only high/max;
+# Anthropic's effort ladder is the full five. Sending an out-of-range value is
+# a 400 on both, so the CLI validates against these rather than a shared list.
+REASONING_EFFORTS_BY_PROVIDER: dict[str, tuple[str, ...]] = {
+    LLM_PROVIDER_DEEPSEEK: ("high", "max"),
+    LLM_PROVIDER_ANTHROPIC: ("low", "medium", "high", "xhigh", "max"),
+}
+# Claude rejects `thinking: {"type": "disabled"}` above this effort level.
+_ANTHROPIC_EFFORTS_REQUIRING_THINKING = frozenset({"xhigh", "max"})
+
 DEFAULT_THINKING_FAILURE_WINDOW = 5
 # Trajectory outcomes that count as "recent failure" for adaptive thinking.
 THINKING_FAILURE_OUTCOMES = frozenset(
@@ -98,6 +135,10 @@ class AgentConfig:
     # tactic script (e.g. the elgamal-broken-repair spec), not a writer-LLM
     # natural-language paraphrase. Only changes the prompt section heading.
     informal_proof_is_formal: bool = False
+    # Overrides the section heading for `informal_proof`. Replay-bootstrap
+    # uses it to label the REMAINING original tactics accurately: only the
+    # first is known-broken, the rest were never reached.
+    informal_proof_heading: str | None = None
     premises_override: dict[str, str] | None = None
     lemma_search_top_k: int = 5
     # Cap consecutive lookup/search actions; warn on the penultimate call.
@@ -115,11 +156,40 @@ class AgentConfig:
     # `count`, so repeating a no-op undo indicates it is stuck rather than
     # making progress; exceeding this triggers an early STUCK exit.
     max_consecutive_noop_undos: int | None = 3
+    # Abort after this many consecutive replies in which the provider
+    # produced nothing usable (no choices, or the output budget was spent
+    # reasoning). Bounded separately from the stuck counter because it is
+    # an infrastructure signal, not a proof-progress one. None disables.
+    max_consecutive_provider_failures: int | None = 5
     history_steps: int = 20
     right_fix: str | None = None
     retrospective_file: Path | None = None
+    # Attempt a verified, line-preserving import/syntax repair when the file
+    # will not load at startup (integration/agent/import_repair.py). Off by
+    # default so a plain agent run never rewrites the user's file implicitly;
+    # the experiment's replay-bootstrap mode drives its own repair separately.
+    import_repair: bool = False
+    # EasyCrypt version endpoints scoping which migration rules and changelog
+    # releases apply. None means "detect" -- see
+    # integration/agent/ec_version.py. Explicit values always win over
+    # detection, since a corpus's authoring-time version is often knowable
+    # from outside the file.
+    source_ec_version: str | None = None
+    target_ec_version: str | None = None
+    # Re-fetch changelog/repair_doc hints on every tactic failure, hopping to
+    # the next unconsumed release each time (roadmap W3), instead of freezing
+    # the block fetched at bootstrap for the whole run. Opt-in: each refresh
+    # costs a retrieval pass, and only version-drift experiments benefit --
+    # a mutation trial's failures are synthetic and map to no real release.
+    live_changelog_hints: bool = False
     # Shared, mutable: every chat completion made with this config adds to it.
     usage_tracker: TokenUsage | None = None
+    # Run-level USD ceiling (integration/agent/budget.py). Unlike
+    # usage_tracker, which the experiment runner rebuilds per trial for
+    # per-trial reporting, this object is shared by EVERY trial in a run so the
+    # cap applies to cumulative spend rather than resetting each trial.
+    # None = uncapped (the historical behaviour).
+    spend_budget: Any = None
 
 
 def _resolve_easycrypt_bin() -> Path:
@@ -162,8 +232,93 @@ def apply_deepseek_provider(
     return config
 
 
+def anthropic_api_key(config: AgentConfig | None = None) -> str | None:
+    """Explicit Anthropic key, if one was supplied.
+
+    ``None`` is NOT an error: the Anthropic SDK also resolves
+    ``ANTHROPIC_AUTH_TOKEN`` and `ant auth login` profiles on its own, so a
+    zero-arg client can be perfectly well authenticated with no key in the
+    environment. Callers should pass whatever this returns straight through
+    and let the SDK do its own resolution rather than refusing to start.
+    """
+    if config is not None and config.llm_api_key:
+        return config.llm_api_key
+    return os.environ.get("ANTHROPIC_API_KEY")
+
+
+def apply_anthropic_provider(
+    config: AgentConfig,
+    *,
+    model: str | None = None,
+    thinking: str | None = None,
+    reasoning_effort: str | None = None,
+) -> AgentConfig:
+    """Point chat completions at the Anthropic API. Embeddings stay on LM Studio.
+
+    Defaults to adaptive thinking at `high` effort, which is the recommended
+    configuration for Claude Opus 5 -- the opposite of the DeepSeek default
+    (thinking off), because Claude's adaptive mode already scales thinking
+    depth to the difficulty of the step instead of spending a fixed budget on
+    every one.
+    """
+    config.llm_provider = LLM_PROVIDER_ANTHROPIC
+    config.llm_model = model or DEFAULT_ANTHROPIC_MODEL
+    if thinking is not None:
+        config.llm_thinking = thinking
+    elif config.llm_thinking is None:
+        config.llm_thinking = DEFAULT_ANTHROPIC_THINKING
+    if reasoning_effort is not None:
+        config.llm_reasoning_effort = reasoning_effort
+    elif config.llm_reasoning_effort is None:
+        config.llm_reasoning_effort = DEFAULT_ANTHROPIC_EFFORT
+    return config
+
+
+def validate_reasoning_effort(provider: str, effort: str | None) -> None:
+    """Raise if `effort` is not one this provider accepts."""
+    if effort is None:
+        return
+    allowed = REASONING_EFFORTS_BY_PROVIDER.get(provider)
+    if allowed is None:
+        raise ValueError(f"provider {provider!r} does not support reasoning effort")
+    if effort not in allowed:
+        raise ValueError(
+            f"llm_reasoning_effort must be one of {', '.join(allowed)} for "
+            f"provider {provider!r}, got {effort!r}"
+        )
+
+
+def validate_anthropic_thinking_effort(thinking: str, effort: str | None) -> None:
+    """Reject the one Claude thinking/effort combination the API 400s on.
+
+    Claude Opus 5 accepts explicitly-disabled thinking only at effort `high`
+    or below. Catching it here turns a mid-run HTTP 400 (which would abort a
+    trial after the harness has already spent EasyCrypt time) into an
+    argument error at startup.
+    """
+    if thinking == "disabled" and effort in _ANTHROPIC_EFFORTS_REQUIRING_THINKING:
+        raise ValueError(
+            "Claude rejects thinking='disabled' at reasoning effort "
+            f"{effort!r}; use effort high or below, or leave thinking adaptive"
+        )
+
+
+def is_paid_provider(config: AgentConfig) -> bool:
+    return config.llm_provider in PAID_LLM_PROVIDERS
+
+
 def chat_client_kwargs(config: AgentConfig) -> dict[str, Any]:
-    """OpenAI-SDK kwargs for solver/writer chat completions."""
+    """OpenAI-SDK kwargs for solver/writer chat completions.
+
+    Only meaningful for the OpenAI-compatible providers (LM Studio, DeepSeek).
+    Anthropic does not use the OpenAI SDK at all -- see
+    ``integration/agent/llm.py::AnthropicBackend``.
+    """
+    if config.llm_provider == LLM_PROVIDER_ANTHROPIC:
+        raise ValueError(
+            "the Anthropic provider does not use the OpenAI SDK; "
+            "AnthropicBackend builds its own client"
+        )
     if config.llm_provider == LLM_PROVIDER_DEEPSEEK:
         api_key = deepseek_api_key(config)
         if not api_key:
@@ -182,9 +337,21 @@ def chat_client_kwargs(config: AgentConfig) -> dict[str, Any]:
     }
 
 
-def deepseek_thinking(config: AgentConfig) -> str:
+def default_thinking_for_provider(provider: str) -> str:
+    """Thinking mode a provider falls back to when none was configured."""
+    if provider == LLM_PROVIDER_ANTHROPIC:
+        return DEFAULT_ANTHROPIC_THINKING
+    return DEFAULT_DEEPSEEK_THINKING
+
+
+def configured_thinking(config: AgentConfig) -> str:
     """Configured thinking mode: ``enabled``, ``disabled``, or ``adaptive``."""
-    return config.llm_thinking or DEFAULT_DEEPSEEK_THINKING
+    return config.llm_thinking or default_thinking_for_provider(config.llm_provider)
+
+
+def deepseek_thinking(config: AgentConfig) -> str:
+    """Backwards-compatible alias for :func:`configured_thinking`."""
+    return configured_thinking(config)
 
 
 def resolve_thinking_for_step(
@@ -195,8 +362,16 @@ def resolve_thinking_for_step(
 
     With ``llm_thinking='adaptive'``, enable thinking when any of the last
     ``thinking_failure_window`` trajectory steps has a failure-like outcome.
+
+    NOTE this is the *harness's* adaptive mode, which is not the same thing as
+    Claude's own adaptive thinking. For Anthropic we deliberately do NOT
+    resolve `adaptive` here: Claude scales thinking depth per request on its
+    own and does it better than a trajectory-window heuristic can, so the mode
+    is passed through untouched and the backend sends `{"type": "adaptive"}`.
     """
-    mode = deepseek_thinking(config)
+    if config.llm_provider == LLM_PROVIDER_ANTHROPIC:
+        return configured_thinking(config)
+    mode = configured_thinking(config)
     if mode in {"enabled", "disabled"}:
         return mode
     if mode != "adaptive":
@@ -220,9 +395,18 @@ def action_response_format_mode(config: AgentConfig) -> str | None:
     ``json_object`` mode does not enforce our action schema; LM Studio's
     ``json_schema`` form is also opt-in because small local models often reject
     it.
+
+    Anthropic is the one provider where this is worth turning on: its
+    structured-outputs ``output_config.format`` genuinely constrains the reply
+    to the action schema (rather than merely to "some JSON"), so the JSON
+    repair path in llm.py becomes a fallback instead of a routine necessity.
+    It is still opt-in, to keep one switch controlling the behaviour on every
+    provider.
     """
     if not config.llm_json_mode:
         return None
+    if config.llm_provider == LLM_PROVIDER_ANTHROPIC:
+        return "anthropic_json_schema"
     if config.llm_provider == LLM_PROVIDER_DEEPSEEK:
         return "json_object"
     return "json_schema"
@@ -238,11 +422,15 @@ def chat_completion_kwargs(
     Pass *thinking* as ``enabled``/``disabled`` to override the configured mode
     for a single call (used by adaptive thinking). ``adaptive`` is not valid
     here — resolve it with :func:`resolve_thinking_for_step` first.
+
+    Anthropic returns ``{}``: its per-call parameters are not OpenAI
+    ``extra_body`` keys and are built by
+    :func:`anthropic_request_kwargs` instead.
     """
     if config.llm_provider != LLM_PROVIDER_DEEPSEEK:
         return {}
 
-    resolved = thinking if thinking is not None else deepseek_thinking(config)
+    resolved = thinking if thinking is not None else configured_thinking(config)
     if resolved == "adaptive":
         resolved = "disabled"
     if resolved not in {"enabled", "disabled"}:
@@ -262,4 +450,58 @@ def chat_completion_kwargs(
                 f"llm_reasoning_effort must be 'high' or 'max', got {effort!r}"
             )
         kwargs["reasoning_effort"] = effort
+    return kwargs
+
+
+def anthropic_client_kwargs(config: AgentConfig) -> dict[str, Any]:
+    """Constructor kwargs for ``anthropic.Anthropic``.
+
+    ``api_key`` is passed only when we actually have one. Omitting it lets the
+    SDK run its own credential resolution (``ANTHROPIC_API_KEY``, then
+    ``ANTHROPIC_AUTH_TOKEN``, then an ``ant auth login`` profile), so a machine
+    authenticated by profile rather than env var still works.
+    """
+    kwargs: dict[str, Any] = {"timeout": float(config.lm_studio_timeout)}
+    key = anthropic_api_key(config)
+    if key:
+        kwargs["api_key"] = key
+    return kwargs
+
+
+def anthropic_request_kwargs(
+    config: AgentConfig,
+    *,
+    thinking: str | None = None,
+) -> dict[str, Any]:
+    """Per-call Anthropic Messages API parameters.
+
+    Deliberately omits ``temperature``/``top_p``/``top_k``: Claude Opus 5
+    removed them and returns a 400 if any is sent. ``AgentConfig.llm_temperature``
+    therefore has no effect on this provider, which is why prompt-level
+    steering is the only knob here.
+    """
+    resolved = thinking if thinking is not None else configured_thinking(config)
+    # The harness's own trajectory-window mode maps onto Claude's native
+    # adaptive thinking: both mean "decide per step", Claude just does it with
+    # more information than a failure counter has.
+    if resolved == "enabled":
+        resolved = "adaptive"
+
+    effort = config.llm_reasoning_effort or DEFAULT_ANTHROPIC_EFFORT
+    validate_reasoning_effort(LLM_PROVIDER_ANTHROPIC, effort)
+    validate_anthropic_thinking_effort(resolved, effort)
+
+    kwargs: dict[str, Any] = {"output_config": {"effort": effort}}
+    if resolved == "adaptive":
+        # `display: summarized` is what makes the reasoning readable in the
+        # run log; the API default ("omitted") streams empty thinking blocks,
+        # which would silently hollow out AgentRunLog's `thought` field.
+        kwargs["thinking"] = {"type": "adaptive", "display": "summarized"}
+    elif resolved == "disabled":
+        kwargs["thinking"] = {"type": "disabled"}
+    else:
+        raise ValueError(
+            "llm_thinking must be 'adaptive', 'enabled', or 'disabled' for "
+            f"Anthropic, got {resolved!r}"
+        )
     return kwargs
