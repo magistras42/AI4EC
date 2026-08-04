@@ -219,6 +219,96 @@ def get_changelog_repair_hints_by_release(
     return [], None
 
 
+def _known_tactic_names(changelog: dict[str, Any]) -> set[str]:
+    """Tactic names the changelog index actually has entries for.
+
+    Taken from the index's own ``by_tactic`` bucket rather than a hardcoded
+    list, so the vocabulary tracks whatever ``build_changelog_index.py``
+    derived from ``tactics_ref.json``.
+    """
+    indexes = changelog.get("indexes") or {}
+    by_tactic = indexes.get("by_tactic") or {}
+    return {str(name) for name in by_tactic}
+
+
+def _tactics_mentioned(text: str, known: set[str]) -> list[str]:
+    """Which known tactic names appear in the failing step, longest first.
+
+    Longest-first so a compound like ``rcondt`` is preferred over ``if`` when
+    both match -- the more specific name is the more informative lookup.
+    """
+    if not known:
+        return []
+    tokens = set(re.findall(r"[A-Za-z_][A-Za-z0-9_]*", text or ""))
+    hits = tokens & known
+    return sorted(hits, key=lambda name: (-len(name), name))
+
+
+def get_tactic_change_hints_by_release(
+    *,
+    failing_tactic_text: str,
+    source_ec_version: str,
+    target_ec_version: str,
+    already_consumed_versions: set[str] | None = None,
+    top_n_per_release: int = 4,
+) -> tuple[list[dict[str, Any]], str | None]:
+    """Changelog entries about the TACTICS the failing step actually uses.
+
+    The identifier-overlap path (``score_entries``) keys on names appearing in
+    the failing tactic and error, which works well for import-shaped breakage
+    ("cannot find theory `SmtMap'") and badly for program-logic breakage: a
+    step like ``seq 1 1 : (={glob Adv, q1, q2})`` names local variables and
+    module parameters, not library symbols, so Tier B finds nothing and the
+    result is filled with unrelated Tier-A structural entries. Measured on the
+    ElGamal run, all three broken lemmas were program-logic failures and every
+    surfaced hint was about imports.
+
+    This queries the index's ``by_tactic`` bucket instead, so a failing ``seq``
+    / ``rnd`` / ``wp`` step retrieves entries about *those tactics*. Same
+    release-hopping contract as ``get_changelog_repair_hints_by_release``.
+    """
+    module = _load_retrieve_entries_module()
+    if not hasattr(module, "entries_for_tactics"):
+        # Older proof_corpus checkout: no typed buckets to query.
+        return [], None
+
+    changelog = module.load_changelog(str(resolve_changelog_path()))
+    names = _tactics_mentioned(failing_tactic_text, _known_tactic_names(changelog))
+    if not names:
+        return [], None
+
+    in_range = module.releases_in_range(
+        changelog.get("releases", []), source_ec_version, target_ec_version,
+    )
+    consumed = already_consumed_versions or set()
+    matches = module.entries_for_tactics(changelog, names)
+    by_version: dict[str, list[dict[str, Any]]] = {}
+    for entry in matches:
+        by_version.setdefault(str(entry.get("version") or ""), []).append(entry)
+
+    for release in in_range:  # chronological, oldest first
+        version = str(release.get("version") or "")
+        if version in consumed:
+            continue
+        hits = by_version.get(version) or []
+        if not hits:
+            continue
+        annotated = []
+        for entry in hits[:top_n_per_release]:
+            row = dict(entry)
+            row.setdefault("version", version)
+            # Mirror score_entries' output contract so the renderer needs no
+            # special case for this path.
+            row["reason"] = (
+                "changes a tactic used in the failing step: "
+                + ", ".join(n for n in names if n in (entry.get("tactics") or []))
+            ) or "tactic change in range"
+            row.setdefault("overlap", [n for n in names if n in (entry.get("tactics") or [])])
+            annotated.append(row)
+        return annotated, version
+    return [], None
+
+
 def _as_list(value: Any) -> list[str]:
     """Normalize a repair_doc field that is sometimes a list and sometimes a
     bare string.
@@ -578,8 +668,17 @@ def get_repair_hints_text(
     target_ec_version: str,
     already_consumed_versions: set[str] | None = None,
     top_n_per_release: int = 4,
+    error_kind: str | None = None,
 ) -> tuple[str, list[str], str | None]:
     """Fetch changelog + repair_doc hints and format them for the prompt.
+
+    ``error_kind`` is an :mod:`integration.agent.ec_errors` classification of
+    the failure and steers WHICH evidence is retrieved. Without it every
+    failure got the same import-shaped treatment, which is right for a file
+    that will not load and wrong for a broken tactic -- on the ElGamal run all
+    three failures were program-logic (``seq``/``rnd``/``wp``) and every hint
+    surfaced was about the SmtMap/FMap import split. ``None`` preserves the
+    original undirected behaviour.
 
     The changelog half hops through releases in chronological order
     (``get_changelog_repair_hints_by_release``) rather than pooling the whole
@@ -599,19 +698,45 @@ def get_repair_hints_text(
     """
     notes: list[str] = []
 
+    from .ec_errors import IN_PROOF_KINDS
+
+    # A tactic failure means the file LOADED and a proof step is wrong. Import
+    # evidence cannot fix that, so try tactic-keyed retrieval first and fall
+    # back to identifier overlap only if the index knows nothing about the
+    # tactics involved.
+    is_in_proof = error_kind in IN_PROOF_KINDS
+
     changelog_entries: list[dict[str, Any]] = []
     matched_version: str | None = None
-    try:
-        changelog_entries, matched_version = get_changelog_repair_hints_by_release(
-            failing_tactic_text=failing_tactic_text,
-            ec_error_text=ec_error_text,
-            source_ec_version=source_ec_version,
-            target_ec_version=target_ec_version,
-            already_consumed_versions=already_consumed_versions,
-            top_n_per_release=top_n_per_release,
-        )
-    except RepairHintsUnavailable as exc:
-        notes.append(f"changelog repair hints unavailable: {exc}")
+    if is_in_proof:
+        try:
+            changelog_entries, matched_version = get_tactic_change_hints_by_release(
+                failing_tactic_text=failing_tactic_text,
+                source_ec_version=source_ec_version,
+                target_ec_version=target_ec_version,
+                already_consumed_versions=already_consumed_versions,
+                top_n_per_release=top_n_per_release,
+            )
+            if changelog_entries:
+                notes.append(
+                    f"error kind {error_kind!r} is proof-level; retrieved "
+                    "changelog entries by TACTIC rather than identifier overlap"
+                )
+        except RepairHintsUnavailable as exc:
+            notes.append(f"tactic-keyed changelog hints unavailable: {exc}")
+
+    if not changelog_entries:
+        try:
+            changelog_entries, matched_version = get_changelog_repair_hints_by_release(
+                failing_tactic_text=failing_tactic_text,
+                ec_error_text=ec_error_text,
+                source_ec_version=source_ec_version,
+                target_ec_version=target_ec_version,
+                already_consumed_versions=already_consumed_versions,
+                top_n_per_release=top_n_per_release,
+            )
+        except RepairHintsUnavailable as exc:
+            notes.append(f"changelog repair hints unavailable: {exc}")
 
     # Surface uncataloged releases as a logged note rather than letting an
     # empty result read as "no known change explains this". Optional: older
@@ -635,10 +760,20 @@ def get_repair_hints_text(
 
     identifiers = _extract_identifiers(failing_tactic_text, ec_error_text)
     repair_doc_entries: list[dict[str, Any]] = []
-    try:
-        repair_doc_entries = get_repair_doc_snippets(identifiers=identifiers)
-    except RepairHintsUnavailable as exc:
-        notes.append(f"repair_doc hints unavailable: {exc}")
+    if is_in_proof:
+        # The library notes are written specifically for import repair (their
+        # load-bearing field is literally `import_repair_note`). Against a
+        # proof-level failure they are long, confident, and irrelevant -- the
+        # worst combination in a prompt that is re-sent every step.
+        notes.append(
+            f"error kind {error_kind!r} is proof-level; suppressed "
+            "import-oriented repair_doc library notes"
+        )
+    else:
+        try:
+            repair_doc_entries = get_repair_doc_snippets(identifiers=identifiers)
+        except RepairHintsUnavailable as exc:
+            notes.append(f"repair_doc hints unavailable: {exc}")
 
     # Only names actually present in the failing step/error are resolved, so
     # this stays small; it is empty when the repair-docs index has not been
