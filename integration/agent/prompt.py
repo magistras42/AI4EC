@@ -22,6 +22,16 @@ _PROC_HEADER_RE = re.compile(
     rf"^\s*{_MOD_PATH}(?:\s*~\s*{_MOD_PATH})?\s*$"
 )
 _CALL_STMT_RE = re.compile(r"<@|\bcall\b", re.IGNORECASE)
+# Random sampling. Its absence from the statement vocabulary is why goals whose
+# remaining code was a sampling read as "no code left": `<$` was matched by
+# nothing, so the prompt advised `skip.` where `rnd` was the correct move.
+_SAMPLING_RE = re.compile(r"<\$")
+_ASSIGN_RE = re.compile(r"<-")
+# EasyCrypt's per-instruction index in the two-column equiv dump, e.g. "(1)".
+_INSTR_INDEX_RE = re.compile(r"\(\s*\d+\s*\)")
+# Any recognizable instruction form.
+_STATEMENT_RE = re.compile(r"<\$|<-|<@|\bwhile\s*\(|\bif\s*\(|\bcall\b", re.IGNORECASE)
+_IN_SYNC_RE = re.compile(r"programs\s+are\s+in\s+sync", re.IGNORECASE)
 _WHILE_RE = re.compile(r"\bwhile\s*\(")
 _IF_RE = re.compile(r"\bif\s*\(")
 _NONLINEAR_RE = re.compile(r"\^|\blog\b|\bln\b|\bexp\b|\*\s*[A-Za-z0-9_(]")
@@ -212,17 +222,96 @@ def goal_is_implication_before_hl(goal: str) -> bool:
 
 
 def _program_statement_block(goal: str) -> str:
-    """Extract the statement region between pre= and post= when present."""
+    """Extract the statement region between pre= and post= when present.
+
+    EasyCrypt prints the region as::
+
+        pre =
+          <precondition formula, ANY number of lines>
+
+        q <$ dexp                  (1)  q1 <$ dexp
+
+        post =
+
+    The precondition and the statements are separated by a blank line, and
+    statement lines carry a distinctive shape (``<$`` / ``<-`` / ``<@`` /
+    ``while`` / ``if``, or an ``(N)`` instruction index).
+
+    This used to drop only the FIRST line after ``pre =`` and treat everything
+    else as statements, so a multi-line precondition leaked in wholesale. Since
+    a precondition of plain equalities contains none of the statement markers,
+    the leaked text then read as "no code left" and the caller advised ``skip.``
+    on goals whose programs were not empty at all -- 121 times across the
+    measured runs, with ``skip`` failing on ``left instruction list is not
+    empty``.
+    """
     text = goal or ""
     if "pre =" not in text or "post =" not in text:
         return ""
-    mid = text.split("pre =", 1)[1]
-    mid = mid.split("post =", 1)[0]
-    # Drop the precondition line itself; keep the body that follows.
-    lines = mid.splitlines()
+    mid = text.split("pre =", 1)[1].split("post =", 1)[0]
+    return "\n".join(_statement_lines(mid)).strip()
+
+
+def _statement_lines(region: str) -> list[str]:
+    """Lines in `region` that are program statements rather than formula text.
+
+    Deliberately conservative: a line is a statement only when it shows a
+    recognizable instruction form. Misclassifying formula text AS code is the
+    safer error here -- it suppresses an "apply skip" claim rather than
+    inventing one.
+    """
+    out: list[str] = []
+    for raw in (region or "").splitlines():
+        line = raw.rstrip()
+        if not line.strip():
+            continue
+        # A closed procedure header (`M.f` / `M.f ~ N.g`) IS the remaining
+        # program -- the bodies simply have not been opened by `proc.` yet --
+        # but it carries none of the instruction markers, so it needs its own
+        # clause or `proc`-stage goals read as empty.
+        if _PROC_HEADER_RE.match(line.strip()):
+            out.append(line)
+            continue
+        if _STATEMENT_RE.search(line) or _INSTR_INDEX_RE.search(line):
+            out.append(line)
+    return out
+
+
+def _programs_in_sync(goal: str) -> bool:
+    """True when EasyCrypt reports both sides hold IDENTICAL remaining code.
+
+    It prints this instead of the statement lists::
+
+        &1 (left ) : {..., c : cipher} [programs are in sync]
+
+    The marker means code REMAINS on both sides -- the opposite of what the
+    absence of a printed statement list naively suggests.
+    """
+    return bool(_IN_SYNC_RE.search(goal or ""))
+
+
+def _last_statement_kind(side: str) -> str | None:
+    """What the final instruction on one side is, for tactic selection.
+
+    ``rnd`` requires the last instruction on both sides to be a random
+    sampling; applying it otherwise is ``invalid arguments`` / ``invalid last
+    instruction``, which was 31 of 134 measured tactic failures.
+    """
+    lines = [l for l in (side or "").splitlines() if l.strip()]
     if not lines:
-        return ""
-    return "\n".join(lines[1:]).strip()
+        return None
+    last = lines[-1]
+    if _SAMPLING_RE.search(last):
+        return "random sampling (`<$`) — `rnd` applies here"
+    if _CALL_STMT_RE.search(last):
+        return "procedure call (`<@`) — `call` / `inline` applies here"
+    if _ASSIGN_RE.search(last):
+        return "assignment (`<-`) — `wp` applies here"
+    if _WHILE_RE.search(last):
+        return "`while` loop — `while (Inv).` or `unroll`"
+    if _IF_RE.search(last):
+        return "conditional — `if` / `rcondt` / `rcondf`"
+    return None
 
 
 def _split_equiv_columns(block: str) -> tuple[str, str]:
@@ -361,19 +450,58 @@ def format_active_goal_shape_hints(goal: str) -> str:
                 "if the sides are not aligned."
             )
 
-        if block and not _WHILE_RE.search(block) and not _IF_RE.search(block):
-            # Possibly empty or straight-line only
-            if not block.strip() or (
-                not _has_proc_header(block)
-                and not _CALL_STMT_RE.search(block)
-                and not re.search(r"<-", block)
-            ):
+        # Structured facts about the remaining program. `seq N M`, `rnd` and
+        # `skip` all need these and none of them are reliably legible in the
+        # raw dump: together they were 60 of 134 measured tactic failures
+        # (13x "invalid `position' parameter", 20x "invalid arguments",
+        # 10x "invalid last instruction", "left instruction list is not empty").
+        left_stmts = _statement_lines(left)
+        right_stmts = _statement_lines(right)
+        if left_stmts or right_stmts:
+            bullets.append(
+                f"Instruction counts — left: {len(left_stmts)}, "
+                f"right: {len(right_stmts)}. `seq N M : (inv)` splits the "
+                "FIRST N (left) and M (right) instructions; N/M must not "
+                "exceed these counts."
+            )
+            for label, side in (("left", left), ("right", right)):
+                kind = _last_statement_kind(side)
+                if kind:
+                    bullets.append(f"Last instruction on the {label}: {kind}.")
+
+        if _programs_in_sync(goal):
+            # The marker means both sides hold IDENTICAL code, so EasyCrypt
+            # prints no statement list. Reading that absence as emptiness is
+            # what produced the bogus "apply skip" advice.
+            bullets.append(
+                "Detected: `[programs are in sync]` — both sides have the "
+                "SAME remaining code, which is why no statement list is "
+                "shown. Code has NOT been consumed: do not apply `skip.` "
+                "yet. Advance both sides together (`seq`, `rnd`, `wp`, "
+                "`call`, `inline`) until the programs are actually empty."
+            )
+        elif not _WHILE_RE.search(block) and not _IF_RE.search(block):
+            # NOTE: no `block and ...` guard. An empty block is precisely the
+            # empty-program case that legitimately wants `skip.`; requiring a
+            # non-empty block suppressed the one situation the advice is
+            # correct for, now that formula text no longer inflates it.
+            if not left_stmts and not right_stmts:
                 bullets.append(
-                    "Detected: little or no code left under `pre`/`post`. "
+                    "Detected: no remaining instructions under `pre`/`post`. "
                     "Apply `skip.` to move to an ambient goal, then use "
-                    "ambient tactics (`smt`, `progress`, `rewrite`, ...)."
+                    "ambient tactics (`smt`, `progress`, `rewrite`, ...). "
+                    "If `skip.` reports `left instruction list is not empty`, "
+                    "statements remain that are not shown — use `seq`/`wp` "
+                    "instead."
                 )
-            elif re.search(r"<-", block) and not _CALL_STMT_RE.search(block):
+            elif _SAMPLING_RE.search(block) and not _CALL_STMT_RE.search(block):
+                bullets.append(
+                    "Detected: random sampling(s) (`<$`) remain. `rnd` "
+                    "requires the LAST instruction on both sides to be a "
+                    "sampling — if it is not, use `seq`/`wp` to reach that "
+                    "point first rather than retrying bare `rnd.`."
+                )
+            elif _ASSIGN_RE.search(block) and not _CALL_STMT_RE.search(block):
                 bullets.append(
                     "Detected: straight-line assignments remain. Typical "
                     "finish: `wp.` then `skip.` then ambient automation."
@@ -429,6 +557,7 @@ def build_prompt(
     changelog_hints: str | None = None,
     informal_proof: str | None = None,
     informal_proof_is_formal: bool = False,
+    informal_proof_heading: str | None = None,
     lookup_notes: list[str] | None = None,
     enable_lemma_lookup: bool = False,
     past_steps: list[dict[str, Any]] | None = None,
@@ -497,7 +626,11 @@ def build_prompt(
             ]
         )
     if informal_proof:
-        heading = (
+        # An explicit heading wins: replay-bootstrap shows the REMAINING
+        # original tactics, of which only the first is known-broken (the rest
+        # were never reached, so calling them "does NOT compile" would be
+        # false and would invite the model to discard usable structure).
+        heading = informal_proof_heading or (
             "## Broken formal proof (reference only — it does NOT compile; "
             "do not paste it verbatim)"
             if informal_proof_is_formal
