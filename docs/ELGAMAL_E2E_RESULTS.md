@@ -873,6 +873,42 @@ it would be guessing — the same mistake §9.1 already had to undo once. The hi
 now names its own recovery instead ("if you get that error the judgment is
 discharged, go ambient"), matching the existing `skip.` fallback.
 
+### 12.5b The step budget, not the model, ended all three
+
+Every unfinished lemma exhausted its budget exactly:
+
+| lemma | tactic lines | budget (1.4x) | steps used | cost | $/step |
+|---|---:|---:|---:|---:|---:|
+| G2_G3 | 30 | 42 | **42** | $0.2843 | 0.0068 |
+| INDCPA_HEG_G1 | 55 | 77 | **77** | $0.5990 | 0.0078 |
+| G1_G2_eq | 104 | 145 | **145** | $0.5995 | 0.0041 |
+
+None stopped because the model gave up; all three hit the ceiling. `G1_G2_eq`
+is the clearest — 107 accepted against 24 failed, the healthiest ratio in the
+run, cut off with 51 tactics already added.
+
+The multiplier is therefore raised **1.4 -> 2.5** (budgets 75 / 137 / 260),
+with the $5.00 cap left where it is. Projected from the measured $/step above,
+2.5x lands at **~$2.65** against that cap:
+
+| multiplier | projected total |
+|---|---:|
+| 1.4 (run D) | $1.49 |
+| 2.0 | $2.13 |
+| **2.5** | **$2.65** |
+| 3.0 | $3.19 |
+
+Read those as a **floor, not a ceiling**. The projection is linear in steps,
+and cost per step grows as the trajectory lengthens the prompt, so the true
+figure will be higher. The cap is the real protection — it is checked before
+every call, so overshoot is bounded by one call.
+
+What this does not assume: that more steps will finish these proofs. It only
+removes the harness as the binding constraint, so the next run measures the
+model rather than the budget. If a lemma still stops at its new ceiling with a
+healthy accept ratio, the answer is more steps again; if the accept ratio
+collapses first, the answer is not steps at all.
+
 ### 12.6 What run D does and does not establish
 
 **Does.** Import repair is finished work on this corpus: 12/12 resolved, no
