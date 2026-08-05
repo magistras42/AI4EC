@@ -22,7 +22,7 @@ the end-to-end run actually produced.
 | **W6** — version detection | ❌ Hardcoded `r2022.04`/`r2026.07` | ✅ `ec_version.py`; target detected as **r2026.06** |
 | **W8** — repair metrics | ❌ Recorded, never reported | ✅ `repair_metrics.py` → `summary.json` |
 | **Providers** | DeepSeek + LM Studio, OpenAI-SDK only | ✅ Three backends behind one protocol, Claude added |
-| Tests | 277 passing | **553 passing**, suite fully green |
+| Tests | 277 passing | **563 passing**, suite fully green |
 
 Since this table was written, everything §11 listed as open has been
 implemented — including W7, which was open when the row above was drafted. See
@@ -289,7 +289,11 @@ into `summary.json`:
 - **changelog_hops** — which release each trial hopped to, misses included
 - **hint_uptake** — whether an identifier the hint named appears in a tactic
   EasyCrypt *accepted*; the closest available proxy for "the knowledge base
-  helped", short of a counterfactual hints-disabled run
+  helped", short of a counterfactual hints-disabled run. **Only names the hint
+  INTRODUCED count** — one already in the source proves nothing about the
+  hint. Run D reported 50% before that correction and 0% after, the whole
+  difference being `Adv`, the corpus's own adversary module
+  ([`ELGAMAL_E2E_RESULTS.md`](ELGAMAL_E2E_RESULTS.md) §12.4)
 
 It is pure derivation from files the trials already wrote — no EasyCrypt, no
 LLM, no network — so it can re-score a finished run after the fact. Malformed
@@ -351,7 +355,7 @@ persistence), `specs.py` / `protocols.py` (version defaults),
 python3 -m venv .venv && .venv/bin/pip install \
   -r integration/agent/requirements-agent.txt hypothesis
 
-# Tests — 553 pass, 1 skipped
+# Tests — 563 pass, 1 skipped
 .venv/bin/python -m pytest integration/tests integration/experiment/tests
 
 # Local model (Gemma et al. via LM Studio) — free, no gate
@@ -508,7 +512,7 @@ measurement, and it is now scoped to the isolated-break case only.
 
 > **Status, 2026-08-04.** Items 1–6 below were worked in the order given. Five
 > are finished; item 6's *infrastructure* is finished and the run itself is
-> the one thing here that an agent cannot do. Suite: **553 passed, 1 skipped**
+> the one thing here that an agent cannot do. Suite: **563 passed, 1 skipped**
 > (was 345). What each item turned out to be is recorded under it.
 
 **1. Rule-selection by error kind — done** (`ab4707ab`).

@@ -664,3 +664,161 @@ clock per call. The two MAX_STEPS trials consumed ~5 of the run's 7 hours.
 For the next run, `REASONING_EFFORT = "high"` would cap thinking rather than
 letting it run to ~19.6k tokens. Note this is *not* a return to disabling
 thinking, which §7 shows is measurably wrong.
+
+---
+
+## 12. Run D — full corpus, 2026-08-05, after the §11 (roadmap) work
+
+First run against the tree with error-kind rule selection, graded import-repair
+outcomes, minimisation, the 116-rule manifest and the 14 authored notes all in
+place. DeepSeek `deepseek-v4-flash`, adaptive thinking, 32768-token cap,
+15 trials, seed 7.
+
+### 12.1 Headline
+
+| | |
+|---|---|
+| Trials | **15** — 12 COMPLETE, 3 MAX_STEPS, 0 stuck, 0 errors |
+| Spend | **$1.4887** (cap $5.00, not reached) |
+| Zero-LLM verbatim replays | **11 of 15** |
+| Repaired by the model | **1** (`INDCPA_Security`, 2 calls) |
+| Tactics accepted overall | 185 / 301 |
+
+The two most expensive trials, `G2_G3` ($0.28) and `INDCPA_HEG_G1` ($0.60),
+account for ~60% of the bill and neither finished.
+
+### 12.2 Import repair: the W4.5 claim reproduced end to end
+
+```
+attempted 12,  resolved 12 (100%)
+  loads          7    compiles clean
+  reached_proof  5    load errors gone; a TACTIC is now at fault
+remaining_error_kinds:  tactic_error 3,  proof_incomplete 2
+```
+
+**Zero pre-proof errors remain**, reproducing the offline measurement exactly,
+including `mean_first_error_line_advance` of 547.8. Every trial moved
+`parse_error:108 -> tactic_error / proof_incomplete`. The manifest has no gap
+left on this corpus; everything still failing is the solver's problem.
+
+Minimisation fired on **10 of 12 trials** (4 rules kept, 3 dropped). Without
+it each of those files would have reached the model carrying three unrelated
+theory requires presented as "this is what was wrong with your proof".
+
+Adaptive re-targeting is visible in the selection counts: 22 rules chosen
+against `parse_error`, then **12 against `unknown_symbol`** — the
+classification advancing as the file changed, which was not possible before.
+
+Note that `resolved_rate` is 1.0, the same headline the old flattering metric
+gave. It is now true for a defensible reason rather than by coincidence, but a
+reader who looks only at that number sees no difference; the distribution and
+`remaining_error_kinds` are where the change is legible.
+
+### 12.3 Tactics per lemma in the repaired files
+
+`original` is the 2020 script, `replayed` how much of it still compiles
+verbatim, `repaired` what the file holds after the run.
+
+| # | lemma | original | replayed | repaired | by model | outcome |
+|---|---|---:|---:|---:|---:|---|
+| 0 | enc_stateless | 1 | 1 | 1 | +0 | COMPLETE |
+| 1 | INDCPA_Sec | 1 | 1 | 1 | +0 | COMPLETE |
+| 2 | INDCPA_Security | 2 | 1 | 2 | **+1** | COMPLETE |
+| 3 | log_gen | 3 | 3 | 3 | +0 | COMPLETE |
+| 4 | gen_log | 3 | 3 | 3 | +0 | COMPLETE |
+| 5 | grexpAll | 5 | 5 | 5 | +0 | COMPLETE |
+| 6 | RO_track_f_ll | 8 | 8 | 8 | +0 | COMPLETE |
+| 7 | G1_G2 | 5 | 5 | 5 | +0 | COMPLETE |
+| 8 | G3_true | 16 | 16 | 16 | +0 | COMPLETE |
+| 9 | RO_LCDHAdv | 17 | 17 | 17 | +0 | COMPLETE |
+| 10 | G2_bad_ub | 15 | 15 | 15 | +0 | COMPLETE |
+| 11 | G2_G3 | 30 | 13 | 13 | +0 | MAX_STEPS |
+| 12 | INDCPA_HEG_G1 | 52 | 21 | 21 | +0 | MAX_STEPS |
+| 13 | correctness | 58 | 58 | 58 | +0 | COMPLETE |
+| 14 | G1_G2_eq | 85 | 18 | **69** | **+51** | MAX_STEPS |
+| | **TOTAL** | **301** | | **237** | | |
+
+Two things this table says that the outcome column does not.
+
+**`correctness` (58 tactics) replayed verbatim, for free.** Proof length does
+not predict version drift — the same point §11.4 made when the "82% reuse"
+figure was retracted.
+
+**`G1_G2_eq` is the real repair story and it is scored as a failure.** The
+model added 51 tactics on top of an 18-tactic replayed prefix, reaching 69 of
+the original 85, at 107 accepted against 24 failed — a far healthier ratio than
+either other MAX_STEPS trial. It ran out of steps at 139 of a 145-step budget.
+This is the one trial where raising `--max-steps` is worth trying, and the only
+one where the harness, not the model, looks like the binding constraint.
+
+Counting note: tactic counts come from the proof body of
+`trials/*/agent_work.agent.ec`, with inline comments stripped first — a line
+like `(* prove 1/2 *) trivial.` is a tactic, and dropping it undercounted two
+lemmas by one each on the first pass.
+
+### 12.4 Two defects this run exposed
+
+Both were found by looking at the artifacts rather than the summary, and both
+are fixed.
+
+**`hint_uptake` reported 50% on a run whose real uptake was 0%.** Only 4 trials
+called the model, and in 2 of them the single "used" identifier was `Adv` — the
+corpus's own adversary module, in the source long before any hint existed,
+mentioned in passing by a module-restriction note, and unavoidably present in
+accepted tactics. The extractor was also harvesting English prose, because
+"capitalized with a lowercase in it" is the shape of an EasyCrypt theory *and*
+of a word starting a sentence: `The`, `This`, `Where`, `Known`, `Drop`,
+`Unprefixed`, `EasyCrypt`, plus `github.com` from provenance URLs.
+
+Fixed by differencing out identifiers already present in `original.ec` — a name
+the proof already used is not evidence a hint taught it anything — and by
+dropping prose and URL hosts. The same run now scores **0.0**, which is the
+truth and a better input to "does the knowledge base help" than a 50% built
+from one pre-existing token.
+
+**The prompt named the last instruction and never the first.** EasyCrypt's
+tactics divide on exactly that: `rnd` and `wp` consume from the END of the
+program, `if` / `rcondt` / `rcondf` from the FRONT. The shape block gave only
+the tail.
+
+Failure taxonomy over all 78 tactic failures:
+
+| message | n | tactic | cause |
+|---|---:|---|---|
+| `expecting a goal of the form: hoare[S], …` | 15 | mixed | hint asserted PROGRAM-LOGIC on an ambient goal |
+| `invalid last instruction` | 13 | `rnd` | hint **did** name the last instruction |
+| `invalid first instruction` | 13 | `if` | hint **never named the first** |
+| `left instruction list is not empty` | 10 | `skip` | |
+
+The captured goal makes the third concrete: the model tried `if{2}` when the
+**right** side's first instruction was an assignment, not a conditional. It
+could never have worked and nothing in the prompt said so. Both ends are now
+reported per side, with the tactic keyed to the correct end — "assignment ->
+`wp`" is said only of the *last* instruction, since `wp` works backwards.
+
+### 12.5 One thing deliberately not fixed
+
+The 15 `expecting a goal of the form` failures come from the hint asserting
+PROGRAM-LOGIC on a `[programs are in sync]` goal whose judgment was already
+discharged. There is no discriminator in the printed goal:
+
+| | accepted a program-logic tactic | rejected it |
+|---|---:|---:|
+| sync goals | 89 | 12 |
+| …of which the statement block was empty | 36 | 4 |
+
+Block emptiness occurs at the same rate in both, so conditioning the advice on
+it would be guessing — the same mistake §9.1 already had to undo once. The hint
+now names its own recovery instead ("if you get that error the judgment is
+discharged, go ambient"), matching the existing `skip.` fallback.
+
+### 12.6 What run D does and does not establish
+
+**Does.** Import repair is finished work on this corpus: 12/12 resolved, no
+pre-proof errors left, and the graded outcome reproduces offline. The cheap-win
+path is real and large — 11 of 15 lemmas cost nothing.
+
+**Does not.** Whether any of the §11 work improves *repair capability*. One
+model-repaired lemma, same as run C. The first-instruction fact addresses 13 of
+78 failures deterministically, but whether that changes outcomes needs another
+run, and per §6 one run cannot settle it.
