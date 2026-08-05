@@ -45,6 +45,16 @@ from typing import Any
 
 from .config import AgentConfig
 from .easycrypt import validate_file
+from .ec_errors import (
+    KIND_PARSE_ERROR,
+    KIND_TYPE_ERROR,
+    KIND_UNKNOWN,
+    KIND_UNKNOWN_SYMBOL,
+    KIND_UNKNOWN_THEORY,
+    ClassifiedError,
+    classify_error,
+    first_error_line,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -61,16 +71,6 @@ _REQUIRE_LINE_RE = re.compile(
     re.MULTILINE,
 )
 _TOKEN_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_']*")
-# Where EasyCrypt says the first error is. It uses two formats and the progress
-# metric depends on reading both:
-#   [critical] [/path/to/file.ec: line 108 (8)] parse error
-#   /path/to/file.ec:120:4-9: ...
-# Matching only the second silently made every probe return -1, so no migration
-# could ever show progress and all of them were rolled back.
-_ERROR_LINE_RES = (
-    re.compile(r"\.eca?:\s*line\s+(\d+)", re.IGNORECASE),
-    re.compile(r"\.eca?:(\d+):"),
-)
 
 LINE_PRESERVING_OPS = frozenset(
     {"add_require", "replace_require", "remove_require", "rename_symbol",
@@ -105,6 +105,11 @@ class AppliedMigration:
     actions: list[str]
     kept: bool
     reason: str
+    # The `ec_errors` kind this rule was picked against, and how strongly it
+    # matched it. Recorded so a finished run can be asked whether targeting
+    # chose well, rather than only whether the file ended up loading.
+    selected_for: str = ""
+    relevance: int = 0
 
 
 @dataclass
@@ -126,6 +131,12 @@ class ImportRepairResult:
     # solver's job, not this module's.
     error_line_before: int = -1
     error_line_after: int = -1
+    # What broke, not just where. `error_kind_after` is how a caller tells
+    # "still the same import problem" from "the imports are fixed and the
+    # proof is now what fails" -- the pre-proof/in-proof boundary the whole
+    # module is scoped to.
+    error_kind_before: str = KIND_UNKNOWN
+    error_kind_after: str = KIND_UNKNOWN
     notes: list[str] = field(default_factory=list)
 
     @property
@@ -146,12 +157,15 @@ class ImportRepairResult:
             "improved": self.improved,
             "error_line_before": self.error_line_before,
             "error_line_after": self.error_line_after,
+            "error_kind_before": self.error_kind_before,
+            "error_kind_after": self.error_kind_after,
             "considered": self.considered,
             "applied": [
                 {
                     "id": a.migration_id, "kind": a.kind,
                     "confidence": a.confidence, "actions": a.actions,
                     "kept": a.kept, "reason": a.reason, "summary": a.summary,
+                    "selected_for": a.selected_for, "relevance": a.relevance,
                 }
                 for a in self.applied
             ],
@@ -272,6 +286,104 @@ def matches(migration: Migration, text: str, tokens: set[str], requires: set[str
         return False
 
     return bool(wanted or absent or used or forbidden or pattern)
+
+
+# --- error-directed ordering ------------------------------------------------
+# `matches()` answers "could this rule apply to this FILE?". It says nothing
+# about the error EasyCrypt actually reported, so a file with a parse error at
+# line 5 would have ten require-semantics rules tried against it before the one
+# syntax rule that fixes the parse error. Each of those is a full EasyCrypt
+# invocation in the incremental pass. The classification from `ec_errors` is
+# what closes that gap.
+
+#: Which migration kinds can plausibly fix which classified error. Keyed by
+#: `ec_errors` kind; the values are `kind =` fields from ec_migrations.toml.
+#: An error kind absent from this table (or `unknown`) puts every rule on equal
+#: footing, which is the pre-existing behaviour.
+MIGRATION_KINDS_BY_ERROR: dict[str, frozenset[str]] = {
+    # "cannot find theory: `SmtMap'" -- the theory is gone, renamed, split, or
+    # was never required. Symbol-level rules cannot fix a missing theory.
+    KIND_UNKNOWN_THEORY: frozenset(
+        {"theory_added", "theory_removed", "theory_renamed", "theory_split"}
+    ),
+    # "unknown operator `fdom'" -- the theory resolved but the name did not.
+    # This is the symbol-move/rename family, plus splits (the name is in the
+    # other half) and require_semantics (a theory stopped re-exporting it).
+    KIND_UNKNOWN_SYMBOL: frozenset(
+        {"symbol_moved", "symbol_renamed", "theory_split", "require_semantics"}
+    ),
+    # A parse error is the engine's grammar, not the library's contents. No
+    # amount of `require` rewriting fixes syntax the parser no longer accepts.
+    KIND_PARSE_ERROR: frozenset({"syntax_change"}),
+    # Type errors sit between the two: a renamed symbol with a new signature,
+    # or an ambient theory that no longer supplies a coercion.
+    KIND_TYPE_ERROR: frozenset(
+        {"symbol_renamed", "symbol_moved", "require_semantics", "syntax_change"}
+    ),
+}
+
+# Scores, not booleans, because two different signals are in play: the rule's
+# *kind* matching the error's kind is weak evidence (a whole family), while the
+# rule naming the exact identifier EasyCrypt blamed is strong evidence (this
+# rule, this symbol).
+RELEVANCE_NAMED_IDENTIFIER = 4
+RELEVANCE_MATCHING_KIND = 2
+
+
+def migration_targets(migration: Migration) -> set[str]:
+    """Every theory or symbol name a migration mentions, on either side.
+
+    Both halves count. A rule that *matches* on `SmtMap` and a rule that
+    *produces* `FMap` are each relevant when EasyCrypt blames one of those
+    names -- the first because the file still uses the old name, the second
+    because the replacement is what is missing.
+    """
+    names: set[str] = set()
+    condition = migration.match
+    for key in ("requires_theory", "missing_require", "uses_symbols", "not_uses_symbols"):
+        names.update(str(name) for name in (condition.get(key) or []))
+    for action in migration.actions:
+        for key in ("theory", "with_theory", "old", "new"):
+            value = action.get(key)
+            if value:
+                names.add(str(value))
+    return names
+
+
+def relevance(migration: Migration, error: ClassifiedError | None) -> int:
+    """How well `migration` matches the failure EasyCrypt actually reported.
+
+    Zero means "nothing links this rule to this error" -- which is a reason to
+    try it *later*, never a reason to drop it. Two facts make exclusion the
+    wrong move here. A file usually has more than one thing wrong with it, so
+    the rule that is irrelevant to the error at line 5 may be exactly the rule
+    the error at line 300 needs once line 5 is fixed; and `KIND_UNKNOWN` exists
+    precisely because this is a heuristic layer over human-readable compiler
+    output. Ordering is the safe form of this optimisation: it makes the
+    likely fix cheap without making any fix unreachable.
+    """
+    if error is None or error.kind == KIND_UNKNOWN:
+        return 0
+
+    score = 0
+    blamed = {name for name in error.identifiers}
+    if blamed and blamed & migration_targets(migration):
+        score += RELEVANCE_NAMED_IDENTIFIER
+    if migration.kind in MIGRATION_KINDS_BY_ERROR.get(error.kind, frozenset()):
+        score += RELEVANCE_MATCHING_KIND
+    return score
+
+
+def order_by_relevance(
+    migrations: list[Migration], error: ClassifiedError | None
+) -> list[Migration]:
+    """Most-relevant rules first; ties keep manifest order.
+
+    The sort is stable, so with no classification (or an unrecognised one) this
+    returns the input unchanged and the caller behaves exactly as it did before
+    error-directed selection existed.
+    """
+    return sorted(migrations, key=lambda m: -relevance(m, error))
 
 
 # --- actions ----------------------------------------------------------------
@@ -413,19 +525,30 @@ def apply_actions(text: str, actions: list[dict[str, Any]]) -> tuple[str, list[s
 
 
 def _first_error_line(output: str) -> int:
-    for pattern in _ERROR_LINE_RES:
-        match = pattern.search(output)
-        if match:
-            return int(match.group(1))
-    return -1
+    """Line of EasyCrypt's first complaint, or -1.
+
+    Delegates to :func:`integration.agent.ec_errors.first_error_line`. This
+    module used to carry its own copy of the two location regexes, and the copy
+    was where the bug lived: it matched only ``file.ec:120:`` and not
+    ``[file.ec: line 120 (8)]``, so every probe returned -1, no migration could
+    ever show progress, and all of them were rolled back. One definition means
+    one place to get it right.
+    """
+    return first_error_line(output)
 
 
-def _probe(path: Path, text: str, config: AgentConfig) -> tuple[bool, str, int]:
-    """Write `text` to `path` and ask EasyCrypt how far it gets."""
+def _probe(
+    path: Path, text: str, config: AgentConfig
+) -> tuple[bool, str, ClassifiedError]:
+    """Write `text` to `path` and ask EasyCrypt how far it gets.
+
+    Returns the classification rather than a bare line number, so callers can
+    steer on *what* broke and not only on *where*.
+    """
     path.write_text(text, encoding="utf-8")
     result = validate_file(path, config)
     output = (result.stderr or "").strip() or (result.stdout or "").strip()
-    return result.returncode == 0, output, _first_error_line(output)
+    return result.returncode == 0, output, classify_error(output)
 
 
 def repair_imports(
@@ -448,6 +571,14 @@ def repair_imports(
     every rule is needed, and the incremental pass costs one call per rule only
     when something did not work.
 
+    The incremental pass is **error-directed**: before each step the current
+    failure is classified (:mod:`integration.agent.ec_errors`) and the rules
+    still untried are ordered by :func:`relevance` to it. Because the file is
+    re-probed after every accepted rule, the classification advances with the
+    file -- a parse error at line 5 pulls the syntax rules forward, and once it
+    is gone an ``unknown_theory`` at line 108 pulls the theory rules forward
+    instead. Nothing is ever excluded; see :func:`relevance` for why.
+
     `source` is never modified: the work happens on `work_path` (default
     ``<source>.import_repair.ec``). The caller decides whether to promote it.
     """
@@ -458,7 +589,8 @@ def repair_imports(
     work_path = work_path or source.with_suffix(".import_repair.ec")
     notes: list[str] = []
 
-    loads_before, error_before, line_before = _probe(work_path, original, config)
+    loads_before, error_before, classified_before = _probe(work_path, original, config)
+    line_before = classified_before.line
     if loads_before:
         return ImportRepairResult(
             changed=False, text=original, applied=[], considered=[],
@@ -476,6 +608,8 @@ def repair_imports(
             loads_before=False, loads_after=False,
             error_before=error_before, error_after=error_before,
             error_line_before=line_before, error_line_after=line_before,
+            error_kind_before=classified_before.kind,
+            error_kind_after=classified_before.kind,
             notes=[f"import repair unavailable: {exc}"],
         )
 
@@ -505,22 +639,45 @@ def repair_imports(
             loads_before=False, loads_after=False,
             error_before=error_before, error_after=error_before,
             error_line_before=line_before, error_line_after=line_before,
+            error_kind_before=classified_before.kind,
+            error_kind_after=classified_before.kind,
             notes=notes + ["no migration matched this file"],
         )
 
-    # Pass 1: everything at once.
+    targeted = [m.id for m in candidates if relevance(m, classified_before)]
+    if targeted:
+        notes.append(
+            f"first error classified as {classified_before.kind!r}"
+            + (
+                f" naming {', '.join(classified_before.identifiers[:5])}"
+                if classified_before.identifiers else ""
+            )
+            + f"; {len(targeted)} of {len(candidates)} rules address it "
+            f"({', '.join(targeted)}) and are tried first"
+        )
+    elif classified_before.kind == KIND_UNKNOWN:
+        notes.append(
+            "first error did not classify; trying rules in manifest order"
+        )
+
+    # Pass 1: everything at once. Order does not affect the outcome here (every
+    # action is applied), but it does decide the order `applied` is reported in,
+    # so the same relevance ordering is used for legibility.
+    ordered_candidates = order_by_relevance(candidates, classified_before)
     bulk_text = original
     bulk_applied: list[AppliedMigration] = []
-    for migration in candidates:
+    for migration in ordered_candidates:
         bulk_text, applied, skipped = apply_actions(bulk_text, migration.actions)
         bulk_applied.append(AppliedMigration(
             migration_id=migration.id, kind=migration.kind,
             confidence=migration.confidence, summary=migration.summary,
             actions=applied, kept=bool(applied),
             reason="applied in bulk" if applied else f"no effect ({'; '.join(skipped)})",
+            selected_for=classified_before.kind,
+            relevance=relevance(migration, classified_before),
         ))
 
-    loads_after, error_after, line_after = _probe(work_path, bulk_text, config)
+    loads_after, error_after, _classified_bulk = _probe(work_path, bulk_text, config)
     if loads_after:
         return ImportRepairResult(
             changed=bulk_text != original, text=bulk_text,
@@ -528,69 +685,92 @@ def repair_imports(
             loads_before=False, loads_after=True,
             error_before=error_before, error_after="",
             error_line_before=line_before, error_line_after=-1,
+            error_kind_before=classified_before.kind, error_kind_after="",
             notes=notes + ["file loads after applying all matching migrations"],
         )
 
-    # Pass 2: incremental, keeping only what demonstrably helps.
+    # Pass 2: incremental, keeping only what demonstrably helps -- and choosing
+    # what to try next from the error the file has *now*, not the one it started
+    # with. Re-classifying each round is what makes the targeting adaptive: the
+    # rule that fixes the parse error at line 5 changes the failure to a missing
+    # theory at line 108, and the theory rules move to the front for the next
+    # round without anyone having ordered them by hand.
     notes.append(
         "bulk apply did not make the file load; retrying incrementally and "
         "keeping only migrations EasyCrypt shows progress on"
     )
     current_text = original
-    current_line = line_before
+    current = classified_before
     current_error = error_before
+    remaining = list(candidates)
     kept: list[AppliedMigration] = []
 
-    for migration in candidates:
+    while remaining:
+        migration = order_by_relevance(remaining, current)[0]
+        remaining.remove(migration)
+        score = relevance(migration, current)
+
         trial_text, applied, skipped = apply_actions(current_text, migration.actions)
         if not applied:
             kept.append(AppliedMigration(
                 migration.id, migration.kind, migration.confidence,
                 migration.summary, [], False, f"no effect ({'; '.join(skipped)})",
+                selected_for=current.kind, relevance=score,
             ))
             continue
 
-        trial_loads, trial_error, trial_line = _probe(work_path, trial_text, config)
-        previous_line = current_line
+        trial_loads, trial_error, trial = _probe(work_path, trial_text, config)
+        previous_line = current.line
         # Non-regression, not strict improvement. Every rule here is
         # independently justified by changelog/commit evidence and is
         # line-preserving, so the question is "does this HURT?", not "does this
         # help right now". A rule that fixes something at line 300 shows no
         # movement while an unrelated parse error still sits at line 108 --
         # requiring strict progress rolled those back and left the file broken.
-        regressed = (not trial_loads) and trial_line >= 0 and previous_line >= 0 and (
-            trial_line < previous_line
+        regressed = (not trial_loads) and trial.line >= 0 and previous_line >= 0 and (
+            trial.line < previous_line
         )
         if regressed:
             kept.append(AppliedMigration(
                 migration.id, migration.kind, migration.confidence,
                 migration.summary, applied, False,
                 f"rolled back: first error moved earlier "
-                f"({previous_line} -> {trial_line})",
+                f"({previous_line} -> {trial.line})",
+                selected_for=current.kind, relevance=score,
             ))
             continue
 
-        current_text, current_line, current_error = trial_text, trial_line, trial_error
         if trial_loads:
             reason = "file loads"
-        elif trial_line > previous_line:
-            reason = f"first error moved later ({previous_line} -> {trial_line})"
+        elif trial.line > previous_line:
+            reason = f"first error moved later ({previous_line} -> {trial.line})"
+        elif trial.kind != current.kind:
+            # Same line, different complaint. That is real movement the line
+            # number cannot show: `parse error` becoming `cannot find theory`
+            # at the same position means the syntax is now accepted.
+            reason = f"kept: error kind changed ({current.kind} -> {trial.kind})"
         else:
-            reason = f"kept: no regression (first error still at {trial_line})"
+            reason = f"kept: no regression (first error still at {trial.line})"
         kept.append(AppliedMigration(
             migration.id, migration.kind, migration.confidence,
             migration.summary, applied, True, reason,
+            selected_for=current.kind, relevance=score,
         ))
+
+        current_text, current, current_error = trial_text, trial, trial_error
         if trial_loads:
             break
 
-    loads_after, error_after, final_line = _probe(work_path, current_text, config)
+    loads_after, error_after, final = _probe(work_path, current_text, config)
     return ImportRepairResult(
         changed=current_text != original, text=current_text,
         applied=kept, considered=considered,
         loads_before=False, loads_after=loads_after,
         error_before=error_before, error_after=error_after,
-        error_line_before=line_before, error_line_after=final_line, notes=notes,
+        error_line_before=line_before, error_line_after=final.line,
+        error_kind_before=classified_before.kind,
+        error_kind_after="" if loads_after else final.kind,
+        notes=notes,
     )
 
 

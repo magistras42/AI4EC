@@ -16,7 +16,7 @@ from pathlib import Path
 
 import pytest
 
-from integration.agent import import_repair
+from integration.agent import ec_errors, import_repair
 from integration.agent.config import AgentConfig
 from integration.agent.easycrypt import LlmResult
 
@@ -113,18 +113,20 @@ class FakeEasyCrypt:
     def __init__(self, script):
         self.script = script
         self.calls = 0
+        self.texts: list[str] = []
 
     def __call__(self, path: Path, config: AgentConfig) -> LlmResult:
         self.calls += 1
         text = Path(path).read_text(encoding="utf-8")
+        self.texts.append(text)
         for predicate, (code, err) in self.script:
             if predicate(text):
                 return LlmResult(returncode=code, stdout="", stderr=err)
         return LlmResult(returncode=0, stdout="", stderr="")
 
 
-def _err(line: int) -> str:
-    return f"[critical] [/tmp/x.ec: line {line} (8)] parse error"
+def _err(line: int, message: str = "parse error") -> str:
+    return f"[critical] [/tmp/x.ec: line {line} (8)] {message}"
 
 
 # --- manifest ---------------------------------------------------------------
@@ -367,6 +369,224 @@ def test_line_count_change_is_an_assertion_error(monkeypatch):
     )
     with pytest.raises(AssertionError, match="line count"):
         import_repair.apply_actions(SOURCE, [{"op": "add_pragma", "pragma": "x"}])
+
+
+# --- error-directed ordering ------------------------------------------------
+# `matches()` asks "could this rule apply to this file?"; relevance asks "does
+# it address the error EasyCrypt actually reported?". Ordering by the second
+# without ever excluding on it is what makes the likely fix cheap while keeping
+# every fix reachable.
+
+
+def _classify(message: str, line: int = 5):
+    return ec_errors.classify_error(_err(line, message))
+
+
+def test_migration_targets_collects_names_from_both_match_and_actions(migrations):
+    by_id = {m.id: m for m in migrations}
+    targets = import_repair.migration_targets(by_id["smtmap-split"])
+    assert "SmtMap" in targets      # matched on
+    assert "fdom" in targets        # matched on
+    assert "FMap" in targets        # produced by the action
+
+
+def test_relevance_scores_kind_and_named_identifier_separately(migrations):
+    by_id = {m.id: m for m in migrations}
+    split = by_id["smtmap-split"]
+
+    # Kind alone: theory_split can fix an unknown theory, but no name matches.
+    kind_only = _classify("cannot find theory: `Nowhere'")
+    assert import_repair.relevance(split, kind_only) == (
+        import_repair.RELEVANCE_MATCHING_KIND
+    )
+
+    # Kind and the blamed name: the strongest signal available.
+    both = _classify("cannot find theory: `FMap'")
+    assert import_repair.relevance(split, both) == (
+        import_repair.RELEVANCE_MATCHING_KIND + import_repair.RELEVANCE_NAMED_IDENTIFIER
+    )
+
+    # A parse error is the engine's grammar; requiring theories cannot fix it.
+    assert import_repair.relevance(split, _classify("parse error")) == 0
+
+
+def test_relevance_is_zero_for_an_unclassifiable_error(migrations):
+    """`unknown` must not pretend to rank: it means the heuristic did not
+    recognise the message, so every rule stays equally plausible."""
+    unknown = ec_errors.classify_error("something nobody has seen before")
+    assert unknown.kind == ec_errors.KIND_UNKNOWN
+    assert all(import_repair.relevance(m, unknown) == 0 for m in migrations)
+    assert all(import_repair.relevance(m, None) == 0 for m in migrations)
+
+
+def test_order_by_relevance_puts_the_addressing_rule_first_and_keeps_the_rest(
+    migrations,
+):
+    """Ordering, not filtering: the irrelevant rules stay in the list, in
+    manifest order, behind the relevant one."""
+    ordered = import_repair.order_by_relevance(migrations, _classify("parse error"))
+    assert ordered[0].id == "proc-star"           # the syntax_change rule
+    assert len(ordered) == len(migrations)        # nothing dropped
+    assert [m.id for m in ordered[1:]] == [
+        m.id for m in migrations if m.id != "proc-star"
+    ]                                             # ties keep manifest order
+
+
+def test_order_by_relevance_is_identity_without_a_classification(migrations):
+    for error in (None, ec_errors.classify_error("no idea")):
+        assert [m.id for m in import_repair.order_by_relevance(migrations, error)] == [
+            m.id for m in migrations
+        ]
+
+
+def test_incremental_pass_tries_the_rule_that_addresses_the_error_first(
+    tmp_path, monkeypatch, manifest_path
+):
+    """The parse error is what EasyCrypt reported, so `proc-star` is probed
+    before `smtmap-split` even though the manifest lists it second."""
+    fake = FakeEasyCrypt([
+        (lambda t: "proc *" in t, (1, _err(5, "parse error"))),
+        (lambda t: True, (1, _err(400, "parse error"))),
+    ])
+    monkeypatch.setattr(import_repair, "validate_file", fake)
+    source = tmp_path / "broken.ec"
+    source.write_text(SOURCE, encoding="utf-8")
+
+    import_repair.repair_imports(
+        source, _config(), source_version="r2022.04", target_version="r2026.07",
+        manifest_path=manifest_path, min_confidence="low",
+    )
+    # texts[0] baseline, texts[1] bulk, texts[2] the first incremental trial.
+    first_trial = fake.texts[2]
+    assert "proc *" not in first_trial      # proc-star was applied ...
+    assert "FMap" not in first_trial        # ... and smtmap-split was not
+
+
+def test_targeting_readvances_as_the_error_changes(
+    tmp_path, monkeypatch, manifest_path
+):
+    """The classification is re-read after every accepted rule, so the ordering
+    follows the file: a parse error pulls the syntax rule forward, and the
+    missing theory it uncovers pulls the theory rule forward next."""
+    # The file never fully loads, so the bulk pass cannot short-circuit and the
+    # incremental pass runs to the end.
+    fake = FakeEasyCrypt([
+        (lambda t: "proc *" in t, (1, _err(5, "parse error"))),
+        (lambda t: True, (1, _err(108, "cannot find theory: `FMap'"))),
+    ])
+    monkeypatch.setattr(import_repair, "validate_file", fake)
+    source = tmp_path / "broken.ec"
+    source.write_text(SOURCE, encoding="utf-8")
+
+    result = import_repair.repair_imports(
+        source, _config(), source_version="r2022.04", target_version="r2026.07",
+        manifest_path=manifest_path, min_confidence="low",
+    )
+    picked = {a.migration_id: a for a in result.applied if a.kept}
+    # Each rule was chosen against the error that was live at the time.
+    assert picked["proc-star"].selected_for == ec_errors.KIND_PARSE_ERROR
+    assert picked["smtmap-split"].selected_for == ec_errors.KIND_UNKNOWN_THEORY
+    # ... and the second was chosen on the strongest evidence: right kind, and
+    # the rule names the theory EasyCrypt blamed.
+    assert picked["smtmap-split"].relevance == (
+        import_repair.RELEVANCE_MATCHING_KIND + import_repair.RELEVANCE_NAMED_IDENTIFIER
+    )
+
+
+def test_an_unaddressing_rule_is_still_tried(tmp_path, monkeypatch, manifest_path):
+    """Fail-open. A rule scoring zero against the current error goes last, not
+    away -- the file's *next* error may be exactly what it fixes."""
+    fake = FakeEasyCrypt([
+        # Only adding FMap fixes this, but the error is a parse error, which
+        # smtmap-split scores zero against.
+        (lambda t: "FMap" not in t, (1, _err(5, "parse error"))),
+    ])
+    monkeypatch.setattr(import_repair, "validate_file", fake)
+    source = tmp_path / "broken.ec"
+    source.write_text(SOURCE, encoding="utf-8")
+
+    result = import_repair.repair_imports(
+        source, _config(), source_version="r2022.04", target_version="r2026.07",
+        manifest_path=manifest_path, min_confidence="low",
+    )
+    assert result.loads_after
+    kept = {a.migration_id for a in result.applied if a.kept}
+    assert "smtmap-split" in kept
+
+
+def test_a_changed_error_kind_at_the_same_line_counts_as_progress(
+    tmp_path, monkeypatch, manifest_path
+):
+    """`parse error` becoming `cannot find theory` at the same position means
+    the syntax is now accepted. The line number cannot show that; the kind can,
+    and without it the rule would read as "no regression" instead of a fix."""
+    fake = FakeEasyCrypt([
+        (lambda t: "proc *" in t, (1, _err(5, "parse error"))),
+        (lambda t: True, (1, _err(5, "cannot find theory: `Nowhere'"))),
+    ])
+    monkeypatch.setattr(import_repair, "validate_file", fake)
+    source = tmp_path / "broken.ec"
+    source.write_text(SOURCE, encoding="utf-8")
+
+    result = import_repair.repair_imports(
+        source, _config(), source_version="r2022.04", target_version="r2026.07",
+        manifest_path=manifest_path, min_confidence="low",
+    )
+    proc_star = next(a for a in result.applied if a.migration_id == "proc-star")
+    assert proc_star.kept
+    assert "error kind changed" in proc_star.reason
+    assert "parse_error -> unknown_theory" in proc_star.reason
+
+
+def test_result_records_what_broke_before_and_after(
+    tmp_path, monkeypatch, manifest_path
+):
+    fake = FakeEasyCrypt([
+        (lambda t: "proc *" in t, (1, _err(5, "parse error"))),
+        (lambda t: True, (1, _err(400, "cannot find theory: `Nowhere'"))),
+    ])
+    monkeypatch.setattr(import_repair, "validate_file", fake)
+    source = tmp_path / "broken.ec"
+    source.write_text(SOURCE, encoding="utf-8")
+
+    result = import_repair.repair_imports(
+        source, _config(), source_version="r2022.04", target_version="r2026.07",
+        manifest_path=manifest_path, min_confidence="low",
+    )
+    assert result.error_kind_before == ec_errors.KIND_PARSE_ERROR
+    assert result.error_kind_after == ec_errors.KIND_UNKNOWN_THEORY
+    payload = result.to_dict()
+    assert payload["error_kind_before"] == ec_errors.KIND_PARSE_ERROR
+    assert payload["error_kind_after"] == ec_errors.KIND_UNKNOWN_THEORY
+    assert all("selected_for" in entry for entry in payload["applied"])
+
+
+def test_a_loading_file_reports_no_remaining_error_kind(
+    tmp_path, monkeypatch, manifest_path
+):
+    """Empty, not `unknown`: there is no error left to classify, and `unknown`
+    would read as "something broke that we could not name"."""
+    fake = FakeEasyCrypt([(lambda t: "proc *" in t, (1, _err(5)))])
+    monkeypatch.setattr(import_repair, "validate_file", fake)
+    source = tmp_path / "broken.ec"
+    source.write_text(SOURCE, encoding="utf-8")
+
+    result = import_repair.repair_imports(
+        source, _config(), manifest_path=manifest_path, min_confidence="low",
+    )
+    assert result.loads_after
+    assert result.error_kind_after == ""
+
+
+def test_every_manifest_kind_is_reachable_from_some_error_kind():
+    """A `kind =` value no error routes to is a rule that targeting can only
+    ever deprioritise -- either the table or the manifest is wrong."""
+    if not REAL_MANIFEST.is_file():
+        pytest.skip("ec_migrations.toml not generated")
+    manifest = import_repair.load_manifest(REAL_MANIFEST)
+    used = {m["kind"] for m in manifest["migration"]}
+    routed = set().union(*import_repair.MIGRATION_KINDS_BY_ERROR.values())
+    assert used <= routed, f"unrouted migration kinds: {sorted(used - routed)}"
 
 
 # --- error-line parsing -----------------------------------------------------
