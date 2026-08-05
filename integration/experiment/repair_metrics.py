@@ -67,21 +67,41 @@ def _name_pattern(name: str) -> re.Pattern[str]:
     return re.compile(rf"(?<![A-Za-z0-9_]){re.escape(name)}(?![A-Za-z0-9_])")
 
 
+#: Capitalized words the hint prose starts sentences with, plus the tool's own
+#: name and the host in provenance URLs. Every one of these was being counted
+#: as an EasyCrypt identifier on the 2026-08-05 run.
+_HINT_PROSE_NOISE = frozenset({
+    "The", "This", "That", "These", "Those", "Where", "When", "Known", "Drop",
+    "Unprefixed", "Detected", "Prefer", "Note", "Both", "Current", "EasyCrypt",
+    "IMPORTANT", "MAJOR", "NOTE", "SEPARATELY", "Also", "Otherwise", "Use",
+    "Verified", "Setting", "Apart", "Since", "There", "They",
+})
+
+
 def _hinted_identifiers(hints_text: str) -> set[str]:
     """Identifiers a rendered hint block actually named.
 
-    Deliberately crude: the rendered block is prose plus identifier lists, so
-    this looks for EasyCrypt-shaped names (CamelCase theories, qualified
-    ``Theory.name`` paths) and ignores ordinary English words by requiring
-    either a dot or an internal capital.
+    Crude by necessity -- the block is prose plus identifier lists -- but the
+    first version was crude enough to measure nothing. On the 2026-08-05 run
+    it extracted `The`, `This`, `Where`, `Known`, `Drop`, `Unprefixed`,
+    `EasyCrypt` and `github.com` alongside the real names, because
+    "capitalized with a lowercase in it" is also the shape of an English word
+    at the start of a sentence.
     """
-    candidates = set(re.findall(r"\b[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)+\b", hints_text))
+    candidates = {
+        name
+        for name in re.findall(
+            r"\b[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)+\b", hints_text
+        )
+        # `github.com`, `easycrypt.org`: provenance URLs, not EasyCrypt paths.
+        if not re.search(r"\.(?:com|org|io|net|dev)$", name)
+    }
     candidates |= {
         token
         for token in re.findall(r"\b[A-Z][A-Za-z0-9_]{2,}\b", hints_text)
         if any(c.islower() for c in token)
     }
-    return candidates
+    return candidates - _HINT_PROSE_NOISE
 
 
 def _accepted_tactics(agent_log: dict[str, Any]) -> list[str]:
@@ -193,13 +213,35 @@ def collect_trial_repair_metrics(trial_dir: Path) -> dict[str, Any] | None:
             hints_text = ""
     if agent_log and hints_text:
         hinted = _hinted_identifiers(hints_text)
+        # A name the proof ALREADY used is not evidence the hint taught it
+        # anything. On the 2026-08-05 run this was the whole measurement: the
+        # only "used" identifier in either scoring trial was `Adv`, the
+        # corpus's own adversary module, present in the source long before any
+        # hint existed and mentioned in passing by a module-restriction note.
+        # Uptake was reported as 50% when it was actually 0%.
+        pre_existing: set[str] = set()
+        original = trial_dir / "original.ec"
+        if original.is_file():
+            try:
+                source = original.read_text(encoding="utf-8")
+            except OSError:
+                source = ""
+            pre_existing = {
+                name for name in hinted if _name_pattern(name).search(source)
+            }
+        novel = hinted - pre_existing
+
         accepted = _accepted_tactics(agent_log)
         accepted_text = "\n".join(accepted)
         used = sorted(
-            name for name in hinted if _name_pattern(name).search(accepted_text)
+            name for name in novel if _name_pattern(name).search(accepted_text)
         )
         metrics["hint_uptake"] = {
             "hinted_identifier_count": len(hinted),
+            # Names the hint introduced that the proof did not already contain.
+            # The only ones whose appearance can be attributed to the hint.
+            "novel_identifier_count": len(novel),
+            "pre_existing_identifier_count": len(pre_existing),
             "used_in_accepted_tactics": used,
             "any_used": bool(used),
             # Load-bearing denominator. With zero accepted tactics, `any_used`

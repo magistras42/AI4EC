@@ -319,6 +319,30 @@ def _programs_in_sync(goal: str) -> bool:
     return bool(_IN_SYNC_RE.search(goal or ""))
 
 
+def _statement_kind(line: str, *, position: str) -> str | None:
+    """Classify one instruction, and name the tactic that consumes it.
+
+    ``position`` is "last" or "first" because EasyCrypt's tactics divide on
+    exactly that: ``rnd`` and ``wp`` work backwards from the END of the
+    program, while ``if`` / ``rcondt`` / ``rcondf`` work forwards from the
+    FRONT. Advice keyed to the wrong end is worse than none.
+    """
+    consumes_last = position == "last"
+    if _SAMPLING_RE.search(line):
+        return ("random sampling (`<$`) — `rnd` applies here" if consumes_last
+                else "random sampling (`<$`) — `seq 1 1` to split it off")
+    if _CALL_STMT_RE.search(line):
+        return "procedure call (`<@`) — `call` / `inline` applies here"
+    if _ASSIGN_RE.search(line):
+        return ("assignment (`<-`) — `wp` applies here" if consumes_last
+                else "assignment (`<-`) — `wp` works from the END, not here")
+    if _WHILE_RE.search(line):
+        return "`while` loop — `while (Inv).` or `unroll`"
+    if _IF_RE.search(line):
+        return "conditional — `if` / `rcondt` / `rcondf` applies here"
+    return None
+
+
 def _last_statement_kind(side: str) -> str | None:
     """What the final instruction on one side is, for tactic selection.
 
@@ -329,18 +353,24 @@ def _last_statement_kind(side: str) -> str | None:
     lines = [l for l in (side or "").splitlines() if l.strip()]
     if not lines:
         return None
-    last = lines[-1]
-    if _SAMPLING_RE.search(last):
-        return "random sampling (`<$`) — `rnd` applies here"
-    if _CALL_STMT_RE.search(last):
-        return "procedure call (`<@`) — `call` / `inline` applies here"
-    if _ASSIGN_RE.search(last):
-        return "assignment (`<-`) — `wp` applies here"
-    if _WHILE_RE.search(last):
-        return "`while` loop — `while (Inv).` or `unroll`"
-    if _IF_RE.search(last):
-        return "conditional — `if` / `rcondt` / `rcondf`"
-    return None
+    return _statement_kind(lines[-1], position="last")
+
+
+def _first_statement_kind(side: str) -> str | None:
+    """What the FIRST instruction on one side is.
+
+    The symmetric gap to `_last_statement_kind`, and it cost more than the
+    original. `if`, `rcondt` and `rcondf` all address the head of the program,
+    and the hint block named only the tail -- so a model told "last
+    instruction: assignment" still had nothing to decide `if` on. Measured
+    over the 2026-08-05 run: ``invalid first instruction`` was 13 of 78 tactic
+    failures, every one of them an `if`, and the second most common failure
+    message overall.
+    """
+    lines = [l for l in (side or "").splitlines() if l.strip()]
+    if not lines:
+        return None
+    return _statement_kind(lines[0], position="first")
 
 
 def _split_equiv_columns(block: str) -> tuple[str, str]:
@@ -538,6 +568,13 @@ def format_active_goal_shape_hints(goal: str) -> str:
                 "exceed these counts."
             )
             for label, side in (("left", left), ("right", right)):
+                # Both ends, because the tactics divide on exactly that: `rnd`
+                # and `wp` consume from the END, `if` / `rcondt` / `rcondf`
+                # from the FRONT. Naming only the tail left every `if` to
+                # guesswork -- 13 of 78 failures in the 2026-08-05 run.
+                first = _first_statement_kind(side)
+                if first:
+                    bullets.append(f"First instruction on the {label}: {first}.")
                 kind = _last_statement_kind(side)
                 if kind:
                     bullets.append(f"Last instruction on the {label}: {kind}.")
@@ -552,6 +589,21 @@ def format_active_goal_shape_hints(goal: str) -> str:
                 "shown. Code has NOT been consumed: do not apply `skip.` "
                 "yet. Advance both sides together (`seq`, `rnd`, `wp`, "
                 "`call`, `inline`) until the programs are actually empty."
+            )
+            # Measured over the 2026-08-05 run: of 101 sync goals, 89 accepted
+            # a program-logic tactic and 12 answered "expecting a goal of the
+            # form hoare/ehoare/phoare/equiv" -- the judgment was already
+            # discharged and only an ambient residual was left. No feature of
+            # the printed goal separates the two, so the advice above cannot
+            # be made conditional. Naming the recovery is what is left, and it
+            # is the same shape as the `skip.` fallback below.
+            bullets.append(
+                "If a program-logic tactic here answers `expecting a goal of "
+                "the form: hoare[S], ehoare[S], phoare[S], equiv[S]`, this "
+                "goal is NOT a program-logic goal despite printing `pre`/"
+                "`post` — the judgment is already discharged and what remains "
+                "is ambient. Switch to `smt` / `progress` / `rewrite` / "
+                "`move =>` rather than retrying `wp` or `seq`."
             )
         elif not _WHILE_RE.search(block) and not _IF_RE.search(block):
             # NOTE: no `block and ...` guard. An empty block is precisely the

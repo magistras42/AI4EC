@@ -281,3 +281,80 @@ def test_goal_section_leaves_a_single_goal_alone():
     rendered = _goal_section("Current goal\n\npre = ={a}\n\npost = ={x}")
     assert rendered[0] == "## Current goal"
     assert "ACTIVE" not in "\n".join(rendered)
+
+
+# --- both ends of the program (2026-08-05 run) ------------------------------
+# EasyCrypt's tactics divide on which end they consume: `rnd` and `wp` work
+# backwards from the LAST instruction, `if` / `rcondt` / `rcondf` forwards from
+# the FIRST. The block named only the last, so every `if` was guesswork --
+# `invalid first instruction` was 13 of 78 failures, all of them `if`.
+
+_ASYMMETRIC_EQUIV = """Current goal
+
+&1 (left ) : {x : int}
+&2 (right) : {x : int}
+
+pre = ={x}
+
+    if (x < 0) {                    (1)  x <- x + 1
+      x <- 0;                       (2)  y <$ dbool
+    }
+    y <$ dbool
+
+post = ={x}
+"""
+
+
+def test_the_first_instruction_is_named_for_each_side():
+    hints = format_active_goal_shape_hints(_ASYMMETRIC_EQUIV)
+    assert "First instruction on the left" in hints
+    assert "First instruction on the right" in hints
+
+
+def test_first_and_last_can_disagree_and_both_are_reported():
+    """The measured failure: the model tried `if{2}` when the RIGHT side's
+    first instruction was an assignment. Naming only the last instruction gave
+    it nothing to rule that out with."""
+    hints = format_active_goal_shape_hints(_ASYMMETRIC_EQUIV)
+    first = [l for l in hints.splitlines() if "First instruction" in l]
+    last = [l for l in hints.splitlines() if "Last instruction" in l]
+    assert first and last
+    assert first != last, "first and last must be derived separately"
+
+
+def test_a_leading_conditional_points_at_the_if_family():
+    hints = format_active_goal_shape_hints(_ASYMMETRIC_EQUIV)
+    left_first = next(l for l in hints.splitlines()
+                      if "First instruction on the left" in l)
+    assert "`if`" in left_first or "rcond" in left_first
+
+
+def test_wp_is_not_advised_at_the_head_of_a_program():
+    """`wp` consumes from the end. Saying "assignment -> wp" about the FIRST
+    instruction would send the model at the wrong end of the program."""
+    hints = format_active_goal_shape_hints(_ASYMMETRIC_EQUIV)
+    right_first = next(l for l in hints.splitlines()
+                       if "First instruction on the right" in l)
+    assert "works from the END" in right_first
+
+
+def test_a_sync_goal_names_its_own_recovery():
+    """Measured: of 101 `[programs are in sync]` goals, 89 accepted a
+    program-logic tactic and 12 answered "expecting a goal of the form ...".
+    No feature of the printed goal separates them, so the advice cannot be
+    made conditional -- naming the recovery is what is left."""
+    goal = """Current goal
+
+&1 (left ) : {x : int} [programs are in sync]
+&2 (right) : {x : int}
+
+pre = ={x}
+
+post = ={x}
+"""
+    hints = format_active_goal_shape_hints(goal)
+    assert "programs are in sync" in hints
+    assert "expecting a goal of the form" in hints
+    assert "is NOT a program-logic goal" in hints
+    # And it must point somewhere useful, not just say "you are stuck".
+    assert "smt" in hints and "progress" in hints

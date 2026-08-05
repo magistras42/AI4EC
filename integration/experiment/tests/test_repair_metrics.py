@@ -327,3 +327,87 @@ def test_zero_accepted_tactics_is_reported_as_unscorable(tmp_path):
     summary = aggregate_repair_metrics(tmp_path)["hint_uptake"]
     assert summary["trials_with_accepted_tactics"] == 0
     assert summary["rate_among_scorable"] is None, "must not imply hints were ignored"
+
+
+# --- hint uptake had to stop measuring noise (2026-08-05 run) ---------------
+# It reported 50% uptake on a run whose real uptake was 0%. Two causes, both
+# here: English prose counted as identifiers, and identifiers the proof
+# already contained counted as things the hint taught it.
+
+
+def _uptake(tmp_path, hints, tactics, original=None):
+    trial = tmp_path / "trials" / "trial_000"
+    trial.mkdir(parents=True)
+    (trial / "changelog_hints.txt").write_text(hints, encoding="utf-8")
+    (trial / "agent_log.json").write_text(json.dumps({
+        "events": [{"event": "iteration", "action": "tactic",
+                    "outcome": "accepted", "tactic": t} for t in tactics]
+    }), encoding="utf-8")
+    if original is not None:
+        (trial / "original.ec").write_text(original, encoding="utf-8")
+    return collect_trial_repair_metrics(trial)["hint_uptake"]
+
+
+def test_a_name_the_proof_already_used_is_not_uptake(tmp_path):
+    """The whole of the measured 50%: `Adv` is the corpus's own adversary
+    module, in the source long before any hint, mentioned in passing by a
+    module-restriction note, and of course present in accepted tactics."""
+    up = _uptake(
+        tmp_path,
+        hints="Unprefixed module-restriction sets like `{RO, Adv}` are no longer accepted.",
+        tactics=["proc (={glob Adv})."],
+        original="module Adv = { proc main() : bool = { return true; } }.",
+    )
+    assert up["pre_existing_identifier_count"] >= 1
+    assert up["used_in_accepted_tactics"] == []
+    assert up["any_used"] is False
+
+
+def test_a_name_the_hint_introduced_still_counts(tmp_path):
+    """The fix must not make the metric unable to ever fire."""
+    up = _uptake(
+        tmp_path,
+        hints="Finite-map operations moved to FMap; use `FMap.fdom` instead.",
+        tactics=["rewrite FMap.fdom."],
+        original="require import SmtMap.",
+    )
+    assert "FMap.fdom" in up["used_in_accepted_tactics"]
+    assert up["any_used"] is True
+    assert up["novel_identifier_count"] >= 1
+
+
+def test_english_prose_is_not_an_identifier(tmp_path):
+    """`The`, `This`, `Where`, `Known`, `Unprefixed`, `EasyCrypt` were all
+    being extracted -- "capitalized with a lowercase in it" is also the shape
+    of a word starting a sentence."""
+    up = _uptake(
+        tmp_path,
+        hints=("The current EasyCrypt no longer accepts this. Where a proof "
+               "relies on it, Unprefixed forms are Known to fail. Drop them."),
+        tactics=["This.", "Where.", "Known.", "EasyCrypt.", "Drop."],
+        original="",
+    )
+    assert up["used_in_accepted_tactics"] == []
+
+
+def test_a_provenance_url_host_is_not_an_identifier(tmp_path):
+    up = _uptake(
+        tmp_path,
+        hints="See https://github.com/EasyCrypt/easycrypt/commit/abc123",
+        tactics=["apply github.com."],
+        original="",
+    )
+    assert "github.com" not in up["used_in_accepted_tactics"]
+
+
+def test_uptake_still_reports_when_no_original_is_available(tmp_path):
+    """Old runs may not have original.ec. Degrade to the previous behaviour
+    rather than dropping the trial."""
+    up = _uptake(
+        tmp_path,
+        hints="Use `FMap.fdom` now.",
+        tactics=["rewrite FMap.fdom."],
+        original=None,
+    )
+    assert up["pre_existing_identifier_count"] == 0
+    assert up["any_used"] is True
