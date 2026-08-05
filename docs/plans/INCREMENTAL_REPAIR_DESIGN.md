@@ -34,22 +34,71 @@ reference document.
 
 ## 2. Why change it
 
-Measured on `run-20260804T164111Z`, trial_012 (`INDCPA_HEG_G1`):
+> **Read §2.1 before quoting any number here.** An earlier revision of this
+> document justified the design with a "**82% of accepted tactics were verbatim
+> from the original**" figure. That figure was an artifact and does not
+> survive scrutiny. The design may still be worth building, but *not* for the
+> reason originally given.
 
-| | |
-|---|---:|
-| Original tactics replayed by bootstrap | 21 / 52 |
-| Tactics remaining, handed over as text | 33 |
-| Tactics the agent then got accepted | 33 |
-| ...**verbatim from the original remaining script** | **27 (82%)** |
-| ...actually newly written | 6 |
+### 2.1 The retracted premise
 
-The model spent ~19.6k reasoning tokens per call re-deriving lines it had been
-handed as literal text. Only ~6 of 33 needed genuine adaptation.
+The original measurement asked "is this accepted tactic a line that appears
+somewhere in the original script?" — set membership. On
+`run-20260804T164111Z` trial_012 that gave 46/56 = 82%, which was read as *the
+model is re-typing the proof it was handed*.
 
-Cost consequence: that trial burned ~2 hours and a large share of the run's
-$1.00 budget. An incremental loop would replay the 27 for free and spend model
-calls only on the ~6 breakages.
+It is not. The original remaining script for that trial is **33 lines but only
+16 distinct**, and is dominated by generic one-word tactics:
+
+```
+6x  auto        4x  sp        4x  if; progress        2x  proc
+```
+
+Of the 46 "reused" tactics, the number that were **distinctive** — unique in
+the original, non-generic, longer than 8 characters — is **zero**. Every match
+was `auto` matching `auto`. Any EasyCrypt proof would score similarly against
+any other. Measured across all three trials that produced accepted tactics:
+
+| Lemma | accepted | set-match ("82%") | **distinctive** | LCS | original |
+|---|---:|---:|---:|---:|---:|
+| `G2_G3` | 9 | 5 | **0** | 3 | 17 |
+| `INDCPA_HEG_G1` | 56 | 46 | **0** | 14 | 33 |
+| `G1_G2_eq` | 7 | 6 | **0** | 5 | 83 |
+
+LCS (longest common subsequence — how much of the original survives *in order*)
+is the fairest of the three, and it says 14/33, 3/17, 5/83. Consistent with the
+model playing common tactics in a plausible order, not with it transcribing
+the reference text.
+
+Order analysis says the same: of 46 matches in trial_012, only **4** were the
+next-expected original tactic; 42 were out of order.
+
+### 2.2 What is still true
+
+Two things survive, and neither depends on the retracted figure:
+
+1. **Replay is free and repair is not.** In run C, 11 of 15 lemmas replayed
+   verbatim at zero cost. Wherever the original script *does* still apply,
+   replaying beats paying — that is arithmetic, not an empirical claim.
+2. **A single broken tactic can be a single cheap repair.** Trial_002
+   (`INDCPA_Security`) is the existence proof: bootstrap broke at 1/2 tactics,
+   the model changed
+   `apply (INDCPA_Sec Adv Adv_choose_ll Adv_guess_ll &m).` to
+   `apply (INDCPA_Sec Adv &m).` — dropping two now-implicit section axioms —
+   and the proof closed. **2 calls, $0.0058.** That is exactly the loop in §3
+   running once.
+
+### 2.3 What is now unknown
+
+The design assumes that after repairing a break, *the rest of the original
+script still applies*. Run C provides *no* evidence for that, and the LCS
+numbers are weak evidence against it. The honest position: the mechanism is
+sound and cheap in the one-break case, and unproven in the many-break case.
+
+This changes the priority, not the validity. Build it for the trial_002 shape
+— a proof with a small number of isolated version-drift breaks — and let §3.3's
+divergence fallback handle everything else. Do **not** promise a cost
+reduction on the hard game-hopping proofs; nothing measured supports that.
 
 Correctness consequence: every model-authored re-typing of a working tactic is
 a chance to corrupt it. Replay cannot corrupt what already compiled.
@@ -215,11 +264,41 @@ enough.
   tactic is replaceable.
 - **Do not** remove the single-handoff path. It is the divergence fallback.
 
-## 9. Known risk
+## 9. Known risk — and the check that already fired
 
-The 82%-reuse figure is from **one trial**. It is a strong signal but a single
-observation, and run-to-run variance in this harness has reached 11-vs-1
-accepted under identical configuration. Before building §4.3 (the invasive
-part), re-measure reuse across several completed trials — the analysis is a
-dozen lines against `agent_log.json` and `informal_proof.md`, costs nothing,
-and would either confirm the premise or kill the project cheaply.
+The original §9 said the 82%-reuse figure rested on one trial and demanded a
+re-measurement across several trials before §4.3 was built, because it "would
+either confirm the premise or kill the project cheaply."
+
+**It ran, and it killed the premise.** See §2.1. The re-measurement cost
+nothing and happened before any code was written, which is the outcome that
+process was for. Preserved here rather than deleted, because the next person
+should trust the same instinct.
+
+### 9.1 What to check before building §4.3 now
+
+The economic case has been withdrawn, so §4.3 (the invasive `run_agent_loop`
+change) should **not** be built on the strength of this document alone. The
+remaining question is narrow and answerable offline:
+
+> Across the corpus, how many broken lemmas have a **small number of isolated
+> breaks** (the trial_002 shape) versus **one early break followed by wholesale
+> divergence** (the trial_014 shape: bootstrap died at 18/85)?
+
+Run C's four paid trials split 1 / 3 against that question — one cheap isolated
+repair, three that broke early and never recovered. That is a discouraging
+ratio, and it is the number that should gate the work.
+
+A cheap way to get it without any model: for each lemma, replay the original
+script, and at the first failure **admit** the failing tactic and keep
+replaying. Count how many further failures occur. Lemmas with 1–2 failures are
+the population this design serves; lemmas with many are the population it
+cannot help. That experiment needs EasyCrypt only, costs no API spend, and is
+strictly more informative than anything measured so far.
+
+### 9.2 Standing caution
+
+Run-to-run variance in this harness has reached 11-vs-1 accepted tactics under
+identical configuration. Any future figure quoted in this document should say
+how many trials it came from and whether the matching criterion could be
+satisfied by generic tactics — that is precisely how §2.1's figure went wrong.

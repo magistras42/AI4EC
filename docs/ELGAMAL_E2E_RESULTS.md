@@ -590,19 +590,57 @@ as repair capability.
 Anyone quoting this work should quote "1 of 4 broken lemmas repaired", not
 "12 of 15 successes".
 
-### 11.4 The strongest result is for the incremental-repair design
+### 11.4 RETRACTED: the "82% reuse" result
 
-Of the 56 tactics the agent got accepted on `INDCPA_HEG_G1`, **46 (82%) were
-verbatim from the original proof script** it had been handed as reference text.
-The trial spent 84 calls and $0.45 to produce roughly **10** genuinely new
-tactics.
+An earlier revision of this section reported that **46 of 56 (82%)** accepted
+tactics on `INDCPA_HEG_G1` were "verbatim from the original proof script", and
+presented it as the strongest result in the run. **That figure is an artifact.
+Do not cite it.**
 
-The same 82% ratio was measured earlier on a 33-tactic sample, so it now holds
-across two samples of different size on the same lemma.
-[`plans/INCREMENTAL_REPAIR_DESIGN.md`](plans/INCREMENTAL_REPAIR_DESIGN.md) §9
-required exactly this re-measurement before the invasive part is built; the
-premise survived. It should still be checked on a *different* lemma before
-§4.3 is implemented -- two samples of one proof is not two proofs.
+The measurement was set membership -- "does this accepted tactic appear
+somewhere in the original script?" The original remaining script for that trial
+is 33 lines but only **16 distinct**, dominated by generic one-word tactics
+(`auto` 6x, `sp` 4x, `if; progress` 4x, `proc` 2x). Of the 46 matches, the
+number that were **distinctive** -- unique in the original, non-generic, longer
+than 8 characters -- is **zero**. Every match was `auto` matching `auto`, which
+any EasyCrypt proof would score against any other.
+
+Measured three ways across the trials that produced accepted tactics:
+
+| Lemma | accepted | set-match ("82%") | distinctive | LCS | original |
+|---|---:|---:|---:|---:|---:|
+| `G2_G3` | 9 | 5 | **0** | 3 | 17 |
+| `INDCPA_HEG_G1` | 56 | 46 | **0** | 14 | 33 |
+| `G1_G2_eq` | 7 | 6 | **0** | 5 | 83 |
+
+Longest common subsequence -- how much of the original survives *in order* --
+is the fairest measure and gives 14/33, 3/17, 5/83. Of the 46 matches in
+trial_012, only 4 were the next-expected original tactic; 42 were out of order.
+The model was playing common tactics in a plausible order, not transcribing the
+reference text.
+
+The consequence for
+[`plans/INCREMENTAL_REPAIR_DESIGN.md`](plans/INCREMENTAL_REPAIR_DESIGN.md) is
+recorded in its §2.1 and §9: the economic justification is withdrawn, and the
+invasive part of that design should not be built on it.
+
+### 11.4b What the run does support
+
+The one genuine model repair, trial_002 (`INDCPA_Security`), is a clean
+existence proof for cheap isolated repair: bootstrap broke at 1 of 2 tactics,
+the model rewrote
+
+```
+apply (INDCPA_Sec Adv Adv_choose_ll Adv_guess_ll &m).   ->   apply (INDCPA_Sec Adv &m).
+```
+
+dropping two now-implicit section axioms, and the proof closed. **2 calls,
+$0.0058.**
+
+Against that, the three hard lemmas broke early and never recovered
+(`G1_G2_eq` died at 18/85 tactics). Run C's four paid trials therefore split
+**1 isolated-break / 3 wholesale-divergence**, which is the ratio that should
+govern how much effort the incremental design is worth.
 
 ### 11.5 Two operational findings
 

@@ -4,6 +4,37 @@ All notable changes to this project are recorded here, grouped by the date they 
 
 ## 2026-08-04
 
+### Retraction: the "82% tactic reuse" figure was an artifact
+
+Commit `3035586e` and an earlier revision of `ELGAMAL_E2E_RESULTS.md` §11.4
+reported that 46 of 56 accepted tactics (82%) on `INDCPA_HEG_G1` were
+"verbatim from the original proof script", and used it to justify
+`plans/INCREMENTAL_REPAIR_DESIGN.md`. **The figure does not survive scrutiny.**
+
+The measurement was set membership -- does this accepted tactic appear anywhere
+in the original script? That script is 33 lines but only **16 distinct**, and
+is dominated by generic one-word tactics (`auto` 6x, `sp` 4x, `if; progress`
+4x). Of the 46 matches, the number that were distinctive -- unique, non-generic,
+longer than 8 characters -- is **zero**. Every match was `auto` matching `auto`,
+which any EasyCrypt proof scores against any other.
+
+Longest common subsequence, which respects order, gives 14/33, 3/17 and 5/83
+across the three trials. Of the 46 matches, only 4 were the next-expected
+original tactic; 42 were out of order.
+
+The design document's economic justification is withdrawn (§2.1, §9 there).
+What survives is narrower and still real: replay is free where it applies
+(11 of 15 lemmas in run C), and an isolated break can be an isolated cheap
+repair -- trial_002 fixed
+`apply (INDCPA_Sec Adv Adv_choose_ll Adv_guess_ll &m).` to
+`apply (INDCPA_Sec Adv &m).` in 2 calls for $0.0058. But three of the four
+paid trials broke early and diverged wholesale, so the design should be scoped
+to the isolated-break case only.
+
+The design doc's own §9 had demanded this re-measurement before any code was
+written, on the grounds that it would "either confirm the premise or kill the
+project cheaply". It killed it, at a cost of zero.
+
 ### Correction: do not disable thinking to avoid truncation
 
 This file and the docs previously recommended `--thinking disabled` for
