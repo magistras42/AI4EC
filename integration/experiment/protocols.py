@@ -102,6 +102,17 @@ class ReplayBootstrapConfig:
     # on one run, 46 original tactics across three lemmas were withheld this
     # way. Set False for the A/B arm that reproduces the old behaviour.
     show_remaining_original: bool = True
+    # W7. Before retrieving hints, re-check the failing tactic against each
+    # release's OWN EasyCrypt binary to find which release broke it, and scope
+    # the changelog to that one transition instead of the whole
+    # (source, target] span. Off by default and deliberately so: the first run
+    # provisions opam switches and full OCaml builds, minutes and hundreds of
+    # megabytes each, so it must be something a run opts into.
+    version_hop: bool = False
+    # "bisect" assumes the tactic breaks once and stays broken -- ~4 builds
+    # over the 14-release catalog against up to 14. "linear" drops the
+    # assumption and pays for it. See integration/experiment/version_hop.py.
+    version_hop_strategy: str = "bisect"
 
 
 @dataclass(frozen=True)

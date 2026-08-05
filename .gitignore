@@ -266,3 +266,9 @@ secrets.yml
 credentials.json
 .anthropic.json
 .deepseek.json
+
+# W7 per-release EasyCrypt builds (integration/experiment/ec_versions.py).
+# Git worktrees, opam-built binaries and the registry that indexes them --
+# machine-specific paths and hundreds of MB per release. Rebuild with
+# `python3 -m integration.experiment.ec_versions --version rYYYY.MM`.
+integration/extern/.ec_versions/

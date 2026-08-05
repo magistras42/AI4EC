@@ -4,27 +4,60 @@ overview: The replay-bootstrap repair mode (integration/experiment/repair_bootst
 todos:
   - id: version-registry
     content: Design the release-tag -> opam-switch -> built-binary registry format and its resolution script
-    status: pending
+    status: completed
   - id: per-version-build
     content: Implement build_ec_version.py (checkout + switch + deps + dune build) for one release tag, idempotent and lazy (build on first reference, not eagerly for all releases)
-    status: pending
+    status: completed
   - id: worktree-sharing
     content: Use git worktrees against a single fork clone (not N full clones) to keep per-version checkouts cheap
-    status: pending
+    status: completed
   - id: hop-harness
     content: Implement the stepwise replay loop that walks releases oldest-to-newest, re-running ProofFile.append_tactic + validate_file against each version's binary
-    status: pending
+    status: completed
   - id: bisection-narrowing
     content: Narrow the changelog lookup to exactly the (broke_at_version_minus_one, broke_at_version] transition once the hop harness finds it, instead of the whole (source, target) range
-    status: pending
+    status: completed
   - id: cost-guardrails
     content: "Cap concurrent provisioned switches (LRU eviction), and only provision versions actually referenced by a corpus under test, not the whole changelog"
-    status: pending
+    status: completed
   - id: integration-point
     content: Wire the hop harness in as an OPTIONAL pre-step ahead of the existing single-binary replay-bootstrap, gated by a flag, so the default (already-implemented) path is unaffected
+    status: completed
+  - id: first-real-build
+    content: "Provision one release for real (opam switch + deps + dune build) and confirm a hop end to end. NOT DONE: the code paths are covered by 33 tests with the shell stubbed, and worktree creation was verified against the live clone, but no EasyCrypt binary has been built from this pipeline."
     status: pending
 isProject: false
 ---
+
+> **Status, 2026-08-04 — implemented.** `integration/experiment/ec_versions.py`
+> (registry + lazy, cached, LRU-bounded provisioning) and
+> `integration/experiment/version_hop.py` (localization) are written and
+> tested; `--version-hop` wires them into `replay_bootstrap` as the opt-in
+> pre-step §5 describes. Three places where the implementation departs from
+> what is written below, each for a reason the design could not have known:
+>
+> 1. **Binary search, not the oldest-to-newest walk in the flowchart.** A build
+>    is minutes; over the 14-release catalog bisection is ~4 probes against up
+>    to 14. It assumes a tactic breaks once and stays broken — the same
+>    assumption `git bisect` makes — so `--version-hop-strategy linear` keeps
+>    the exhaustive answer available and the result records which was used.
+> 2. **Probes are three-valued, not yes/no.** §3 frames each check as "does the
+>    tactic still hold". Against a four-year-old EasyCrypt most checks are
+>    neither: a 2020 proof repaired to load against r2026.06 requires FMap, and
+>    FMap did not exist before r2024.09, so the file does not LOAD at r2023.09
+>    and the tactic is never reached. Counting that as "broken here" puts the
+>    boundary at the wrong release. `ec_errors` (W4.1, written after this plan)
+>    separates them: a pre-proof failure is INCONCLUSIVE and is excluded from
+>    the search rather than counted as either answer.
+> 3. **Tags are resolved from the existing clone, not `git ls-remote`.** §2
+>    step 1 proposes querying upstream. The fork was cloned from upstream and
+>    already carries all 14 `rYYYY.MM` tags, so the network call would only add
+>    a failure mode for information on disk.
+>
+> The option-(a) recommendation in §1 held up exactly as predicted: `-premises`
+> exists only on the fork's HEAD (`src/ecOptions.ml`, `src/ec.ml`) and not at
+> any release tag, and hop validation only ever runs `llm -lastgoals`, so no
+> patch rebasing is needed.
 
 # EasyCrypt version-hopping infrastructure
 

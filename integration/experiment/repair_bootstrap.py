@@ -23,6 +23,7 @@ the first tactic that no longer works, with changelog/repair_doc hints
 from __future__ import annotations
 
 import json
+import logging
 import re
 import time
 from dataclasses import replace
@@ -40,6 +41,8 @@ from integration.experiment.config import ExperimentConfig
 from integration.experiment.proof_extract import apply_lines, strip_tactics
 from integration.experiment.protocols import ProofCase, ReplayBootstrapConfig
 from integration.experiment.runner import TrialResult, TokenUsage, _cost_for_usage
+
+logger = logging.getLogger(__name__)
 
 
 _TACTIC_SPLIT_RE = re.compile(r"\.\s")
@@ -100,6 +103,74 @@ def _oldest_cataloged_release() -> str:
     """
     releases = _cataloged_releases()
     return releases[0] if releases else ""
+
+
+def _hop_releases(source: str | None, target: str | None) -> list[str]:
+    """Cataloged releases in ``[source, target]``, oldest first.
+
+    Bounded by the catalog on purpose. The fork carries tags the changelog has
+    no entries for, and localizing a break to a release the knowledge base
+    cannot describe buys nothing -- the whole point of narrowing is to make a
+    changelog lookup more precise.
+    """
+    releases = _cataloged_releases() or []
+    if not releases:
+        return []
+    low = releases.index(source) if source in releases else 0
+    high = releases.index(target) if target in releases else len(releases) - 1
+    if low > high:
+        low, high = high, low
+    return releases[low: high + 1]
+
+
+def _run_version_hop(
+    *,
+    hop_path: Path,
+    trial_dir: Path,
+    agent_config: AgentConfig,
+    source_version: str | None,
+    target_version: str | None,
+    strategy: str,
+):
+    """Localize the break to one release, or return None and change nothing.
+
+    Every failure mode here -- no catalog, nothing importable, a release that
+    will not compile, an unreadable registry -- degrades to "we did not learn
+    anything", never to a failed trial. Version hopping is a precision
+    improvement on an optional hint lookup; it has no business ending a repair
+    that would otherwise have run.
+    """
+    releases = _hop_releases(source_version, target_version)
+    if len(releases) < 2:
+        return None
+    try:
+        from integration.experiment.ec_versions import EcVersionProvisioner
+        from integration.experiment.version_hop import find_break_version
+    except ImportError as exc:  # pragma: no cover - defensive
+        logger.warning("version hop unavailable: %s", exc)
+        return None
+
+    try:
+        result = find_break_version(
+            file_path=hop_path,
+            versions=releases,
+            config=agent_config,
+            provisioner=EcVersionProvisioner(),
+            strategy=strategy,
+        )
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.warning("version hop failed: %s", exc)
+        return None
+
+    (trial_dir / "version_hop.json").write_text(
+        json.dumps(result.as_dict(), indent=2), encoding="utf-8",
+    )
+    if result.localized:
+        logger.info(
+            "Version hop: tactic held at %s, broke at %s (%d build(s))",
+            result.last_good, result.first_broken, result.builds,
+        )
+    return result
 
 
 def run_replay_bootstrap_trial(
@@ -205,10 +276,18 @@ def run_replay_bootstrap_trial(
     accepted_count = 0
     failed_tactic = ""
     raw_error = ""
+    # The file exactly as it stood when the tactic failed -- accepted prefix
+    # plus the failing tactic. Snapshotted before the undo because that is the
+    # file the version hop has to re-check: "which release did THIS tactic stop
+    # working at" is unanswerable against a file the tactic has been taken out
+    # of. Costs one write on the failure path and nothing on the happy one.
+    hop_path: Path | None = None
     for tactic in tactics:
         inserted_line = proof.append_tactic(tactic)
         validation = validate_file(work_copy, agent_config)
         if validation.returncode != 0:
+            hop_path = trial_dir / "version_hop_input.ec"
+            hop_path.write_bytes(work_copy.read_bytes())
             proof.remove_lines(inserted_line)
             failed_tactic = tactic
             raw_error = validation.stderr.strip() or validation.stdout.strip()
@@ -253,16 +332,36 @@ def run_replay_bootstrap_trial(
     # likely to be proof-level as import-level, and the two want different
     # evidence (integration/agent/ec_errors.py).
     failure_kind = classify_error(raw_error).kind
+
+    # An undetected source means "consider every release". Spell that as the
+    # OLDEST cataloged release rather than an empty string: both fail open to
+    # the full range, but the empty string does it by tripping
+    # retrieve_entries' unknown-version warning on every single lookup.
+    hint_source = source_version or _oldest_cataloged_release()
+    hint_target = target_version or ""
+
+    # W7: narrow that span to the one release that actually broke the tactic,
+    # verified by re-running it against each release's own binary. Opt-in, and
+    # fail-open by construction -- an unlocalized hop leaves the endpoints
+    # exactly as they were.
+    if replay_config.version_hop and hop_path is not None:
+        hop = _run_version_hop(
+            hop_path=hop_path,
+            trial_dir=trial_dir,
+            agent_config=agent_config,
+            source_version=hint_source,
+            target_version=target_version,
+            strategy=replay_config.version_hop_strategy,
+        )
+        if hop is not None and hop.changelog_range:
+            hint_source, hint_target = hop.changelog_range
+
     changelog_hints, hint_notes, matched_version = get_repair_hints_text(
         failing_tactic_text=failed_tactic,
         ec_error_text=raw_error,
         error_kind=failure_kind,
-        # An undetected source means "consider every release". Spell that as
-        # the OLDEST cataloged release rather than an empty string: both fail
-        # open to the full range, but the empty string does it by tripping
-        # retrieve_entries' unknown-version warning on every single lookup.
-        source_ec_version=source_version or _oldest_cataloged_release(),
-        target_ec_version=target_version or "",
+        source_ec_version=hint_source,
+        target_ec_version=hint_target,
     )
     if hint_notes:
         (trial_dir / "repair_hints_notes.json").write_text(

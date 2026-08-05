@@ -268,6 +268,30 @@ def main(argv: list[str] | None = None) -> int:
             "clarity in scripts / run_flags)."
         ),
     )
+    run_p.add_argument(
+        "--version-hop",
+        action="store_true",
+        help=(
+            "replay_bootstrap only (W7). When a tactic fails, re-check it "
+            "against each release's OWN EasyCrypt binary to find which release "
+            "broke it, and scope the changelog to that one transition instead "
+            "of the whole source..target span. BUILDS EASYCRYPT: the first run "
+            "provisions an opam switch and a full OCaml build per release "
+            "probed (minutes and hundreds of MB each), cached in "
+            "integration/extern/.ec_versions/ thereafter. Pre-build with "
+            "`python3 -m integration.experiment.ec_versions --version rYYYY.MM`."
+        ),
+    )
+    run_p.add_argument(
+        "--version-hop-strategy",
+        choices=("bisect", "linear"),
+        default="bisect",
+        help=(
+            "bisect (default) assumes a tactic breaks once and stays broken, "
+            "costing ~4 builds over the 14-release catalog; linear drops that "
+            "assumption and costs up to 14."
+        ),
+    )
     run_p.add_argument("-v", "--verbose", action="store_true", help="Verbose logging")
 
     args = parser.parse_args(argv)
@@ -436,6 +460,23 @@ def main(argv: list[str] | None = None) -> int:
             spec = dc_replace(
                 spec, informal=dc_replace(spec.informal, **overrides)
             )
+
+    if args.version_hop:
+        if spec.replay_bootstrap is None:
+            print(
+                f"error: --version-hop applies to replay_bootstrap specs; "
+                f"{args.spec!r} is not one",
+                file=sys.stderr,
+            )
+            return 2
+        spec = dc_replace(
+            spec,
+            replay_bootstrap=dc_replace(
+                spec.replay_bootstrap,
+                version_hop=True,
+                version_hop_strategy=args.version_hop_strategy,
+            ),
+        )
 
     if provider in PAID_LLM_PROVIDERS:
         # Embeddings always run on LM Studio, whatever the chat provider is.
