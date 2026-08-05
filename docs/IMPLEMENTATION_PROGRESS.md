@@ -361,7 +361,12 @@ Embeddings always stay on LM Studio regardless of provider.
 
 ---
 
-## 10. Where to go next (evidence-based)
+## 10. Where to go next (evidence-based) — **items 1 and 2 are now DONE**
+
+> **Status, 2026-08-04.** Items (1) and (2) below were implemented in
+> `e13b6ecd` and `06f1c28c`. Item (3) was deliberately dropped. The analysis is
+> kept because it is what motivated the work; read §10.1 for what actually
+> happened, then §11 for what is genuinely still open.
 
 Classifying all 134 tactic failures points somewhere other than the knowledge
 base. `rnd` (31), `seq` (15) and `skip` (14) are **45% of all failures**, and
@@ -378,23 +383,74 @@ Recommended order: (1) fix the `[programs are in sync]` misdetection, (2) give
 program-logic goals a structured, numbered view, (3) only then revisit the A/B,
 with >= 5 seeds per cell.
 
+### 10.1 What was done, and what it did and did not buy
+
+**(1) and (2) — done.** Three parsing defects were fixed, then a fourth and
+larger one: the hints were reading *all* open subgoals as one goal. 90% of
+prompts carried more than one subgoal and 70% of the goal text was inactive.
+Scoped to the active goal, measured over run C's 88 iterations:
+
+| | before | after |
+|---|---:|---:|
+| Instruction counts fabricated from an inactive goal | 33 | **0** |
+| Failures where the hint asserted PROGRAM-LOGIC wrongly | 17 | **10** |
+| Records advised `skip.` | 121 | 57 |
+
+**(3) — dropped, not deferred.** Run-to-run variance under identical
+configuration reached 11-vs-1 accepted tactics, which exceeds any between-arm
+difference the A/B could detect. It would need ~10x the spend to say anything.
+
+**What this did not buy.** Run C repaired **1 of 4** broken lemmas. The
+mechanism-level wins are real and measurable; they did not translate into
+repair capability. See [`ELGAMAL_E2E_RESULTS.md`](ELGAMAL_E2E_RESULTS.md) §11.3.
+
+A separate line of work -- replaying the original script incrementally instead
+of handing the whole remainder over at the first break -- is designed in
+[`plans/INCREMENTAL_REPAIR_DESIGN.md`](plans/INCREMENTAL_REPAIR_DESIGN.md).
+Note its §2.1: the economic premise originally given for it was retracted after
+measurement, and it is now scoped to the isolated-break case only.
+
 ---
 
 ## 11. What is still open
 
-- **W7** — version-hopping binaries. Designed in
-  [`plans/ec_version_hopping_infrastructure.md`](plans/ec_version_hopping_infrastructure.md),
-  correctly deferred until now. It is the natural next item.
-- **W4.5** — a better progress measure than first-error line. A rule that fixes
-  one error and introduces another later still reads as progress.
-- **W5** — authored `import_repair_note`s for more libraries. The 14 derived
-  notes state verified facts but cannot explain a semantic change the way the
-  4 hand-written ones do. Still the highest-value manual work in the corpus.
-- **Rule-selection by error kind.** `ec_errors.py` now provides the
-  classification, but `import_repair.py` still selects rules by version window
-  and `[migration.match]` only — it does not yet narrow by what actually broke.
-- **Symbol-level moves.** `symbol_moved` still has exactly one instance; the
-  6325-symbol index has the data to generate more.
-- **Hint uptake is a proxy.** Establishing that hints *help* needs a paired
-  hints-on/hints-off run on the same corpus, which requires a real model.
-- **The 2 `test_goal_state.py` failures** predate this work and are untouched.
+Audited against the tree on 2026-08-04. Suggested order is by leverage per unit
+of effort, not by roadmap number.
+
+**1. Rule-selection by error kind — half done, finish it.**
+`ec_errors.py` provides the classification and `repair_hints.py` already
+consumes it (5 call sites), but `import_repair.py` contains **zero** references
+to it and still selects rules by version window and `[migration.match]` alone.
+This is connecting two finished components, not new design. Deterministic,
+testable offline, no API spend.
+
+**2. W4.5 — a better progress measure than first-error line.** A rule that
+fixes one error and introduces another later still reads as progress. Run C
+gives this fresh urgency: `import_repair` reported `improved_rate: 1.0` — 12 of
+12 "improved" — while `made_file_load` was only **7 of 12**. The metric is
+currently flattering itself, and it is what item 1 would be tuned against, so
+this arguably belongs *before* it.
+
+**3. Symbol-level moves.** `symbol_moved` appears only in
+`build_ec_migrations.py` and one test — there are **zero** instances among the
+913 changelog entries. The 6325-symbol index has the data to generate real
+ones; one instance is not a category.
+
+**4. W5 — authored `import_repair_note`s for more libraries.** Still
+`authored: 4, derived: 14`. The derived notes state verified facts but cannot
+explain a *semantic* change the way the hand-written ones do. Highest value per
+note, but it is human authoring rather than automatable work.
+
+**5. W7 — version-hopping binaries.** Designed in
+[`plans/ec_version_hopping_infrastructure.md`](plans/ec_version_hopping_infrastructure.md).
+Still a plan with no implementing code. Large; correctly deferred.
+
+**6. Hint uptake is a proxy.** Establishing that hints *help* needs a paired
+hints-on/hints-off run on the same corpus. Requires a real model and real
+spend, and given the variance measured in §10.1 it needs several seeds per arm
+to say anything — treat it as expensive, not quick.
+
+### Closed since this list was written
+
+- ~~**The 2 `test_goal_state.py` failures**~~ — **fixed**; that file is 16/16
+  green. The full suite is 345 passed, 1 skipped.
