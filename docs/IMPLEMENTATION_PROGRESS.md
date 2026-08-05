@@ -22,12 +22,21 @@ the end-to-end run actually produced.
 | **W6** — version detection | ❌ Hardcoded `r2022.04`/`r2026.07` | ✅ `ec_version.py`; target detected as **r2026.06** |
 | **W8** — repair metrics | ❌ Recorded, never reported | ✅ `repair_metrics.py` → `summary.json` |
 | **Providers** | DeepSeek + LM Studio, OpenAI-SDK only | ✅ Three backends behind one protocol, Claude added |
-| Tests | 277 passing | **412 passing**, suite fully green |
+| Tests | 277 passing | **553 passing**, suite fully green |
 
-W7 (version-hopping binaries) is deliberately **not** started — the handoff
-says not to begin it before W1–W5, and it improves hint *precision*, which only
-matters once hints reach the model every step. They now do; W7 is the natural
-next item.
+Since this table was written, everything §11 listed as open has been
+implemented — including W7, which was open when the row above was drafted. See
+§11 for what each turned out to be; the short version is that four of the six
+items uncovered a defect rather than merely adding a feature.
+
+| Roadmap item | Outcome |
+|---|---|
+| **W4.1 adjacent** — error-kind rule selection | ✅ `import_repair.py` now consumes `ec_errors`; targeting re-classifies each round |
+| **W4.5** — progress measure | ✅ Graded outcome; **3 classifier holes found and fixed** by re-measuring |
+| **Symbol moves** | ✅ 1 → 5, by mining 135 theories instead of 16 |
+| **W5** — authored notes | ✅ 4/14 → **14 authored / 4 derived**; found the r2024.09 cost-logic removal |
+| **W7** — version hopping | ✅ Implemented (binaries not yet built — see §11) |
+| **Hint-uptake A/B** | ✅ Arm + scorer built; the run needs a human |
 
 ---
 
@@ -304,6 +313,25 @@ or partial artifacts are skipped rather than fatal.
 | `integration/experiment/tests/test_cli_spec_rebuild.py` | 18 tests — the W1 regression |
 | `integration/experiment/tests/test_repair_metrics.py` | 14 tests — aggregation |
 
+**New since, for §11**
+
+| File | Purpose |
+|---|---|
+| `integration/experiment/ec_versions.py` | Per-release EasyCrypt provisioning + registry (W7) |
+| `integration/experiment/version_hop.py` | Break-release localization (W7) |
+| `integration/experiment/compare_runs.py` | Paired-arm scoring across seeds |
+| `integration/experiment/tests/test_version_hop.py` | 33 tests — provisioning, bisection, integration |
+| `integration/experiment/tests/test_compare_runs.py` | 19 tests — mostly what it refuses to conclude |
+
+Also modified for §11: `import_repair.py` (error-kind selection, graded
+outcome, minimisation), `ec_errors.py` (three classifier holes),
+`repair_metrics.py` (outcome distribution), `repair_bootstrap.py` (hop
+pre-step, hints-off arm), `protocols.py` / `runner.py` / `__main__.py` (flags,
+`arm` block), `proof_corpus/scripts/analyze_library_history.py` +
+`build_ec_migrations.py` (theory discovery, distinctiveness), 13
+`proof_corpus/repair_doc/*.json`, and the regenerated
+`ec_migrations.toml` / `library_history.json` / `repair_docs_index.json`.
+
 **Modified**
 
 `llm.py` (backend split), `config.py` (provider config, detection fields),
@@ -323,7 +351,7 @@ persistence), `specs.py` / `protocols.py` (version defaults),
 python3 -m venv .venv && .venv/bin/pip install \
   -r integration/agent/requirements-agent.txt hypothesis
 
-# Tests — 394 pass, 0 fail
+# Tests — 553 pass, 1 skipped
 .venv/bin/python -m pytest integration/tests integration/experiment/tests
 
 # Local model (Gemma et al. via LM Studio) — free, no gate
@@ -358,6 +386,58 @@ python3 -m integration.experiment run --spec elgamal-changelog-repair \
 ```
 
 Embeddings always stay on LM Studio regardless of provider.
+
+### 9.1 The hints-on / hints-off A/B (§11 item 6)
+
+Both arms need a real model, so **print these and let a human run them**. Use
+the same seeds in both arms and at least 5 per arm — §10.1 measured 11-vs-1
+accepted tactics under *identical* configuration, so fewer cannot separate the
+arms from the noise.
+
+```bash
+for SEED in 1 2 3 4 5; do
+  # arm A — with the knowledge base
+  python3 -m integration.experiment run --spec elgamal-changelog-repair \
+    --provider anthropic --trials 15 --seed $SEED \
+    --output-dir runs/hints-on-$SEED
+
+  # arm B — identical but for the one variable
+  python3 -m integration.experiment run --spec elgamal-changelog-repair \
+    --provider anthropic --trials 15 --seed $SEED --no-changelog-hints \
+    --output-dir runs/hints-off-$SEED
+done
+
+python3 -m integration.experiment.compare_runs \
+  --arm hints-on  runs/hints-on-*  \
+  --arm hints-off runs/hints-off-* \
+  --json runs/ab_report.json
+```
+
+`compare_runs` reports `CONCLUSIVE` only when the gap between arm means
+exceeds the widest within-arm range, and warns about the ways a pairing goes
+quietly wrong (mismatched seeds, mixed models, a run stopped by its spend cap,
+both arms accidentally sharing the same hints setting). It reads only
+`summary.json`, so a finished pair can be re-scored at any time.
+
+### 9.2 Version hopping (§11 item 5)
+
+Free to plan, expensive to run — each release is an opam switch and a full
+OCaml build.
+
+```bash
+# See what is buildable and what is already cached.
+python3 -m integration.experiment.ec_versions --list
+
+# Print the plan without touching the machine.
+python3 -m integration.experiment.ec_versions --version r2025.02 --dry-run
+
+# Actually build (minutes, hundreds of MB; cached afterwards).
+python3 -m integration.experiment.ec_versions --version r2025.02
+
+# Then, on a replay_bootstrap spec:
+python3 -m integration.experiment run --spec elgamal-changelog-repair \
+  --version-hop --trials 15
+```
 
 ---
 
@@ -412,45 +492,155 @@ measurement, and it is now scoped to the isolated-break case only.
 
 ---
 
-## 11. What is still open
+## 11. What was still open — all six now implemented
 
-Audited against the tree on 2026-08-04. Suggested order is by leverage per unit
-of effort, not by roadmap number.
+> **Status, 2026-08-04.** Items 1–6 below were worked in the order given. Five
+> are finished; item 6's *infrastructure* is finished and the run itself is
+> the one thing here that an agent cannot do. Suite: **553 passed, 1 skipped**
+> (was 345). What each item turned out to be is recorded under it.
 
-**1. Rule-selection by error kind — half done, finish it.**
-`ec_errors.py` provides the classification and `repair_hints.py` already
-consumes it (5 call sites), but `import_repair.py` contains **zero** references
-to it and still selects rules by version window and `[migration.match]` alone.
-This is connecting two finished components, not new design. Deterministic,
-testable offline, no API spend.
+**1. Rule-selection by error kind — done** (`ab4707ab`).
+`import_repair.py` had zero references to `ec_errors.py` and selected rules by
+version window and `[migration.match]` alone, so a file with a parse error at
+line 5 could have ten require-semantics rules probed against it — one EasyCrypt
+invocation each — before reaching the syntax rule that fixed it.
 
-**2. W4.5 — a better progress measure than first-error line.** A rule that
-fixes one error and introduces another later still reads as progress. Run C
-gives this fresh urgency: `import_repair` reported `improved_rate: 1.0` — 12 of
-12 "improved" — while `made_file_load` was only **7 of 12**. The metric is
-currently flattering itself, and it is what item 1 would be tuned against, so
-this arguably belongs *before* it.
+Rules are now scored against the classification: 4 for naming the identifier
+EasyCrypt blamed, 2 for a kind that can plausibly fix that error kind
+(`MIGRATION_KINDS_BY_ERROR`). The incremental pass **re-classifies after every
+accepted rule**, so targeting follows the file rather than its first error —
+fixing a parse error uncovers a missing theory, and the theory rules move to
+the front on their own.
 
-**3. Symbol-level moves.** `symbol_moved` appears only in
-`build_ec_migrations.py` and one test — there are **zero** instances among the
-913 changelog entries. The 6325-symbol index has the data to generate real
-ones; one instance is not a category.
+Ordering, never exclusion. A file usually has more than one thing wrong with
+it, so a rule irrelevant to the error at line 5 may be exactly what the error
+at line 300 needs; and `unknown` exists precisely because this is a heuristic
+over human-readable compiler output. Zero relevance means "try it later".
 
-**4. W5 — authored `import_repair_note`s for more libraries.** Still
-`authored: 4, derived: 14`. The derived notes state verified facts but cannot
-explain a *semantic* change the way the hand-written ones do. Highest value per
-note, but it is human authoring rather than automatable work.
+**2. W4.5 — a better progress measure — done** (`ca83e978`).
+The graded outcome replaces the boolean:
 
-**5. W7 — version-hopping binaries.** Designed in
-[`plans/ec_version_hopping_infrastructure.md`](plans/ec_version_hopping_infrastructure.md).
-Still a plan with no implementing code. Large; correctly deferred.
+| | |
+|---|---|
+| `loads` | compiles clean |
+| `reached_proof` | load errors gone; a **tactic** is now at fault |
+| `advanced` | still a load error, but a later or different one |
+| `none` / `regressed` | |
 
-**6. Hint uptake is a proxy.** Establishing that hints *help* needs a paired
-hints-on/hints-off run on the same corpus. Requires a real model and real
-spend, and given the variance measured in §10.1 it needs several seeds per arm
-to say anything — treat it as expensive, not quick.
+`reached_proof` is the insight the line number could not express. Import
+repair's job is to get a file past *loading*; a file whose only remaining
+complaint is a bad tactic has been handed to the solver, and that is this
+module finishing even though EasyCrypt still exits nonzero. `resolved` is the
+headline; `improved` keeps its low bar because its two call sites are
+promotion gates.
 
-### Closed since this list was written
+**Re-measuring the corpus found three classifier holes.** All four "unknown"
+results were in-proof failures the patterns missed: EasyCrypt quotes
+Lisp-style (``` `position' ```) but the pattern allowed `'position'` only;
+`cannot save an incomplete proof` vs `proof is incomplete`; and ``expecting a
+`memory', not a `formula'`` matched nothing. The fixtures used straight quotes
+because they were written from prose rather than compiler output. This
+mattered — `unknown` counts as a *load* failure, so the failures that most
+clearly belonged to the solver were reported as possibly belonging to import
+repair.
 
-- ~~**The 2 `test_goal_state.py` failures**~~ — **fixed**; that file is 16/16
-  green. The full suite is 345 passed, 1 skipped.
+Re-measured (local EasyCrypt only, no LLM): **12/12 resolved — 7 compile
+clean, 5 `reached_proof`, zero pre-proof errors remaining.** The manifest has
+no gap left on this corpus and every remaining failure is tactic-level, which
+agrees with §10.1's finding that the bottleneck is program-logic tactics.
+
+**3. Symbol-level moves — done, 1 → 5** (`4e80aea8`).
+The cause was structural, not a shortage of reorganisations: the history miner
+tracked a hardcoded 16 theories out of ~127, and a move is only visible when
+*both* ends are tracked. Discovery now mines every theory present at any
+release tag (135, 48 seconds).
+
+At 135 theories co-occurrence alone produces coincidences, and two facts
+separate a real absorption from two unrelated edits landing in one release:
+
+- **distinctiveness** — `add`, `mul`, `opp`, `rone`, `rzero` live in 5–8
+  theories because every algebraic structure declares them. The 6325-symbol
+  index is the measure. *BitWord → Ring was exactly those five names.*
+- **absorption share** — OldFMap lost 118 names in r2023.09; 4 also appear in
+  PolyReduce's additions, because PolyReduce arrived from Kyber that release
+  and defines `reduce`. 3% is noise; the real ones are 37–100%.
+
+Also: `nosmt` was being parsed as a declaration name (`lemma nosmt foo`) and
+showed up as a "moved symbol" in four rules.
+
+A 116-rule manifest broke the old "keep anything that does not hurt" policy —
+it put `require import Commitment` and `SDist` into a hashed-ElGamal proof.
+Harmless is not the bar when the repaired file is shown to the model as *this
+is what was wrong with your proof*. `_minimize` takes each rule back out,
+least-relevant first, and restores it only if its absence costs graded
+progress. **Going 15 → 116 rules changed the repaired output not at all.**
+
+**4. W5 — authored notes — done, ratio inverted to 14 authored / 4 derived**
+(`9880fc5a`). Ten new notes, each citing a release tag, a commit SHA or a line
+of EasyCrypt source — a test enforces that. The surrounding prose carries a
+caveat saying "No true git-diff was possible"; one now is.
+
+The find worth the exercise is the **r2024.09 cost-logic removal** (commit
+`41c2667f`). Nothing in the corpus mentioned it, and it explains removals in
+five libraries that otherwise look unrelated — AllCore lost 9 names, SmtMap 8,
+DInterval 3, DBool 2, Bool 1, all in one release. What makes it prose rather
+than a rule is the engine half: `cost` and `schema` were removed from
+`src/ecLexer.mll`'s keyword table in the same commit, so a pre-r2024.09 proof
+carrying annotations fails with a **parse error**, not an unknown symbol.
+Debugging that from the line number alone would look in entirely the wrong
+place, and there is no rewrite to generate — the repair is to delete them.
+
+**5. W7 — version-hopping binaries — implemented** (`b4da8626`).
+`ec_versions.py` (registry, lazy/cached/LRU-bounded provisioning via git
+worktrees and opam switches) and `version_hop.py` (localization), wired in
+behind `--version-hop`. Three departures from the design, recorded in the
+plan's front matter:
+
+- **Binary search, not the flowchart's walk.** A build is minutes; over the
+  14-release catalog bisection is ~4 probes against up to 14. It assumes a
+  tactic breaks once and stays broken — `--version-hop-strategy linear` keeps
+  the exhaustive answer, and the result records which produced it.
+- **Three-valued probes.** The one that would have made the feature report
+  wrong answers. A 2020 proof repaired to load against r2026.06 requires FMap,
+  and FMap did not exist before r2024.09 — so the file does not *load* at
+  r2023.09 and the tactic is never reached. Read as "broken here", that puts
+  the boundary at the wrong release. `ec_errors` is the discriminator: a
+  pre-proof failure is INCONCLUSIVE and is excluded from the search.
+- **Tags come from the existing clone**, not `git ls-remote` — the fork
+  already carries all 14.
+
+The plan's option (a) held: `-premises` exists only on the fork's HEAD, hop
+validation only runs `llm -lastgoals`, so nothing needs rebasing.
+
+⚠️ **No EasyCrypt binary has been built by this pipeline.** The 33 tests stub
+the shell; worktree creation was verified against the live clone (correct
+release, 521K on disk rather than a full clone); the opam and dune steps have
+only been dry-run. Pre-build with
+`python3 -m integration.experiment.ec_versions --version rYYYY.MM`.
+
+**6. Hint uptake — the A/B is now runnable; the run is not done**
+(`d578596f`). This was treated as blocked on spend. It was blocked on
+something cheaper first: **there was no hints-off arm.** `changelog_hints` was
+populated unconditionally, so the counterfactual could not be produced at any
+price. `--no-changelog-hints` is that arm (off for the whole chain, including
+the per-failure refresh; import repair still runs, since it edits the file
+rather than the prompt). `summary.json` gained an `arm` block, and
+`compare_runs.py` scores N seeds per arm.
+
+The scorer exists because of the variance, not despite it: `conclusive` is
+True only when the gap between arm means exceeds the widest within-arm range,
+never with one run per arm, and when nothing separates the arms it says so is
+a statement about *power*. See §9 for the commands.
+
+### Closed earlier
+
+- ~~**The 2 `test_goal_state.py` failures**~~ — fixed; that file is 16/16 green.
+
+### Genuinely still open
+
+- **A real W7 provision.** Build one release and confirm a hop end to end.
+- **The paired A/B run itself.** Needs a real model and real spend; per
+  `AGENTS.md` an agent must never answer that prompt.
+- **Rule-selection tuning.** Targeting now orders rules by relevance; whether
+  the affinity table's weights are right is an empirical question no run has
+  asked yet.
