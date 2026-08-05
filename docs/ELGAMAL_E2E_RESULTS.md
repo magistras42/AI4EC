@@ -728,7 +728,7 @@ verbatim, `repaired` what the file holds after the run.
 | 4 | gen_log | 3 | 3 | 3 | +0 | COMPLETE |
 | 5 | grexpAll | 5 | 5 | 5 | +0 | COMPLETE |
 | 6 | RO_track_f_ll | 8 | 8 | 8 | +0 | COMPLETE |
-| 7 | G1_G2 | 5 | 5 | 6 | **+1** | COMPLETE |
+| 7 | G1_G2 | 5 | 5 | 5 | +0 | COMPLETE |
 | 8 | G3_true | 16 | 16 | 16 | +0 | COMPLETE |
 | 9 | RO_LCDHAdv | 17 | 17 | 17 | +0 | COMPLETE |
 | 10 | G2_bad_ub | 15 | 15 | 15 | +0 | COMPLETE |
@@ -736,7 +736,7 @@ verbatim, `repaired` what the file holds after the run.
 | 12 | INDCPA_HEG_G1 | 52 | 21 | 21 | +0 | MAX_STEPS |
 | 13 | correctness | 58 | 58 | 58 | +0 | COMPLETE |
 | 14 | G1_G2_eq | 85 | 18 | **69** | **+51** | MAX_STEPS |
-| | **TOTAL** | **301** | | **238** | | |
+| | **TOTAL** | **301** | | **237** | | |
 
 Two things this table says that the outcome column does not.
 
@@ -758,12 +758,22 @@ one where the harness, not the model, looks like the binding constraint.
    `(* prove 1/2 *) trivial.` is a tactic.
 2. Counting physical **lines** is not counting tactics. A
    `seq 5 5 : (invariant …)` wraps across lines and `wp; skip; smt().` is one
-   line holding three steps. This under-reported `G1_G2` as 5 and hid that the
-   model repaired it.
+   line holding three steps.
+3. Closing a statement at any depth-0 `.` splits **qualified names**.
+   `by rewrite RealOrder.lerr_eq (G2_bad_ub &m).` is one tactic, and the dot in
+   `RealOrder.lerr_eq` is at depth 0 with identifier characters on both sides.
+   That over-counted `G1_G2` as 6 and produced a phantom "+1 by the model" on a
+   lemma the agent never ran against.
 
-The counter now closes a statement at a `.` at parenthesis depth 0, with
-comments stripped first. It calibrates exactly against `correctness`, which
-replayed 58/58 verbatim in both runs and counts 58 in both.
+A terminator is now a depth-0 `.` **followed by whitespace or end of input**,
+with comments stripped first.
+
+**The calibration that catches this class of error**: any trial with
+`fully_replayed: true` and zero agent iterations must count exactly its
+replayed prefix, because nothing was added. That is ground truth rather than an
+estimate, it covers 11 of 15 trials per run, and it is asserted rather than
+eyeballed. Mistake 3 was caught by it; mistakes 1 and 2 were not, because
+`correctness` alone happened to be insensitive to both.
 
 ### 12.3b The same table for run C, and what the pair says
 
@@ -779,7 +789,7 @@ $1.00 cap**.
 | 4 | gen_log | 3 | 3 | 3 | +0 | COMPLETE |
 | 5 | grexpAll | 5 | 5 | 5 | +0 | COMPLETE |
 | 6 | RO_track_f_ll | 8 | 8 | 8 | +0 | COMPLETE |
-| 7 | G1_G2 | 5 | 5 | 6 | **+1** | COMPLETE |
+| 7 | G1_G2 | 5 | 5 | 5 | +0 | COMPLETE |
 | 8 | G3_true | 16 | 16 | 16 | +0 | COMPLETE |
 | 9 | RO_LCDHAdv | 17 | 17 | 17 | +0 | COMPLETE |
 | 10 | G2_bad_ub | 15 | 15 | 15 | +0 | COMPLETE |
@@ -787,18 +797,22 @@ $1.00 cap**.
 | 12 | INDCPA_HEG_G1 | 52 | 21 | 28 | **+7** | MAX_STEPS |
 | 13 | correctness | 58 | 58 | 58 | +0 | COMPLETE |
 | 14 | G1_G2_eq | 85 | 18 | 11 | **−7** | BUDGET_EXHAUSTED |
-| | **TOTAL** | **301** | | **193** | | |
+| | **TOTAL** | **301** | | **192** | | |
 
 The `−7` is not an artifact: the cap killed the trial mid-repair, immediately
 after two `undone` events, so the file was left holding *less* than the
-replayed prefix. That trial is unusable as a data point, and it is why run C's
-"one lemma repaired" figure understates it — with statements counted properly,
-run C repaired **two** lemmas partially (`INDCPA_Security` and `G1_G2`), not
-one.
+replayed prefix. That trial is unusable as a data point.
+
+**Correction.** An earlier revision of this section claimed run C repaired two
+lemmas, `INDCPA_Security` and `G1_G2`. That was wrong and the cause was the
+counter, not the run — see the counting note in §12.3. `G1_G2` replays 5/5
+verbatim with `fully_replayed=true` and **zero** agent iterations in both runs;
+the model never touched it. Both runs partially repaired exactly one lemma,
+`INDCPA_Security`.
 
 | repaired tactics | run C | run D |
 |---|---:|---:|
-| total | 193 | **238** |
+| total | 192 | **237** |
 | spend | $1.0074 (capped out) | $1.4887 (finished) |
 
 Every COMPLETE lemma is identical across the two runs — the eleven free
