@@ -9,14 +9,15 @@ Companion document: [`IMPLEMENTATION_PROGRESS.md`](IMPLEMENTATION_PROGRESS.md)
 
 ---
 
-## 0. Read this first: how to read `successes: 3`
+## 0. Read this first: `successes` is not a repair rate
 
-Two runs are reported here, and they answer different questions:
+Three runs are reported here, and they answer different questions:
 
 | Run | Solver | What it establishes |
 |---|---|---|
 | **A — stubbed** | Local stub returning a deliberately-failing tactic | That the *harness* works: dispatch, replay, retrieval, prompt assembly, metrics |
 | **B — DeepSeek** (`deepseek-v4-flash`, thinking off) | Real paid API, 23 calls, $0.0305 | That a *model* was given the knowledge base and what it did with it |
+| **C — DeepSeek, post-fix** (thinking adaptive, 32k cap) | Real paid API, 162 calls, $1.0074, all 15 lemmas | Whether the 2026-08-04 fixes changed anything — see §11 |
 
 **The single most important reading correction:** run B's `summary.json` says
 `successes: 3`, and **none of those three came from the model**. All three are
@@ -28,6 +29,13 @@ zero-LLM replay path is a route. That is the correct definition for the field,
 but it means the headline number must never be read as a repair rate. The
 per-trial breakdown in §5 is the number that answers "did the model fix
 anything".
+
+**The same trap, larger, in run C:** `successes: 12` of 15 — of which **11 are
+zero-LLM replays and exactly 1 is a model repair**. The correct summary of
+run C is *"1 of 4 broken lemmas repaired"*, not *"12 of 15"*. See §11.1.
+
+Across every run in this document, the model has repaired **1** genuinely
+broken lemma, and it was the smallest one (2 tactics, 2 calls).
 
 ---
 
@@ -515,3 +523,106 @@ modules, not library symbols. The `ec_errors.py` classifier added here can
 already tell a `tactic_error` from an `unknown_theory`; wiring that into
 retrieval so program-logic failures pull *tactic* changelog entries rather than
 import notes is the obvious next research step.
+
+---
+
+## 11. Run C — full corpus, after the 2026-08-04 fixes
+
+**Date:** 2026-08-04 · `deepseek-v4-flash`, thinking `adaptive`,
+`--llm-max-tokens 32768`, `COST_LIMIT_USD 1.00`, all 15 lemmas, ~7h15m.
+Run directory: `integration/output/experiments/run-20260804T164111Z/`.
+
+First run with the truncation fix, the goal-shape parser fixes, the warning
+filter, and the raised output budget all in place.
+
+### 11.1 Headline
+
+```
+Trials: 15 run, 0 skipped
+Successes: 12    stuck: 0    max_steps: 2    budget_stopped: True
+Spend: $1.0074 over 162 calls
+```
+
+**Do not read `successes: 12` as a repair rate** (§0 applies unchanged). The
+breakdown by route:
+
+| Route | Trials | |
+|---|---:|---|
+| Replayed verbatim, **zero LLM calls** | **11** | the harness working, not the model |
+| **Repaired by the model** | **1** | `INDCPA_Security`, 2 calls, $0.0058 |
+| Unsolved | 3 | `G2_G3`, `INDCPA_HEG_G1` (MAX_STEPS), `G1_G2_eq` (budget) |
+
+| # | Lemma | Reason | Steps | Calls | Cost |
+|---:|---|---|---:|---:|---:|
+| 0 | enc_stateless | COMPLETE | 0 | 0 | — |
+| 1 | INDCPA_Sec | COMPLETE | 0 | 0 | — |
+| 2 | INDCPA_Security | **COMPLETE (model)** | 2 | 2 | $0.0058 |
+| 3–10 | log_gen … G2_bad_ub | COMPLETE | 0 | 0 | — |
+| 11 | G2_G3 | MAX_STEPS | 42 | 53 | $0.3975 |
+| 12 | INDCPA_HEG_G1 | MAX_STEPS | 77 | 84 | $0.4479 |
+| 13 | correctness | COMPLETE | 0 | 0 | — |
+| 14 | G1_G2_eq | BUDGET_EXHAUSTED | 18 | 23 | $0.1561 |
+
+### 11.2 The fixes worked at the mechanism level
+
+**Zero `format_error` in 162 calls**, against 51-of-52 in the pre-fix A/B run.
+Same lemma, same model, before and after:
+
+| `INDCPA_HEG_G1` | pre-fix | run C |
+|---|---:|---:|
+| accepted | 18 | **56** |
+| failed | 18 | 13 |
+| `format_error` | **31** | **0** |
+| exit | LLM_ERROR | MAX_STEPS |
+
+Truncation is gone and accepted tactics roughly tripled. The proof still did
+not close: it ran out of *steps*, not budget.
+
+### 11.3 The fixes did not translate into repaired proofs
+
+One repair, and it was a 2-call fix on the easiest broken lemma. All three
+genuinely hard proofs failed. This is the caveat from §9.2 landing exactly as
+written -- fixing the guidance moved the model to the next obstacle rather than
+to a solution. Mechanism-level wins (no truncation, 3x accepted tactics, no
+fabricated hints) are real and measurable, and they are **not** the same thing
+as repair capability.
+
+Anyone quoting this work should quote "1 of 4 broken lemmas repaired", not
+"12 of 15 successes".
+
+### 11.4 The strongest result is for the incremental-repair design
+
+Of the 56 tactics the agent got accepted on `INDCPA_HEG_G1`, **46 (82%) were
+verbatim from the original proof script** it had been handed as reference text.
+The trial spent 84 calls and $0.45 to produce roughly **10** genuinely new
+tactics.
+
+The same 82% ratio was measured earlier on a 33-tactic sample, so it now holds
+across two samples of different size on the same lemma.
+[`plans/INCREMENTAL_REPAIR_DESIGN.md`](plans/INCREMENTAL_REPAIR_DESIGN.md) §9
+required exactly this re-measurement before the invasive part is built; the
+premise survived. It should still be checked on a *different* lemma before
+§4.3 is implemented -- two samples of one proof is not two proofs.
+
+### 11.5 Two operational findings
+
+**The spend cap is soft.** Final spend was $1.0074 against a $1.00 limit. The
+budget is checked between calls, so a call already in flight can carry past the
+limit. Harmless at this scale; worth knowing before setting a limit that
+matters.
+
+**Proof length does not predict cost.** `correctness` is 58 tactics and
+replayed free in about a minute; `INDCPA_Security` is 2 tactics and needed the
+model. What matters is whether the 2020 tactics still compile, not how many
+there are. A prediction made here from line count alone was wrong.
+
+### 11.6 Cost shape
+
+99.8% of output tokens were reasoning; the visible answer averaged ~29 tokens
+per call. Mean output was ~19.6k tokens against the 32768 cap -- comfortably
+inside it, which is why truncation vanished, but it costs ~3.4 minutes of wall
+clock per call. The two MAX_STEPS trials consumed ~5 of the run's 7 hours.
+
+For the next run, `REASONING_EFFORT = "high"` would cap thinking rather than
+letting it run to ~19.6k tokens. Note this is *not* a return to disabling
+thinking, which §7 shows is measurably wrong.
