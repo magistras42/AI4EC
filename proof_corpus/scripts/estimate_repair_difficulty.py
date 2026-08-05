@@ -60,7 +60,7 @@ AUTOMATION_MULTIPLIER = 1.0
 
 def find_lemma_blocks(text: str) -> list[dict]:
     """Extract each lemma's name (best-effort), proof body text, and span,
-    covering both explicit proof...qed/abort/admit blocks and the inline
+    covering both explicit proof...qed/save/abort/admit blocks and the inline
     'lemma ... by tactic.' shorthand.
 
     Callers should pass comment-stripped text (see strip_comments, imported
