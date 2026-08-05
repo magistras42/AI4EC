@@ -59,6 +59,7 @@ PROOF_CORPUS = REPO_ROOT / "proof_corpus"
 
 DEFAULT_HISTORY = PROOF_CORPUS / "output" / "library_history.json"
 DEFAULT_CHANGELOG = PROOF_CORPUS / "output" / "changelog_index.json"
+DEFAULT_DOCS_INDEX = PROOF_CORPUS / "output" / "repair_docs_index.json"
 DEFAULT_OUT = PROOF_CORPUS / "ec_migrations.toml"
 
 DEFAULT_THEORY_DIRS = (
@@ -75,6 +76,38 @@ MIN_MOVED_SYMBOLS = 3
 # run to 125; the manifest stays readable and the match still fires because any
 # one of them is enough.
 MAX_MATCH_SYMBOLS = 40
+
+# --- separating a move from a coincidence -----------------------------------
+#
+# "Names removed from A in release R" INTERSECT "names added to B in release R"
+# is the right starting point, but on its own it is a co-occurrence test, and
+# once every theory is mined rather than a hand-picked 16 the coincidences
+# arrive. Two independent facts about a real absorption filter them out.
+#
+# 1. The names have to be DISTINCTIVE. `add`, `mul`, `opp`, `rone`, `rzero`
+#    live in 5-8 theories each because every algebraic structure declares
+#    them. BitWord losing those five in the same release Ring gained them is
+#    shared vocabulary, not a shared API. `repair_docs_index.json`'s
+#    6325-symbol index is exactly the measure of how discriminating a name is.
+#
+# 2. B has to have absorbed a REAL SHARE of A. OldFMap was deleted in r2023.09
+#    having removed 118 names; 4 of them also appear among PolyReduce's 85
+#    additions, because PolyReduce was independently imported from the Kyber
+#    project that release and happens to define `reduce`. 3% is noise. The
+#    genuine cases sit an order of magnitude higher: SmtMap -> FMap is 95%,
+#    Int -> IntMin is 100%, CyclicGroup -> Group is 37% -- and that last one's
+#    commit subject is literally "Remove dependency to oldlibs for Group".
+
+#: A name in more than this many theories today is not evidence of anything.
+#: Absent from the index entirely counts as distinctive: it means the name
+#: exists nowhere now, which is the strongest form of "it left".
+MAX_THEORIES_FOR_MATCH = 4
+#: The destination must account for at least this share of what the source
+#: lost. Below it, the overlap is two unrelated edits landing in one release.
+MIN_ABSORPTION_FRACTION = 0.10
+#: An export-gap rule adds a whole theory to a file's requires on the
+#: strength of a token appearing anywhere in it. One name is not enough.
+MIN_EXPORT_GAP_SYMBOLS = 2
 
 # Theories the ENGINE loads into every file before it reads a single line, so
 # they are never something a proof must require. `ecCommands.ml` exports
@@ -220,13 +253,54 @@ def export_closure(theory: str, index: dict[str, Path], seen: set[str] | None = 
 # --- derivation from history ------------------------------------------------
 
 
-def derive_symbol_moves(history: dict[str, Any], earliest_tag: str | None) -> list[dict[str, Any]]:
+def load_symbol_theory_counts(path: Path | None) -> dict[str, int]:
+    """``symbol -> how many theories currently declare it``.
+
+    From ``repair_docs_index.json``. Returns an empty mapping when the index is
+    absent, which disables the distinctiveness filter rather than failing the
+    build -- the manifest is still derivable without it, just noisier.
+    """
+    if path is None or not path.is_file():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    index = payload.get("symbol_index") or {}
+    return {name: len(theories or []) for name, theories in index.items()}
+
+
+def distinctive(names: Iterable[str], counts: dict[str, int]) -> list[str]:
+    """Names discriminating enough to key a rewrite rule on, best first.
+
+    Sorted by ascending theory count so that when ``MAX_MATCH_SYMBOLS``
+    truncates the list, what survives is the most discriminating end of it.
+    """
+    if not counts:
+        return sorted(names)
+    return sorted(
+        (name for name in names if counts.get(name, 0) <= MAX_THEORIES_FOR_MATCH),
+        key=lambda name: (counts.get(name, 0), name),
+    )
+
+
+def derive_symbol_moves(
+    history: dict[str, Any],
+    earliest_tag: str | None,
+    symbol_counts: dict[str, int] | None = None,
+) -> list[dict[str, Any]]:
     """Symbols leaving theory A and arriving in theory B in the same release.
 
     This is the shape of a theory split or a library reorganisation, and it is
     exactly what breaks a `require import`: the file still requires A, but the
     names it uses now live in B.
+
+    Co-occurrence alone is not enough to call it a move; see
+    ``MAX_THEORIES_FOR_MATCH`` and ``MIN_ABSORPTION_FRACTION`` above for the
+    two facts that separate an absorption from two unrelated edits landing in
+    the same release.
     """
+    counts = symbol_counts or {}
     libraries = history.get("libraries") or {}
     releases = sorted({
         release
@@ -255,21 +329,41 @@ def derive_symbol_moves(history: dict[str, Any], earliest_tag: str | None) -> li
                 moved = sorted(removed & added)
                 if len(moved) < MIN_MOVED_SYMBOLS:
                     continue
+
+                # Did B absorb a real share of A, or did two unrelated edits
+                # land in the same release?
+                absorption = len(moved) / len(removed)
+                if absorption < MIN_ABSORPTION_FRACTION:
+                    continue
+
+                # Are the shared names evidence, or common vocabulary?
+                keys = distinctive(moved, counts)
+                if len(keys) < MIN_MOVED_SYMBOLS:
+                    continue
+
                 migrations.append({
                     "id": f"{source.lower()}-symbols-moved-to-{destination.lower()}-{release}",
                     "kind": "symbol_moved",
                     "breaks_at": release,
                     "summary": (
                         f"{len(moved)} declarations moved from {source} to "
-                        f"{destination} in {release}. A file that requires "
-                        f"{source} and uses any of them must also require "
-                        f"{destination}."
+                        f"{destination} in {release} "
+                        f"({absorption:.0%} of what {source} lost). A file "
+                        f"that requires {source} and uses any of them must "
+                        f"also require {destination}."
                     ),
-                    "confidence": "high" if len(moved) >= 10 else "medium",
+                    # High needs both scale and a source that was substantially
+                    # emptied into this destination -- either many distinctive
+                    # names amid a majority absorption, or a near-total one.
+                    "confidence": (
+                        "high"
+                        if (len(keys) >= 10 and absorption >= 0.5) or absorption >= 0.9
+                        else "medium"
+                    ),
                     "match": {
                         "requires_theory": [source],
                         "missing_require": [destination],
-                        "uses_symbols": moved[:MAX_MATCH_SYMBOLS],
+                        "uses_symbols": keys[:MAX_MATCH_SYMBOLS],
                     },
                     "actions": [
                         {"op": "add_require", "theory": destination, "after": source},
@@ -277,11 +371,17 @@ def derive_symbol_moves(history: dict[str, Any], earliest_tag: str | None) -> li
                     "provenance": {
                         "derived_from": "library_history.json",
                         "moved_symbol_count": len(moved),
+                        "distinctive_symbol_count": len(keys),
+                        "absorption_fraction": round(absorption, 4),
                         "commits": _release_commits(source_record, release)
                                    + _release_commits(destination_record, release),
                         "note": (
                             f"Derived: {len(moved)} names present in {source} "
-                            f"before {release} and in {destination} after. "
+                            f"before {release} and in {destination} after, "
+                            f"{absorption:.0%} of everything {source} lost that "
+                            f"release. {len(keys)} of them are distinctive "
+                            f"enough to match on (<= {MAX_THEORIES_FOR_MATCH} "
+                            f"theories today, per repair_docs_index.json). "
                             f"Full list in library_history.json under "
                             f"libraries.{source}.symbol_events.{release}.removed."
                         ),
@@ -382,7 +482,10 @@ def derive_theory_lifecycle(
 
 
 def derive_export_gaps(
-    history: dict[str, Any], index: dict[str, Path], hub: str = "AllCore",
+    history: dict[str, Any],
+    index: dict[str, Path],
+    hub: str = "AllCore",
+    symbol_counts: dict[str, int] | None = None,
 ) -> list[dict[str, Any]]:
     """Tracked libraries a `require import <hub>` does NOT bring into scope.
 
@@ -403,7 +506,7 @@ def derive_export_gaps(
         if library in ENGINE_PRELOADED:
             continue
         record = (history.get("libraries") or {}).get(library) or {}
-        symbols = _representative_symbols(record)
+        symbols = _representative_symbols(record, symbol_counts)
         if not symbols:
             continue
         migrations.append({
@@ -434,17 +537,29 @@ def derive_export_gaps(
     return migrations
 
 
-def _representative_symbols(record: dict[str, Any], limit: int = 12) -> list[str]:
+def _representative_symbols(
+    record: dict[str, Any], counts: dict[str, int] | None = None, limit: int = 12,
+) -> list[str]:
     """Distinctive names a library currently provides, for match conditions.
 
     Taken from the most recent release that added names, so they reflect the
     current interface rather than something long since renamed.
+
+    "Distinctive" used to mean only ``len(name) > 3``, which was all that was
+    available. It is not enough for these rules: they fire on a *token
+    appearing anywhere in the file* and then add a whole theory to its
+    requires, so a name like ``Hash`` or ``data`` would drag in an unrelated
+    crypto theory. With the symbol index available, use the real measure.
     """
     events = record.get("symbol_events") or {}
     for release in sorted(events, reverse=True):
         names = [n for n in events[release].get("added", []) if len(n) > 3]
-        if names:
-            return sorted(names)[:limit]
+        if not names:
+            continue
+        keys = distinctive(names, counts or {})
+        # One name is too thin to justify rewriting a file's imports; two
+        # independent hits is the minimum that is not a coincidence.
+        return keys[:limit] if len(keys) >= MIN_EXPORT_GAP_SYMBOLS else []
     return []
 
 
@@ -527,8 +642,14 @@ def render_migration(migration: dict[str, Any]) -> str:
         for key in ("changelog", "commits"):
             if provenance.get(key):
                 out.append(f"  {key} = {_arr(provenance[key], '  ')}")
-        if provenance.get("moved_symbol_count"):
-            out.append(f'  moved_symbol_count = {provenance["moved_symbol_count"]}')
+        # The evidence a symbol-move rule rests on. Emitted so the manifest can
+        # be audited without re-running the miner: `absorption_fraction` is
+        # what separates a real absorption from two unrelated edits landing in
+        # one release, and it is otherwise invisible in the TOML.
+        for key in ("moved_symbol_count", "distinctive_symbol_count",
+                    "absorption_fraction"):
+            if provenance.get(key) is not None:
+                out.append(f"  {key} = {provenance[key]}")
         if provenance.get("note"):
             out.append(f'  note = {_multiline(provenance["note"], "    ")}')
     return "\n".join(out)
@@ -619,6 +740,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--history", type=Path, default=DEFAULT_HISTORY)
     parser.add_argument("--changelog-index", type=Path, default=DEFAULT_CHANGELOG)
+    parser.add_argument(
+        "--docs-index", type=Path, default=DEFAULT_DOCS_INDEX,
+        help="repair_docs_index.json; supplies the symbol->theory counts that "
+             "tell a distinctive name from common vocabulary",
+    )
     parser.add_argument("--theories", type=Path, action="append", default=None)
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
     args = parser.parse_args()
@@ -654,10 +780,23 @@ def main() -> int:
         if from_changelog:
             known_versions = from_changelog
 
+    symbol_counts = load_symbol_theory_counts(args.docs_index)
+    if not symbol_counts:
+        print(
+            f"warning: {args.docs_index} unreadable; symbol-move rules will "
+            "match on every shared name, including common vocabulary",
+            file=sys.stderr,
+        )
+    else:
+        print(
+            f"  {len(symbol_counts)} symbols indexed for distinctiveness",
+            file=sys.stderr,
+        )
+
     migrations = (
-        derive_symbol_moves(history, earliest_tag)
+        derive_symbol_moves(history, earliest_tag, symbol_counts)
         + derive_theory_lifecycle(history, earliest_tag)
-        + derive_export_gaps(history, index)
+        + derive_export_gaps(history, index, symbol_counts=symbol_counts)
         + CURATED_ENGINE_MIGRATIONS
     )
 

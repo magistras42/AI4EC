@@ -175,6 +175,59 @@ def test_real_manifest_derives_the_smtmap_split_from_git_history():
     assert {"dom", "empty"} <= set(move["match"]["uses_symbols"])
 
 
+def test_real_manifest_has_symbol_moves_as_a_category_not_an_anecdote():
+    """`symbol_moved` had exactly one instance, because the history miner
+    tracked 16 hand-picked theories and a move is only visible when BOTH ends
+    are tracked. Mining every theory in the tree makes the category real."""
+    if not REAL_MANIFEST.is_file():
+        pytest.skip("ec_migrations.toml not generated")
+    manifest = import_repair.load_manifest(REAL_MANIFEST)
+    moves = [m for m in manifest["migration"] if m["kind"] == "symbol_moved"]
+    assert len(moves) >= 4, f"only {len(moves)} symbol moves"
+    # Each is a distinct source theory losing names to a distinct destination.
+    assert len({(m["match"]["requires_theory"][0],
+                 m["match"]["missing_require"][0]) for m in moves}) == len(moves)
+
+
+def test_symbol_move_rules_carry_their_absorption_evidence():
+    """A move is only a move if the destination absorbed a real share of the
+    source. Co-occurrence alone put OldFMap -> PolyReduce in the manifest at
+    3%, because PolyReduce arrived from Kyber that release and defines
+    `reduce`."""
+    if not REAL_MANIFEST.is_file():
+        pytest.skip("ec_migrations.toml not generated")
+    manifest = import_repair.load_manifest(REAL_MANIFEST)
+    for migration in manifest["migration"]:
+        if migration["kind"] != "symbol_moved":
+            continue
+        provenance = migration["provenance"]
+        assert provenance["absorption_fraction"] >= 0.10, migration["id"]
+        assert provenance["distinctive_symbol_count"] >= 3, migration["id"]
+
+
+def test_no_derived_rule_matches_on_a_name_common_to_many_theories():
+    """These rules fire on a token appearing anywhere in a file and then
+    rewrite its imports. `add`, `mul`, `opp` live in 5-8 theories each because
+    every algebraic structure declares them -- keying a rewrite on one is how
+    BitWord got a rule saying its operators had moved to Ring."""
+    if not REAL_MANIFEST.is_file():
+        pytest.skip("ec_migrations.toml not generated")
+    docs_index = REPO_ROOT / "proof_corpus" / "output" / "repair_docs_index.json"
+    if not docs_index.is_file():
+        pytest.skip("repair_docs_index.json not generated")
+    index = json.loads(docs_index.read_text(encoding="utf-8"))["symbol_index"]
+
+    manifest = import_repair.load_manifest(REAL_MANIFEST)
+    offenders = []
+    for migration in manifest["migration"]:
+        if not (migration.get("provenance") or {}).get("derived_from"):
+            continue  # curated engine rules match on regexes, not names
+        for name in migration["match"].get("uses_symbols") or []:
+            if len(index.get(name) or []) > 4:
+                offenders.append((migration["id"], name, len(index[name])))
+    assert not offenders, f"non-distinctive match symbols: {offenders[:10]}"
+
+
 def test_real_manifest_never_requires_an_engine_preloaded_theory():
     """`Pervasive` and `Logic` are exported into every file by the engine
     (ecCommands.ml), so a rule telling a proof to require them is wrong."""
@@ -482,7 +535,9 @@ def test_targeting_readvances_as_the_error_changes(
         source, _config(), source_version="r2022.04", target_version="r2026.07",
         manifest_path=manifest_path, min_confidence="low",
     )
-    picked = {a.migration_id: a for a in result.applied if a.kept}
+    # Over every record, kept or later minimised away: what is under test is
+    # which error each rule was *selected against*, not whether it survived.
+    picked = {a.migration_id: a for a in result.applied}
     # Each rule was chosen against the error that was live at the time.
     assert picked["proc-star"].selected_for == ec_errors.KIND_PARSE_ERROR
     assert picked["smtmap-split"].selected_for == ec_errors.KIND_UNKNOWN_THEORY
@@ -641,8 +696,12 @@ def test_bulk_apply_short_circuits_when_it_makes_the_file_load(
     assert result.loads_after and result.improved
     assert "proc *" not in result.text
     assert all(a.kept for a in result.applied)
-    # Two probes: the baseline and the bulk attempt. No incremental pass.
-    assert fake.calls == 2
+    # Baseline, bulk, then one minimisation probe. No incremental pass.
+    assert fake.calls == 3
+    # Only `proc *` was ever broken, so adding FMap was along for the ride and
+    # the minimisation pass takes it back out.
+    assert {a.migration_id for a in result.applied} == {"proc-star"}
+    assert "FMap" not in result.text
 
 
 def test_incremental_pass_keeps_non_regressing_migrations(
@@ -728,6 +787,101 @@ def test_min_confidence_filters_low_rules(tmp_path, monkeypatch, manifest_path):
         source, _config(), manifest_path=manifest_path, min_confidence="low",
     )
     assert "always-on" in low.considered
+
+
+# --- minimisation -----------------------------------------------------------
+# "Did not hurt" is why a rule gets kept. It is not a good enough reason to
+# tell the model the rule was part of the repair -- with 116 manifest rules
+# that list fills up with unrelated theories.
+
+
+def test_a_rule_the_loading_file_does_not_need_is_taken_back_out(
+    tmp_path, monkeypatch, manifest_path
+):
+    """Only `proc *` is broken here. `smtmap-split` matches the file and does
+    no harm, so both the bulk and the incremental pass keep it -- and the
+    repaired file would tell the model it was missing an FMap import it never
+    needed."""
+    fake = FakeEasyCrypt([(lambda t: "proc *" in t, (1, _err(5)))])
+    monkeypatch.setattr(import_repair, "validate_file", fake)
+    source = tmp_path / "broken.ec"
+    source.write_text(SOURCE, encoding="utf-8")
+
+    result = import_repair.repair_imports(
+        source, _config(), source_version="r2022.04", target_version="r2026.07",
+        manifest_path=manifest_path, min_confidence="low",
+    )
+    assert result.loads_after
+    assert {a.migration_id for a in result.applied if a.kept} == {"proc-star"}
+    dropped = [a for a in result.applied if not a.kept]
+    assert not dropped or all("loads without it" in a.reason for a in dropped)
+    assert any("dropped as unnecessary" in n for n in result.notes)
+
+
+def test_minimisation_never_removes_the_rule_that_did_the_work(
+    tmp_path, monkeypatch, manifest_path
+):
+    """Both rules are load-bearing, so nothing may be dropped however the
+    relevance ordering ranks them."""
+    fake = FakeEasyCrypt([
+        (lambda t: "proc *" in t or "FMap" not in t, (1, _err(5))),
+    ])
+    monkeypatch.setattr(import_repair, "validate_file", fake)
+    source = tmp_path / "broken.ec"
+    source.write_text(SOURCE, encoding="utf-8")
+
+    result = import_repair.repair_imports(
+        source, _config(), source_version="r2022.04", target_version="r2026.07",
+        manifest_path=manifest_path, min_confidence="low",
+    )
+    assert result.loads_after
+    assert {a.migration_id for a in result.applied if a.kept} == {
+        "proc-star", "smtmap-split"
+    }
+
+
+def test_minimisation_measures_against_the_graded_rank_not_just_loading(
+    tmp_path, monkeypatch, manifest_path
+):
+    """Most repaired files never fully load -- they reach `reached_proof` and
+    stop. Testing necessity with "does it still load" would skip exactly those
+    and leave the noise in. The test is the rank the full set achieved."""
+    fake = FakeEasyCrypt([
+        (lambda t: "proc *" in t, (1, _err(5, "parse error"))),
+        # Once the syntax is fixed the only complaint is a tactic: the file got
+        # past loading, which is `reached_proof`. Adding FMap changes nothing.
+        (lambda t: True, (1, _err(453, "invalid `position' parameter"))),
+    ])
+    monkeypatch.setattr(import_repair, "validate_file", fake)
+    source = tmp_path / "broken.ec"
+    source.write_text(SOURCE, encoding="utf-8")
+
+    result = import_repair.repair_imports(
+        source, _config(), source_version="r2022.04", target_version="r2026.07",
+        manifest_path=manifest_path, min_confidence="low",
+    )
+    assert not result.loads_after
+    assert result.outcome == import_repair.PROGRESS_REACHED_PROOF
+    assert {a.migration_id for a in result.applied if a.kept} == {"proc-star"}
+    assert any("dropped as unnecessary" in n for n in result.notes)
+
+
+def test_minimisation_does_not_run_when_nothing_was_achieved(
+    tmp_path, monkeypatch, manifest_path
+):
+    """No progress means no target to preserve, and dropping on a guess would
+    discard rules the incremental pass verified as non-regressing."""
+    fake = FakeEasyCrypt([(lambda t: True, (1, _err(108)))])
+    monkeypatch.setattr(import_repair, "validate_file", fake)
+    source = tmp_path / "broken.ec"
+    source.write_text(SOURCE, encoding="utf-8")
+
+    result = import_repair.repair_imports(
+        source, _config(), source_version="r2022.04", target_version="r2026.07",
+        manifest_path=manifest_path, min_confidence="low",
+    )
+    assert result.outcome == import_repair.PROGRESS_NONE
+    assert not any("dropped as unnecessary" in n for n in result.notes)
 
 
 # --- graded progress (W4.5) -------------------------------------------------

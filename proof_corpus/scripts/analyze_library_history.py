@@ -63,15 +63,21 @@ PROOF_CORPUS = REPO_ROOT / "proof_corpus"
 DEFAULT_REPO = REPO_ROOT / "integration" / "extern" / "easycrypt"
 DEFAULT_OUT = PROOF_CORPUS / "output" / "library_history.json"
 
-# The standard-library theories tracked by default. These are the ones a
-# broken proof is most likely to import, and the same set `repair_doc/`
-# documents -- but here every claim is derived from the commit history rather
-# than from those files.
-DEFAULT_LIBRARIES = [
+# The 16 theories `repair_doc/` documents. Kept as a named fallback, but no
+# longer the default set, because tracking only these made the *derived*
+# rules structurally incomplete: `derive_symbol_moves` can only see a symbol
+# leave A and arrive in B when BOTH A and B are tracked, so a hand-picked list
+# of 16 out of ~127 theories could only ever find moves inside that list. That
+# is why `symbol_moved` had exactly one instance -- not because EasyCrypt
+# reorganises one theory pair per decade, but because nothing else was
+# being looked at. The default is now discovery; see `discover_libraries`.
+CORE_LIBRARIES = [
     "AllCore", "Bool", "Core", "CoreMap", "CoreReal", "DBool", "DInterval",
     "Distr", "FMap", "FSet", "Int", "Logic", "Pervasive", "PROM", "Real",
     "SmtMap",
 ]
+#: Backwards-compatible alias for the pre-discovery default.
+DEFAULT_LIBRARIES = CORE_LIBRARIES
 
 _THEORY_SUFFIXES = (".ec", ".eca")
 
@@ -101,6 +107,11 @@ _KEYWORDS = frozenset({
     "type", "of", "with", "as", "end", "import", "export", "require", "proof",
     "qed", "by", "op", "pred", "lemma", "axiom", "module", "theory", "const",
     "abbrev", "local", "declare", "abstract", "rename", "clone", "section",
+    # `lemma nosmt foo` is an attribute, not the lemma's name. Left in, it was
+    # captured as a declaration of every theory using it and then showed up as
+    # a "moved symbol" in four derived rules -- shared vocabulary, not shared
+    # API.
+    "nosmt",
 })
 _RENAME_DECL_RE = re.compile(
     r'^\s*rename\s+(?:\[\w+\]\s*)?"[^"]+"\s+as\s+"(?P<name>[^"]+)"'
@@ -161,6 +172,27 @@ def locate_library(repo: Path, library: str, ref: str) -> list[str]:
             if stem == f"{library}{suffix}":
                 paths.append(line)
     return sorted(paths)
+
+
+def discover_libraries(repo: Path, refs: Iterable[str]) -> list[str]:
+    """Every theory basename that exists at ANY of `refs`.
+
+    Union across releases, not just the newest, so a theory that existed in
+    r2022.04 and has since been deleted is still tracked. Those are precisely
+    the ones a legacy proof breaks on: a `require import` of a theory that no
+    longer exists is unfixable if the miner never looked at it.
+    """
+    names: set[str] = set()
+    for ref in refs:
+        for line in git(repo, ["ls-tree", "-r", "--name-only", ref]).splitlines():
+            line = line.strip()
+            if not line.startswith("theories/"):
+                continue
+            stem = line.rsplit("/", 1)[-1]
+            for suffix in _THEORY_SUFFIXES:
+                if stem.endswith(suffix):
+                    names.add(stem[: -len(suffix)])
+    return sorted(names)
 
 
 def historical_paths(repo: Path, library: str, ref: str) -> list[str]:
@@ -396,7 +428,14 @@ def main() -> int:
     parser.add_argument("--repo", type=Path, default=DEFAULT_REPO)
     parser.add_argument(
         "--library", action="append", default=None,
-        help=f"repeatable; default: {', '.join(DEFAULT_LIBRARIES)}",
+        help="repeatable; default: every theory found in the tree at any "
+             "release tag",
+    )
+    parser.add_argument(
+        "--core-libraries-only", action="store_true",
+        help=f"track only the {len(CORE_LIBRARIES)} theories repair_doc/ "
+             "documents, the pre-discovery default. Faster, but symbol moves "
+             "between untracked theories become invisible.",
     )
     parser.add_argument(
         "--ref", default=None,
@@ -421,7 +460,20 @@ def main() -> int:
         return 1
 
     ref = args.ref or tags[-1]
-    libraries = args.library or DEFAULT_LIBRARIES
+    if args.library:
+        libraries, selection = args.library, "explicit"
+    elif args.core_libraries_only:
+        libraries, selection = CORE_LIBRARIES, "core"
+    else:
+        libraries = discover_libraries(args.repo, [*tags, ref])
+        selection = "discovered"
+        print(
+            f"Discovered {len(libraries)} theories across {len(tags)} tags",
+            file=sys.stderr,
+        )
+        if not libraries:
+            libraries, selection = CORE_LIBRARIES, "core"
+            print("  (none found; falling back to the core list)", file=sys.stderr)
 
     print(
         f"Building release map over {len(tags)} tags ({tags[0]} .. {tags[-1]}) ...",
@@ -448,6 +500,7 @@ def main() -> int:
             "repo": str(args.repo),
             "ref": ref,
             "tags": tags,
+            "library_selection": selection,
         },
         "libraries": results,
         "stats": {

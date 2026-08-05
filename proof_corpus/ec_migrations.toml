@@ -52,7 +52,7 @@
 # [[library]] -- per-theory history summary, also from library_history.json.
 
 schema = "ai4ec.ec-migrations/1"
-generated_at = "2026-07-31T00:03:19+00:00"
+generated_at = "2026-08-05T01:32:45+00:00"
 
 [meta]
 library_history = "proof_corpus/output/library_history.json"
@@ -74,22 +74,141 @@ known_versions = [
 ]
 earliest_tag = "r2022.04"
 tracked_libraries = [
+  "AEAD",
+  "AdvAbsVal",
+  "AlgTactic",
   "AllCore",
+  "Array",
+  "Bigalg",
+  "Bigop",
+  "Binomial",
+  "Birthday",
+  "BitEncoding",
+  "BitWord",
   "Bool",
+  "CCA",
+  "CCA1",
+  "CHoareTactic",
+  "CPA",
+  "CRHash",
+  "Commitment",
   "Core",
+  "CoreInt",
   "CoreMap",
   "CoreReal",
+  "Counter",
+  "CyclicGroup",
+  "Cyclic_group_prime",
   "DBool",
+  "DDH_hybrid",
+  "DHIES",
   "DInterval",
+  "DJoin",
+  "DList",
+  "DLog",
+  "DMap",
+  "DProd",
+  "Dexcepted",
+  "Dfilter",
+  "DiffieHellman",
+  "DigitalSignatures",
+  "DigitalSignaturesROM",
+  "Discrete",
   "Distr",
+  "DynMatrix",
+  "EventPartitioning",
   "FMap",
   "FSet",
+  "FelTactic",
+  "FinType",
+  "Finite",
+  "FloorCeil",
+  "FoldProc",
+  "GlobalHybrid",
+  "Group",
+  "Hybrid",
+  "Ideal",
+  "Indist",
   "Int",
+  "IntDiv",
+  "IntMin",
+  "IterProc",
+  "KeyEncapsulationMechanisms",
+  "KeyEncapsulationMechanismsROM",
+  "KeyedHashFunctions",
+  "List",
   "Logic",
+  "LoopTransform",
+  "LorR",
+  "MAC",
+  "MRPKE",
+  "MSet",
+  "Matrix",
+  "Means",
+  "ModuleStructure",
+  "Monoid",
+  "Mu_mem",
+  "NewSKE",
+  "Number",
+  "ODH",
+  "OW",
+  "OldDistr",
+  "OldFMap",
+  "OracleBounds",
+  "PKE",
+  "PKE_CPA",
+  "PKE_hybrid",
+  "PKS",
+  "PKSMK",
+  "PRF",
+  "PRG",
   "PROM",
+  "PRP",
+  "Perms",
   "Pervasive",
+  "PlugAndPray",
+  "Poly",
+  "PolyReduce",
+  "Pr_half",
+  "PrimeField",
+  "Prime_field",
+  "PublicKeyEncryption",
+  "PublicKeyEncryptionROM",
+  "QFABV",
+  "Quotient",
+  "ROM",
   "Real",
+  "RealExp",
+  "RealFLub",
+  "RealFun",
+  "RealLub",
+  "RealSeq",
+  "RealSeries",
+  "Reflection",
+  "Ring",
+  "RndExcept",
+  "RndProd",
+  "SDist",
+  "SampleBool",
+  "SecureChannels",
+  "SigmaProtocol",
   "SmtMap",
+  "SplitRO",
+  "StdBigop",
+  "StdOrder",
+  "StdRing",
+  "Strong_RP_RF",
+  "Subtype",
+  "SymmetricEncryption",
+  "Tactics",
+  "TotalProb",
+  "Tuple",
+  "TweakableHashFunctions",
+  "WF",
+  "Word",
+  "Xint",
+  "Xreal",
+  "ZModP",
 ]
 
 # ==========================================================================
@@ -97,20 +216,160 @@ tracked_libraries = [
 # ==========================================================================
 
 [[migration]]
+id = "cyclicgroup-symbols-moved-to-group-r2023.09"
+kind = "symbol_moved"
+breaks_at = "r2023.09"
+confidence = "medium"
+summary = """
+  7 declarations moved from CyclicGroup to Group in r2023.09 (37% of what CyclicGroup
+  lost). A file that requires CyclicGroup and uses any of them must also require
+  Group.
+  """
+
+  [migration.match]
+  requires_theory = ["CyclicGroup"]
+  missing_require = ["Group"]
+  uses_symbols = ["Cost", "cgdiv", "cgeq", "cgmul", "cgpow", "ge0_cg", "mulN"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Group"
+  after = "CyclicGroup"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["9656af661"]
+  moved_symbol_count = 7
+  distinctive_symbol_count = 7
+  absorption_fraction = 0.3684
+  note = """
+    Derived: 7 names present in CyclicGroup before r2023.09 and in Group after, 37% of
+    everything CyclicGroup lost that release. 7 of them are distinctive enough to match
+    on (<= 4 theories today, per repair_docs_index.json). Full list in
+    library_history.json under libraries.CyclicGroup.symbol_events.r2023.09.removed.
+    """
+
+[[migration]]
+id = "int-symbols-moved-to-intmin-r2023.09"
+kind = "symbol_moved"
+breaks_at = "r2023.09"
+confidence = "high"
+summary = """
+  8 declarations moved from Int to IntMin in r2023.09 (100% of what Int lost). A file
+  that requires Int and uses any of them must also require IntMin.
+  """
+
+  [migration.match]
+  requires_theory = ["Int"]
+  missing_require = ["IntMin"]
+  uses_symbols = [
+    "argmin",
+    "argminP",
+    "argmin_eq",
+    "argmin_le",
+    "argmin_min",
+    "argmin_out",
+    "ge0_argmin",
+    "minz",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "IntMin"
+  after = "Int"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  moved_symbol_count = 8
+  distinctive_symbol_count = 8
+  absorption_fraction = 1.0
+  note = """
+    Derived: 8 names present in Int before r2023.09 and in IntMin after, 100% of
+    everything Int lost that release. 8 of them are distinctive enough to match on (<= 4
+    theories today, per repair_docs_index.json). Full list in library_history.json under
+    libraries.Int.symbol_events.r2023.09.removed.
+    """
+
+[[migration]]
+id = "primefield-symbols-moved-to-group-r2023.09"
+kind = "symbol_moved"
+breaks_at = "r2023.09"
+confidence = "medium"
+summary = """
+  8 declarations moved from PrimeField to Group in r2023.09 (15% of what PrimeField
+  lost). A file that requires PrimeField and uses any of them must also require Group.
+  """
+
+  [migration.match]
+  requires_theory = ["PrimeField"]
+  missing_require = ["Group"]
+  uses_symbols = ["Cost", "cdt", "FDistr", "dt1E", "dt_fu", "dt_funi", "dt_ll"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Group"
+  after = "PrimeField"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["9656af661"]
+  moved_symbol_count = 8
+  distinctive_symbol_count = 7
+  absorption_fraction = 0.1509
+  note = """
+    Derived: 8 names present in PrimeField before r2023.09 and in Group after, 15% of
+    everything PrimeField lost that release. 7 of them are distinctive enough to match
+    on (<= 4 theories today, per repair_docs_index.json). Full list in
+    library_history.json under libraries.PrimeField.symbol_events.r2023.09.removed.
+    """
+
+[[migration]]
+id = "primefield-symbols-moved-to-zmodp-r2023.09"
+kind = "symbol_moved"
+breaks_at = "r2023.09"
+confidence = "medium"
+summary = """
+  7 declarations moved from PrimeField to ZModP in r2023.09 (13% of what PrimeField
+  lost). A file that requires PrimeField and uses any of them must also require ZModP.
+  """
+
+  [migration.match]
+  requires_theory = ["PrimeField"]
+  missing_require = ["ZModP"]
+  uses_symbols = ["Cost", "cfadd", "cfdiv", "cfeq", "cfmul", "cfsub", "ge0_cf"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "ZModP"
+  after = "PrimeField"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["9656af661"]
+  moved_symbol_count = 7
+  distinctive_symbol_count = 7
+  absorption_fraction = 0.1321
+  note = """
+    Derived: 7 names present in PrimeField before r2023.09 and in ZModP after, 13% of
+    everything PrimeField lost that release. 7 of them are distinctive enough to match
+    on (<= 4 theories today, per repair_docs_index.json). Full list in
+    library_history.json under libraries.PrimeField.symbol_events.r2023.09.removed.
+    """
+
+[[migration]]
 id = "smtmap-symbols-moved-to-fmap-r2025.02"
 kind = "symbol_moved"
 breaks_at = "r2025.02"
 confidence = "high"
 summary = """
-  125 declarations moved from SmtMap to FMap in r2025.02. A file that requires SmtMap
-  and uses any of them must also require FMap.
+  125 declarations moved from SmtMap to FMap in r2025.02 (95% of what SmtMap lost). A
+  file that requires SmtMap and uses any of them must also require FMap.
   """
 
   [migration.match]
   requires_theory = ["SmtMap"]
   missing_require = ["FMap"]
   uses_symbols = [
-    "bounded",
     "bounded_empty",
     "bounded_set",
     "dom",
@@ -135,7 +394,6 @@ summary = """
     "eq_except_setlr",
     "eq_except_setr",
     "eq_exceptmS",
-    "eq_in_filter",
     "fcoll",
     "fcollPn",
     "fdom0",
@@ -146,10 +404,12 @@ summary = """
     "fdom_ofassoc",
     "fdom_rem",
     "fdom_set",
-    "filter",
-    "filterE",
     "filter_empty",
     "filter_set",
+    "filter_valE",
+    "findP",
+    "find_eq_none",
+    "find_map",
   ]
 
   [[migration.action]]
@@ -161,10 +421,140 @@ summary = """
   derived_from = "library_history.json"
   commits = ["6942bd0dd"]
   moved_symbol_count = 125
+  distinctive_symbol_count = 125
+  absorption_fraction = 0.9542
   note = """
-    Derived: 125 names present in SmtMap before r2025.02 and in FMap after. Full list in
-    library_history.json under libraries.SmtMap.symbol_events.r2025.02.removed.
+    Derived: 125 names present in SmtMap before r2025.02 and in FMap after, 95% of
+    everything SmtMap lost that release. 125 of them are distinctive enough to match on
+    (<= 4 theories today, per repair_docs_index.json). Full list in library_history.json
+    under libraries.SmtMap.symbol_events.r2025.02.removed.
     """
+
+[[migration]]
+id = "choaretactic-removed-r2024.09"
+kind = "theory_removed"
+breaks_at = "r2024.09"
+confidence = "low"
+summary = """
+  CHoareTactic was removed in r2024.09; a `require import CHoareTactic` no longer
+  resolves. No automatic replacement is known -- this rule reports the problem.
+  """
+
+  [migration.match]
+  requires_theory = ["CHoareTactic"]
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["41c2667f7"]
+  note = "2024-03-29 This diff removes the cost logic."
+
+[[migration]]
+id = "cyclicgroup-removed-r2023.09"
+kind = "theory_removed"
+breaks_at = "r2023.09"
+confidence = "low"
+summary = """
+  CyclicGroup was removed in r2023.09; a `require import CyclicGroup` no longer
+  resolves. No automatic replacement is known -- this rule reports the problem.
+  """
+
+  [migration.match]
+  requires_theory = ["CyclicGroup"]
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["9656af661"]
+  note = "2022-09-02 Remove dependency to oldlibs for Group"
+
+[[migration]]
+id = "cyclic_group_prime-removed-r2023.09"
+kind = "theory_removed"
+breaks_at = "r2023.09"
+confidence = "low"
+summary = """
+  Cyclic_group_prime was removed in r2023.09; a `require import Cyclic_group_prime` no
+  longer resolves. No automatic replacement is known -- this rule reports the problem.
+  """
+
+  [migration.match]
+  requires_theory = ["Cyclic_group_prime"]
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["9656af661"]
+  note = "2022-09-02 Remove dependency to oldlibs for Group"
+
+[[migration]]
+id = "digitalsignatures-added-r2024.09"
+kind = "theory_added"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  DigitalSignatures did not exist before r2024.09 (created at
+  theories/crypto/DigitalSignatures.eca). A proof written earlier cannot have required
+  it; if it needs DigitalSignatures's contents, they lived somewhere else.
+  """
+
+  [migration.match]
+  missing_require = ["DigitalSignatures"]
+  uses_symbols = ["DigitalSignatures"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "DigitalSignatures"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["ad79306d3"]
+  note = "2023-07-14 DigitalSignatures.eca library"
+
+[[migration]]
+id = "digitalsignaturesrom-added-r2024.09"
+kind = "theory_added"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  DigitalSignaturesROM did not exist before r2024.09 (created at
+  theories/crypto/DigitalSignaturesROM.eca). A proof written earlier cannot have
+  required it; if it needs DigitalSignaturesROM's contents, they lived somewhere else.
+  """
+
+  [migration.match]
+  missing_require = ["DigitalSignaturesROM"]
+  uses_symbols = ["DigitalSignaturesROM"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "DigitalSignaturesROM"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["ad79306d3"]
+  note = "2023-07-14 DigitalSignatures.eca library"
+
+[[migration]]
+id = "dynmatrix-added-r2023.09"
+kind = "theory_added"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  DynMatrix did not exist before r2023.09 (created at theories/algebra/DynMatrix.eca).
+  A proof written earlier cannot have required it; if it needs DynMatrix's contents,
+  they lived somewhere else.
+  """
+
+  [migration.match]
+  missing_require = ["DynMatrix"]
+  uses_symbols = ["DynMatrix"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "DynMatrix"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["efab580cc"]
+  note = "2023-02-14 matrix library with support for arbitrary dynamic size (#267)"
 
 [[migration]]
 id = "fmap-added-r2024.09"
@@ -191,6 +581,369 @@ summary = """
   note = "2024-09-05 stage the SmtMap -> FMap renaming"
 
 [[migration]]
+id = "globalhybrid-added-r2026.05"
+kind = "theory_added"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  GlobalHybrid did not exist before r2026.05 (created at
+  theories/crypto/GlobalHybrid.ec). A proof written earlier cannot have required it;
+  if it needs GlobalHybrid's contents, they lived somewhere else.
+  """
+
+  [migration.match]
+  missing_require = ["GlobalHybrid"]
+  uses_symbols = ["GlobalHybrid"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "GlobalHybrid"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["ea0bde607"]
+  note = "2026-03-24 [theories/crypto] global hybrid theory"
+
+[[migration]]
+id = "keyencapsulationmechanisms-added-r2025.02"
+kind = "theory_added"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  KeyEncapsulationMechanisms did not exist before r2025.02 (created at
+  theories/crypto/KeyEncapsulationMechanisms.eca). A proof written earlier cannot have
+  required it; if it needs KeyEncapsulationMechanisms's contents, they lived somewhere
+  else.
+  """
+
+  [migration.match]
+  missing_require = ["KeyEncapsulationMechanisms"]
+  uses_symbols = ["KeyEncapsulationMechanisms"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "KeyEncapsulationMechanisms"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["d9c058ab1"]
+  note = "2025-01-17 KEM libraries (standard model and ROM) (#672)"
+
+[[migration]]
+id = "keyencapsulationmechanismsrom-added-r2025.02"
+kind = "theory_added"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  KeyEncapsulationMechanismsROM did not exist before r2025.02 (created at
+  theories/crypto/KeyEncapsulationMechanismsROM.eca). A proof written earlier cannot
+  have required it; if it needs KeyEncapsulationMechanismsROM's contents, they lived
+  somewhere else.
+  """
+
+  [migration.match]
+  missing_require = ["KeyEncapsulationMechanismsROM"]
+  uses_symbols = ["KeyEncapsulationMechanismsROM"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "KeyEncapsulationMechanismsROM"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["d9c058ab1"]
+  note = "2025-01-17 KEM libraries (standard model and ROM) (#672)"
+
+[[migration]]
+id = "keyedhashfunctions-added-r2025.11"
+kind = "theory_added"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  KeyedHashFunctions did not exist before r2025.11 (created at
+  theories/crypto/KeyedHashFunctions.eca). A proof written earlier cannot have
+  required it; if it needs KeyedHashFunctions's contents, they lived somewhere else.
+  """
+
+  [migration.match]
+  missing_require = ["KeyedHashFunctions"]
+  uses_symbols = ["KeyedHashFunctions"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "KeyedHashFunctions"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["f27a68156"]
+  note = "2025-08-15 [stdlib] keyed hash functions"
+
+[[migration]]
+id = "looptransform-added-r2023.09"
+kind = "theory_added"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  LoopTransform did not exist before r2023.09 (created at
+  theories/looping/LoopTransform.ec). A proof written earlier cannot have required it;
+  if it needs LoopTransform's contents, they lived somewhere else.
+  """
+
+  [migration.match]
+  missing_require = ["LoopTransform"]
+  uses_symbols = ["LoopTransform"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "LoopTransform"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["ea77e0ed6"]
+  note = "2022-07-15 add looptransform"
+
+[[migration]]
+id = "mset-added-r2025.03"
+kind = "theory_added"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  MSet did not exist before r2025.03 (created at theories/datatypes/MSet.ec). A proof
+  written earlier cannot have required it; if it needs MSet's contents, they lived
+  somewhere else.
+  """
+
+  [migration.match]
+  missing_require = ["MSet"]
+  uses_symbols = ["MSet"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "MSet"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["fe160c4de"]
+  note = "2025-03-14 add new `MSet` theory (#722)"
+
+[[migration]]
+id = "modulestructure-added-r2025.10"
+kind = "theory_added"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  ModuleStructure did not exist before r2025.10 (created at
+  theories/modules/ModuleStructure.ec). A proof written earlier cannot have required
+  it; if it needs ModuleStructure's contents, they lived somewhere else.
+  """
+
+  [migration.match]
+  missing_require = ["ModuleStructure"]
+  uses_symbols = ["ModuleStructure"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "ModuleStructure"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["ebec96e7e"]
+  note = "2025-08-08 add Reflection theory (#794)"
+
+[[migration]]
+id = "olddistr-removed-r2023.09"
+kind = "theory_removed"
+breaks_at = "r2023.09"
+confidence = "low"
+summary = """
+  OldDistr was removed in r2023.09; a `require import OldDistr` no longer resolves. No
+  automatic replacement is known -- this rule reports the problem.
+  """
+
+  [migration.match]
+  requires_theory = ["OldDistr"]
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["1365ceaf2"]
+  note = "2023-03-16 drop unused and obsolete theory files"
+
+[[migration]]
+id = "oldfmap-removed-r2023.09"
+kind = "theory_removed"
+breaks_at = "r2023.09"
+confidence = "low"
+summary = """
+  OldFMap was removed in r2023.09; a `require import OldFMap` no longer resolves. No
+  automatic replacement is known -- this rule reports the problem.
+  """
+
+  [migration.match]
+  requires_theory = ["OldFMap"]
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["1365ceaf2"]
+  note = "2023-03-16 drop unused and obsolete theory files"
+
+[[migration]]
+id = "polyreduce-added-r2023.09"
+kind = "theory_added"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  PolyReduce did not exist before r2023.09 (created at
+  theories/algebra/PolyReduce.ec). A proof written earlier cannot have required it; if
+  it needs PolyReduce's contents, they lived somewhere else.
+  """
+
+  [migration.match]
+  missing_require = ["PolyReduce"]
+  uses_symbols = ["PolyReduce"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "PolyReduce"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["b0eeedc97"]
+  note = "2023-06-10 Take PolyReduce theory from Kyber project"
+
+[[migration]]
+id = "primefield-removed-r2023.09"
+kind = "theory_removed"
+breaks_at = "r2023.09"
+confidence = "low"
+summary = """
+  PrimeField was removed in r2023.09; a `require import PrimeField` no longer
+  resolves. No automatic replacement is known -- this rule reports the problem.
+  """
+
+  [migration.match]
+  requires_theory = ["PrimeField"]
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["9656af661"]
+  note = "2022-09-02 Remove dependency to oldlibs for Group"
+
+[[migration]]
+id = "prime_field-removed-r2023.09"
+kind = "theory_removed"
+breaks_at = "r2023.09"
+confidence = "low"
+summary = """
+  Prime_field was removed in r2023.09; a `require import Prime_field` no longer
+  resolves. No automatic replacement is known -- this rule reports the problem.
+  """
+
+  [migration.match]
+  requires_theory = ["Prime_field"]
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["9656af661"]
+  note = "2022-09-02 Remove dependency to oldlibs for Group"
+
+[[migration]]
+id = "publickeyencryption-added-r2025.02"
+kind = "theory_added"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  PublicKeyEncryption did not exist before r2025.02 (created at
+  theories/crypto/PublicKeyEncryption.eca). A proof written earlier cannot have
+  required it; if it needs PublicKeyEncryption's contents, they lived somewhere else.
+  """
+
+  [migration.match]
+  missing_require = ["PublicKeyEncryption"]
+  uses_symbols = ["PublicKeyEncryption"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "PublicKeyEncryption"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["7c5fbe97c"]
+  note = "2025-01-17 Add PKE libraries (both standard model and ROM) (#677)"
+
+[[migration]]
+id = "publickeyencryptionrom-added-r2025.02"
+kind = "theory_added"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  PublicKeyEncryptionROM did not exist before r2025.02 (created at
+  theories/crypto/PublicKeyEncryptionROM.eca). A proof written earlier cannot have
+  required it; if it needs PublicKeyEncryptionROM's contents, they lived somewhere
+  else.
+  """
+
+  [migration.match]
+  missing_require = ["PublicKeyEncryptionROM"]
+  uses_symbols = ["PublicKeyEncryptionROM"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "PublicKeyEncryptionROM"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["7c5fbe97c"]
+  note = "2025-01-17 Add PKE libraries (both standard model and ROM) (#677)"
+
+[[migration]]
+id = "qfabv-added-r2026.07"
+kind = "theory_added"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  QFABV did not exist before r2026.07 (created at theories/datatypes/QFABV.ec). A
+  proof written earlier cannot have required it; if it needs QFABV's contents, they
+  lived somewhere else.
+  """
+
+  [migration.match]
+  missing_require = ["QFABV"]
+  uses_symbols = ["QFABV"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "QFABV"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["e07ffa0ed"]
+  note = "2026-06-24 Add bit-level circuit reasoning: circuit/extens tactics and bind command"
+
+[[migration]]
+id = "reflection-added-r2025.10"
+kind = "theory_added"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  Reflection did not exist before r2025.10 (created at
+  theories/modules/Reflection.eca). A proof written earlier cannot have required it;
+  if it needs Reflection's contents, they lived somewhere else.
+  """
+
+  [migration.match]
+  missing_require = ["Reflection"]
+  uses_symbols = ["Reflection"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Reflection"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["ebec96e7e"]
+  note = "2025-08-08 add Reflection theory (#794)"
+
+[[migration]]
 id = "smtmap-moved-r2025.02"
 kind = "theory_renamed"
 # no breaks_at: applies whenever source < target
@@ -208,6 +961,371 @@ summary = """
   derived_from = "library_history.json"
   commits = ["6942bd0dd"]
   note = "split SmtMap into SMT Array and finite map"
+
+[[migration]]
+id = "totalprob-added-r2026.05"
+kind = "theory_added"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  TotalProb did not exist before r2026.05 (created at theories/modules/TotalProb.ec).
+  A proof written earlier cannot have required it; if it needs TotalProb's contents,
+  they lived somewhere else.
+  """
+
+  [migration.match]
+  missing_require = ["TotalProb"]
+  uses_symbols = ["TotalProb"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "TotalProb"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["587d28f80"]
+  note = """
+    2026-04-06 [theories/modules] add law of total probability for lossless
+    distributions with finite support
+    """
+
+[[migration]]
+id = "tweakablehashfunctions-added-r2025.11"
+kind = "theory_added"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  TweakableHashFunctions did not exist before r2025.11 (created at
+  theories/crypto/TweakableHashFunctions.eca). A proof written earlier cannot have
+  required it; if it needs TweakableHashFunctions's contents, they lived somewhere
+  else.
+  """
+
+  [migration.match]
+  missing_require = ["TweakableHashFunctions"]
+  uses_symbols = ["TweakableHashFunctions"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "TweakableHashFunctions"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["02da120b7"]
+  note = "2025-09-17 [stdlib] tweakable hash functions"
+
+[[migration]]
+id = "xreal-added-r2024.01"
+kind = "theory_added"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  Xreal did not exist before r2024.01 (created at theories/datatypes/Xreal.ec). A
+  proof written earlier cannot have required it; if it needs Xreal's contents, they
+  lived somewhere else.
+  """
+
+  [migration.match]
+  missing_require = ["Xreal"]
+  uses_symbols = ["Xreal"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Xreal"
+
+  [migration.provenance]
+  derived_from = "library_history.json"
+  commits = ["99ec9f4bc"]
+  note = "2023-10-11 ehoare"
+
+[[migration]]
+id = "allcore-does-not-export-aead"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring AEAD into scope (AllCore exports only Core,
+  Int, Real, Xint). A file that requires AllCore, uses AEAD names, and never requires
+  AEAD needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["AEAD"]
+  uses_symbols = [
+    "AEAD_Adv",
+    "AEAD_OraclesT",
+    "AEADmul_Adv",
+    "AEADmul_OraclesT",
+    "AData",
+    "AEAD_LoR",
+    "AEAD_LoRCondProb",
+    "AEAD_Oracles",
+    "AEAD_OraclesCondProb",
+    "AEADmul_Oracles",
+    "AEADmul_Sec",
+    "aead_corr",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "AEAD"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; AEAD is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-algtactic"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring AlgTactic into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses AlgTactic names, and
+  never requires AlgTactic needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["AlgTactic"]
+  uses_symbols = [
+    "Cn_eq0",
+    "Cp_idp",
+    "divrE",
+    "subrE",
+    "addr0",
+    "addrK",
+    "addrN",
+    "expr0",
+    "exprN",
+    "exprS",
+    "mulr1",
+    "mulrK",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "AlgTactic"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; AlgTactic is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-bigalg"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Bigalg into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Bigalg names, and never
+  requires Bigalg needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Bigalg"]
+  uses_symbols = [
+    "ler_prod",
+    "ler_prod_seq",
+    "ler_sum_seq",
+    "mulr_const",
+    "mulr_const_cond",
+    "prodr_eq0",
+    "prodr_ge0",
+    "prodr_ge0_seq",
+    "prodr_gt0",
+    "prodr_gt0_seq",
+    "sub_ler_sum",
+    "sum_pair_dep",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Bigalg"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Bigalg is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-bigop"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Bigop into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Bigop names, and never
+  requires Bigop needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Bigop"]
+  uses_symbols = [
+    "bigD1",
+    "bigD1_cond",
+    "bigD1_cond_if",
+    "bigID",
+    "big_addn",
+    "big_allpairs",
+    "big_cat_int",
+    "big_catl",
+    "big_catr",
+    "big_comp",
+    "big_const",
+    "big_distr",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Bigop"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Bigop is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-binomial"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Binomial into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Binomial names, and never
+  requires Binomial needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Binomial"]
+  uses_symbols = [
+    "BinomialCoeffs",
+    "bin0",
+    "bin0n",
+    "bin1",
+    "binSn",
+    "bin_gt",
+    "bin_lt0l",
+    "bin_lt0r",
+    "binn",
+    "binomial",
+    "binomial_r",
+    "binp",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Binomial"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Binomial is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-birthday"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Birthday into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Birthday names, and never
+  requires Birthday needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Birthday"]
+  uses_symbols = ["maxu", "maxuP", "pr_Sample_le", "pr_Sample_le_q2", "pr_collision_q2"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Birthday"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Birthday is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-bitencoding"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring BitEncoding into scope (AllCore exports
+  only Core, Int, Real, Xint). A file that requires AllCore, uses BitEncoding names,
+  and never requires BitEncoding needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["BitEncoding"]
+  uses_symbols = ["chunk_exact", "chunk_nil"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "BitEncoding"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; BitEncoding is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-bitword"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring BitWord into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses BitWord names, and never
+  requires BitWord needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["BitWord"]
+  uses_symbols = ["onew_int", "zerow_int"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "BitWord"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; BitWord is not in it.
+    """
 
 [[migration]]
 id = "allcore-does-not-export-bool"
@@ -238,6 +1356,85 @@ summary = """
     """
 
 [[migration]]
+id = "allcore-does-not-export-crhash"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring CRHash into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses CRHash names, and never
+  requires CRHash needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["CRHash"]
+  uses_symbols = [
+    "AdvCR",
+    "AdvInd",
+    "HCheck",
+    "Hash",
+    "HashI",
+    "OrclInd",
+    "IdealHash",
+    "IndHash",
+    "OrclCR",
+    "RealHash",
+    "data",
+    "hkey",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "CRHash"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; CRHash is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-commitment"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Commitment into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Commitment names, and
+  never requires Commitment needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Commitment"]
+  uses_symbols = [
+    "Binder",
+    "CommitmentScheme",
+    "Unhider",
+    "BindingExperiment",
+    "CommitmentProtocol",
+    "HidingExperiment",
+    "commitment",
+    "openingkey",
+    "value",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Commitment"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Commitment is not in it.
+    """
+
+[[migration]]
 id = "allcore-does-not-export-corereal"
 kind = "require_semantics"
 # no breaks_at: applies whenever source < target
@@ -263,6 +1460,34 @@ summary = """
   note = """
     AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
     'Xint']; CoreReal is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-counter"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Counter into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Counter names, and never
+  requires Counter needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Counter"]
+  uses_symbols = ["Distinguisher", "Oracle", "System", "ind_counting", "Counter", "from"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Counter"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Counter is not in it.
     """
 
 [[migration]]
@@ -322,6 +1547,271 @@ summary = """
     """
 
 [[migration]]
+id = "allcore-does-not-export-djoin"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring DJoin into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses DJoin names, and never
+  requires DJoin needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["DJoin"]
+  uses_symbols = ["JoinMapSampling", "JoinSampling", "pr_sample"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "DJoin"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; DJoin is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-dlist"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring DList into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses DList names, and never
+  requires DList needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["DList"]
+  uses_symbols = ["LoopSnoc", "ParametricProgram", "SampleCons", "Loop", "Sample"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "DList"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; DList is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-dmap"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring DMap into scope (AllCore exports only Core,
+  Int, Real, Xint). A file that requires AllCore, uses DMap names, and never requires
+  DMap needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["DMap"]
+  uses_symbols = ["DMapSampling", "sample_r"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "DMap"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; DMap is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-dexcepted"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Dexcepted into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Dexcepted names, and
+  never requires Dexcepted needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Dexcepted"]
+  uses_symbols = ["dexcepted1E_in", "dexcepted1E_notin", "weight_dexcepted"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Dexcepted"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Dexcepted is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-dfilter"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Dfilter into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Dfilter names, and never
+  requires Dfilter needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Dfilter"]
+  uses_symbols = ["dfilter1E_in", "dfilter1E_notin", "dfilterE", "dfilterE_indep", "dfilterE_subset"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Dfilter"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Dfilter is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-digitalsignatures"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring DigitalSignatures into scope (AllCore
+  exports only Core, Int, Real, Xint). A file that requires AllCore, uses
+  DigitalSignatures names, and never requires DigitalSignatures needs an explicit
+  require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["DigitalSignatures"]
+  uses_symbols = [
+    "Adv_EUFCMA",
+    "Adv_EUFGCMA",
+    "Adv_EUFKOA",
+    "Adv_EUFNACMA",
+    "Adv_EUFRMA",
+    "Adv_SEUFCMA",
+    "Adv_SUFCMA",
+    "Adv_SUFGCMA",
+    "Adv_SUFKOA",
+    "Adv_SUFNACMA",
+    "Adv_SUFRMA",
+    "Adv_UBCMA",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "DigitalSignatures"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; DigitalSignatures is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-digitalsignaturesrom"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring DigitalSignaturesROM into scope (AllCore
+  exports only Core, Int, Real, Xint). A file that requires AllCore, uses
+  DigitalSignaturesROM names, and never requires DigitalSignaturesROM needs an
+  explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["DigitalSignaturesROM"]
+  uses_symbols = [
+    "Adv_EUFCMA_ROM",
+    "Adv_EUFGCMA_ROM",
+    "Adv_EUFKOA_ROM",
+    "Adv_EUFNACMA_ROM",
+    "Adv_EUFRMA_ROM",
+    "Adv_SEUFCMA_ROM",
+    "Adv_SUFCMA_ROM",
+    "Adv_SUFGCMA_ROM",
+    "Adv_SUFKOA_ROM",
+    "Adv_SUFNACMA_ROM",
+    "Adv_SUFRMA_ROM",
+    "Adv_UBCMA_ROM",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "DigitalSignaturesROM"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; DigitalSignaturesROM is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-discrete"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Discrete into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Discrete names, and never
+  requires Discrete needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Discrete"]
+  uses_symbols = [
+    "cnt_Uw",
+    "countableIL",
+    "countableIR",
+    "countableP",
+    "countableU",
+    "countable_inj",
+    "countable_le",
+    "enum_cenum",
+    "enum_uniq_pmap_range",
+    "enumerate_pmap_range",
+    "eq_enumerate",
+    "inj_condL_countable",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Discrete"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Discrete is not in it.
+    """
+
+[[migration]]
 id = "allcore-does-not-export-distr"
 kind = "require_semantics"
 # no breaks_at: applies whenever source < target
@@ -350,6 +1840,76 @@ summary = """
     """
 
 [[migration]]
+id = "allcore-does-not-export-dynmatrix"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring DynMatrix into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses DynMatrix names, and
+  never requires DynMatrix needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["DynMatrix"]
+  uses_symbols = ["canon", "mclamp", "vclamp"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "DynMatrix"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; DynMatrix is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-eventpartitioning"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring EventPartitioning into scope (AllCore
+  exports only Core, Int, Real, Xint). A file that requires AllCore, uses
+  EventPartitioning names, and never requires EventPartitioning needs an explicit
+  require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["EventPartitioning"]
+  uses_symbols = [
+    "FPredPartitioning",
+    "FSetPartitioning",
+    "ListPartitioning",
+    "ResultPartitioning",
+    "TotalSubuniformResultOnly",
+    "eq_M_Ref",
+    "fpred_partitioning",
+    "fset_partitioning",
+    "gt0_k",
+    "is_subuniform",
+    "le1_k",
+    "list_partitioning",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "EventPartitioning"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; EventPartitioning is not in it.
+    """
+
+[[migration]]
 id = "allcore-does-not-export-fmap"
 kind = "require_semantics"
 # no breaks_at: applies whenever source < target
@@ -369,13 +1929,13 @@ summary = """
     "ge0_fsize",
     "mem_offset",
     "mem_offsetmap",
-    "offset",
     "offsetK",
     "offset_get",
     "offsetmap",
     "offsetmapN",
     "offsetmapT",
     "rem_set",
+    "offset",
   ]
 
   [[migration.action]]
@@ -391,31 +1951,843 @@ summary = """
     """
 
 [[migration]]
-id = "allcore-does-not-export-fset"
+id = "allcore-does-not-export-fintype"
 kind = "require_semantics"
 # no breaks_at: applies whenever source < target
 confidence = "medium"
 summary = """
-  `require import AllCore.` does not bring FSet into scope (AllCore exports only Core,
-  Int, Real, Xint). A file that requires AllCore, uses FSet names, and never requires
-  FSet needs an explicit require.
+  `require import AllCore.` does not bring FinType into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses FinType names, and never
+  requires FinType needs an explicit require.
   """
 
   [migration.match]
   requires_theory = ["AllCore"]
-  missing_require = ["FSet"]
-  uses_symbols = ["finite_mem"]
+  missing_require = ["FinType"]
+  uses_symbols = ["card_size_to_seq", "perm_eq_enum_to_seq", "is_finite_for"]
 
   [[migration.action]]
   op = "add_require"
-  theory = "FSet"
+  theory = "FinType"
   after = "AllCore"
 
   [migration.provenance]
   derived_from = "AllCore.ec export closure + library_history.json"
   note = """
     AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
-    'Xint']; FSet is not in it.
+    'Xint']; FinType is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-finite"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Finite into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Finite names, and never
+  requires Finite needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Finite"]
+  uses_symbols = ["finite_fixfinfun", "finite_for_mem", "mem_fingraph", "sub_size_to_seq", "finite_mem"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Finite"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Finite is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-floorceil"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring FloorCeil into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses FloorCeil names, and
+  never requires FloorCeil needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["FloorCeil"]
+  uses_symbols = ["ceilE", "ceil_floor", "floorE", "floor_mono"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "FloorCeil"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; FloorCeil is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-foldproc"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring FoldProc into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses FoldProc names, and never
+  requires FoldProc needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["FoldProc"]
+  uses_symbols = ["Orcl", "Fold", "fold_ll"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "FoldProc"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; FoldProc is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-globalhybrid"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring GlobalHybrid into scope (AllCore exports
+  only Core, Int, Real, Xint). A file that requires AllCore, uses GlobalHybrid names,
+  and never requires GlobalHybrid needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["GlobalHybrid"]
+  uses_symbols = [
+    "HYBRID_PARAM",
+    "Exper",
+    "Param",
+    "hybrid_param",
+    "hybrid_param_result",
+    "or_input",
+    "or_output",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "GlobalHybrid"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; GlobalHybrid is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-group"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Group into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Group names, and never
+  requires Group needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Group"]
+  uses_symbols = ["expE", "logE"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Group"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Group is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-hybrid"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Hybrid into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Hybrid names, and never
+  requires Hybrid needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Hybrid"]
+  uses_symbols = [
+    "AdvOrcl",
+    "AdvCount",
+    "GLB_WL",
+    "GRB_WR",
+    "HybGameFixed",
+    "Hybrid0",
+    "Hybrid_div",
+    "Hybrid_restr",
+    "Hybrid_restr_div",
+    "OrclCount",
+    "Orclb",
+    "Hybrid",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Hybrid"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Hybrid is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-ideal"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Ideal into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Ideal names, and never
+  requires Ideal needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Ideal"]
+  uses_symbols = [
+    "RingQuotientBase",
+    "RingQuotientDflInv",
+    "add0r",
+    "addNr",
+    "mul1r",
+    "addrA",
+    "addrC",
+    "mulrA",
+    "mulrC",
+    "mulrDl",
+    "oner_neq0",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Ideal"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Ideal is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-indist"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Indist into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Indist names, and never
+  requires Indist needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Indist"]
+  uses_symbols = ["Orcl", "Orcl2", "OrclL", "OrclR"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Indist"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Indist is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-intdiv"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring IntDiv into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses IntDiv names, and never
+  requires IntDiv needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["IntDiv"]
+  uses_symbols = ["edivn_def", "edivz_def"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "IntDiv"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; IntDiv is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-keyencapsulationmechanisms"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring KeyEncapsulationMechanisms into scope
+  (AllCore exports only Core, Int, Real, Xint). A file that requires AllCore, uses
+  KeyEncapsulationMechanisms names, and never requires KeyEncapsulationMechanisms
+  needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["KeyEncapsulationMechanisms"]
+  uses_symbols = [
+    "Adv_ANOCCA",
+    "Adv_ANOCCA1",
+    "Adv_ANOCCA2",
+    "Adv_ANOCPA",
+    "Adv_HONBIND",
+    "Adv_INDCCA",
+    "Adv_INDCCA1",
+    "Adv_INDCCA2",
+    "Adv_INDCPA",
+    "Adv_LEAKBIND",
+    "Adv_MALBIND",
+    "Adv_MALBIND_DD",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "KeyEncapsulationMechanisms"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; KeyEncapsulationMechanisms is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-keyencapsulationmechanismsrom"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring KeyEncapsulationMechanismsROM into scope
+  (AllCore exports only Core, Int, Real, Xint). A file that requires AllCore, uses
+  KeyEncapsulationMechanismsROM names, and never requires
+  KeyEncapsulationMechanismsROM needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["KeyEncapsulationMechanismsROM"]
+  uses_symbols = [
+    "Adv_ANOCCA1_ROM",
+    "Adv_ANOCCA2_ROM",
+    "Adv_ANOCCA_ROM",
+    "Adv_ANOCPA_ROM",
+    "Adv_HONBIND_ROM",
+    "Adv_INDCCA1_ROM",
+    "Adv_INDCCA2_ROM",
+    "Adv_INDCCA_ROM",
+    "Adv_INDCPA_ROM",
+    "Adv_LEAKBIND_ROM",
+    "Adv_MALBIND_DD_ROM",
+    "Adv_MALBIND_ED_ROM",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "KeyEncapsulationMechanismsROM"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; KeyEncapsulationMechanismsROM is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-keyedhashfunctions"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring KeyedHashFunctions into scope (AllCore
+  exports only Core, Int, Real, Xint). A file that requires AllCore, uses
+  KeyedHashFunctions names, and never requires KeyedHashFunctions needs an explicit
+  require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["KeyedHashFunctions"]
+  uses_symbols = [
+    "Adv_CR",
+    "Adv_DMDSPR",
+    "Adv_DMPRE",
+    "Adv_DMSPR",
+    "Adv_DMUD",
+    "Adv_DSPR",
+    "Adv_ETCR",
+    "Adv_ITSR",
+    "Adv_METCR",
+    "Adv_MMDSPR",
+    "Adv_MMPRE",
+    "Adv_MMSPR",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "KeyedHashFunctions"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; KeyedHashFunctions is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-looptransform"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring LoopTransform into scope (AllCore exports
+  only Core, Int, Real, Xint). A file that requires AllCore, uses LoopTransform names,
+  and never requires LoopTransform needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["LoopTransform"]
+  uses_symbols = [
+    "AdvLoop",
+    "ExactIter",
+    "ILoop",
+    "c_gt0",
+    "le_floor",
+    "le_floorE",
+    "lt_floorE",
+    "step",
+    "step_gt0",
+    "Loop",
+    "floor",
+    "floor_le",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "LoopTransform"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; LoopTransform is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-mrpke"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring MRPKE into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses MRPKE names, and never
+  requires MRPKE needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["MRPKE"]
+  uses_symbols = [
+    "MRPKE_Adv",
+    "MRPKE_OrclT",
+    "MRPKE_Sec",
+    "MRPKE_lor",
+    "Scheme",
+    "fold_encs",
+    "mencrypt_ll",
+    "CTxt",
+    "MCTxt",
+    "PTxt",
+    "decrypt",
+    "gen_ll",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "MRPKE"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; MRPKE is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-mset"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring MSet into scope (AllCore exports only Core,
+  Int, Real, Xint). A file that requires AllCore, uses MSet names, and never requires
+  MSet needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["MSet"]
+  uses_symbols = ["mset", "oflistK'"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "MSet"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; MSet is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-matrix"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Matrix into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Matrix names, and never
+  requires Matrix needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Matrix"]
+  uses_symbols = ["canon", "mclamp", "vclamp"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Matrix"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Matrix is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-monoid"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Monoid into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Monoid names, and never
+  requires Monoid needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Monoid"]
+  uses_symbols = ["add0m", "addmA", "addmC"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Monoid"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Monoid is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-mu_mem"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Mu_mem into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Mu_mem names, and never
+  requires Mu_mem needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Mu_mem"]
+  uses_symbols = ["mu_mem_le_fsize", "mu_mem_le_gen"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Mu_mem"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Mu_mem is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-number"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Number into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Number names, and never
+  requires Number needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Number"]
+  uses_symbols = ["maxrA", "minrA"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Number"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Number is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-ow"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring OW into scope (AllCore exports only Core,
+  Int, Real, Xint). A file that requires AllCore, uses OW names, and never requires OW
+  needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["OW"]
+  uses_symbols = ["challenge_ll", "challenge_uni", "dkeys", "dkeys_ll"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "OW"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; OW is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-pke"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring PKE into scope (AllCore exports only Core,
+  Int, Real, Xint). A file that requires AllCore, uses PKE names, and never requires
+  PKE needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["PKE"]
+  uses_symbols = [
+    "AdversaryRO",
+    "CAdversary",
+    "CAdversaryRO",
+    "CGame",
+    "CPAGame",
+    "SchemeRO",
+    "CGameROM",
+    "CPAGameROM",
+    "CPAROM",
+    "CPA_L_ROM",
+    "CPA_R_ROM",
+    "CorrectnessAdv",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "PKE"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; PKE is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-pke_cpa"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring PKE_CPA into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses PKE_CPA names, and never
+  requires PKE_CPA needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["PKE_CPA"]
+  uses_symbols = ["Adversary", "Scheme"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "PKE_CPA"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; PKE_CPA is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-pke_hybrid"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring PKE_hybrid into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses PKE_hybrid names, and
+  never requires PKE_hybrid needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["PKE_hybrid"]
+  uses_symbols = [
+    "AHL_bound",
+    "AHR_bound",
+    "AL_bound",
+    "AR_bound",
+    "Cost",
+    "big_b2i",
+    "bigi1",
+    "bigi_b2i_split",
+    "bigi_inP",
+    "cScheme",
+    "cost_AHL",
+    "cost_AHR",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "PKE_hybrid"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; PKE_hybrid is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-pksmk"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring PKSMK into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses PKSMK names, and never
+  requires PKSMK needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["PKSMK"]
+  uses_symbols = [
+    "AdvInd",
+    "AdvUF",
+    "AdvUF1",
+    "FullSigService",
+    "OrclInd",
+    "OrclUF1",
+    "SigService",
+    "SigServiceV",
+    "Aux1",
+    "Aux1_EAux1",
+    "Aux_Aux1",
+    "Aux_bound",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "PKSMK"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; PKSMK is not in it.
     """
 
 [[migration]]
@@ -433,16 +2805,16 @@ summary = """
   requires_theory = ["AllCore"]
   missing_require = ["PROM"]
   uses_symbols = [
+    "RM_Distinguisher",
     "FinT",
     "FunRO",
     "MainRM",
     "Pc_ge0",
-    "RM_Distinguisher",
     "Vars",
-    "dout_ll",
     "fcollP",
     "fcoll_bound",
     "pr_FinRO_FunRO_D",
+    "dout_ll",
   ]
 
   [[migration.action]]
@@ -455,6 +2827,569 @@ summary = """
   note = """
     AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
     'Xint']; PROM is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-perms"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Perms into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Perms names, and never
+  requires Perms needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Perms"]
+  uses_symbols = ["allperms_rP", "uniq_allperms_r"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Perms"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Perms is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-plugandpray"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring PlugAndPray into scope (AllCore exports
+  only Core, Int, Real, Xint). A file that requires AllCore, uses PlugAndPray names,
+  and never requires PlugAndPray needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["PlugAndPray"]
+  uses_symbols = ["Guess", "PBound_mult", "Game", "indices", "tval"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "PlugAndPray"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; PlugAndPray is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-poly"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Poly into scope (AllCore exports only Core,
+  Int, Real, Xint). A file that requires AllCore, uses Poly names, and never requires
+  Poly needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Poly"]
+  uses_symbols = ["PolyComRing", "scale1p", "scalep1"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Poly"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Poly is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-publickeyencryption"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring PublicKeyEncryption into scope (AllCore
+  exports only Core, Int, Real, Xint). A file that requires AllCore, uses
+  PublicKeyEncryption names, and never requires PublicKeyEncryption needs an explicit
+  require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["PublicKeyEncryption"]
+  uses_symbols = [
+    "Adv_ANOCCA1",
+    "Adv_ANOCCA2",
+    "Adv_ANOCPA",
+    "Adv_Cor",
+    "Adv_INDCCA1",
+    "Adv_INDCCA2",
+    "Adv_INDCPA",
+    "Adv_NMCCA1",
+    "Adv_NMCCA2",
+    "Adv_NMCPA",
+    "Adv_OWCCA1",
+    "Adv_OWCCA2",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "PublicKeyEncryption"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; PublicKeyEncryption is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-publickeyencryptionrom"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring PublicKeyEncryptionROM into scope (AllCore
+  exports only Core, Int, Real, Xint). A file that requires AllCore, uses
+  PublicKeyEncryptionROM names, and never requires PublicKeyEncryptionROM needs an
+  explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["PublicKeyEncryptionROM"]
+  uses_symbols = [
+    "Adv_ANOCCA1_ROM",
+    "Adv_ANOCCA2_ROM",
+    "Adv_ANOCPA_ROM",
+    "Adv_Cor_ROM",
+    "Adv_INDCCA1_ROM",
+    "Adv_INDCCA2_ROM",
+    "Adv_INDCPA_ROM",
+    "Adv_NMCCA1_ROM",
+    "Adv_NMCCA2_ROM",
+    "Adv_NMCPA_ROM",
+    "Adv_OWCCA1_ROM",
+    "Adv_OWCCA2_ROM",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "PublicKeyEncryptionROM"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; PublicKeyEncryptionROM is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-qfabv"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring QFABV into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses QFABV names, and never
+  requires QFABV needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["QFABV"]
+  uses_symbols = [
+    "A2B2A",
+    "BVA2B",
+    "BVAExtract",
+    "BVAInit",
+    "BVASHR",
+    "BVASHRS",
+    "BVASliceGet",
+    "BVASliceSet",
+    "BVAdd",
+    "BVAnd",
+    "BVB2A",
+    "BVConcat",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "QFABV"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; QFABV is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-quotient"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Quotient into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Quotient names, and never
+  requires Quotient needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Quotient"]
+  uses_symbols = ["CanonQuotient", "canon"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Quotient"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Quotient is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-realexp"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring RealExp into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses RealExp names, and never
+  requires RealExp needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["RealExp"]
+  uses_symbols = ["rexpr_ge0_hmono_ltr", "rexprn_ege1", "expM", "expB"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "RealExp"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; RealExp is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-realflub"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring RealFLub into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses RealFLub names, and never
+  requires RealFLub needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["RealFLub"]
+  uses_symbols = [
+    "flubZ",
+    "flub_const",
+    "has_fub",
+    "has_fubZ",
+    "has_fub_lub",
+    "is_fub",
+    "ler_flub",
+    "ler_has_fub",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "RealFLub"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; RealFLub is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-realseq"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring RealSeq into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses RealSeq names, and never
+  requires RealSeq needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["RealSeq"]
+  uses_symbols = [
+    "cnvC",
+    "cnv_pow",
+    "cnvtoV0",
+    "cnvtoV_nz",
+    "cnvtoVn",
+    "cnvtoVn2",
+    "cnvto_pow",
+    "converge_sum",
+    "convergeto_sum",
+    "geC_lim_from",
+    "leC_lim_from",
+    "limM",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "RealSeq"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; RealSeq is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-realseries"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring RealSeries into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses RealSeries names, and
+  never requires RealSeries needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["RealSeries"]
+  uses_symbols = [
+    "abs_neg_ler",
+    "abs_pos_ler",
+    "eqL_notin_summable",
+    "eq_psum",
+    "eq_sum",
+    "ge0_psum",
+    "ge0_sum",
+    "ler_big_psum",
+    "ler_big_sum",
+    "ler_neg",
+    "ler_norm_sum",
+    "ler_pos",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "RealSeries"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; RealSeries is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-reflection"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Reflection into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Reflection names, and
+  never requires Reflection needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Reflection"]
+  uses_symbols = ["gen_fact", "reflection", "reflection_glob", "reflection_res"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Reflection"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Reflection is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-rndexcept"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring RndExcept into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses RndExcept names, and
+  never requires RndExcept needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["RndExcept"]
+  uses_symbols = [
+    "AdvRndE",
+    "SAMPLE",
+    "SAMPLE_ADV",
+    "Adversary",
+    "Adversary1",
+    "Adversary1_1",
+    "AdversaryN",
+    "CountI",
+    "Main",
+    "MainE",
+    "SampleB",
+    "SampleEB",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "RndExcept"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; RndExcept is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-rndprod"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring RndProd into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses RndProd names, and never
+  requires RndProd needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["RndProd"]
+  uses_symbols = ["Distinguisher", "Oracles", "d_input", "da_ll", "db_ll", "map_prod", "Game"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "RndProd"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; RndProd is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-sdist"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring SDist into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses SDist names, and never
+  requires SDist needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["SDist"]
+  uses_symbols = [
+    "Distinguisher",
+    "Oracle",
+    "Oracle_i",
+    "Adversary",
+    "Dist",
+    "GenDist",
+    "N_ge0",
+    "Osd1_Hyb",
+    "Osd2_Hyb",
+    "Sample_dlet",
+    "adv_isdistr",
+    "adv_mu1",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "SDist"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; SDist is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-sigmaprotocol"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring SigmaProtocol into scope (AllCore exports
+  only Core, Int, Real, Xint). A file that requires AllCore, uses SigmaProtocol names,
+  and never requires SigmaProtocol needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["SigmaProtocol"]
+  uses_symbols = [
+    "SigmaAlgorithms",
+    "SigmaScheme",
+    "SigmaTraceDistinguisher",
+    "Completeness",
+    "SigmaProtocol",
+    "SimulateHonestVerifier",
+    "SpecialHVZKExperiment",
+    "SpecialSoundnessExperiment",
+    "response",
+    "slen",
+    "slen_pos",
+    "statement",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "SigmaProtocol"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; SigmaProtocol is not in it.
     """
 
 [[migration]]
@@ -474,7 +3409,6 @@ summary = """
   uses_symbols = [
     "domE",
     "empty_valE",
-    "eq_except_refl",
     "eq_except_reml",
     "eq_except_remr",
     "eq_except_set_eq",
@@ -482,8 +3416,9 @@ summary = """
     "eq_except_set_neq",
     "eq_except_set_same",
     "eq_except_setlr",
-    "eq_except_sub",
-    "eq_except_sym",
+    "finite_dom",
+    "finite_rng",
+    "fmap_eqP",
   ]
 
   [[migration.action]]
@@ -496,6 +3431,367 @@ summary = """
   note = """
     AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
     'Xint']; SmtMap is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-splitro"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring SplitRO into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses SplitRO names, and never
+  requires SplitRO needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["SplitRO"]
+  uses_symbols = [
+    "ofpairK",
+    "RO_DOM",
+    "RO_Pair",
+    "Split",
+    "SplitCodom",
+    "SplitDom",
+    "ofpair",
+    "pr_RO_split",
+    "sample_spec",
+    "sampleto",
+    "sampleto1",
+    "sampleto2",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "SplitRO"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; SplitRO is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-stdorder"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring StdOrder into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses StdOrder names, and never
+  requires StdOrder needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["StdOrder"]
+  uses_symbols = ["RealOrder", "upto_maxr"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "StdOrder"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; StdOrder is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-subtype"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Subtype into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Subtype names, and never
+  requires Subtype needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Subtype"]
+  uses_symbols = ["internal_val", "subtype_injection", "insub"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Subtype"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Subtype is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-tactics"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Tactics into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Tactics names, and never
+  requires Tactics needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Tactics"]
+  uses_symbols = ["andaIs", "andaWrs"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Tactics"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Tactics is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-totalprob"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring TotalProb into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses TotalProb names, and
+  never requires TotalProb needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["TotalProb"]
+  uses_symbols = [
+    "RandAux",
+    "RandAux_partition_eq",
+    "TotalBool",
+    "TotalGeneral",
+    "TotalRange",
+    "TotalUniform",
+    "total_prob",
+    "total_prob'",
+    "total_prob_bool",
+    "total_prob_drange",
+    "total_prob_uniform",
+    "x_of_glob_RA",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "TotalProb"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; TotalProb is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-tuple"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Tuple into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Tuple names, and never
+  requires Tuple needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Tuple"]
+  uses_symbols = ["size_wordn", "word_spec", "word_spec_cat", "wordn0", "wordnP", "wordnS", "wordn_size"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Tuple"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Tuple is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-tweakablehashfunctions"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring TweakableHashFunctions into scope (AllCore
+  exports only Core, Int, Real, Xint). A file that requires AllCore, uses
+  TweakableHashFunctions names, and never requires TweakableHashFunctions needs an
+  explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["TweakableHashFunctions"]
+  uses_symbols = [
+    "Adv_SMDTDSPR",
+    "Adv_SMDTDSPRC",
+    "Adv_SMDTOpenPRE",
+    "Adv_SMDTOpenPREC",
+    "Adv_SMDTPRE",
+    "Adv_SMDTPREC",
+    "Adv_SMDTTCR",
+    "Adv_SMDTTCRC",
+    "Adv_SMDTUD",
+    "Adv_SMDTUDC",
+    "Oracle_SMDTDSPR",
+    "Oracle_SMDTOpenPRE",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "TweakableHashFunctions"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; TweakableHashFunctions is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-wf"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring WF into scope (AllCore exports only Core,
+  Int, Real, Xint). A file that requires AllCore, uses WF names, and never requires WF
+  needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["WF"]
+  uses_symbols = ["wf_recur", "wfc_least_inversion", "wfc_least_inversion_aux"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "WF"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; WF is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-word"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Word into scope (AllCore exports only Core,
+  Int, Real, Xint). A file that requires AllCore, uses Word names, and never requires
+  Word needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Word"]
+  uses_symbols = ["setE", "getE"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Word"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Word is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-xreal"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring Xreal into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses Xreal names, and never
+  requires Xreal needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["Xreal"]
+  uses_symbols = ["Ep_dbiased", "xle_rle"]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "Xreal"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; Xreal is not in it.
+    """
+
+[[migration]]
+id = "allcore-does-not-export-zmodp"
+kind = "require_semantics"
+# no breaks_at: applies whenever source < target
+confidence = "medium"
+summary = """
+  `require import AllCore.` does not bring ZModP into scope (AllCore exports only
+  Core, Int, Real, Xint). A file that requires AllCore, uses ZModP names, and never
+  requires ZModP needs an explicit require.
+  """
+
+  [migration.match]
+  requires_theory = ["AllCore"]
+  missing_require = ["ZModP"]
+  uses_symbols = [
+    "Cost",
+    "cfadd",
+    "cfdiv",
+    "cfeq",
+    "cfmul",
+    "cfsub",
+    "ge0_cf",
+    "exp_inzmod",
+    "exp_mod",
+    "exp_p",
+    "exp_sub_p_1",
+    "inv_exp_sub_p_2",
+  ]
+
+  [[migration.action]]
+  op = "add_require"
+  theory = "ZModP"
+  after = "AllCore"
+
+  [migration.provenance]
+  derived_from = "AllCore.ec export closure + library_history.json"
+  note = """
+    AllCore's transitive `require export` closure is ['AllCore', 'Core', 'Int', 'Real',
+    'Xint']; ZModP is not in it.
     """
 
 [[migration]]
@@ -576,6 +3872,43 @@ summary = """
 # ==========================================================================
 
 [[library]]
+theory = "AEAD"
+path = "theories/crypto/assumptions/AEAD.ec"
+exists_now = true
+commits_examined = 7
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +26/-0"
+path_history = ["? -> theories/crypto/assumptions/AEAD.ec (r2022.04, 3bbc09bdf)"]
+
+[[library]]
+theory = "AdvAbsVal"
+path = "theories/crypto/AdvAbsVal.ec"
+exists_now = true
+commits_examined = 23
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +0/-0"
+path_history = [
+  "? -> theories/AdvAbsVal.ec (r2022.04, 1ee099cf1)",
+  "? -> theories/AdvAbsVal.ec (r2022.04, a2cdf0752)",
+  "theories/AdvAbsVal.ec -> theories/crypto/AdvAbsVal.ec (r2022.04, a2cdf0752)",
+]
+
+[[library]]
+theory = "AlgTactic"
+path = "theories/tactics/AlgTactic.ec"
+exists_now = true
+commits_examined = 26
+releases_touched = ["r2022.04", "r2024.09"]
+symbol_churn = "r2022.04: +0/-0, r2024.09: +24/-0"
+path_history = [
+  "? -> theories/AlgTactic.ec (r2022.04, ab1f88ab9)",
+  "? -> theories/AlgTactic.ec (r2022.04, ba74e83f9)",
+  "theories/AlgTactic.ec -> theories/algebra/AlgTactic.ec (r2022.04, ba74e83f9)",
+  "? -> theories/algebra/AlgTactic.ec (r2022.04, 82c366dd9)",
+  "theories/algebra/AlgTactic.ec -> theories/tactics/AlgTactic.ec (r2022.04, 82c366dd9)",
+]
+
+[[library]]
 theory = "AllCore"
 path = "theories/core/AllCore.ec"
 exists_now = true
@@ -585,12 +3918,97 @@ symbol_churn = "r2022.04: +1/-0, r2024.09: +0/-9"
 path_history = ["theories/datatypes/Datatypes.ec -> theories/core/AllCore.ec (r2022.04, 4f2492811)"]
 
 [[library]]
+theory = "Array"
+path = "theories/datatypes/Array.ec"
+exists_now = true
+commits_examined = 66
+releases_touched = ["r2022.04", "r2024.09", "r2025.02", "r2025.08"]
+symbol_churn = "r2022.04: +19/-0, r2024.09: +9/-0, r2025.02: +3/-0, r2025.08: +1/-0"
+path_history = [
+  "? -> theories/Array.ec (r2022.04, 7c09b1e0e)",
+  "? -> theories/Array.ec (r2022.04, ba74e83f9)",
+  "theories/Array.ec -> theories/datatypes/Array.ec (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "Bigalg"
+path = "theories/algebra/Bigalg.ec"
+exists_now = true
+commits_examined = 45
+releases_touched = ["r2022.04", "r2023.09", "r2024.09"]
+symbol_churn = "r2022.04: +15/-0, r2023.09: +6/-0, r2024.09: +18/-0"
+path_history = [
+  "theories/newth/NewBigalg.eca -> theories/algebra/Bigalg.eca (r2022.04, ba74e83f9)",
+  "? -> theories/algebra/Bigalg.ec (r2022.04, 128794fa6)",
+  "? -> theories/algebra/Bigalg.eca (r2022.04, 128794fa6)",
+]
+
+[[library]]
+theory = "Bigop"
+path = "theories/algebra/Bigop.eca"
+exists_now = true
+commits_examined = 83
+releases_touched = ["r2022.04", "r2024.09"]
+symbol_churn = "r2022.04: +18/-0, r2024.09: +54/-0"
+path_history = ["theories/newth/NewBigop.eca -> theories/algebra/Bigop.eca (r2022.04, ba74e83f9)"]
+
+[[library]]
+theory = "Binomial"
+path = "theories/algebra/Binomial.ec"
+exists_now = true
+commits_examined = 19
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +22/-0"
+path_history = ["? -> theories/algebra/Binomial.ec (r2022.04, 45faa5efd)"]
+
+[[library]]
+theory = "Birthday"
+path = "theories/crypto/Birthday.eca"
+exists_now = true
+commits_examined = 39
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +6/-0, r2023.09: +0/-18"
+path_history = [
+  "? -> theories/Birthday.ec (r2022.04, 2b752c312)",
+  "theories/Birthday.ec -> examples/Birthday.ec (r2022.04, e82685561)",
+  "? -> theories/Birthday.ec (r2022.04, a2cdf0752)",
+  "theories/Birthday.ec -> theories/crypto/Birthday.ec (r2022.04, a2cdf0752)",
+  "? -> examples/Birthday.ec (r2022.04, b31f19f26)",
+  "? -> theories/crypto/Birthday.ec (r2023.09, 35e3849e4)",
+]
+
+[[library]]
+theory = "BitEncoding"
+path = "theories/datatypes/BitEncoding.ec"
+exists_now = true
+commits_examined = 28
+releases_touched = ["r2022.04", "r2023.09", "r2024.09", "r2025.10", "r2026.03"]
+symbol_churn = """
+  r2022.04: +19/-0, r2023.09: +47/-0, r2024.09: +12/-0, r2025.10: +2/-0, r2026.03:
+  +2/-0
+  """
+path_history = ["? -> theories/datatypes/BitEncoding.ec (r2022.04, 4e6f16350)"]
+
+[[library]]
+theory = "BitWord"
+path = "theories/datatypes/BitWord.eca"
+exists_now = true
+commits_examined = 28
+releases_touched = ["r2022.04", "r2023.09", "r2024.09"]
+symbol_churn = "r2022.04: +16/-0, r2023.09: +2/-5, r2024.09: +0/-2"
+path_history = [
+  "? -> theories/newth/BitWord.eca (r2022.04, 2a273fbb3)",
+  "theories/newth/BitWord.eca -> theories/datatypes/BitWord.eca (r2022.04, ba74e83f9)",
+  "? -> theories/newth/BitWord.eca (r2022.04, ba74e83f9)",
+]
+
+[[library]]
 theory = "Bool"
 path = "theories/core/Bool.ec"
 exists_now = true
 commits_examined = 41
 releases_touched = ["r2022.04", "r2024.09"]
-symbol_churn = "r2022.04: +2/-0, r2024.09: +5/-2"
+symbol_churn = "r2022.04: +2/-0, r2024.09: +5/-1"
 path_history = [
   "theories/bool.ec -> theories/Bool.ec (r2022.04, 7c09b1e0e)",
   "? -> theories/Bool.ec (r2022.04, 46514b20f)",
@@ -598,13 +4016,90 @@ path_history = [
 ]
 
 [[library]]
+theory = "CCA"
+path = "theories/crypto/ske/CCA.eca"
+exists_now = true
+commits_examined = 12
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +0/-0"
+path_history = [
+  "? -> theories/newth/ske/CCA.eca (r2022.04, 39da53073)",
+  "theories/newth/ske/CCA.eca -> theories/crypto/ske/CCA.eca (r2022.04, ba74e83f9)",
+  "? -> theories/newth/ske/CCA.eca (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "CCA1"
+path = "theories/crypto/ske/CCA1.eca"
+exists_now = true
+commits_examined = 12
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +0/-0"
+path_history = [
+  "? -> theories/newth/ske/CCA1.eca (r2022.04, 39da53073)",
+  "theories/newth/ske/CCA1.eca -> theories/crypto/ske/CCA1.eca (r2022.04, ba74e83f9)",
+  "? -> theories/newth/ske/CCA1.eca (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "CHoareTactic"
+path = ""
+exists_now = false
+commits_examined = 3
+releases_touched = ["r2022.04", "r2024.09"]
+symbol_churn = "r2022.04: +36/-0, r2024.09: +0/-36"
+path_history = [
+  "? -> theories/tactics/CHoareTactic.ec (r2022.04, a9748f75a)",
+  "? -> theories/tactics/CHoareTactic.ec (r2024.09, 41c2667f7)",
+]
+
+[[library]]
+theory = "CPA"
+path = "theories/crypto/ske/CPA.eca"
+exists_now = true
+commits_examined = 13
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +0/-0"
+path_history = [
+  "? -> theories/newth/ske/CPA.eca (r2022.04, 39da53073)",
+  "theories/newth/ske/CPA.eca -> theories/crypto/ske/CPA.eca (r2022.04, ba74e83f9)",
+  "? -> theories/newth/ske/CPA.eca (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "CRHash"
+path = "theories/crypto/assumptions/CRHash.ec"
+exists_now = true
+commits_examined = 6
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +26/-0"
+path_history = ["? -> theories/crypto/assumptions/CRHash.ec (r2022.04, 350728be0)"]
+
+[[library]]
+theory = "Commitment"
+path = "theories/crypto/Commitment.ec"
+exists_now = true
+commits_examined = 4
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +11/-0"
+path_history = ["? -> theories/crypto/Commitment.ec (r2022.04, 78e8f6ebf)"]
+
+[[library]]
 theory = "Core"
 path = "theories/core/Core.ec"
 exists_now = true
 commits_examined = 62
 releases_touched = ["r2022.04", "r2023.09", "r2024.01", "r2024.09", "r2026.07"]
-symbol_churn = "r2022.04: +4/-0, r2023.09: +8/-0, r2024.01: +1/-0, r2024.09: +60/-1, r2026.07: +1/-0"
+symbol_churn = "r2022.04: +4/-0, r2023.09: +8/-0, r2024.01: +1/-0, r2024.09: +60/-0, r2026.07: +1/-0"
 path_history = ["theories/core/Fun.ec -> theories/core/Core.ec (r2022.04, 4f2492811)"]
+
+[[library]]
+theory = "CoreInt"
+path = "theories/core/CoreInt.ec"
+exists_now = true
+commits_examined = 10
+releases_touched = ["r2022.04", "r2024.09"]
+symbol_churn = "r2022.04: +8/-0, r2024.09: +1/-0"
 
 [[library]]
 theory = "CoreMap"
@@ -624,6 +4119,43 @@ releases_touched = ["r2022.04"]
 symbol_churn = "r2022.04: +9/-0"
 
 [[library]]
+theory = "Counter"
+path = "theories/query_counting/Counter.eca"
+exists_now = true
+commits_examined = 10
+releases_touched = ["r2022.04", "r2025.08"]
+symbol_churn = "r2022.04: +7/-0, r2025.08: +0/-0"
+path_history = ["? -> theories/query_counting/Counter.eca (r2022.04, a9cefc65d)"]
+
+[[library]]
+theory = "CyclicGroup"
+path = ""
+exists_now = false
+commits_examined = 19
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +1/-0, r2023.09: +0/-19"
+path_history = [
+  "? -> theories/CyclicGroup.ec (r2022.04, 928df46a2)",
+  "? -> theories/CyclicGroup.ec (r2022.04, ba74e83f9)",
+  "? -> theories/oldlibs/CyclicGroup.ec (r2022.04, ba478f889)",
+  "? -> theories/oldlibs/CyclicGroup.ec (r2023.09, 9656af661)",
+]
+
+[[library]]
+theory = "Cyclic_group_prime"
+path = ""
+exists_now = false
+commits_examined = 24
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +1/-0, r2023.09: +0/-13"
+path_history = [
+  "theories/cyclic_group_prime.ec -> theories/Cyclic_group_prime.ec (r2022.04, 7c09b1e0e)",
+  "? -> theories/Cyclic_group_prime.ec (r2022.04, ba74e83f9)",
+  "? -> theories/oldlibs/Cyclic_group_prime.ec (r2022.04, ba478f889)",
+  "? -> theories/oldlibs/Cyclic_group_prime.ec (r2023.09, 9656af661)",
+]
+
+[[library]]
 theory = "DBool"
 path = "theories/distributions/DBool.ec"
 exists_now = true
@@ -637,6 +4169,24 @@ path_history = [
 ]
 
 [[library]]
+theory = "DDH_hybrid"
+path = "theories/encryption/DDH_hybrid.ec"
+exists_now = true
+commits_examined = 21
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +10/-0, r2023.09: +2/-0"
+path_history = ["? -> theories/encryption/DDH_hybrid.ec (r2022.04, 041fd551e)"]
+
+[[library]]
+theory = "DHIES"
+path = "theories/crypto/assumptions/DHIES.ec"
+exists_now = true
+commits_examined = 24
+releases_touched = ["r2022.04", "r2023.09", "r2024.09", "r2025.02"]
+symbol_churn = "r2022.04: +44/-0, r2023.09: +4/-0, r2024.09: +12/-0, r2025.02: +1/-0"
+path_history = ["? -> theories/crypto/assumptions/DHIES.ec (r2022.04, 3d6651794)"]
+
+[[library]]
 theory = "DInterval"
 path = "theories/distributions/DInterval.ec"
 exists_now = true
@@ -646,13 +4196,133 @@ symbol_churn = "r2022.04: +9/-0, r2023.09: +4/-0, r2024.09: +0/-3"
 path_history = ["? -> theories/distributions/DInterval.ec (r2022.04, e379fcf26)"]
 
 [[library]]
+theory = "DJoin"
+path = "theories/distributions/DJoin.ec"
+exists_now = true
+commits_examined = 6
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +5/-0"
+path_history = ["? -> theories/distributions/DJoin.ec (r2022.04, 034476513)"]
+
+[[library]]
+theory = "DList"
+path = "theories/distributions/DList.ec"
+exists_now = true
+commits_examined = 44
+releases_touched = ["r2022.04", "r2023.09", "r2024.09", "r2025.02", "r2026.03", "r2026.07"]
+symbol_churn = """
+  r2022.04: +21/-0, r2023.09: +1/-0, r2024.09: +2/-0, r2025.02: +1/-0, r2026.03:
+  +1/-0, r2026.07: +6/-0
+  """
+path_history = [
+  "? -> theories/newth/distributions/DList.ec (r2022.04, d7b985ae5)",
+  "theories/newth/distributions/DList.ec -> theories/distributions/DList.ec (r2022.04, ba74e83f9)",
+  "? -> theories/newth/distributions/DList.ec (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "DLog"
+path = "theories/crypto/DLog.ec"
+exists_now = true
+commits_examined = 6
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +7/-0, r2023.09: +2/-0"
+path_history = ["? -> theories/crypto/DLog.ec (r2022.04, 78e8f6ebf)"]
+
+[[library]]
+theory = "DMap"
+path = "theories/distributions/DMap.ec"
+exists_now = true
+commits_examined = 5
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +4/-0"
+path_history = ["? -> theories/distributions/DMap.ec (r2022.04, 034476513)"]
+
+[[library]]
+theory = "DProd"
+path = "theories/distributions/DProd.ec"
+exists_now = true
+commits_examined = 25
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +5/-0, r2023.09: +1/-0"
+path_history = ["? -> theories/distributions/DProd.ec (r2022.04, 11d8d1b71)"]
+
+[[library]]
+theory = "Dexcepted"
+path = "theories/distributions/Dexcepted.ec"
+exists_now = true
+commits_examined = 29
+releases_touched = ["r2022.04", "r2024.09"]
+symbol_churn = "r2022.04: +36/-0, r2024.09: +3/-0"
+path_history = [
+  "? -> theories/newth/distributions/FSet/Dexcepted.ec (r2022.04, 409993e9b)",
+  "theories/newth/distributions/FSet/Dexcepted.ec -> theories/distributions/FSet/Dexcepted.ec (r2022.04, ba74e83f9)",
+  "? -> theories/newth/distributions/FSet/Dexcepted.ec (r2022.04, ba74e83f9)",
+  "? -> theories/distributions/Dexcepted.ec (r2022.04, 666c7c604)",
+  "? -> theories/distributions/FSet/Dexcepted.ec (r2022.04, 666c7c604)",
+]
+
+[[library]]
+theory = "Dfilter"
+path = "theories/distributions/Dfilter.ec"
+exists_now = true
+commits_examined = 19
+releases_touched = ["r2022.04", "r2024.09"]
+symbol_churn = "r2022.04: +4/-0, r2024.09: +5/-0"
+path_history = [
+  "? -> theories/newth/distributions/Dfilter.ec (r2022.04, f79704116)",
+  "theories/newth/distributions/Dfilter.ec -> theories/distributions/Dfilter.ec (r2022.04, ba74e83f9)",
+  "? -> theories/newth/distributions/Dfilter.ec (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "DiffieHellman"
+path = "theories/crypto/DiffieHellman.ec"
+exists_now = true
+commits_examined = 35
+releases_touched = ["r2022.04", "r2023.09", "r2024.09"]
+symbol_churn = "r2022.04: +8/-0, r2023.09: +2/-0, r2024.09: +0/-3"
+path_history = [
+  "examples/CDH.ec -> theories/DiffieHellman.ec (r2022.04, 7d03eaab9)",
+  "? -> theories/DiffieHellman.ec (r2022.04, a2cdf0752)",
+  "theories/DiffieHellman.ec -> theories/crypto/DiffieHellman.ec (r2022.04, a2cdf0752)",
+]
+
+[[library]]
+theory = "DigitalSignatures"
+path = "theories/crypto/DigitalSignatures.eca"
+exists_now = true
+commits_examined = 2
+releases_touched = ["r2024.09"]
+symbol_churn = "r2024.09: +82/-0"
+path_history = ["? -> theories/crypto/DigitalSignatures.eca (r2024.09, ad79306d3)"]
+
+[[library]]
+theory = "DigitalSignaturesROM"
+path = "theories/crypto/DigitalSignaturesROM.eca"
+exists_now = true
+commits_examined = 1
+releases_touched = ["r2024.09"]
+symbol_churn = "r2024.09: +87/-0"
+path_history = ["? -> theories/crypto/DigitalSignaturesROM.eca (r2024.09, ad79306d3)"]
+
+[[library]]
+theory = "Discrete"
+path = "theories/structure/Discrete.ec"
+exists_now = true
+commits_examined = 21
+releases_touched = ["r2022.04", "r2024.09"]
+symbol_churn = "r2022.04: +22/-0, r2024.09: +14/-0"
+path_history = ["? -> theories/structure/Discrete.ec (r2022.04, 7829849a0)"]
+
+[[library]]
 theory = "Distr"
 path = "theories/distributions/Distr.ec"
 exists_now = true
 commits_examined = 170
 releases_touched = ["r2022.04", "r2023.09", "r2024.09", "r2025.02", "r2025.08", "r2025.10"]
 symbol_churn = """
-  r2022.04: +291/-0, r2023.09: +79/-0, r2024.09: +10/-1, r2025.02: +2/-0, r2025.08:
+  r2022.04: +291/-0, r2023.09: +79/-0, r2024.09: +10/-0, r2025.02: +2/-0, r2025.08:
   +3/-0, r2025.10: +0/-0
   """
 path_history = [
@@ -660,6 +4330,24 @@ path_history = [
   "? -> theories/Distr.ec (r2022.04, ba74e83f9)",
   "theories/Distr.ec -> theories/distributions/Distr.ec (r2022.04, ba74e83f9)",
 ]
+
+[[library]]
+theory = "DynMatrix"
+path = "theories/algebra/DynMatrix.eca"
+exists_now = true
+commits_examined = 10
+releases_touched = ["r2023.09", "r2024.09", "r2026.07"]
+symbol_churn = "r2023.09: +342/-0, r2024.09: +14/-0, r2026.07: +3/-10"
+path_history = ["? -> theories/algebra/DynMatrix.eca (r2023.09, efab580cc)"]
+
+[[library]]
+theory = "EventPartitioning"
+path = "theories/modules/EventPartitioning.ec"
+exists_now = true
+commits_examined = 15
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +20/-0"
+path_history = ["? -> theories/modules/EventPartitioning.ec (r2022.04, 179af541f)"]
 
 [[library]]
 theory = "FMap"
@@ -684,7 +4372,7 @@ exists_now = true
 commits_examined = 100
 releases_touched = ["r2022.04", "r2023.09", "r2024.09", "r2025.02", "r2025.03"]
 symbol_churn = """
-  r2022.04: +23/-0, r2023.09: +13/-0, r2024.09: +17/-1, r2025.02: +12/-0, r2025.03:
+  r2022.04: +23/-0, r2023.09: +13/-0, r2024.09: +17/-0, r2025.02: +12/-0, r2025.03:
   +1/-0
   """
 path_history = [
@@ -694,16 +4382,199 @@ path_history = [
 ]
 
 [[library]]
+theory = "FelTactic"
+path = "theories/tactics/FelTactic.ec"
+exists_now = true
+commits_examined = 10
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +0/-0"
+
+[[library]]
+theory = "FinType"
+path = "theories/structure/FinType.ec"
+exists_now = true
+commits_examined = 30
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +3/-0, r2023.09: +3/-0"
+path_history = [
+  "? -> theories/newth/FinType.eca (r2022.04, 80e6596a2)",
+  "? -> theories/structure/FinType.eca (r2022.04, 80e6596a2)",
+  "theories/structure/FinType.eca -> theories/structure/FinType.ec (r2022.04, 87743765e)",
+  "? -> theories/structure/FinType.eca (r2022.04, 87743765e)",
+]
+
+[[library]]
+theory = "Finite"
+path = "theories/structure/Finite.ec"
+exists_now = true
+commits_examined = 21
+releases_touched = ["r2022.04", "r2023.09", "r2024.01"]
+symbol_churn = "r2022.04: +30/-0, r2023.09: +5/-0, r2024.01: +0/-0"
+path_history = [
+  "? -> theories/newth/Finite.ec (r2022.04, 5498adfba)",
+  "? -> theories/newth/Finite.ec (r2022.04, ba74e83f9)",
+  "theories/newth/Finite.ec -> theories/structure/Finite.ec (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "FloorCeil"
+path = "theories/datatypes/FloorCeil.ec"
+exists_now = true
+commits_examined = 2
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +4/-0"
+path_history = ["? -> theories/datatypes/FloorCeil.ec (r2022.04, 3ffc3beb6)"]
+
+[[library]]
+theory = "FoldProc"
+path = "theories/looping/FoldProc.eca"
+exists_now = true
+commits_examined = 16
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +6/-0"
+path_history = ["? -> theories/looping/FoldProc.eca (r2022.04, a4f23adca)"]
+
+[[library]]
+theory = "GlobalHybrid"
+path = "theories/crypto/GlobalHybrid.ec"
+exists_now = true
+commits_examined = 2
+releases_touched = ["r2026.05", "r2026.06"]
+symbol_churn = "r2026.05: +3/-0, r2026.06: +9/-0"
+path_history = ["? -> theories/crypto/GlobalHybrid.ec (r2026.05, ea0bde607)"]
+
+[[library]]
+theory = "Group"
+path = "theories/algebra/Group.ec"
+exists_now = true
+commits_examined = 18
+releases_touched = ["r2022.04", "r2023.09", "r2024.09", "r2025.02"]
+symbol_churn = "r2022.04: +91/-0, r2023.09: +17/-0, r2024.09: +6/-7, r2025.02: +2/-0"
+path_history = ["? -> theories/algebra/Group.ec (r2022.04, 60a7d3495)"]
+
+[[library]]
+theory = "Hybrid"
+path = "theories/encryption/Hybrid.ec"
+exists_now = true
+commits_examined = 39
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +20/-0"
+path_history = ["? -> theories/encryption/Hybrid.ec (r2022.04, 37dbfb0fd)"]
+
+[[library]]
+theory = "Ideal"
+path = "theories/algebra/Ideal.ec"
+exists_now = true
+commits_examined = 16
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +78/-0, r2023.09: +11/-1"
+path_history = ["? -> theories/algebra/Ideal.ec (r2022.04, c404a43db)"]
+
+[[library]]
+theory = "Indist"
+path = "theories/encryption/Indist.ec"
+exists_now = true
+commits_examined = 34
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +6/-0"
+path_history = ["? -> theories/encryption/Indist.ec (r2022.04, 37dbfb0fd)"]
+
+[[library]]
 theory = "Int"
 path = "theories/datatypes/Int.ec"
 exists_now = true
 commits_examined = 100
 releases_touched = ["r2022.04", "r2023.09", "r2024.09", "r2026.07"]
-symbol_churn = "r2022.04: +48/-0, r2023.09: +7/-9, r2024.09: +9/-1, r2026.07: +2/-0"
+symbol_churn = "r2022.04: +48/-0, r2023.09: +7/-8, r2024.09: +9/-0, r2026.07: +2/-0"
 path_history = [
   "theories/int.ec -> theories/Int.ec (r2022.04, 7c09b1e0e)",
   "? -> theories/Int.ec (r2022.04, ba74e83f9)",
   "theories/Int.ec -> theories/datatypes/Int.ec (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "IntDiv"
+path = "theories/algebra/IntDiv.ec"
+exists_now = true
+commits_examined = 56
+releases_touched = ["r2022.04", "r2023.09", "r2024.09", "r2025.02"]
+symbol_churn = "r2022.04: +35/-0, r2023.09: +33/-0, r2024.09: +154/-0, r2025.02: +2/-0"
+path_history = [
+  "? -> theories/newth/IntDiv.ec (r2022.04, f43434f57)",
+  "theories/newth/IntDiv.ec -> theories/algebra/IntDiv.ec (r2022.04, ba74e83f9)",
+  "? -> theories/newth/IntDiv.ec (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "IntMin"
+path = "theories/datatypes/IntMin.ec"
+exists_now = true
+commits_examined = 7
+releases_touched = ["r2022.04", "r2023.09", "r2024.09"]
+symbol_churn = "r2022.04: +11/-0, r2023.09: +23/-0, r2024.09: +1/-0"
+path_history = ["? -> theories/datatypes/IntMin.ec (r2022.04, 60a7d3495)"]
+
+[[library]]
+theory = "IterProc"
+path = "theories/looping/IterProc.eca"
+exists_now = true
+commits_examined = 21
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +10/-0, r2023.09: +1/-0"
+path_history = ["? -> theories/looping/IterProc.eca (r2022.04, 084bf5593)"]
+
+[[library]]
+theory = "KeyEncapsulationMechanisms"
+path = "theories/crypto/KeyEncapsulationMechanisms.eca"
+exists_now = true
+commits_examined = 4
+releases_touched = ["r2025.02"]
+symbol_churn = "r2025.02: +197/-0"
+path_history = ["? -> theories/crypto/KeyEncapsulationMechanisms.eca (r2025.02, d9c058ab1)"]
+
+[[library]]
+theory = "KeyEncapsulationMechanismsROM"
+path = "theories/crypto/KeyEncapsulationMechanismsROM.eca"
+exists_now = true
+commits_examined = 1
+releases_touched = ["r2025.02"]
+symbol_churn = "r2025.02: +108/-0"
+path_history = ["? -> theories/crypto/KeyEncapsulationMechanismsROM.eca (r2025.02, d9c058ab1)"]
+
+[[library]]
+theory = "KeyedHashFunctions"
+path = "theories/crypto/KeyedHashFunctions.eca"
+exists_now = true
+commits_examined = 1
+releases_touched = ["r2025.11"]
+symbol_churn = "r2025.11: +86/-0"
+path_history = ["? -> theories/crypto/KeyedHashFunctions.eca (r2025.11, f27a68156)"]
+
+[[library]]
+theory = "List"
+path = "theories/datatypes/List.ec"
+exists_now = true
+commits_examined = 212
+releases_touched = [
+  "r2022.04",
+  "r2023.09",
+  "r2024.09",
+  "r2025.03",
+  "r2025.10",
+  "r2025.11",
+  "r2026.03",
+  "r2026.07",
+]
+symbol_churn = """
+  r2022.04: +225/-0, r2023.09: +61/-0, r2024.09: +53/-1, r2025.03: +9/-0, r2025.10:
+  +15/-0, r2025.11: +4/-0, r2026.03: +4/-0, r2026.07: +1/-0
+  """
+path_history = [
+  "theories/list.ec -> theories/List.ec (r2022.04, 7c09b1e0e)",
+  "theories/NewList.ec -> theories/realizations/List.ec (r2022.04, b878377a1)",
+  "? -> theories/realizations/List.ec (r2022.04, 4540d472c)",
+  "? -> theories/List.ec (r2022.04, ba74e83f9)",
+  "theories/List.ec -> theories/datatypes/List.ec (r2022.04, ba74e83f9)",
 ]
 
 [[library]]
@@ -723,6 +4594,299 @@ path_history = [
 ]
 
 [[library]]
+theory = "LoopTransform"
+path = "theories/looping/LoopTransform.ec"
+exists_now = true
+commits_examined = 3
+releases_touched = ["r2023.09"]
+symbol_churn = "r2023.09: +15/-0"
+path_history = ["? -> theories/looping/LoopTransform.ec (r2023.09, ea77e0ed6)"]
+
+[[library]]
+theory = "LorR"
+path = "theories/crypto/LorR.eca"
+exists_now = true
+commits_examined = 5
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +1/-0"
+path_history = [
+  "? -> theories/crypto/LorR.ec (r2022.04, 728c306d4)",
+  "? -> theories/crypto/LorR.ec (r2022.04, 619999774)",
+  "? -> theories/crypto/LorR.eca (r2022.04, 619999774)",
+]
+
+[[library]]
+theory = "MAC"
+path = "theories/crypto/MAC.ec"
+exists_now = true
+commits_examined = 18
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +0/-0"
+path_history = [
+  "? -> theories/MAC.ec (r2022.04, b05f207fe)",
+  "? -> theories/MAC.ec (r2022.04, a2cdf0752)",
+  "theories/MAC.ec -> theories/crypto/MAC.ec (r2022.04, a2cdf0752)",
+]
+
+[[library]]
+theory = "MRPKE"
+path = "theories/crypto/assumptions/MRPKE.ec"
+exists_now = true
+commits_examined = 4
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +23/-0"
+path_history = ["? -> theories/crypto/assumptions/MRPKE.ec (r2022.04, 2dd053cce)"]
+
+[[library]]
+theory = "MSet"
+path = "theories/datatypes/MSet.ec"
+exists_now = true
+commits_examined = 4
+releases_touched = ["r2025.03", "r2026.07"]
+symbol_churn = "r2025.03: +144/-0, r2026.07: +5/-1"
+path_history = ["? -> theories/datatypes/MSet.ec (r2025.03, fe160c4de)"]
+
+[[library]]
+theory = "Matrix"
+path = "theories/algebra/Matrix.eca"
+exists_now = true
+commits_examined = 52
+releases_touched = ["r2022.04", "r2023.09", "r2024.09", "r2026.07"]
+symbol_churn = "r2022.04: +100/-0, r2023.09: +6/-0, r2024.09: +3/-0, r2026.07: +4/-4"
+path_history = [
+  "theories/matrix.ec -> theories/Matrix.ec (r2022.04, 7c09b1e0e)",
+  "? -> theories/Matrix.ec (r2022.04, ba74e83f9)",
+  "? -> theories/oldlibs/Matrix.ec (r2022.04, ba478f889)",
+  "? -> theories/oldlibs/Matrix.ec (r2022.04, 221aca58b)",
+  "? -> theories/algebra/Matrix.eca (r2022.04, 41d0d0885)",
+]
+
+[[library]]
+theory = "Means"
+path = "theories/encryption/Means.ec"
+exists_now = true
+commits_examined = 48
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +0/-0"
+path_history = [
+  "? -> theories/Means.ec (r2022.04, b824030ad)",
+  "? -> theories/encryption/Means.ec (r2022.04, 37dbfb0fd)",
+  "? -> theories/Means.ec (r2022.04, 14a525f82)",
+]
+
+[[library]]
+theory = "ModuleStructure"
+path = "theories/modules/ModuleStructure.ec"
+exists_now = true
+commits_examined = 1
+releases_touched = ["r2025.10"]
+symbol_churn = "r2025.10: +3/-0"
+path_history = ["? -> theories/modules/ModuleStructure.ec (r2025.10, ebec96e7e)"]
+
+[[library]]
+theory = "Monoid"
+path = "theories/algebra/Monoid.eca"
+exists_now = true
+commits_examined = 60
+releases_touched = ["r2022.04", "r2024.09"]
+symbol_churn = "r2022.04: +3/-0, r2024.09: +3/-0"
+path_history = [
+  "theories/Monoide.ec -> theories/Monoid.ec (r2022.04, 0073ce8c6)",
+  "? -> theories/Monoid.ec (r2022.04, ba74e83f9)",
+  "theories/newth/NewMonoid.eca -> theories/algebra/Monoid.eca (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "Mu_mem"
+path = "theories/distributions/Mu_mem.ec"
+exists_now = true
+commits_examined = 17
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +0/-0, r2023.09: +2/-0"
+path_history = [
+  "? -> theories/newth/distributions/Mu_mem.ec (r2022.04, 5498adfba)",
+  "theories/newth/distributions/Mu_mem.ec -> theories/distributions/Mu_mem.ec (r2022.04, ba74e83f9)",
+  "? -> theories/newth/distributions/Mu_mem.ec (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "NewSKE"
+path = "theories/crypto/ske/NewSKE.eca"
+exists_now = true
+commits_examined = 13
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +0/-0"
+path_history = [
+  "? -> theories/newth/ske/NewSKE.eca (r2022.04, 39da53073)",
+  "theories/newth/ske/NewSKE.eca -> theories/crypto/ske/NewSKE.eca (r2022.04, ba74e83f9)",
+  "? -> theories/newth/ske/NewSKE.eca (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "Number"
+path = "theories/algebra/Number.ec"
+exists_now = true
+commits_examined = 71
+releases_touched = ["r2022.04", "r2023.09", "r2024.09", "r2025.03"]
+symbol_churn = "r2022.04: +42/-0, r2023.09: +5/-0, r2024.09: +218/-0, r2025.03: +2/-0"
+path_history = [
+  "? -> theories/Number.ec (r2022.04, e6ba88c2e)",
+  "? -> theories/Number.ec (r2022.04, 974570388)",
+  "theories/newth/NewNumber.eca -> theories/algebra/Number.eca (r2022.04, ba74e83f9)",
+  "theories/algebra/Number.eca -> theories/algebra/Number.ec (r2022.04, 1ee53f96b)",
+  "? -> theories/algebra/Number.eca (r2022.04, 1ee53f96b)",
+]
+
+[[library]]
+theory = "ODH"
+path = "theories/crypto/assumptions/ODH.ec"
+exists_now = true
+commits_examined = 7
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +0/-0, r2023.09: +2/-0"
+path_history = ["? -> theories/crypto/assumptions/ODH.ec (r2022.04, 7fb964ca6)"]
+
+[[library]]
+theory = "OW"
+path = "theories/crypto/OW.ec"
+exists_now = true
+commits_examined = 23
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +5/-0"
+path_history = [
+  "? -> theories/OW.ec (r2022.04, d1dd6a8c9)",
+  "? -> theories/OW.ec (r2022.04, a2cdf0752)",
+  "theories/OW.ec -> theories/crypto/OW.ec (r2022.04, a2cdf0752)",
+]
+
+[[library]]
+theory = "OldDistr"
+path = ""
+exists_now = false
+commits_examined = 93
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +0/-0, r2023.09: +0/-31"
+path_history = [
+  "? -> theories/distributions/OldDistr.ec (r2022.04, e8b483578)",
+  "theories/distributions/OldDistr.ec -> theories/oldlibs/OldDistr.ec (r2022.04, e8b483578)",
+  "? -> theories/oldlibs/OldDistr.ec (r2023.09, 1365ceaf2)",
+]
+
+[[library]]
+theory = "OldFMap"
+path = ""
+exists_now = false
+commits_examined = 78
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +65/-0, r2023.09: +0/-117"
+path_history = [
+  "theories/newth/NewFMap.ec -> theories/oldlibs/OldFMap.ec (r2022.04, a27bd4836)",
+  "? -> theories/oldlibs/OldFMap.ec (r2023.09, 1365ceaf2)",
+]
+
+[[library]]
+theory = "OracleBounds"
+path = "theories/query_counting/OracleBounds.ec"
+exists_now = true
+commits_examined = 33
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +0/-0"
+path_history = [
+  "theories/oracleBounds.ec -> theories/OracleBounds.ec (r2022.04, e345a586a)",
+  "? -> theories/OracleBounds.ec (r2022.04, a2cdf0752)",
+  "theories/OracleBounds.ec -> theories/crypto/OracleBounds.ec (r2022.04, a2cdf0752)",
+  "? -> theories/crypto/OracleBounds.ec (r2022.04, 8430fab1a)",
+  "theories/crypto/OracleBounds.ec -> theories/query_counting/OracleBounds.ec (r2022.04, 8430fab1a)",
+]
+
+[[library]]
+theory = "PKE"
+path = "theories/crypto/PKE.ec"
+exists_now = true
+commits_examined = 40
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +5/-0, r2023.09: +14/-0"
+path_history = [
+  "? -> theories/PKE.ec (r2022.04, a7271c781)",
+  "? -> theories/encryption/PKE.ec (r2022.04, 37dbfb0fd)",
+  "? -> theories/PKE.ec (r2022.04, a2cdf0752)",
+  "theories/PKE.ec -> theories/crypto/PKE.ec (r2022.04, a2cdf0752)",
+  "? -> theories/encryption/PKE.ec (r2022.04, 66f9db62f)",
+]
+
+[[library]]
+theory = "PKE_CPA"
+path = "theories/crypto/pke/PKE_CPA.eca"
+exists_now = true
+commits_examined = 5
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +4/-0"
+path_history = ["? -> theories/crypto/pke/PKE_CPA.eca (r2022.04, a73ed5750)"]
+
+[[library]]
+theory = "PKE_hybrid"
+path = "theories/encryption/PKE_hybrid.ec"
+exists_now = true
+commits_examined = 36
+releases_touched = ["r2022.04", "r2024.09"]
+symbol_churn = "r2022.04: +30/-0, r2024.09: +0/-35"
+path_history = ["theories/encryption/PKE.ec -> theories/encryption/PKE_hybrid.ec (r2022.04, 66f9db62f)"]
+
+[[library]]
+theory = "PKS"
+path = "theories/crypto/PKS.ec"
+exists_now = true
+commits_examined = 21
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +0/-0"
+path_history = [
+  "? -> theories/PKS.ec (r2022.04, f761f2a77)",
+  "? -> theories/PKS.ec (r2022.04, a2cdf0752)",
+  "theories/PKS.ec -> theories/crypto/PKS.ec (r2022.04, a2cdf0752)",
+]
+
+[[library]]
+theory = "PKSMK"
+path = "theories/crypto/assumptions/PKSMK.ec"
+exists_now = true
+commits_examined = 15
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +54/-0"
+path_history = ["? -> theories/crypto/assumptions/PKSMK.ec (r2022.04, 13b7bdda5)"]
+
+[[library]]
+theory = "PRF"
+path = "theories/crypto/PRF.eca"
+exists_now = true
+commits_examined = 27
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +2/-0"
+path_history = [
+  "? -> theories/PRF.ec (r2022.04, 71d9c5f13)",
+  "? -> theories/PRF.ec (r2022.04, 1514f9227)",
+  "theories/PRF.ec -> theories/PRF.eca (r2022.04, 1514f9227)",
+  "? -> theories/PRF.eca (r2022.04, a2cdf0752)",
+  "theories/PRF.eca -> theories/crypto/PRF.eca (r2022.04, a2cdf0752)",
+  "? -> examples/prg-tutorial/PRF.eca (r2022.04, e58c36ab2)",
+]
+
+[[library]]
+theory = "PRG"
+path = "theories/crypto/PRG.eca"
+exists_now = true
+commits_examined = 67
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +3/-0, r2023.09: +1/-0"
+path_history = [
+  "? -> examples/PRG.ec (r2022.04, 50a40c310)",
+  "? -> theories/PRG.ec (r2022.04, 71d9c5f13)",
+  "? -> theories/PRG.ec (r2022.04, 6926bb27d)",
+  "theories/PRG.ec -> theories/PRG.eca (r2022.04, 6926bb27d)",
+  "? -> theories/PRG.eca (r2022.04, a2cdf0752)",
+  "theories/PRG.eca -> theories/crypto/PRG.eca (r2022.04, a2cdf0752)",
+]
+
+[[library]]
 theory = "PROM"
 path = "theories/crypto/PROM.ec"
 exists_now = true
@@ -736,6 +4900,30 @@ path_history = [
 ]
 
 [[library]]
+theory = "PRP"
+path = "theories/crypto/PRP.eca"
+exists_now = true
+commits_examined = 46
+releases_touched = ["r2022.04", "r2023.09", "r2024.09"]
+symbol_churn = "r2022.04: +40/-0, r2023.09: +0/-1, r2024.09: +1/-0"
+path_history = [
+  "? -> theories/PRP.ec (r2022.04, 71d9c5f13)",
+  "? -> theories/PRP.ec (r2022.04, 1514f9227)",
+  "theories/PRP.ec -> theories/PRP.eca (r2022.04, 1514f9227)",
+  "? -> theories/PRP.eca (r2022.04, a2cdf0752)",
+  "theories/PRP.eca -> theories/crypto/PRP.eca (r2022.04, a2cdf0752)",
+]
+
+[[library]]
+theory = "Perms"
+path = "theories/algebra/Perms.ec"
+exists_now = true
+commits_examined = 19
+releases_touched = ["r2022.04", "r2024.09", "r2026.05"]
+symbol_churn = "r2022.04: +7/-0, r2024.09: +2/-0, r2026.05: +0/-0"
+path_history = ["? -> theories/algebra/Perms.ec (r2022.04, 385c46ad9)"]
+
+[[library]]
 theory = "Pervasive"
 path = "theories/prelude/Pervasive.ec"
 exists_now = true
@@ -744,13 +4932,142 @@ releases_touched = ["r2022.04", "r2026.03"]
 symbol_churn = "r2022.04: +9/-0, r2026.03: +1/-0"
 
 [[library]]
+theory = "PlugAndPray"
+path = "theories/modules/PlugAndPray.eca"
+exists_now = true
+commits_examined = 7
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +7/-0"
+
+[[library]]
+theory = "Poly"
+path = "theories/algebra/Poly.ec"
+exists_now = true
+commits_examined = 39
+releases_touched = ["r2022.04", "r2023.09", "r2025.02"]
+symbol_churn = "r2022.04: +55/-0, r2023.09: +1/-2, r2025.02: +4/-4"
+path_history = [
+  "? -> theories/Poly.ec (r2022.04, bf5db52db)",
+  "? -> theories/Poly.ec (r2022.04, ba74e83f9)",
+  "? -> theories/algebra/Poly.eca (r2022.04, fcdfcbdcc)",
+  "theories/algebra/Poly.eca -> theories/algebra/Poly.ec (r2022.04, de2158b34)",
+  "? -> theories/algebra/Poly.eca (r2022.04, de2158b34)",
+]
+
+[[library]]
+theory = "PolyReduce"
+path = "theories/algebra/PolyReduce.ec"
+exists_now = true
+commits_examined = 7
+releases_touched = ["r2023.09", "r2025.10", "r2026.07"]
+symbol_churn = "r2023.09: +85/-0, r2025.10: +2/-2, r2026.07: +1/-1"
+path_history = ["? -> theories/algebra/PolyReduce.ec (r2023.09, b0eeedc97)"]
+
+[[library]]
+theory = "Pr_half"
+path = "theories/modules/Pr_half.eca"
+exists_now = true
+commits_examined = 3
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +4/-0"
+path_history = ["? -> theories/modules/Pr_half.eca (r2022.04, 0a6c7f81a)"]
+
+[[library]]
+theory = "PrimeField"
+path = ""
+exists_now = false
+commits_examined = 25
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +6/-0, r2023.09: +0/-53"
+path_history = [
+  "? -> theories/PrimeField.ec (r2022.04, 928df46a2)",
+  "? -> theories/PrimeField.ec (r2022.04, ba74e83f9)",
+  "? -> theories/oldlibs/PrimeField.ec (r2022.04, ba478f889)",
+  "? -> theories/oldlibs/PrimeField.ec (r2022.04, 221aca58b)",
+  "? -> theories/oldlibs/PrimeField.ec (r2022.04, 061186a58)",
+  "? -> theories/oldlibs/PrimeField.ec (r2023.09, 9656af661)",
+]
+
+[[library]]
+theory = "Prime_field"
+path = ""
+exists_now = false
+commits_examined = 29
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +1/-0, r2023.09: +0/-35"
+path_history = [
+  "theories/prime_field.ec -> theories/Prime_field.ec (r2022.04, 7c09b1e0e)",
+  "? -> theories/Prime_field.ec (r2022.04, ba74e83f9)",
+  "? -> theories/oldlibs/Prime_field.ec (r2022.04, ba478f889)",
+  "? -> theories/oldlibs/Prime_field.ec (r2023.09, 9656af661)",
+]
+
+[[library]]
+theory = "PublicKeyEncryption"
+path = "theories/crypto/PublicKeyEncryption.eca"
+exists_now = true
+commits_examined = 2
+releases_touched = ["r2025.02"]
+symbol_churn = "r2025.02: +81/-0"
+path_history = ["? -> theories/crypto/PublicKeyEncryption.eca (r2025.02, 7c5fbe97c)"]
+
+[[library]]
+theory = "PublicKeyEncryptionROM"
+path = "theories/crypto/PublicKeyEncryptionROM.eca"
+exists_now = true
+commits_examined = 1
+releases_touched = ["r2025.02"]
+symbol_churn = "r2025.02: +78/-0"
+path_history = ["? -> theories/crypto/PublicKeyEncryptionROM.eca (r2025.02, 7c5fbe97c)"]
+
+[[library]]
+theory = "QFABV"
+path = "theories/datatypes/QFABV.ec"
+exists_now = true
+commits_examined = 2
+releases_touched = ["r2026.07"]
+symbol_churn = "r2026.07: +153/-0"
+path_history = ["? -> theories/datatypes/QFABV.ec (r2026.07, e07ffa0ed)"]
+
+[[library]]
+theory = "Quotient"
+path = "theories/structure/Quotient.ec"
+exists_now = true
+commits_examined = 22
+releases_touched = ["r2022.04", "r2023.09", "r2025.02", "r2026.07"]
+symbol_churn = "r2022.04: +13/-0, r2023.09: +0/-2, r2025.02: +0/-3, r2026.07: +3/-1"
+path_history = [
+  "? -> theories/newth/Quotient.ec (r2022.04, 79772f494)",
+  "? -> theories/newth/Quotient.ec (r2022.04, a8087892a)",
+  "theories/newth/Quotient.ec -> theories/newth/Quotient.eca (r2022.04, a8087892a)",
+  "? -> theories/newth/Quotient.eca (r2022.04, 80e6596a2)",
+  "theories/newth/Quotient.eca -> theories/structure/Quotient.eca (r2022.04, 80e6596a2)",
+  "theories/structure/Quotient.eca -> theories/structure/Quotient.ec (r2022.04, acfd4ea7d)",
+]
+
+[[library]]
+theory = "ROM"
+path = "theories/crypto/ROM.eca"
+exists_now = true
+commits_examined = 84
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +23/-0, r2023.09: +2/-0"
+path_history = [
+  "examples/RandomOracle.ec -> theories/ROM.ec (r2022.04, 86511e0f0)",
+  "? -> theories/ROM.ec (r2022.04, a2cdf0752)",
+  "theories/ROM.ec -> theories/crypto/ROM.ec (r2022.04, a2cdf0752)",
+  "? -> theories/crypto/ROM.ec (r2022.04, 66c830f95)",
+  "? -> theories/crypto/ROM.eca (r2022.04, 66c830f95)",
+]
+
+[[library]]
 theory = "Real"
 path = "theories/datatypes/Real.ec"
 exists_now = true
 commits_examined = 76
 releases_touched = ["r2022.04", "r2023.09", "r2024.09", "r2025.02", "r2025.10"]
 symbol_churn = """
-  r2022.04: +31/-0, r2023.09: +8/-0, r2024.09: +18/-1, r2025.02: +5/-0, r2025.10:
+  r2022.04: +31/-0, r2023.09: +8/-0, r2024.09: +18/-0, r2025.02: +5/-0, r2025.10:
   +2/-0
   """
 path_history = [
@@ -760,14 +5077,338 @@ path_history = [
 ]
 
 [[library]]
+theory = "RealExp"
+path = "theories/analysis/RealExp.ec"
+exists_now = true
+commits_examined = 33
+releases_touched = ["r2022.04", "r2023.09", "r2024.09", "r2026.07"]
+symbol_churn = "r2022.04: +114/-0, r2023.09: +13/-0, r2024.09: +26/-0, r2026.07: +4/-0"
+path_history = ["? -> theories/analysis/RealExp.ec (r2022.04, 7283ef824)"]
+
+[[library]]
+theory = "RealFLub"
+path = "theories/analysis/RealFLub.ec"
+exists_now = true
+commits_examined = 5
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +3/-0, r2023.09: +8/-0"
+path_history = ["? -> theories/analysis/RealFLub.ec (r2022.04, a21c135f5)"]
+
+[[library]]
+theory = "RealFun"
+path = "theories/analysis/RealFun.ec"
+exists_now = true
+commits_examined = 10
+releases_touched = ["r2022.04", "r2024.09"]
+symbol_churn = "r2022.04: +6/-0, r2024.09: +1/-0"
+path_history = ["? -> theories/analysis/RealFun.ec (r2022.04, f6b75ac66)"]
+
+[[library]]
+theory = "RealLub"
+path = "theories/analysis/RealLub.ec"
+exists_now = true
+commits_examined = 17
+releases_touched = ["r2022.04", "r2023.09", "r2024.09", "r2025.02"]
+symbol_churn = "r2022.04: +6/-0, r2023.09: +5/-0, r2024.09: +3/-0, r2025.02: +1/-0"
+path_history = ["? -> theories/analysis/RealLub.ec (r2022.04, 28217e794)"]
+
+[[library]]
+theory = "RealSeq"
+path = "theories/analysis/RealSeq.ec"
+exists_now = true
+commits_examined = 45
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +30/-0, r2023.09: +16/-0"
+path_history = [
+  "? -> theories/newth/RealSeq.ec (r2022.04, 2acc5201d)",
+  "theories/newth/RealSeq.ec -> theories/analysis/RealSeq.ec (r2022.04, ba74e83f9)",
+  "? -> theories/newth/RealSeq.ec (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "RealSeries"
+path = "theories/analysis/RealSeries.ec"
+exists_now = true
+commits_examined = 53
+releases_touched = ["r2022.04", "r2023.09", "r2024.01", "r2024.09"]
+symbol_churn = "r2022.04: +37/-0, r2023.09: +8/-0, r2024.01: +2/-0, r2024.09: +67/-0"
+path_history = [
+  "theories/newth/RealSeries.ec -> theories/analysis/RealSeries.ec (r2022.04, ba74e83f9)",
+  "? -> theories/newth/RealSeries.ec (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "Reflection"
+path = "theories/modules/Reflection.eca"
+exists_now = true
+commits_examined = 1
+releases_touched = ["r2025.10"]
+symbol_churn = "r2025.10: +6/-0"
+path_history = ["? -> theories/modules/Reflection.eca (r2025.10, ebec96e7e)"]
+
+[[library]]
+theory = "Ring"
+path = "theories/algebra/Ring.ec"
+exists_now = true
+commits_examined = 94
+releases_touched = ["r2022.04", "r2023.09", "r2024.09", "r2026.07"]
+symbol_churn = "r2022.04: +55/-0, r2023.09: +15/-0, r2024.09: +86/-0, r2026.07: +1/-0"
+path_history = [
+  "? -> theories/Ring.ec (r2022.04, b878377a1)",
+  "? -> theories/Ring.ec (r2022.04, ba74e83f9)",
+  "theories/Ring.ec -> theories/algebra/Ring.ec (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "RndExcept"
+path = "theories/crypto/RndExcept.eca"
+exists_now = true
+commits_examined = 14
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +34/-0"
+path_history = ["? -> theories/crypto/RndExcept.eca (r2022.04, 00a61be88)"]
+
+[[library]]
+theory = "RndProd"
+path = "theories/modules/RndProd.eca"
+exists_now = true
+commits_examined = 12
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +23/-0"
+path_history = ["? -> theories/modules/RndProd.eca (r2022.04, 67392e160)"]
+
+[[library]]
+theory = "SDist"
+path = "theories/distributions/SDist.ec"
+exists_now = true
+commits_examined = 34
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +61/-0"
+path_history = ["? -> theories/distributions/SDist.ec (r2022.04, 4529cfcda)"]
+
+[[library]]
+theory = "SampleBool"
+path = "theories/encryption/SampleBool.ec"
+exists_now = true
+commits_examined = 24
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +3/-0"
+path_history = ["? -> theories/encryption/SampleBool.ec (r2022.04, 37dbfb0fd)"]
+
+[[library]]
+theory = "SecureChannels"
+path = "theories/crypto/SecureChannels.ec"
+exists_now = true
+commits_examined = 21
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +0/-0"
+path_history = [
+  "? -> theories/SecureChannels.ec (r2022.04, cc921b888)",
+  "? -> theories/SecureChannels.ec (r2022.04, a2cdf0752)",
+  "theories/SecureChannels.ec -> theories/crypto/SecureChannels.ec (r2022.04, a2cdf0752)",
+]
+
+[[library]]
+theory = "SigmaProtocol"
+path = "theories/crypto/SigmaProtocol.ec"
+exists_now = true
+commits_examined = 4
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +22/-0"
+path_history = ["? -> theories/crypto/SigmaProtocol.ec (r2022.04, 78e8f6ebf)"]
+
+[[library]]
 theory = "SmtMap"
 path = "theories/datatypes/SmtMap.ec"
 exists_now = true
 commits_examined = 34
 releases_touched = ["r2022.04", "r2023.09", "r2024.09", "r2025.02"]
-symbol_churn = "r2022.04: +114/-0, r2023.09: +15/-0, r2024.09: +34/-9, r2025.02: +0/-131"
+symbol_churn = "r2022.04: +114/-0, r2023.09: +14/-0, r2024.09: +34/-8, r2025.02: +0/-131"
 path_history = [
   "? -> theories/newth/SmtMap.ec (r2022.04, 850f427fc)",
   "? -> theories/datatypes/SmtMap.ec (r2025.02, 6942bd0dd)",
   "? -> theories/newth/SmtMap.ec (r2025.02, 6942bd0dd)",
+]
+
+[[library]]
+theory = "SplitRO"
+path = "theories/crypto/SplitRO.ec"
+exists_now = true
+commits_examined = 12
+releases_touched = ["r2022.04", "r2025.08"]
+symbol_churn = "r2022.04: +24/-0, r2025.08: +0/-1"
+path_history = ["? -> theories/crypto/SplitRO.ec (r2022.04, 87743765e)"]
+
+[[library]]
+theory = "StdBigop"
+path = "theories/algebra/StdBigop.ec"
+exists_now = true
+commits_examined = 40
+releases_touched = ["r2022.04", "r2023.09", "r2024.09", "r2026.07"]
+symbol_churn = "r2022.04: +19/-0, r2023.09: +0/-1, r2024.09: +6/-0, r2026.07: +1/-0"
+path_history = [
+  "? -> theories/newth/StdBigop.ec (r2022.04, 45ca71a8c)",
+  "theories/newth/StdBigop.ec -> theories/algebra/StdBigop.ec (r2022.04, ba74e83f9)",
+  "? -> theories/newth/StdBigop.ec (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "StdOrder"
+path = "theories/algebra/StdOrder.ec"
+exists_now = true
+commits_examined = 29
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +9/-0, r2023.09: +2/-0"
+path_history = [
+  "? -> theories/newth/StdOrder.ec (r2022.04, 1ea87c6cf)",
+  "theories/newth/StdOrder.ec -> theories/algebra/StdOrder.ec (r2022.04, ba74e83f9)",
+  "? -> theories/newth/StdOrder.ec (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "StdRing"
+path = "theories/algebra/StdRing.ec"
+exists_now = true
+commits_examined = 26
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +1/-0"
+path_history = [
+  "? -> theories/newth/StdRing.ec (r2022.04, 6f8f464e5)",
+  "theories/newth/StdRing.ec -> theories/algebra/StdRing.ec (r2022.04, ba74e83f9)",
+  "? -> theories/newth/StdRing.ec (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "Strong_RP_RF"
+path = "theories/crypto/prp_prf/Strong_RP_RF.eca"
+exists_now = true
+commits_examined = 42
+releases_touched = ["r2022.04", "r2024.09"]
+symbol_churn = "r2022.04: +19/-0, r2024.09: +1/-0"
+path_history = ["? -> theories/crypto/prp_prf/Strong_RP_RF.eca (r2022.04, 52a4f4ffc)"]
+
+[[library]]
+theory = "Subtype"
+path = "theories/structure/Subtype.eca"
+exists_now = true
+commits_examined = 21
+releases_touched = ["r2022.04", "r2023.09", "r2024.09", "r2025.02"]
+symbol_churn = "r2022.04: +0/-0, r2023.09: +3/-3, r2024.09: +5/-0, r2025.02: +0/-6"
+path_history = [
+  "? -> theories/newth/Subtype.ec (r2022.04, c2cfbab97)",
+  "? -> theories/newth/Subtype.ec (r2022.04, a8087892a)",
+  "theories/newth/Subtype.ec -> theories/newth/Subtype.eca (r2022.04, a8087892a)",
+  "? -> theories/newth/Subtype.eca (r2022.04, 80e6596a2)",
+  "theories/newth/Subtype.eca -> theories/structure/Subtype.eca (r2022.04, 80e6596a2)",
+]
+
+[[library]]
+theory = "SymmetricEncryption"
+path = "theories/crypto/SymmetricEncryption.ec"
+exists_now = true
+commits_examined = 24
+releases_touched = ["r2022.04", "r2023.09"]
+symbol_churn = "r2022.04: +0/-0, r2023.09: +0/-0"
+path_history = [
+  "? -> theories/SymmetricEncryption.ec (r2022.04, 37394d149)",
+  "? -> theories/SymmetricEncryption.ec (r2022.04, a2cdf0752)",
+  "theories/SymmetricEncryption.ec -> theories/crypto/SymmetricEncryption.ec (r2022.04, a2cdf0752)",
+]
+
+[[library]]
+theory = "Tactics"
+path = "theories/prelude/Tactics.ec"
+exists_now = true
+commits_examined = 11
+releases_touched = ["r2022.04", "r2024.09", "r2025.02"]
+symbol_churn = "r2024.09: +43/-0, r2025.02: +2/-0"
+path_history = ["? -> theories/prelude/Tactics.ec (r2022.04, 4f2492811)"]
+
+[[library]]
+theory = "TotalProb"
+path = "theories/modules/TotalProb.ec"
+exists_now = true
+commits_examined = 1
+releases_touched = ["r2026.05"]
+symbol_churn = "r2026.05: +21/-0"
+path_history = ["? -> theories/modules/TotalProb.ec (r2026.05, 587d28f80)"]
+
+[[library]]
+theory = "Tuple"
+path = "theories/datatypes/Tuple.eca"
+exists_now = true
+commits_examined = 22
+releases_touched = ["r2022.04", "r2024.09"]
+symbol_churn = "r2022.04: +1/-0, r2024.09: +7/-0"
+path_history = [
+  "? -> theories/Tuple.eca (r2022.04, aff3930e9)",
+  "? -> theories/Tuple.eca (r2022.04, ba74e83f9)",
+  "theories/Tuple.eca -> theories/datatypes/Tuple.eca (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "TweakableHashFunctions"
+path = "theories/crypto/TweakableHashFunctions.eca"
+exists_now = true
+commits_examined = 1
+releases_touched = ["r2025.11"]
+symbol_churn = "r2025.11: +66/-0"
+path_history = ["? -> theories/crypto/TweakableHashFunctions.eca (r2025.11, 02da120b7)"]
+
+[[library]]
+theory = "WF"
+path = "theories/structure/WF.ec"
+exists_now = true
+commits_examined = 5
+releases_touched = ["r2022.04", "r2024.09"]
+symbol_churn = "r2022.04: +45/-0, r2024.09: +3/-2"
+path_history = ["? -> theories/structure/WF.ec (r2022.04, 8cfa32bcc)"]
+
+[[library]]
+theory = "Word"
+path = "theories/datatypes/Word.eca"
+exists_now = true
+commits_examined = 78
+releases_touched = ["r2022.04", "r2023.09", "r2024.09", "r2025.02"]
+symbol_churn = "r2022.04: +15/-0, r2023.09: +2/-0, r2024.09: +8/-0, r2025.02: +2/-2"
+path_history = [
+  "? -> theories/Word.ec (r2022.04, 7c09b1e0e)",
+  "? -> theories/Word.ec (r2022.04, e996f58fa)",
+  "theories/newth/NewWord.eca -> theories/datatypes/Word.eca (r2022.04, ba74e83f9)",
+]
+
+[[library]]
+theory = "Xint"
+path = "theories/datatypes/Xint.ec"
+exists_now = true
+commits_examined = 1
+releases_touched = ["r2022.04"]
+symbol_churn = "r2022.04: +6/-0"
+path_history = ["? -> theories/datatypes/Xint.ec (r2022.04, a9748f75a)"]
+
+[[library]]
+theory = "Xreal"
+path = "theories/datatypes/Xreal.ec"
+exists_now = true
+commits_examined = 6
+releases_touched = ["r2024.01", "r2024.09", "r2025.02", "r2025.10", "r2026.05"]
+symbol_churn = """
+  r2024.01: +173/-0, r2024.09: +12/-0, r2025.02: +0/-4, r2025.10: +16/-0, r2026.05:
+  +2/-0
+  """
+path_history = ["? -> theories/datatypes/Xreal.ec (r2024.01, 99ec9f4bc)"]
+
+[[library]]
+theory = "ZModP"
+path = "theories/algebra/ZModP.ec"
+exists_now = true
+commits_examined = 34
+releases_touched = ["r2022.04", "r2023.09", "r2024.09", "r2025.02"]
+symbol_churn = "r2022.04: +15/-0, r2023.09: +23/-0, r2024.09: +0/-7, r2025.02: +0/-3"
+path_history = [
+  "theories/newth/ZMod.eca -> theories/newth/ZModP.eca (r2022.04, 6c8359d8b)",
+  "theories/newth/ZModP.eca -> theories/algebra/ZModP.eca (r2022.04, ba74e83f9)",
+  "? -> theories/newth/ZModP.eca (r2022.04, ba74e83f9)",
+  "theories/algebra/ZModP.eca -> theories/algebra/ZModP.ec (r2022.04, 60a7d3495)",
+  "? -> theories/algebra/ZModP.eca (r2022.04, 60a7d3495)",
 ]

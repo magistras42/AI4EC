@@ -645,6 +645,74 @@ def _probe(
     return result.returncode == 0, output, classify_error(strip_warning_lines(output))
 
 
+def _rank_of(before: ClassifiedError, loads: bool, after: ClassifiedError) -> int:
+    """Graded progress of one trial, without building a full result."""
+    return ImportRepairResult(
+        changed=True, text="", applied=[], considered=[],
+        loads_before=False, loads_after=loads,
+        error_before="", error_after="",
+        error_line_before=before.line,
+        error_line_after=-1 if loads else after.line,
+        error_kind_before=before.kind,
+        error_kind_after="" if loads else after.kind,
+    ).progress_rank
+
+
+def _minimize(
+    original: str,
+    applied: list[tuple[Migration, AppliedMigration]],
+    work_path: Path,
+    config: AgentConfig,
+    error: ClassifiedError,
+    target_rank: int,
+) -> tuple[str, list[str], int]:
+    """Drop rules that were kept without earning it.
+
+    The bulk pass applies every matching rule at once, and the incremental pass
+    keeps anything that does not make EasyCrypt stop earlier. Both were safe
+    when the manifest held 15 rules. At 116 they are not: on the ElGamal corpus
+    the widened manifest added `require import Commitment` and `require import
+    SDist` to a hashed-ElGamal proof -- kept because they were harmless, not
+    because they were needed. Harmless is not the bar. The repaired text is
+    shown to the model as "this is what was wrong with your file", and two
+    unrelated crypto theories in that list are a false explanation.
+
+    So take each rule away again, least-relevant first, and put it back only if
+    its absence costs progress -- measured against `target_rank`, the graded
+    outcome the full set achieved. Testing against the rank rather than against
+    "does it still load" is what lets this clean up a file that only reached
+    `reached_proof`, which is most of them.
+
+    Mutates the `AppliedMigration` records in place. Returns
+    ``(text, dropped_ids, probes)``.
+    """
+    order = sorted(range(len(applied)), key=lambda i: relevance(applied[i][0], error))
+    keep = set(range(len(applied)))
+    dropped: list[str] = []
+    probes = 0
+
+    for index in order:
+        if len(keep) <= 1:
+            break  # a single rule that got the file this far is necessary
+        text = original
+        for i in sorted(keep - {index}):
+            text, _applied, _skipped = apply_actions(text, applied[i][0].actions)
+        loads, _output, classified = _probe(work_path, text, config)
+        probes += 1
+        if _rank_of(error, loads, classified) >= target_rank:
+            keep.discard(index)
+            dropped.append(applied[index][0].id)
+
+    text = original
+    for index, (migration, record) in enumerate(applied):
+        if index in keep:
+            text, _applied, _skipped = apply_actions(text, migration.actions)
+        else:
+            record.kept = False
+            record.reason = "dropped: the same progress is reached without it"
+    return text, dropped, probes
+
+
 def repair_imports(
     source: Path,
     config: AgentConfig,
@@ -773,14 +841,29 @@ def repair_imports(
 
     loads_after, error_after, _classified_bulk = _probe(work_path, bulk_text, config)
     if loads_after:
+        effective = [
+            (migration, record)
+            for migration, record in zip(ordered_candidates, bulk_applied)
+            if record.kept
+        ]
+        bulk_text, dropped, probes = _minimize(
+            original, effective, work_path, config, classified_before,
+            PROGRESS_RANK[PROGRESS_LOADS],
+        )
+        note = "file loads after applying all matching migrations"
+        if dropped:
+            note += (
+                f"; {len(dropped)} of {len(effective)} then dropped as "
+                f"unnecessary ({', '.join(dropped)}) in {probes} probes"
+            )
         return ImportRepairResult(
             changed=bulk_text != original, text=bulk_text,
-            applied=[a for a in bulk_applied if a.kept], considered=considered,
+            applied=[a for _m, a in effective if a.kept], considered=considered,
             loads_before=False, loads_after=True,
             error_before=error_before, error_after="",
             error_line_before=line_before, error_line_after=-1,
             error_kind_before=classified_before.kind, error_kind_after="",
-            notes=notes + ["file loads after applying all matching migrations"],
+            notes=notes + [note],
         )
 
     # Pass 2: incremental, keeping only what demonstrably helps -- and choosing
@@ -798,6 +881,7 @@ def repair_imports(
     current_error = error_before
     remaining = list(candidates)
     kept: list[AppliedMigration] = []
+    accepted: list[tuple[Migration, AppliedMigration]] = []
 
     while remaining:
         migration = order_by_relevance(remaining, current)[0]
@@ -845,17 +929,36 @@ def repair_imports(
             reason = f"kept: error kind changed ({current.kind} -> {trial.kind})"
         else:
             reason = f"kept: no regression (first error still at {trial.line})"
-        kept.append(AppliedMigration(
+        record = AppliedMigration(
             migration.id, migration.kind, migration.confidence,
             migration.summary, applied, True, reason,
             selected_for=current.kind, relevance=score,
-        ))
+        )
+        kept.append(record)
+        accepted.append((migration, record))
 
         current_text, current, current_error = trial_text, trial, trial_error
         if trial_loads:
             break
 
     loads_after, error_after, final = _probe(work_path, current_text, config)
+    reached = _rank_of(classified_before, loads_after, final)
+    if len(accepted) > 1 and reached > PROGRESS_RANK[PROGRESS_NONE]:
+        # Same reasoning as the bulk path: "did not hurt" got each of these
+        # kept, and that is not a good enough reason to tell the model a rule
+        # was part of the repair. `_minimize` mutates the AppliedMigration
+        # records in place, so `kept` already reflects the demotions.
+        current_text, dropped, probes = _minimize(
+            original, accepted, work_path, config, classified_before, reached
+        )
+        if dropped:
+            notes.append(
+                f"{len(dropped)} of {len(accepted)} kept migrations then "
+                f"dropped as unnecessary ({', '.join(dropped)}) in "
+                f"{probes} probes"
+            )
+            loads_after, error_after, final = _probe(work_path, current_text, config)
+
     return ImportRepairResult(
         changed=current_text != original, text=current_text,
         applied=kept, considered=considered,
