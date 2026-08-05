@@ -728,7 +728,7 @@ verbatim, `repaired` what the file holds after the run.
 | 4 | gen_log | 3 | 3 | 3 | +0 | COMPLETE |
 | 5 | grexpAll | 5 | 5 | 5 | +0 | COMPLETE |
 | 6 | RO_track_f_ll | 8 | 8 | 8 | +0 | COMPLETE |
-| 7 | G1_G2 | 5 | 5 | 5 | +0 | COMPLETE |
+| 7 | G1_G2 | 5 | 5 | 6 | **+1** | COMPLETE |
 | 8 | G3_true | 16 | 16 | 16 | +0 | COMPLETE |
 | 9 | RO_LCDHAdv | 17 | 17 | 17 | +0 | COMPLETE |
 | 10 | G2_bad_ub | 15 | 15 | 15 | +0 | COMPLETE |
@@ -736,7 +736,7 @@ verbatim, `repaired` what the file holds after the run.
 | 12 | INDCPA_HEG_G1 | 52 | 21 | 21 | +0 | MAX_STEPS |
 | 13 | correctness | 58 | 58 | 58 | +0 | COMPLETE |
 | 14 | G1_G2_eq | 85 | 18 | **69** | **+51** | MAX_STEPS |
-| | **TOTAL** | **301** | | **237** | | |
+| | **TOTAL** | **301** | | **238** | | |
 
 Two things this table says that the outcome column does not.
 
@@ -751,10 +751,71 @@ either other MAX_STEPS trial. It ran out of steps at 139 of a 145-step budget.
 This is the one trial where raising `--max-steps` is worth trying, and the only
 one where the harness, not the model, looks like the binding constraint.
 
-Counting note: tactic counts come from the proof body of
-`trials/*/agent_work.agent.ec`, with inline comments stripped first — a line
-like `(* prove 1/2 *) trivial.` is a tactic, and dropping it undercounted two
-lemmas by one each on the first pass.
+**Counting note, and a correction.** Counts come from the proof body of
+`trials/*/agent_work.agent.ec`. Two passes were wrong before this one:
+
+1. Dropping any line starting with `(*` undercounted two lemmas, because
+   `(* prove 1/2 *) trivial.` is a tactic.
+2. Counting physical **lines** is not counting tactics. A
+   `seq 5 5 : (invariant …)` wraps across lines and `wp; skip; smt().` is one
+   line holding three steps. This under-reported `G1_G2` as 5 and hid that the
+   model repaired it.
+
+The counter now closes a statement at a `.` at parenthesis depth 0, with
+comments stripped first. It calibrates exactly against `correctness`, which
+replayed 58/58 verbatim in both runs and counts 58 in both.
+
+### 12.3b The same table for run C, and what the pair says
+
+Run C (`run-20260804T164111Z`) under the same spec and model, **stopped by its
+$1.00 cap**.
+
+| # | lemma | original | replayed | repaired | by model | outcome |
+|---|---|---:|---:|---:|---:|---|
+| 0 | enc_stateless | 1 | 1 | 1 | +0 | COMPLETE |
+| 1 | INDCPA_Sec | 1 | 1 | 1 | +0 | COMPLETE |
+| 2 | INDCPA_Security | 2 | 1 | 2 | **+1** | COMPLETE |
+| 3 | log_gen | 3 | 3 | 3 | +0 | COMPLETE |
+| 4 | gen_log | 3 | 3 | 3 | +0 | COMPLETE |
+| 5 | grexpAll | 5 | 5 | 5 | +0 | COMPLETE |
+| 6 | RO_track_f_ll | 8 | 8 | 8 | +0 | COMPLETE |
+| 7 | G1_G2 | 5 | 5 | 6 | **+1** | COMPLETE |
+| 8 | G3_true | 16 | 16 | 16 | +0 | COMPLETE |
+| 9 | RO_LCDHAdv | 17 | 17 | 17 | +0 | COMPLETE |
+| 10 | G2_bad_ub | 15 | 15 | 15 | +0 | COMPLETE |
+| 11 | G2_G3 | 30 | 13 | 19 | **+6** | MAX_STEPS |
+| 12 | INDCPA_HEG_G1 | 52 | 21 | 28 | **+7** | MAX_STEPS |
+| 13 | correctness | 58 | 58 | 58 | +0 | COMPLETE |
+| 14 | G1_G2_eq | 85 | 18 | 11 | **−7** | BUDGET_EXHAUSTED |
+| | **TOTAL** | **301** | | **193** | | |
+
+The `−7` is not an artifact: the cap killed the trial mid-repair, immediately
+after two `undone` events, so the file was left holding *less* than the
+replayed prefix. That trial is unusable as a data point, and it is why run C's
+"one lemma repaired" figure understates it — with statements counted properly,
+run C repaired **two** lemmas partially (`INDCPA_Security` and `G1_G2`), not
+one.
+
+| repaired tactics | run C | run D |
+|---|---:|---:|
+| total | 193 | **238** |
+| spend | $1.0074 (capped out) | $1.4887 (finished) |
+
+Every COMPLETE lemma is identical across the two runs — the eleven free
+replays and `correctness` are deterministic, as they must be. All the
+difference sits in the three hard lemmas:
+
+| lemma | run C | run D | |
+|---|---:|---:|---|
+| G2_G3 | 19 | 13 | **worse** — MAX_STEPS both times, run D got less far |
+| INDCPA_HEG_G1 | 28 | 21 | **worse**, same way |
+| G1_G2_eq | 11 | 69 | run C's 11 is the cut-off artifact; against its 18-tactic baseline run D added 51 where run C never got to try |
+
+**This does not show the §11 work helping or hurting.** Two lemmas got worse,
+one got much better, one run each, on a corpus whose measured run-to-run spread
+(§6) is larger than any of those gaps. It is the same reason the A/B was
+dropped, and the same reason the first-instruction fix in §12.4 is reported as
+addressing a *failure class* rather than as improving outcomes.
 
 ### 12.4 Two defects this run exposed
 
@@ -818,7 +879,9 @@ discharged, go ambient"), matching the existing `skip.` fallback.
 pre-proof errors left, and the graded outcome reproduces offline. The cheap-win
 path is real and large — 11 of 15 lemmas cost nothing.
 
-**Does not.** Whether any of the §11 work improves *repair capability*. One
-model-repaired lemma, same as run C. The first-instruction fact addresses 13 of
-78 failures deterministically, but whether that changes outcomes needs another
-run, and per §6 one run cannot settle it.
+**Does not.** Whether any of the §11 work improves *repair capability*. Both
+runs partially repaired the same two lemmas (`INDCPA_Security`, `G1_G2`) and
+finished neither of the three hard ones; §12.3b shows two of those three going
+*backwards* in run D and one going far forwards. The first-instruction fact
+addresses 13 of 78 failures deterministically, but whether that changes
+outcomes needs another run, and per §6 one run cannot settle it.
