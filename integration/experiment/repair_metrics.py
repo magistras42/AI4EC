@@ -19,6 +19,7 @@ run has none of these files, and a crashed trial may have written only some.
 from __future__ import annotations
 
 import json
+import sys
 import re
 from collections.abc import Iterable
 from pathlib import Path
@@ -330,3 +331,38 @@ def aggregate_repair_metrics(output_dir: Path) -> dict[str, Any]:
     summary["changelog_hops"] = hops
     summary["per_trial"] = per_trial
     return summary
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Re-score a finished run from its artifacts.
+
+    The module has always been able to do this -- it reads only files the
+    trials already wrote, no EasyCrypt, no LLM, no network -- but there was no
+    way to ask for it without importing the module. Re-scoring matters most
+    exactly when the metrics have changed under an old run: W4.5's graded
+    outcome can be derived for runs that predate it (see `_infer_outcome`),
+    so a finished experiment can be re-read rather than re-run.
+    """
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Aggregate a finished run's repair artifacts (W8)",
+    )
+    parser.add_argument("output_dir", type=Path,
+                        help="an experiment output directory (holds trials/)")
+    parser.add_argument("--per-trial", action="store_true",
+                        help="include the per-trial rows, not just the rollup")
+    args = parser.parse_args(argv)
+
+    summary = aggregate_repair_metrics(args.output_dir)
+    if not summary:
+        print(f"no repair artifacts under {args.output_dir}", file=sys.stderr)
+        return 1
+    if not args.per_trial:
+        summary.pop("per_trial", None)
+    print(json.dumps(summary, indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

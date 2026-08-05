@@ -34,7 +34,6 @@ from integration.experiment.proof_extract import (
     strip_tactics,
 )
 from integration.experiment.protocols import ExperimentSpec, ProofCase
-from integration.experiment.repair_metrics import aggregate_repair_metrics
 from integration.experiment.verify import is_proof_complete, is_proof_incomplete
 
 logger = logging.getLogger(__name__)
@@ -643,6 +642,14 @@ def run_experiment(spec: ExperimentSpec, config: ExperimentConfig) -> Experiment
     # Derived purely by reading artifacts the trials already wrote, so a
     # failure here must not lose an otherwise-complete experiment.
     try:
+        # Imported here, not at module scope: `integration.experiment`
+        # re-exports run_experiment, so a top-level import made
+        # `python -m integration.experiment.repair_metrics` load the module
+        # twice and warn about it.
+        from integration.experiment.repair_metrics import (
+            aggregate_repair_metrics,
+        )
+
         repair_metrics = aggregate_repair_metrics(config.output_dir)
     except Exception:  # pragma: no cover - defensive
         logger.exception("Failed to aggregate repair metrics")
