@@ -12,6 +12,7 @@ nothing depends on the vendored EasyCrypt checkout being present.
 from __future__ import annotations
 
 import importlib.util
+import re
 import json
 import types
 from pathlib import Path
@@ -330,3 +331,98 @@ def test_prompt_omits_symbol_block_when_nothing_resolves():
         symbol_theories={},
     )
     assert not text.startswith("Where the names")
+
+
+# --- the real corpus (W5) ---------------------------------------------------
+# A derived note states verified facts -- what a theory requires, what it
+# declares -- but cannot say WHY something broke or what to do instead, and
+# "why" is the part that changes what the model tries. These check the real
+# checked-in notes, not the synthetic fixture above.
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+REPAIR_DOC = REPO_ROOT / "proof_corpus" / "repair_doc"
+REAL_INDEX = REPO_ROOT / "proof_corpus" / "output" / "repair_docs_index.json"
+
+#: Something a reader can go and check: a release tag, a commit SHA, or a file.
+_EVIDENCE = re.compile(r"r20\d\d\.\d\d|\b[0-9a-f]{8,9}\b|\.(?:ec|eca|ml|mll)\b")
+
+
+def _real_docs() -> list[tuple[str, dict]]:
+    if not REPAIR_DOC.is_dir():
+        pytest.skip("repair_doc/ not present")
+    return [
+        (path.name, json.loads(path.read_text(encoding="utf-8")))
+        for path in sorted(REPAIR_DOC.glob("*_lib.json"))
+    ]
+
+
+def test_authored_notes_now_outnumber_derived_ones():
+    """The ratio started inverted: 4 authored, 14 derived."""
+    authored = [name for name, doc in _real_docs() if doc.get("import_repair_note")]
+    assert len(authored) >= 14, f"only {len(authored)} authored: {authored}"
+
+
+def test_every_authored_note_cites_something_checkable():
+    """An authored note's value is that it explains a change. An explanation
+    nobody can verify is indistinguishable from a guess -- and the surrounding
+    prose in these files carries a `caveat` saying exactly that ("No true
+    git-diff was possible")."""
+    for name, doc in _real_docs():
+        note = doc.get("import_repair_note")
+        if not note:
+            continue
+        assert _EVIDENCE.search(note), f"{name} cites no release, commit or source"
+
+
+def test_the_cost_logic_removal_is_explained_where_it_bit():
+    """r2024.09 deleted the complexity subsystem from the whole standard
+    library AND removed `cost`/`schema` from the lexer, so a pre-r2024.09
+    proof carrying annotations fails with a PARSE error rather than an unknown
+    symbol. Every library that lost names to it must say so: hints are
+    retrieved per theory, so a proof failing on DInterval never sees
+    AllCore's note."""
+    affected = {
+        "allcore_lib.json", "bool_lib.json", "dbool_lib.json",
+        "dinverval_lib.json", "smtmap_lib.json",
+    }
+    for name, doc in _real_docs():
+        if name not in affected:
+            continue
+        note = doc.get("import_repair_note") or ""
+        assert "cost" in note.lower(), f"{name} does not mention the cost removal"
+        assert "41c2667f" in note, f"{name} does not cite the removing commit"
+
+
+def test_no_authored_note_tells_a_proof_to_require_an_engine_theory():
+    """`Pervasive` and `Logic` are exported into every file by the engine, so
+    "add a require" is wrong advice however it is phrased. The generated rules
+    are guarded by ENGINE_PRELOADED; the prose needs the same guard."""
+    bad = re.compile(r"require\s+(?:import\s+)?(?:\w+\s+)*(Pervasive|Logic)\b")
+    # The negation can sit on either side of the phrase -- "NEVER add `require
+    # import Pervasive.`" puts it before, "'you must require Pervasive' is
+    # actively wrong advice" puts it after -- so read the whole sentence.
+    negations = ("never", "not ", "wrong", "no generated rule", "cannot")
+    for name, doc in _real_docs():
+        note = doc.get("import_repair_note") or ""
+        for match in bad.finditer(note):
+            start = note.rfind(".", 0, match.start()) + 1
+            end = note.find(".", match.end())
+            sentence = note[start: end if end != -1 else len(note)]
+            assert any(word in sentence.lower() for word in negations), (
+                f"{name} appears to advise requiring {match.group(1)}: "
+                f"...{sentence.strip()}"
+            )
+
+
+def test_the_built_index_agrees_with_the_authored_files():
+    if not REAL_INDEX.is_file():
+        pytest.skip("repair_docs_index.json not generated")
+    index = json.loads(REAL_INDEX.read_text(encoding="utf-8"))
+    authored = [
+        lib for lib in index["libraries"]
+        if lib.get("import_repair_note_source") == "authored"
+    ]
+    assert len(authored) >= 14
+    # Regenerating must not have dropped a note on the floor.
+    on_disk = {name for name, doc in _real_docs() if doc.get("import_repair_note")}
+    assert len(authored) == len(on_disk)

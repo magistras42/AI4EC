@@ -7,5 +7,6 @@
   "version_diffs_found": [
     "r2025.02: 'FMap: add lemmas on range after update' (#690) -- new lemmas about how frng changes after a .[x <- v] update.",
     "r2025.02 (related, not FMap itself): SmtMap was split the same release (#605) -- see the SmtMap file; FMap.ec's own reliance on SmtMap for its underlying total-map representation means this split is relevant context even though the FMap.ec file itself wasn't the PR's target."
-  ]
+  ],
+  "import_repair_note": "FMap DID NOT EXIST before r2024.09 (created at theories/datatypes/FMap.ec, commit-verified). A proof older than that cannot have required it, so adding `require import FMap` is always a migration forward and never a restoration of something that was dropped. In r2025.02 FMap gained 147 names, 125 of which left SmtMap the same release -- that is the split, and the SmtMap note describes it from the other side. The direction of the dependency is what makes the repair mechanical: FMap.ec begins `require import AllCore SmtMap Finite List FSet Ring StdOrder.`, so requiring FMap gives you SmtMap too, while requiring SmtMap gives you nothing of FMap. Adding FMap alongside an existing SmtMap require is therefore always safe; so is replacing SmtMap with FMap, because SmtMap comes back transitively. FMap has never had a symbol removed. An unknown name against FMap is a missing require or a name newer than the proof, never a move out."
 }

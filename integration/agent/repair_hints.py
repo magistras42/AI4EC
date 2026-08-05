@@ -479,8 +479,14 @@ def get_repair_doc_snippets(
     When ``output/repair_docs_index.json`` exists, its condensed records are
     used instead of the raw authored files: same matching, but the summary is
     clipped, ``requires`` is the list parsed from the real source rather than
-    prose, and every library has an ``import_repair_note`` (4 authored, 14
+    prose, and every library has an ``import_repair_note`` (14 authored, 4
     derived) instead of only four.
+
+    The authored/derived ratio started inverted, at 4 and 14. A derived note
+    states verified facts -- what a theory requires, what it declares -- but
+    cannot say *why* something broke or what to do instead, and "why" is the
+    part that changes what the model tries. The 10 written since carry their
+    evidence: a commit SHA, a release tag, or a line of EasyCrypt source.
     """
     index = load_repair_docs_index()
     if index is not None:
