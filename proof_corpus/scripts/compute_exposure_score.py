@@ -649,7 +649,7 @@ def compute_automation_ratio(repo_path: Path, exclude_dirs: set[str] | None = No
 
 # --- proof complexity --------------------------------------------------------
 
-PROOF_BLOCK_RE = re.compile(r"\bproof\.(.*?)\b(?:qed|abort|admit)\.", re.DOTALL)
+PROOF_BLOCK_RE = re.compile(r"\bproof\.(.*?)\b(?:qed|save|abort|admit)\.", re.DOTALL)
 # EasyCrypt also supports a terse inline form that never uses the word
 # "proof" at all: `lemma foo : P by trivial.` -- very common for short,
 # illustrative, one-tactic-per-example material (exactly what a
