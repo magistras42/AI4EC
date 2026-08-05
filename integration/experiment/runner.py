@@ -102,6 +102,12 @@ class ExperimentResult:
     # know before interpreting the success rate.
     budget: dict | None = None
     budget_stopped: bool = False
+    # The knobs that distinguish one arm of a paired comparison from the
+    # other, recorded so `compare_runs.py` can read them off the artifacts.
+    # Without this a hints-on and a hints-off summary.json are
+    # indistinguishable, and pairing them relies on someone remembering which
+    # directory was which.
+    arm: dict = field(default_factory=dict)
 
 
 class EventLog:
@@ -113,6 +119,26 @@ class EventLog:
         entry = {"time": _utc_now(), "event": event, **fields}
         with self.path.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
+
+
+def _arm_of(spec, config) -> dict:
+    """The settings that make one arm of a comparison different from another.
+
+    Deliberately narrow: seed, model and the toggles under study. Dumping the
+    whole config would make every run look unique and nothing would ever pair.
+    """
+    arm: dict = {
+        "spec": spec.name,
+        "seed": config.seed,
+        "model": getattr(config.agent, "llm_model", None),
+        "provider": getattr(config.agent, "llm_provider", None),
+    }
+    replay = getattr(spec, "replay_bootstrap", None)
+    if replay is not None:
+        arm["changelog_hints"] = replay.changelog_hints
+        arm["show_remaining_original"] = replay.show_remaining_original
+        arm["version_hop"] = replay.version_hop
+    return arm
 
 
 def _write_summary(path: Path, result: ExperimentResult) -> None:
@@ -641,6 +667,7 @@ def run_experiment(spec: ExperimentSpec, config: ExperimentConfig) -> Experiment
         repair_metrics=repair_metrics,
         budget=budget.as_dict() if budget is not None else None,
         budget_stopped=budget_stopped,
+        arm=_arm_of(spec, config),
     )
     _write_summary(config.output_dir / "summary.json", result)
     events.record(

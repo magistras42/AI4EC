@@ -269,6 +269,19 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     run_p.add_argument(
+        "--no-changelog-hints",
+        action="store_true",
+        help=(
+            "replay_bootstrap only. Run WITHOUT the changelog/repair_doc "
+            "knowledge base -- the hints-off arm of the paired A/B that shows "
+            "whether it helps. `hint_uptake` in summary.json is only a proxy "
+            "for that; this is the counterfactual. Import repair still runs "
+            "(it edits the file, not the prompt). Pair with several seeds per "
+            "arm: run-to-run variance under identical configuration has been "
+            "measured at 11-vs-1 accepted tactics."
+        ),
+    )
+    run_p.add_argument(
         "--version-hop",
         action="store_true",
         help=(
@@ -461,21 +474,24 @@ def main(argv: list[str] | None = None) -> int:
                 spec, informal=dc_replace(spec.informal, **overrides)
             )
 
+    replay_overrides: dict[str, object] = {}
     if args.version_hop:
+        replay_overrides["version_hop"] = True
+        replay_overrides["version_hop_strategy"] = args.version_hop_strategy
+    if args.no_changelog_hints:
+        replay_overrides["changelog_hints"] = False
+    if replay_overrides:
         if spec.replay_bootstrap is None:
+            flags = ", ".join(f"--{k.replace('_', '-')}" for k in replay_overrides)
             print(
-                f"error: --version-hop applies to replay_bootstrap specs; "
+                f"error: {flags} apply to replay_bootstrap specs; "
                 f"{args.spec!r} is not one",
                 file=sys.stderr,
             )
             return 2
         spec = dc_replace(
             spec,
-            replay_bootstrap=dc_replace(
-                spec.replay_bootstrap,
-                version_hop=True,
-                version_hop_strategy=args.version_hop_strategy,
-            ),
+            replay_bootstrap=dc_replace(spec.replay_bootstrap, **replay_overrides),
         )
 
     if provider in PAID_LLM_PROVIDERS:

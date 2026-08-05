@@ -108,6 +108,20 @@ class ReplayBootstrapConfig:
     # (source, target] span. Off by default and deliberately so: the first run
     # provisions opam switches and full OCaml builds, minutes and hundreds of
     # megabytes each, so it must be something a run opts into.
+    # The hints-OFF arm of the counterfactual the hint_uptake metric cannot
+    # substitute for. `repair_metrics.hint_uptake` asks whether an identifier a
+    # hint named turns up in an accepted tactic, which is a proxy: the model
+    # might have reached that name anyway. Showing the knowledge base HELPS
+    # needs the same corpus run without it, and until this flag existed there
+    # was no way to produce that arm -- changelog_hints was populated
+    # unconditionally, so the comparison could not be made at any price.
+    #
+    # Off means off for the whole chain: no bootstrap-time retrieval, no
+    # per-failure refresh. Import repair is deliberately NOT disabled -- it
+    # edits the file rather than the prompt, so suppressing its summary would
+    # leave the model proving against a file it was not told about, which
+    # changes more than the variable under test.
+    changelog_hints: bool = True
     version_hop: bool = False
     # "bisect" assumes the tactic breaks once and stays broken -- ~4 builds
     # over the 14-release catalog against up to 14. "linear" drops the

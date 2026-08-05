@@ -356,13 +356,22 @@ def run_replay_bootstrap_trial(
         if hop is not None and hop.changelog_range:
             hint_source, hint_target = hop.changelog_range
 
-    changelog_hints, hint_notes, matched_version = get_repair_hints_text(
-        failing_tactic_text=failed_tactic,
-        ec_error_text=raw_error,
-        error_kind=failure_kind,
-        source_ec_version=hint_source,
-        target_ec_version=hint_target,
-    )
+    if replay_config.changelog_hints:
+        changelog_hints, hint_notes, matched_version = get_repair_hints_text(
+            failing_tactic_text=failed_tactic,
+            ec_error_text=raw_error,
+            error_kind=failure_kind,
+            source_ec_version=hint_source,
+            target_ec_version=hint_target,
+        )
+    else:
+        # The hints-off arm. Retrieval is skipped entirely rather than
+        # retrieved-and-discarded: the point is a run the knowledge base did
+        # not touch, and a retrieval pass that happens anyway would still cost
+        # the time it costs and still show up in the run's timings.
+        changelog_hints, hint_notes, matched_version = "", [
+            "changelog hints disabled for this run (hints-off A/B arm)"
+        ], None
     if hint_notes:
         (trial_dir / "repair_hints_notes.json").write_text(
             json.dumps(hint_notes, indent=2), encoding="utf-8",
@@ -437,8 +446,10 @@ def run_replay_bootstrap_trial(
         retrospective_file=trial_dir / "timeout_retrospective.json",
         # W3: let the loop re-aim the changelog block at each NEW failure and
         # hop past releases already shown, rather than proving the rest of the
-        # script against hints fetched for the first broken tactic only.
-        live_changelog_hints=True,
+        # script against hints fetched for the first broken tactic only. Off in
+        # the hints-off arm: a run whose bootstrap hints were suppressed but
+        # which then refetched them on the next failure is not a hints-off run.
+        live_changelog_hints=replay_config.changelog_hints,
         source_ec_version=source_version,
         target_ec_version=target_version,
     )
