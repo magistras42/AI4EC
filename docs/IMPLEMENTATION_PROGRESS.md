@@ -36,7 +36,7 @@ items uncovered a defect rather than merely adding a feature.
 | **Symbol moves** | ✅ 1 → 5, by mining 135 theories instead of 16 |
 | **W5** — authored notes | ✅ 4/14 → **14 authored / 4 derived**; found the r2024.09 cost-logic removal |
 | **W7** — version hopping | ✅ Implemented (binaries not yet built — see §11) |
-| **Hint-uptake A/B** | ✅ Arm + scorer built; the run needs a human |
+| **Hint-uptake A/B** | ⚠️ Arm + scorer built, but §10.1 already dropped an A/B on this corpus for variance — the run should probably not happen |
 
 ---
 
@@ -387,12 +387,24 @@ python3 -m integration.experiment run --spec elgamal-changelog-repair \
 
 Embeddings always stay on LM Studio regardless of provider.
 
-### 9.1 The hints-on / hints-off A/B (§11 item 6)
+### 9.1 The hints-on / hints-off arm (§11 item 6)
 
-Both arms need a real model, so **print these and let a human run them**. Use
-the same seeds in both arms and at least 5 per arm — §10.1 measured 11-vs-1
-accepted tactics under *identical* configuration, so fewer cannot separate the
-arms from the noise.
+> ⚠️ **Read §10.1 before spending anything on this.** A *different* A/B —
+> `show_remaining_original` — was already run on this corpus and **dropped, not
+> deferred**: run-to-run variance under identical configuration reached 11-vs-1
+> accepted tactics, exceeding any between-arm difference it could detect.
+> [`ELGAMAL_E2E_RESULTS.md`](ELGAMAL_E2E_RESULTS.md) §9.2 says to re-open an A/B
+> "if at all", at roughly 10x the spend.
+>
+> Nothing about the hints-on/hints-off variable escapes that. Same corpus, same
+> model, same variance. **This section is not a recommendation to run it.** The
+> arm and the scorer exist so the option is not blocked by missing plumbing, and
+> because `--no-changelog-hints` is independently useful for debugging whether a
+> hint block is *causing* a failure. Deciding the experiment is worth its cost is
+> a separate judgement, and the evidence so far says it is not.
+
+If it is run anyway: both arms need a real model, so **print these and let a
+human run them**. Use the same seeds in both arms and at least 5 per arm.
 
 ```bash
 for SEED in 1 2 3 4 5; do
@@ -618,19 +630,36 @@ release, 521K on disk rather than a full clone); the opam and dune steps have
 only been dry-run. Pre-build with
 `python3 -m integration.experiment.ec_versions --version rYYYY.MM`.
 
-**6. Hint uptake — the A/B is now runnable; the run is not done**
-(`d578596f`). This was treated as blocked on spend. It was blocked on
-something cheaper first: **there was no hints-off arm.** `changelog_hints` was
-populated unconditionally, so the counterfactual could not be produced at any
-price. `--no-changelog-hints` is that arm (off for the whole chain, including
-the per-failure refresh; import repair still runs, since it edits the file
-rather than the prompt). `summary.json` gained an `arm` block, and
-`compare_runs.py` scores N seeds per arm.
+**6. Hint uptake — plumbing built; the run should probably NOT happen**
+(`d578596f`).
 
-The scorer exists because of the variance, not despite it: `conclusive` is
-True only when the gap between arm means exceeds the widest within-arm range,
-never with one run per arm, and when nothing separates the arms it says so is
-a statement about *power*. See §9 for the commands.
+⚠️ **Scope correction.** This item is in tension with §10.1 and §10.1 wins. A
+*different* A/B (`show_remaining_original`) was already run on this corpus and
+**dropped, not deferred**, because run-to-run variance under identical
+configuration reached 11-vs-1 accepted tactics —
+[`ELGAMAL_E2E_RESULTS.md`](ELGAMAL_E2E_RESULTS.md) §6, whose §9.2 says to
+re-open an A/B "if at all". The hints-on/hints-off variable is different but
+the corpus, the model and the variance are the same, so the verdict carries.
+**Nothing below should be read as a recommendation to spend on this run.**
+
+What was built, and why it stands on its own:
+
+- **`--no-changelog-hints`.** There was no way to turn the knowledge base off
+  — `changelog_hints` was populated unconditionally. That is worth fixing
+  independently of any A/B: it is how you check whether a hint block is
+  *causing* a failure, which is a debugging need, not an experimental one.
+- **`summary.json` `arm` block.** Two runs' summaries were previously
+  indistinguishable; pairing relied on remembering which directory was which.
+- **`compare_runs.py`.** The scorer exists *because* of the variance. Its
+  main job is refusing to conclude: `conclusive` is True only when the gap
+  between arm means exceeds the widest within-arm range, is never True with
+  one run per arm, and when nothing separates the arms it prints that this is
+  a statement about *power*. It makes §6's lesson mechanical instead of
+  something a reader has to remember.
+
+So the deliverable here is an instrument that says "you cannot conclude that",
+plus the flag that was missing for unrelated reasons. Running the experiment
+remains a judgement call, and the evidence says no.
 
 ### Closed earlier
 
