@@ -20,8 +20,11 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
+
+from integration.agent import import_repair as import_repair_mod
 
 
 def _read_json(path: Path) -> dict[str, Any] | None:
@@ -33,6 +36,29 @@ def _read_json(path: Path) -> dict[str, Any] | None:
 
 def _mean(values: list[float]) -> float | None:
     return round(sum(values) / len(values), 4) if values else None
+
+
+def _counts(values: Iterable[str]) -> dict[str, int]:
+    """Tally non-empty strings, sorted by key for stable output."""
+    tally: dict[str, int] = {}
+    for value in values:
+        if value:
+            tally[value] = tally.get(value, 0) + 1
+    return dict(sorted(tally.items()))
+
+
+def _infer_outcome(import_repair: dict[str, Any]) -> str:
+    """Best-effort outcome for an artifact written before W4.5.
+
+    `reached_proof` is deliberately unreachable here: it needs the error
+    classification, which those artifacts do not carry. Guessing it from a line
+    number is exactly the inference W4.5 exists to stop making.
+    """
+    if import_repair.get("loads_after"):
+        return import_repair_mod.PROGRESS_LOADS
+    if import_repair.get("improved"):
+        return import_repair_mod.PROGRESS_ADVANCED
+    return import_repair_mod.PROGRESS_NONE
 
 
 def _name_pattern(name: str) -> re.Pattern[str]:
@@ -119,12 +145,28 @@ def collect_trial_repair_metrics(trial_dir: Path) -> dict[str, Any] | None:
             "attempted": True,
             "changed": bool(import_repair.get("changed")),
             "improved": bool(import_repair.get("improved")),
+            # W4.5. Artifacts written before graded outcomes existed have
+            # neither key; derive the best available answer rather than
+            # dropping the trial, so an old run can still be re-scored.
+            "outcome": import_repair.get("outcome") or _infer_outcome(import_repair),
+            "resolved": bool(
+                import_repair.get(
+                    "resolved", import_repair.get("loads_after", False)
+                )
+            ),
             "loads_after": bool(import_repair.get("loads_after")),
             "considered_count": len(import_repair.get("considered", []) or []),
             "kept_count": len(kept),
             "kept_ids": [a.get("id") for a in kept],
             "error_line_before": import_repair.get("error_line_before", -1),
             "error_line_after": import_repair.get("error_line_after", -1),
+            "error_kind_before": import_repair.get("error_kind_before", ""),
+            "error_kind_after": import_repair.get("error_kind_after", ""),
+            # Which classified error each kept rule was chosen against (W4.1
+            # wiring). Empty on artifacts predating error-directed selection.
+            "selected_for": sorted(
+                {a.get("selected_for", "") for a in kept} - {""}
+            ),
         }
 
     if hop:
@@ -224,6 +266,11 @@ def aggregate_repair_metrics(output_dir: Path) -> dict[str, Any]:
     if imports:
         improved = sum(1 for i in imports if i["improved"])
         loaded = sum(1 for i in imports if i["loads_after"])
+        resolved = sum(1 for i in imports if i["resolved"])
+        outcomes: dict[str, int] = {}
+        for entry in imports:
+            key = entry.get("outcome") or import_repair_mod.PROGRESS_NONE
+            outcomes[key] = outcomes.get(key, 0) + 1
         advances = [
             i["error_line_after"] - i["error_line_before"]
             for i in imports
@@ -231,14 +278,32 @@ def aggregate_repair_metrics(output_dir: Path) -> dict[str, Any]:
         ]
         summary["import_repair"] = {
             "attempted": len(imports),
-            "improved": improved,
-            "improved_rate": round(improved / len(imports), 4),
+            # W4.5 headline. `resolved` counts the attempts that got the file
+            # past LOADING -- either it compiles, or the only complaint left is
+            # a tactic, which is the solver's problem and not this module's.
+            # This is what `improved_rate` was standing in for and flattering:
+            # on run C that rate was 1.0 while only 7 of 12 files loaded,
+            # because trading one import error for a later one satisfied it.
+            "resolved": resolved,
+            "resolved_rate": round(resolved / len(imports), 4),
+            # The full distribution, so no single rate has to carry the story.
+            "outcomes": dict(sorted(outcomes.items())),
             "made_file_load": loaded,
+            # Retained, but read it as "the repaired file was worth keeping",
+            # not "the repair worked" -- it is the promotion gate's predicate.
+            "worth_keeping": improved,
+            "worth_keeping_rate": round(improved / len(imports), 4),
             "mean_migrations_kept": _mean([float(i["kept_count"]) for i in imports]),
             # Positive = EasyCrypt now gets further into the file before
-            # complaining. The honest partial-progress measure (4.5): it does
-            # not claim the proof works, only that loading advanced.
+            # complaining. Kept as a diagnostic; it is explicitly no longer the
+            # measure of success.
             "mean_first_error_line_advance": _mean([float(a) for a in advances]),
+            # What the remaining failures actually are, across the run. A pile
+            # of `unknown_theory` says the manifest has gaps; a pile of
+            # `tactic_error` says import repair is done and the solver is next.
+            "remaining_error_kinds": _counts(
+                i.get("error_kind_after", "") for i in imports
+            ),
         }
 
     if uptakes:

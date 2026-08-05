@@ -46,6 +46,7 @@ from typing import Any
 from .config import AgentConfig
 from .easycrypt import validate_file
 from .ec_errors import (
+    IN_PROOF_KINDS,
     KIND_PARSE_ERROR,
     KIND_TYPE_ERROR,
     KIND_UNKNOWN,
@@ -54,6 +55,7 @@ from .ec_errors import (
     ClassifiedError,
     classify_error,
     first_error_line,
+    strip_warning_lines,
 )
 
 logger = logging.getLogger(__name__)
@@ -112,6 +114,37 @@ class AppliedMigration:
     relevance: int = 0
 
 
+# --- progress (W4.5) --------------------------------------------------------
+# "Did the first error move later in the file?" is too weak to be the measure
+# of record. It is true of almost any edit that changes anything, so it cannot
+# distinguish "the imports are fixed" from "one import error was traded for the
+# next one" -- on run C it reported 12 of 12 attempts improved while only 7 of
+# 12 made the file load. What it was missing is not precision about *where* the
+# error is, but the classification of *what* it is.
+#
+# The boundary that actually decides whether this module succeeded is the one
+# `ec_errors` exists to draw. Import repair's job is to get a file past
+# LOADING. A file whose remaining complaint is a bad tactic argument has been
+# handed off to the solver -- that is this module finishing, even though
+# EasyCrypt still exits nonzero. A file whose remaining complaint is another
+# missing theory has not.
+
+PROGRESS_LOADS = "loads"                    # compiles clean
+PROGRESS_REACHED_PROOF = "reached_proof"    # load errors gone; a tactic is now at fault
+PROGRESS_ADVANCED = "advanced"              # still a load error, but a later/different one
+PROGRESS_NONE = "none"                      # nothing measurable changed
+PROGRESS_REGRESSED = "regressed"            # EasyCrypt stops earlier, or back before the proof
+
+#: Ordered so two attempts can be compared, which a set of booleans cannot be.
+PROGRESS_RANK: dict[str, int] = {
+    PROGRESS_REGRESSED: -1,
+    PROGRESS_NONE: 0,
+    PROGRESS_ADVANCED: 1,
+    PROGRESS_REACHED_PROOF: 2,
+    PROGRESS_LOADS: 3,
+}
+
+
 @dataclass
 class ImportRepairResult:
     changed: bool
@@ -140,20 +173,76 @@ class ImportRepairResult:
     notes: list[str] = field(default_factory=list)
 
     @property
-    def improved(self) -> bool:
-        """True when the file now loads, or EasyCrypt gets measurably further."""
+    def outcome(self) -> str:
+        """Graded progress: one of the ``PROGRESS_*`` constants.
+
+        Read top to bottom, most decisive first. The two kind-based clauses are
+        what the line number alone could never express: crossing into an
+        in-proof error is this module succeeding, and falling back out of one
+        is a regression no matter how far into the file it happened.
+        """
         if self.loads_after and not self.loads_before:
-            return True
-        return (
-            self.error_line_before >= 0
-            and self.error_line_after > self.error_line_before
-        )
+            return PROGRESS_LOADS
+        if self.loads_before:
+            return PROGRESS_NONE  # nothing was wrong; no repair was attempted
+
+        before_in_proof = self.error_kind_before in IN_PROOF_KINDS
+        after_in_proof = self.error_kind_after in IN_PROOF_KINDS
+        if after_in_proof and not before_in_proof:
+            return PROGRESS_REACHED_PROOF
+        if before_in_proof and not after_in_proof:
+            return PROGRESS_REGRESSED
+
+        if self.error_line_before >= 0 and self.error_line_after >= 0:
+            if self.error_line_after < self.error_line_before:
+                return PROGRESS_REGRESSED
+            if self.error_line_after > self.error_line_before:
+                return PROGRESS_ADVANCED
+        if (
+            self.error_kind_before
+            and self.error_kind_after
+            and self.error_kind_after != self.error_kind_before
+        ):
+            # Same position, different complaint: the old error is genuinely
+            # gone and a different one is underneath it.
+            return PROGRESS_ADVANCED
+        return PROGRESS_NONE
+
+    @property
+    def progress_rank(self) -> int:
+        return PROGRESS_RANK.get(self.outcome, 0)
+
+    @property
+    def resolved(self) -> bool:
+        """True when import repair did the job it exists to do.
+
+        The headline measure. `improved` answers a different, weaker question
+        -- see there -- and reporting only that is what let run C claim a 100%
+        improvement rate on a run where 5 of 12 files still would not load.
+        """
+        return self.progress_rank >= PROGRESS_RANK[PROGRESS_REACHED_PROOF]
+
+    @property
+    def improved(self) -> bool:
+        """True when the repaired text is worth keeping over the original.
+
+        Deliberately a *low* bar, because that is what its callers need: this
+        gates whether the repaired file is promoted, and by the time a result
+        exists the incremental pass has already rolled back everything that
+        made EasyCrypt stop earlier. The question left is "did this do anything
+        at all", not "did this finish the job" -- for the latter use
+        :attr:`resolved`, and for the full picture :attr:`outcome`.
+        """
+        return self.progress_rank >= PROGRESS_RANK[PROGRESS_ADVANCED]
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "changed": self.changed,
             "loads_before": self.loads_before,
             "loads_after": self.loads_after,
+            "outcome": self.outcome,
+            "progress_rank": self.progress_rank,
+            "resolved": self.resolved,
             "improved": self.improved,
             "error_line_before": self.error_line_before,
             "error_line_after": self.error_line_after,
@@ -548,7 +637,12 @@ def _probe(
     path.write_text(text, encoding="utf-8")
     result = validate_file(path, config)
     output = (result.stderr or "").strip() or (result.stdout or "").strip()
-    return result.returncode == 0, output, classify_error(output)
+    # EasyCrypt re-emits every file-level warning on every invocation, so the
+    # one `[critical]` line arrives buried under notices that are identical for
+    # the repaired and unrepaired file. Classifying the stripped text keeps
+    # `ClassifiedError.message` the actual failure rather than the first
+    # warning above it.
+    return result.returncode == 0, output, classify_error(strip_warning_lines(output))
 
 
 def repair_imports(

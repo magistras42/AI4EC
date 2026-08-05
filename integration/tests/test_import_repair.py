@@ -730,6 +730,109 @@ def test_min_confidence_filters_low_rules(tmp_path, monkeypatch, manifest_path):
     assert "always-on" in low.considered
 
 
+# --- graded progress (W4.5) -------------------------------------------------
+# "The first error moved later" is true of almost any edit, so it could not
+# tell "the imports are fixed" from "one import error was traded for the next".
+# The boundary that decides it is the pre-proof/in-proof one.
+
+
+def _result(**kwargs) -> import_repair.ImportRepairResult:
+    base = dict(
+        changed=True, text="", applied=[], considered=[],
+        loads_before=False, loads_after=False,
+        error_before="x", error_after="y",
+        error_line_before=108, error_line_after=108,
+        error_kind_before=ec_errors.KIND_UNKNOWN_THEORY,
+        error_kind_after=ec_errors.KIND_UNKNOWN_THEORY,
+    )
+    base.update(kwargs)
+    return import_repair.ImportRepairResult(**base)
+
+
+def test_a_remaining_tactic_error_is_this_module_succeeding():
+    """The file still exits nonzero, but the only complaint left is a bad
+    tactic -- the solver's problem. Import repair got the file past loading,
+    which is the whole job, and `loads_after` alone would score it a failure."""
+    result = _result(error_kind_after=ec_errors.KIND_TACTIC_ERROR, error_line_after=453)
+    assert result.outcome == import_repair.PROGRESS_REACHED_PROOF
+    assert result.resolved
+    assert result.improved
+
+
+def test_a_later_error_of_the_same_kind_is_advanced_not_resolved():
+    """The case that made `improved_rate` read 1.0: one missing theory traded
+    for another, further down. Real movement, but not the job done."""
+    result = _result(error_line_after=453)
+    assert result.outcome == import_repair.PROGRESS_ADVANCED
+    assert not result.resolved
+    assert result.improved            # still worth keeping over the original
+
+
+def test_a_loading_file_outranks_everything():
+    result = _result(loads_after=True, error_kind_after="", error_line_after=-1)
+    assert result.outcome == import_repair.PROGRESS_LOADS
+    assert result.resolved
+    assert result.progress_rank > _result(
+        error_kind_after=ec_errors.KIND_TACTIC_ERROR
+    ).progress_rank
+
+
+def test_falling_back_out_of_the_proof_is_a_regression_however_far_in():
+    """A rule that turns a tactic error at line 453 into a missing theory at
+    line 500 has undone the module's own work. The line number says progress;
+    the kind says the opposite, and the kind is right."""
+    result = _result(
+        error_kind_before=ec_errors.KIND_TACTIC_ERROR, error_line_before=453,
+        error_kind_after=ec_errors.KIND_UNKNOWN_THEORY, error_line_after=500,
+    )
+    assert result.outcome == import_repair.PROGRESS_REGRESSED
+    assert not result.improved
+
+
+def test_an_earlier_error_is_a_regression():
+    result = _result(error_line_before=453, error_line_after=108)
+    assert result.outcome == import_repair.PROGRESS_REGRESSED
+    assert result.progress_rank < 0
+
+
+def test_a_different_error_at_the_same_line_is_advancement():
+    result = _result(error_kind_after=ec_errors.KIND_PARSE_ERROR)
+    assert result.outcome == import_repair.PROGRESS_ADVANCED
+
+
+def test_nothing_changing_is_not_progress():
+    assert _result().outcome == import_repair.PROGRESS_NONE
+    assert not _result().improved
+
+
+def test_a_file_that_already_loaded_reports_no_progress():
+    """`loads_after and loads_before` is "there was nothing to do", not a win;
+    counting it as one would inflate every rate by the healthy files."""
+    result = _result(loads_before=True, loads_after=True)
+    assert result.outcome == import_repair.PROGRESS_NONE
+    assert not result.resolved
+
+
+def test_progress_rank_orders_every_outcome():
+    ranks = [
+        import_repair.PROGRESS_RANK[name] for name in (
+            import_repair.PROGRESS_REGRESSED, import_repair.PROGRESS_NONE,
+            import_repair.PROGRESS_ADVANCED, import_repair.PROGRESS_REACHED_PROOF,
+            import_repair.PROGRESS_LOADS,
+        )
+    ]
+    assert ranks == sorted(ranks) and len(set(ranks)) == len(ranks)
+
+
+def test_to_dict_publishes_the_graded_outcome():
+    payload = _result(
+        error_kind_after=ec_errors.KIND_TACTIC_ERROR, error_line_after=453
+    ).to_dict()
+    assert payload["outcome"] == import_repair.PROGRESS_REACHED_PROOF
+    assert payload["resolved"] is True
+    assert payload["progress_rank"] == 2
+
+
 # --- prompt rendering -------------------------------------------------------
 
 

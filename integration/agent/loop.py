@@ -1711,8 +1711,11 @@ def _maybe_repair_imports(
 
     if not (result.changed and result.improved):
         logger.info(
-            "Import repair made no verified progress (first error line %s -> %s)",
+            "Import repair made no verified progress (%s; first error %s:%s -> %s:%s)",
+            result.outcome,
+            result.error_kind_before,
             result.error_line_before,
+            result.error_kind_after,
             result.error_line_after,
         )
         return None
@@ -1721,9 +1724,12 @@ def _maybe_repair_imports(
     # promoting the repaired text cannot invalidate recorded line numbers.
     proof.path.write_text(result.text, encoding="utf-8")
     logger.info(
-        "Import repair applied %d migration(s); first error line %s -> %s",
+        "Import repair applied %d migration(s): %s (first error %s:%s -> %s:%s)",
         sum(1 for a in result.applied if a.kept),
+        result.outcome,
+        result.error_kind_before,
         result.error_line_before,
+        result.error_kind_after,
         result.error_line_after,
     )
     return format_for_prompt(result) or None

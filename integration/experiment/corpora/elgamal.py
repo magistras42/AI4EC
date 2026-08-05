@@ -165,11 +165,24 @@ class ElGamalCorpus(CorpusProvider):
         Goals reachable before repair    15/15         3/15
         Trials lost to goal_unreachable    0             0
         import_repair attempted            0            12
-        ... of which improved              -        12 (100%)
-        ... made the file load             -             7
+        ... resolved (W4.5)                -        12 (100%)
+        ...... made the file load          -             7
+        ...... reached_proof               -             5
         Mean first-error advance           -      +547.8 lines
         Fully replayed                   11/15      11/15
         =============================  ===========  ===========
+
+        Read the resolved row carefully, because an earlier version of this
+        table reported "12 (100%) improved" and meant something much weaker.
+        `improved` only asked whether EasyCrypt's first complaint moved later
+        in the file, which almost any edit achieves. `resolved` (W4.5) asks
+        whether the file got past LOADING, which is the only thing this module
+        is responsible for: 7 files compile clean, and the other 5 fail solely
+        on `tactic_error` / `proof_incomplete` -- proof problems handed to the
+        solver. **Zero pre-proof errors remain on this corpus**, so the
+        manifest has no gap left here and every remaining failure is
+        tactic-level. That agrees with the run-C finding that the bottleneck
+        is program-logic tactics rather than the knowledge base.
 
         Identical trial coverage, and the four rules the manifest applies are
         the same four fixes ``port_legacy_easycrypt_syntax`` hardcodes -- but

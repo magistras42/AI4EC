@@ -61,6 +61,45 @@ def test_classification_kinds(text, expected):
     assert classify_error(text).kind == expected
 
 
+@pytest.mark.parametrize(
+    "text,expected",
+    [
+        # Captured verbatim from the installed r2026.06 build, running import
+        # repair over the ElGamal corpus. Every one of these classified as
+        # `unknown` before -- and `unknown` is treated as a LOAD failure, so
+        # the four failures that most clearly belong to the solver were being
+        # reported as ones that might still belong to import repair.
+        (
+            "[critical] [/x/hashedelgamal.ec: line 453 (0) to line 454 (53)] "
+            "invalid `position' parameter",
+            KIND_TACTIC_ERROR,
+        ),
+        (
+            "[critical] [/x/hashedelgamal.ec: line 751 (0-78)] "
+            "invalid `position' parameter",
+            KIND_TACTIC_ERROR,
+        ),
+        (
+            "[critical] [/x/hashedelgamal.ec: line 828 (22-35)] "
+            "expecting a `memory', not a `formula'",
+            KIND_TACTIC_ERROR,
+        ),
+        (
+            "[critical] [/x/hashedelgamal.ec: line 689 (0-4)] "
+            "cannot save an incomplete proof",
+            KIND_PROOF_INCOMPLETE,
+        ),
+    ],
+)
+def test_real_easycrypt_messages_classify_as_in_proof(text, expected):
+    """EasyCrypt quotes names Lisp-style -- ```position'`` -- and the
+    patterns were written against the docs' prose rendering, which uses
+    straight quotes. The fixtures above are copy-pasted compiler output."""
+    classified = classify_error(text)
+    assert classified.kind == expected
+    assert classified.is_in_proof
+
+
 def test_pre_proof_and_in_proof_are_disjoint_and_meaningful():
     """The boundary this whole subsystem is organized around."""
     load_failure = classify_error(BRACKET_FORM)

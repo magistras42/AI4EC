@@ -24,16 +24,27 @@ def _bootstrap(accepted, total, failed="rewrite foo.", fully=False):
     }
 
 
-def _import_repair(*, improved=True, loads_after=False, kept=("rule-a",), before=108, after=453):
+def _import_repair(
+    *, improved=True, loads_after=False, kept=("rule-a",), before=108, after=453,
+    outcome="advanced", resolved=False,
+    kind_before="unknown_theory", kind_after="unknown_theory", selected_for="",
+):
     return {
         "changed": True,
         "improved": improved,
+        "outcome": outcome,
+        "resolved": resolved,
         "loads_after": loads_after,
         "considered": ["rule-a", "rule-b", "rule-c", "rule-d"],
-        "applied": [{"id": rule, "kept": True} for rule in kept]
+        "applied": [
+            {"id": rule, "kept": True, "selected_for": selected_for}
+            for rule in kept
+        ]
         + [{"id": "rejected-rule", "kept": False}],
         "error_line_before": before,
         "error_line_after": after,
+        "error_kind_before": kind_before,
+        "error_kind_after": "" if loads_after else kind_after,
     }
 
 
@@ -84,11 +95,76 @@ def test_aggregates_import_repair_attempts_and_line_advance(tmp_path):
 
     summary = aggregate_repair_metrics(tmp_path)["import_repair"]
     assert summary["attempted"] == 2
-    assert summary["improved"] == 1
-    assert summary["improved_rate"] == 0.5
+    assert summary["worth_keeping"] == 1
+    assert summary["worth_keeping_rate"] == 0.5
     # (345 + 0) / 2
     assert summary["mean_first_error_line_advance"] == 172.5
     assert summary["mean_migrations_kept"] == 1.0
+
+
+def test_reports_the_graded_outcome_distribution_not_one_boolean(tmp_path):
+    """W4.5. Run C reported a 100% improvement rate on a run where 5 of 12
+    files still would not load, because trading one import error for a later
+    one satisfied the boolean. The distribution cannot hide that."""
+    trials = tmp_path / "trials"
+    _write(trials / "trial_000", "import_repair.json",
+           _import_repair(outcome="loads", resolved=True, loads_after=True))
+    _write(trials / "trial_001", "import_repair.json",
+           _import_repair(outcome="reached_proof", resolved=True,
+                          kind_after="tactic_error"))
+    _write(trials / "trial_002", "import_repair.json",
+           _import_repair(outcome="advanced", kind_after="unknown_theory"))
+    _write(trials / "trial_003", "import_repair.json",
+           _import_repair(outcome="advanced", kind_after="unknown_theory"))
+
+    summary = aggregate_repair_metrics(tmp_path)["import_repair"]
+    # All four were "worth keeping"; only half got past loading.
+    assert summary["worth_keeping"] == 4
+    assert summary["resolved"] == 2
+    assert summary["resolved_rate"] == 0.5
+    assert summary["outcomes"] == {"advanced": 2, "loads": 1, "reached_proof": 1}
+    # And what is still in the way is named, not just counted.
+    assert summary["remaining_error_kinds"] == {
+        "tactic_error": 1, "unknown_theory": 2
+    }
+
+
+def test_an_artifact_predating_graded_outcomes_is_still_scored(tmp_path):
+    """Re-scoring an old run must work -- that is the point of deriving
+    metrics from files rather than computing them during the run. But
+    `reached_proof` must stay unreachable: it needs the classification those
+    artifacts do not carry, and inferring it from a line number is the exact
+    inference W4.5 exists to stop."""
+    trials = tmp_path / "trials"
+    legacy_loads = _import_repair(loads_after=True)
+    legacy_advanced = _import_repair(before=108, after=453)
+    legacy_flat = _import_repair(improved=False, before=108, after=108)
+    for key in ("outcome", "resolved", "error_kind_before", "error_kind_after"):
+        for payload in (legacy_loads, legacy_advanced, legacy_flat):
+            payload.pop(key, None)
+    _write(trials / "trial_000", "import_repair.json", legacy_loads)
+    _write(trials / "trial_001", "import_repair.json", legacy_advanced)
+    _write(trials / "trial_002", "import_repair.json", legacy_flat)
+
+    summary = aggregate_repair_metrics(tmp_path)["import_repair"]
+    assert summary["outcomes"] == {"advanced": 1, "loads": 1, "none": 1}
+    assert summary["resolved"] == 1          # the one that loaded, and only it
+    assert summary["remaining_error_kinds"] == {}
+
+
+def test_trial_metrics_carry_the_error_kinds_and_what_rules_targeted(tmp_path):
+    trial = tmp_path / "trials" / "trial_000"
+    _write(trial, "import_repair.json", _import_repair(
+        outcome="reached_proof", resolved=True,
+        kind_before="unknown_theory", kind_after="tactic_error",
+        selected_for="unknown_theory",
+    ))
+    metrics = collect_trial_repair_metrics(trial)["import_repair"]
+    assert metrics["outcome"] == "reached_proof"
+    assert metrics["resolved"] is True
+    assert metrics["error_kind_before"] == "unknown_theory"
+    assert metrics["error_kind_after"] == "tactic_error"
+    assert metrics["selected_for"] == ["unknown_theory"]
 
 
 def test_counts_changelog_hops_including_misses(tmp_path):

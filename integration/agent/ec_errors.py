@@ -91,16 +91,25 @@ _KIND_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     (
         KIND_PROOF_INCOMPLETE,
         re.compile(
-            r"cannot prove goal|proof is incomplete|"
+            r"cannot prove goal|proof is incomplete|incomplete proof|"
             r"the proof is not closed|remaining goals",
             re.IGNORECASE,
         ),
     ),
     (
         KIND_TACTIC_ERROR,
+        # EasyCrypt quotes names Lisp-style -- `position' -- so the quote
+        # character class must accept a backtick. Without it every
+        # ``invalid `position' parameter`` fell through to `unknown`, which is
+        # a *pre-proof* answer: the failure that most clearly belongs to the
+        # solver was being reported as one that might belong to import repair.
         re.compile(
-            r"invalid (?:goal shape|'?position'?|argument|tactic)|"
+            r"invalid\s+[`'\"]?(?:goal shape|position|argument|tactic)|"
             r"tactic failure|no (?:such|more) goal|"
+            # "expecting a `memory', not a `formula'" -- a tactic argument of
+            # the wrong syntactic class. In-proof despite reading like a type
+            # error, and `type_error` is pre-proof.
+            r"expecting an? [`'\"]?\w+['\"]?,\s*not an? |"
             r"cannot apply|not applicable|unable to apply",
             re.IGNORECASE,
         ),
