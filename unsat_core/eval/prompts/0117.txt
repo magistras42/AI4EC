@@ -1,0 +1,38 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/UC/composition.ec::29
+source file: examples/UC/composition.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (=> (not (= rr (as Logic_None (Logic_option COMPOSITION_R_backdoor)))) (= (Logic_omap2 Left_ho1 (Logic_obind1 getl_ho_ho1 (Logic_omap1 Left_ho2 rr))) (Logic_omap2 Left_ho1 rr)))))
+
+CANDIDATE LEMMAS (24 names):
+- Left_proj_1'def
+- Left_proj_1_sort
+- Left_sort
+- Logic_None_sort
+- Logic_Some_proj_1'def
+- Logic_Some_proj_1_sort
+- Logic_Some_sort
+- Logic_obind'def
+- Logic_obind_sort
+- Logic_odflt'def
+- Logic_odflt_sort
+- Logic_omap'def
+- Logic_omap_sort
+- Logic_option_inversion
+- Right_proj_1'def
+- Right_proj_1_sort
+- Right_sort
+- get_as_Left'def
+- get_as_Left_sort
+- getl'def
+- getl_ho_ho_sort
+- getl_ho_ho_spec
+- getl_sort
+- sum_inversion
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

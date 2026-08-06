@@ -1,0 +1,71 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/cramer-shoup/cramer_shoup.ec::17
+source file: examples/cramer-shoup/cramer_shoup.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (forall ((w DH_GP_ZModE_exp)) (=> (Distr_support1 (Dexcepted_bs1 (Distr_MUniform_duniform1 (List_map1 DH_GP_ZModE_inzmod_ho (List_Range_range 0 (List_size1 DH_G_elems)))) (select Logic_pred1_ho1 (DH_GP_ZModE_inzmod 0))) w) (forall ((u DH_GP_ZModE_exp)) (=> (Distr_support1 (Distr_MUniform_duniform1 (List_map1 DH_GP_ZModE_inzmod_ho (List_Range_range 0 (List_size1 DH_G_elems)))) u) (forall ((uqt DH_GP_ZModE_exp)) (=> (Distr_support1 (Dexcepted_bs1 (Distr_MUniform_duniform1 (List_map1 DH_GP_ZModE_inzmod_ho (List_Range_range 0 (List_size1 DH_G_elems)))) (select Logic_pred1_ho1 u)) uqt) (forall ((k TCR_H_K)) (=> (Distr_support2 TCR_H_dk k) (forall ((y DH_GP_ZModE_exp)) (=> (Distr_support1 (Distr_MUniform_duniform1 (List_map1 DH_GP_ZModE_inzmod_ho (List_Range_range 0 (List_size1 DH_G_elems)))) y) (forall ((z DH_GP_ZModE_exp)) (=> (Distr_support1 (Distr_MUniform_duniform1 (List_map1 DH_GP_ZModE_inzmod_ho (List_Range_range 0 (List_size1 DH_G_elems)))) z) (forall ((rqt DH_GP_ZModE_exp)) (=> (Distr_support1 (Distr_MUniform_duniform1 (List_map1 DH_GP_ZModE_inzmod_ho (List_Range_range 0 (List_size1 DH_G_elems)))) rqt) (forall ((x DH_GP_ZModE_exp)) (=> (Distr_support1 (Distr_MUniform_duniform1 (List_map1 DH_GP_ZModE_inzmod_ho (List_Range_range 0 (List_size1 DH_G_elems)))) x) (forall ((r DH_GP_ZModE_exp)) (=> (Distr_support1 (Distr_MUniform_duniform1 (List_map1 DH_GP_ZModE_inzmod_ho (List_Range_range 0 (List_size1 DH_G_elems)))) r) (<= 0 PKE__qD)))))))))))))))))))))
+
+CANDIDATE LEMMAS (57 names):
+- DH_GP_ZModE_Sub_insubd'def
+- DH_GP_ZModE_inzmod'def
+- DH_GP_ZModE_inzmod_ho_spec
+- Dexcepted___'def
+- Dexcepted____sort
+- Distr_DScalar_dscalar'def
+- Distr_DScalar_dscalar_sort
+- Distr_DScalar_mscalar'def
+- Distr_DScalar_mscalar_ho_sort
+- Distr_DScalar_mscalar_ho_spec
+- Distr_MRat_drat'def
+- Distr_MRat_drat_sort
+- Distr_MRat_mrat'def
+- Distr_MRat_mrat_ho_sort
+- Distr_MRat_mrat_ho_spec
+- Distr_MUniform_duniform'def
+- Distr_MUniform_duniform_sort
+- Distr_drestrict'def
+- Distr_drestrict_sort
+- Distr_dscale'def
+- Distr_dscale_sort
+- Distr_mk_sort
+- Distr_mrestrict'def
+- Distr_mrestrict_ho_sort
+- Distr_mrestrict_ho_spec
+- Distr_support'def
+- Int_b2i'def
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_Range_range'def
+- List_[]_sort
+- List_count'def
+- List_list_inversion
+- List_map'def
+- List_map_sort
+- List_mem'def
+- List_size'def
+- List_undup'def
+- List_undup_sort
+- Logic_None_sort
+- Logic_Some_proj_1'def
+- Logic_Some_proj_1_sort
+- Logic_Some_sort
+- Logic_odflt'def
+- Logic_odflt_sort
+- Logic_option_inversion
+- Logic_pred1_ho_sort
+- Logic_pred1_ho_spec
+- Logic_predC'def
+- Logic_predC_ho_sort
+- Logic_predC_ho_spec
+- Logic_predT_ho_sort
+- Logic_predT_ho_spec
+- PKE__qD_pos
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

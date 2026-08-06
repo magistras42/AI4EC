@@ -1,0 +1,280 @@
+{
+ "examples/ChaChaPoly/chacha_poly.ec::Z3:6": [
+  "List_size_nseq",
+  "List_nseq1"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::CVC5:1": [
+  "Int_min'def",
+  "Int_min_ho_spec",
+  "Int_ge0case",
+  "Int_ge0ind",
+  "Int_lez01",
+  "Int_lezNgt",
+  "Distr_dfold'def",
+  "Distr_dfoldS"
+ ],
+ "examples/ChaChaPoly/ske.ec::Z3:1": [
+  "SKE_RND_CCA_CPA_UFCMA_dec_enc",
+  "FMap_domNE",
+  "FMap_dom_ho_sort",
+  "FMap_dom_ho_spec",
+  "FMap_eq_except'def",
+  "FMap_eq_exceptP",
+  "FMap_eq_exceptSm"
+ ],
+ "examples/FundamentalLemma.ec::CVC5:6": [
+  "Distr_mu1_le_eq"
+ ],
+ "examples/MEE-CBC/FunctionalSpec.ec::CVC5:1": [
+  "Int_max'def",
+  "IntDiv_mod2_b2i",
+  "IntDiv_emodz_eq",
+  "IntDiv_eqmodE",
+  "IntDiv_eqmodP",
+  "IntDiv_modz_coprime",
+  "IntDiv_modz_dvd"
+ ],
+ "examples/MEE-CBC/RCPA_CMA.ec::Z3:3": [
+  "FSet_fset1D",
+  "FSet_fset1I",
+  "FSet_fsetDDl",
+  "FSet_fsetDDr",
+  "FSet_fsetDIr",
+  "FSet_fsetDK",
+  "FSet_fsetDUl",
+  "FSet_fsetDUr"
+ ],
+ "examples/MEE-CBC/RCPA_CMA.ec::CVC5:8": [
+  "Distr_MUnit_dunit1E",
+  "Distr_MUnit_dunitE",
+  "FSet_`_`'def",
+  "FSet_set1E",
+  "Logic_odflt'def",
+  "Logic_oapp'def"
+ ],
+ "examples/PIR.ec::Z3:5": [
+  "Distr_MUniform_duniform1E",
+  "Distr_MUniform_duniformE",
+  "Distr_DConditional_dcondE",
+  "Distr_MUniform_duniform1E_uniq",
+  "Distr_MUniform_duniform_sort",
+  "Distr_DConditional_dcond_sort",
+  "Distr_DConditional_dcond_supp",
+  "Distr_DConditional_eq_dcond"
+ ],
+ "examples/PIR.ec::CVC5:8": [
+  "sxor2_cons",
+  "sxor_cons",
+  "List_perm_eq_small",
+  "Int_addz_ge0",
+  "Int_ge0ind",
+  "Logic_odflt_sort",
+  "Logic_pred1_ho_sort"
+ ],
+ "examples/PRG.ec::Z3:12": [
+  "List_size1_zip",
+  "List_size2_zip",
+  "List_size_allpairs",
+  "List_size_alltuples",
+  "List_size_behead",
+  "List_size_belast",
+  "List_size_cat",
+  "List_size_drop"
+ ],
+ "examples/UC/dh_enc.ec::CVC5:31": [
+  "Composition_sum_inversion",
+  "Composition_Right_proj_1'def",
+  "Composition_Left_proj_1'def",
+  "Logic_odflt'def",
+  "Logic_odflt_sort",
+  "Composition_Right_sort"
+ ],
+ "examples/UC/dh_enc.ec::Z3:5": [
+  "DHKE_FKE_party_start'def",
+  "DHKE_HybFChan_F2Auth_FAuthLR_set_msg'def",
+  "DHKE_HybFChan_get_msg'def",
+  "DHKE_HybFChan_leakpkg'def",
+  "Ch_Init_sort",
+  "Ch_Blocked1_sort",
+  "Ch_Blocked2_sort",
+  "Ch_Wait_sort"
+ ],
+ "examples/Upto.ec::Z3:4": [
+  "Distr_mu1_uni",
+  "Distr_mu1_uni_ll",
+  "Distr_mu1_le_eq",
+  "Distr_mu1_le_eq_mu1",
+  "Int_ge0case",
+  "Int_ge0ind",
+  "Distr_dadd1E",
+  "Distr_daddE"
+ ],
+ "examples/WF-examp.ec::CVC5:7": [
+  "IntDiv_div0z",
+  "IntDiv_divz0",
+  "IntDiv_divz1",
+  "List_size_cat",
+  "List_size_take",
+  "Int_addz1_neq0",
+  "Int_addz1_neqC0"
+ ],
+ "examples/async-while.ec::Z3:1": [
+  "Int_lt0n",
+  "Int_ltz_add2r",
+  "Int_ltz_addl",
+  "Int_addz_ge0",
+  "Int_addz_gt0",
+  "Int_addNz",
+  "Int_addzA",
+  "Int_lezNgt"
+ ],
+ "examples/br93.ec::CVC5:2": [
+  "Distr_mu1_le_eq",
+  "Distr_mu1_uni",
+  "Distr_mu1_uni_ll",
+  "Core_<='def",
+  "RealExp_expD",
+  "RealExp_expN",
+  "Distr_Jensen_fin_concave",
+  "RealExp_exp_mono"
+ ],
+ "examples/br93.ec::Z3:1": [
+  "FMap_domE",
+  "FMap_domNE"
+ ],
+ "examples/cramer-shoup/bad_abs.ec::CVC5:3": [
+  "RealExp_exp_gt0",
+  "RealExp_exp_mono"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::Z3:21": [],
+ "examples/cramer-shoup/cramer_shoup.ec::CVC5:10": [
+  "RealExp_e_boundW",
+  "RealExp_e_ge0",
+  "RealExp_e_gt0",
+  "RealExp_exp0",
+  "RealExp_expD",
+  "RealExp_expK",
+  "RealExp_expN",
+  "RealExp_exp_gt0"
+ ],
+ "examples/ehoare/adversary.ec::CVC5:1": [
+  "Core_<='def",
+  "RealExp_exp_gt0",
+  "StdOrder_RealOrder_ler_def",
+  "StdOrder_RealOrder_ltr_def",
+  "DBool_Biased_clamp_ge0",
+  "DBool_Biased_clamp_le1"
+ ],
+ "examples/ehoare/qselect/qselect.ec::CVC5:2": [
+  "Array___[_<-_]'def",
+  "Array___[_]'def",
+  "Array_size'def",
+  "Array_eq_from_get",
+  "Array_getE",
+  "Array_size_ge0",
+  "Array_size_map",
+  "Array_map_sort"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp1.ec::CVC5:3": [
+  "Distr_+'def",
+  "Distr_DConditional_dcond'def",
+  "Distr_MUnit_dunit'def",
+  "FSet_card'def",
+  "RealExp_exp_gt0",
+  "GlobalHybrid_Param_TR_total_prob",
+  "Distr_MIntUniform_drange'def",
+  "FSet_fcardI"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::Z3:20": [
+  "FMap_domE",
+  "FMap_dom_ho_sort",
+  "GH_hybrid_simp",
+  "GH_Param_hybrid_param",
+  "GH_hybrid_gen",
+  "Hybrid_GIdeal",
+  "FMap_dom_ho_spec"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::CVC5:21": [
+  "FMap_eq_except'def",
+  "FMap_eq_exceptP",
+  "FMap_eq_exceptSm",
+  "FMap_dom_ho_spec",
+  "FMap_dom_restr",
+  "FMap_eq_in_filter",
+  "FMap_fdom_set",
+  "FMap_fdom0"
+ ],
+ "examples/hashed_elgamal_generic.ec::CVC5:1": [
+  "FSet_fcard1",
+  "FSet_fcardI",
+  "FSet_fcardU",
+  "FSet_fcard_eq1",
+  "FMap_dom_ho_spec",
+  "FMap_fdom_set"
+ ],
+ "examples/hashed_elgamal_generic.ec::Z3:2": [
+  "Distr_MUniform_duniform1E",
+  "Distr_MUniform_duniformE",
+  "DiffieHellman_GP_ZModE_asint_ho_spec",
+  "Bits_mkbits_ho_spec",
+  "Logic___o_ho_spec",
+  "DiffieHellman_GP_ZModE_inzmod_ho_spec"
+ ],
+ "examples/hashed_elgamal_std.ec::CVC5:1": [
+  "Distr_DScalar_dscalar_sort",
+  "Distr_DScalar_dscalar1E",
+  "Distr_DScalar_dscalarE",
+  "Real_b2r0",
+  "Real_b2r1",
+  "Real_b2rE",
+  "RealExp_exp0",
+  "RealExp_exp_gt0"
+ ],
+ "examples/old/trapdoor.ec::CVC5:1": [
+  "RealExp_rpow_ge0",
+  "RealExp_rpow_gt0",
+  "RealExp_rpow_hmono",
+  "RealExp_rpow_mono",
+  "StdOrder_RealOrder_ler_def",
+  "StdOrder_RealOrder_ler_trans",
+  "Real_RField_mul0r",
+  "Real_RField_mul1r"
+ ],
+ "examples/plug-and-pray/Plug_and_Pray_example.ec::CVC5:1": [
+  "List_Range_range'def",
+  "List_Range_mem_range",
+  "List_Range_mem_range_addl",
+  "List_Range_mem_range_addr",
+  "List_Range_rangeS",
+  "List_Range_rangeSr",
+  "List_Range_size_range",
+  "List_alltuples'def"
+ ],
+ "examples/prg-tutorial/PRGc.ec::CVC5:5": [
+  "Distr_countable_mu1",
+  "Distr_madd_ho_spec",
+  "Logic___o_ho_sort",
+  "Distr_mu_le",
+  "Logic_pred0_ho_spec",
+  "Logic_associative'def"
+ ],
+ "examples/upto_syntaxtic.ec::CVC5:1": [
+  "Core_<='def",
+  "Distr_dadd1E",
+  "Distr_daddE",
+  "Distr_mu1_le_eq",
+  "Distr_mu1_le_eq_mu1",
+  "Distr_daddE",
+  "Distr_dadd1E"
+ ],
+ "examples/upto_syntaxtic.ec::Z3:3": [
+  "Real_RField_add0r",
+  "Real_RField_addIr",
+  "Real_RField_addKr",
+  "StdOrder_RealOrder_ler_def",
+  "RealFun_convex'def",
+  "RealFun_convexD",
+  "RealFun_convexZ",
+  "Real_RField_oner_neq0"
+ ]
+}

@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/ehoare/qselect/qselect.ec::CVC5:2
+source file: examples/ehoare/qselect/qselect.ec
+
+GOAL:
+(assert (not (=> (<= 0 i_) (=> (< i_ (Array_size1 t_)) (=> (<= 0 j_) (=> (< j_ (Array_size1 t_)) (and (= (Array_size1 t_) (Array_size1 (Array___lb_lsmn_rb1 (Array___lb_lsmn_rb1 t_ i_ (Array___lb_rb1 t_ j_)) j_ (Array___lb_rb1 t_ i_)))) (and (forall ((k Int)) (=> (not (= k i_)) (=> (not (= k j_)) (= (Array___lb_rb1 t_ k) (Array___lb_rb1 (Array___lb_lsmn_rb1 (Array___lb_lsmn_rb1 t_ i_ (Array___lb_rb1 t_ j_)) j_ (Array___lb_rb1 t_ i_)) k))))) (and (= (Array___lb_rb1 t_ i_) (Array___lb_rb1 (Array___lb_lsmn_rb1 (Array___lb_lsmn_rb1 t_ i_ (Array___lb_rb1 t_ j_)) j_ (Array___lb_rb1 t_ i_)) j_)) (= (Array___lb_rb1 t_ j_) (Array___lb_rb1 (Array___lb_lsmn_rb1 (Array___lb_lsmn_rb1 t_ i_ (Array___lb_rb1 t_ j_)) j_ (Array___lb_rb1 t_ i_)) i_)))))))))))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- Array_get_set_if
+- Array_set_above
+- Array_set_out
+- Array___[_<-_]'def
+- Array_get_set
+- Array_setE
+- Array_set_neg
+- Array_set_set_swap
+- Array_size_set
+- Array_set_set_eq
+- Array_set_set_if
+- Array___[_<-_]_sort
+- Array_get_default
+- Array_mapE
+- Array_get_neg
+- Array_offunifE
+- Partition0_in_ofarray
+- Array___[_]_sort
+- Array_offunE
+- Partition0_get_sub
+- Partition0_mem_sub
+- Partition0_get_array_sub
+- Partition0_ofarray_sub1
+- Array___[_]'def
+- Array_getE
+- Partition0_mem_array_sub
+- Partition0_ofarray_split
+- Array_eq_from_get
+- Partition0_mem_sort_sub
+- Partition0_ofarray_split3
+- Partition0_eq_except'def
+- Partition0_partition_on'def
+- Array_arrayP
+- Array_size_ge0
+- Partition0_perm_sindex
+- Partition0_size_array_sub
+- Array_size_offun
+- Partition0_array_sub_sub
+- IntMin_pmin_eq
+- List_index_nth
+- List_Range_mem_range_gt
+- List_Range_mem_range_ge
+- Partition0_array_sub'def
+- Array_size'def
+- Array_sizeE
+- Int_sintind
+- List_Range_mem_range_le
+- List_Range_mem_range_lt
+- Array_size_map
+- Array_size_mkarray
+- List_nseq0_le
+- Partition0_swapP'def
+- Xreal_BXA_eq_big_int
+- Array_offun'def
+- Array_offun_sort
+- List_Range_range_geq
+- List_drop_oversize
+- List_index_ge0
+- Partition0_perm_eq_on_eq_except
+- Xreal_bigiXI
+- Array_mkarray_sort
+- IntMin_ge0_pmin
+- List_before_index
+- List_drop_drop
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

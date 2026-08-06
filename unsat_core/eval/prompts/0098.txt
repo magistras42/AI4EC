@@ -1,0 +1,34 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/PIR.ec::69
+source file: examples/PIR.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (and (is_restr (FSet_oflist1 (as List_lbrb (List_list Int))) 0) (forall ((s_L (List_list Int)) (s_R (List_list Int)) (j_R Int)) (=> (not (< j_R N)) (=> (not (< j_R N)) (=> (<= 0 j_R) (=> (<= j_R N) (=> (is_restr (FSet_oflist1 s_L) j_R) (=> (is_restr (FSet_oflist1 s_R) j_R) (=> (= (= (FSet_oflist1 s_L) (restr x1 j_R)) (= (FSet_oflist1 s_R) (restr x2 j_R))) (= (= (FSet_oflist1 s_L) x1) (= (FSet_oflist1 s_R) x2)))))))))))))
+
+CANDIDATE LEMMAS (20 names):
+- FSet_`&`'def
+- FSet_`&`_sort
+- FSet_elems_sort
+- FSet_mem'def
+- FSet_mem_ho_sort
+- FSet_mem_ho_spec
+- FSet_oflist_sort
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_filter'def
+- List_filter_sort
+- List_list_inversion
+- List_mem'def
+- is_restr'def
+- is_restr_fset0
+- restr'def
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

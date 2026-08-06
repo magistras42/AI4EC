@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/Upto.ec::Z3:4
+source file: examples/Upto.ec
+
+GOAL:
+(assert (not (<= (+ (+ (mu1 (ExperimentlpO2cm_Advrp_slmain Tuple0 etm) unamed_lambda) (mu1 (ExperimentlpO2cm_Advrp_slmain Tuple0 etm) unamed_lambda1)) (- (mu1 (ExperimentlpO2cm_Advrp_slmain Tuple0 etm) unamed_lambda2))) (+ (mu1 (ExperimentlpO2cm_Advrp_slmain Tuple0 etm) unamed_lambda) (mu1 (ExperimentlpO2cm_Advrp_slmain Tuple0 etm) unamed_lambda1)))))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- StdOrder_RealOrder_ler_sub
+- StdOrder_IntOrder_ler_sub
+- StdOrder_IntOrder_ler_subl_addl
+- StdOrder_IntOrder_ler_subl_addr
+- StdOrder_RealOrder_ler_subl_addl
+- StdOrder_RealOrder_ler_subl_addr
+- Distr_ge0_mu1
+- StdOrder_RealOrder_lerNgt
+- StdOrder_RealOrder_ler_lt_sub
+- Distr_ge0_mu
+- Int_lezNgt
+- Real_upto_abs
+- StdOrder_IntOrder_lerNgt
+- StdOrder_IntOrder_ler_lt_sub
+- StdOrder_IntOrder_ltr_le_sub
+- StdOrder_RealOrder_ler_subr_addl
+- StdOrder_RealOrder_ler_subr_addr
+- StdOrder_RealOrder_ltr_le_sub
+- Int_ltzNge
+- Real_upto_le
+- StdOrder_IntOrder_ler_subr_addl
+- StdOrder_IntOrder_ler_subr_addr
+- StdOrder_IntOrder_ltr_geF
+- StdOrder_RealOrder_ler_add2r
+- StdOrder_RealOrder_ltr_naddl
+- StdOrder_RealOrder_ltr_naddr
+- Distr_ge0_weight
+- Int_addz_ge0
+- StdOrder_IntOrder_addr_ge0
+- StdOrder_IntOrder_ler_add
+- StdOrder_IntOrder_ler_lt_add
+- StdOrder_IntOrder_ler_paddl
+- StdOrder_IntOrder_ltrNge
+- StdOrder_IntOrder_ltr_le_add
+- StdOrder_IntOrder_ltr_naddl
+- StdOrder_IntOrder_ltr_neqAle
+- StdOrder_IntOrder_ltr_paddl
+- StdOrder_RealOrder_addr_ge0
+- StdOrder_RealOrder_ler_naddl
+- StdOrder_RealOrder_ler_naddr
+- StdOrder_RealOrder_ler_paddl
+- StdOrder_RealOrder_ltr_le_add
+- StdOrder_RealOrder_ltr_neqAle
+- StdOrder_RealOrder_ltr_paddl
+- Distr_mu_sub
+- Int_lez_add2l
+- Int_lez_add2r
+- StdOrder_IntOrder_ler_add2r
+- StdOrder_IntOrder_ler_gtF
+- StdOrder_IntOrder_ler_naddl
+- StdOrder_IntOrder_ler_naddr
+- StdOrder_IntOrder_ler_paddr
+- StdOrder_IntOrder_ltr_naddr
+- StdOrder_IntOrder_ltr_paddr
+- StdOrder_RealOrder_ler_add
+- StdOrder_RealOrder_ler_lt_add
+- StdOrder_RealOrder_ler_oppr
+- StdOrder_RealOrder_ler_paddr
+- StdOrder_RealOrder_ltrNge
+- StdOrder_RealOrder_ltr_geF
+- StdOrder_RealOrder_ltr_paddr
+- Int_ltz_def
+- StdOrder_IntOrder_ler_add2l
+- StdOrder_IntOrder_ler_lt_asym
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

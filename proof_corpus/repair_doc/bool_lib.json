@@ -1,8 +1,0 @@
-{
-  "path": "theories/core/Bool.ec",
-  "confidence": "verified_current_source (whole file, 27 lines)",
-  "caveat": "No true git-diff was possible. This is a structural snapshot of the file's CURRENT (main-branch) content plus any changelog-confirmed version deltas.",
-  "current_content_summary": "Tiny. Defines the boolean xor operator (^^) with its algebraic lemmas (xor_false/xor_true/xorA/xorC/xorK), then clones FinType (see the FinType entry) at type bool under the name BoolFin, with enum = [true; false] and card = 2 -- i.e. bool's FinType instance lives here, not in FinType.ec itself.",
-  "requires": "Int, Xint, FinType.",
-  "version_diffs_found": "None found by name in the scanned changelog window."
-}

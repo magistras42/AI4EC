@@ -1,0 +1,1146 @@
+{
+ "examples/ChaChaPoly/chacha_poly.ec::1": [
+  "Int_min'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::2": [
+  "List_nth'def",
+  "List_size'def",
+  "Int_min'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::3": [
+  "List_nth'def",
+  "List_size'def",
+  "Int_min'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::4": [
+  "Int_min'def",
+  "List_size'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::5": [
+  "C_gt0_max_counter"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::6": [
+  "List_size'def",
+  "List_nseq'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::7": [
+  "Int_max'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::8": [
+  "List_nth_mkseq",
+  "List_mkseq'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::9": [
+  "Poly_in_ge0_poly_in_size",
+  "Poly_out_ge0_poly_out_size",
+  "Extra_block_ge0_extra_block_size"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::10": [
+  "Int_max'def",
+  "List_size'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::11": [
+  "List_nth'def",
+  "List_size'def",
+  "List_take'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::12": [
+  "List_size'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::13": [
+  "Int_min'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::14": [
+  "extend'def",
+  "List_nth'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::15": [
+  "Int_max'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::16": [
+  "gt0_block_size"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::17": [
+  "Int_max'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::18": [
+  "CoreInt_absz'def",
+  "List_size'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::21": [
+  "gt0_block_size"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::22": [
+  "List_size'def",
+  "List_drop'def",
+  "Int_b2i'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::23": [
+  "Int_max'def",
+  "List_size'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::24": [
+  "CoreInt_absz'def",
+  "List_size'def",
+  "List_size_ge0"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::26": [
+  "Int_b2i'def",
+  "List_size'def",
+  "List_drop'def",
+  "Logic_Some_sort"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::27": [
+  "List_drop'def",
+  "List_size'def",
+  "List_size_drop"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::28": [
+  "Int_IterOp_iter'def",
+  "Int_b2i'def",
+  "List_size'def",
+  "OpCC_cc_ho_spec",
+  "take_xor_ho_spec"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::31": [
+  "Int_min'def",
+  "List_size'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::33": [
+  "Int_min'def",
+  "List_size'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::35": [
+  "List_drop'def",
+  "List_size'def",
+  "List_size_drop"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::36": [
+  "gt0_block_size"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::37": [
+  "List_size'def",
+  "List_drop'def",
+  "gen_CTR_encrypt_bytes'def",
+  "Step1_2_get_ho_spec"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::38": [
+  "List_size'def",
+  "List_drop'def",
+  "gen_CTR_encrypt_bytes'def",
+  "Step1_2_get_ho_spec",
+  "take_xor_ho_spec"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::39": [
+  "Int_min'def",
+  "gen_CTR_encrypt_bytes'def",
+  "take_xor_ho_spec"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::40": [
+  "Int_min'def",
+  "List_size'def",
+  "List_++'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::41": [
+  "Poly_in_ge0_poly_in_size",
+  "Poly_out_ge0_poly_out_size"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::42": [
+  "Int_max'def",
+  "Poly_in_ge0_poly_in_size",
+  "Poly_out_ge0_poly_out_size"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::43": [
+  "Step1_2_SplitC1_ofpair_ho_spec"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::44": [
+  "Int_max'def",
+  "Int_b2i'def",
+  "Extra_block_extra_block_of_bytesd'def",
+  "Poly_in_ge0_poly_in_size",
+  "Poly_out_ge0_poly_out_size"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::46": [
+  "Poly_in_ge0_poly_in_size",
+  "Poly_out_ge0_poly_out_size"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::47": [
+  "Int_max'def",
+  "Poly_in_ge0_poly_in_size",
+  "Poly_out_ge0_poly_out_size"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::48": [
+  "Logic_injective'def",
+  "Step1_2_SplitC2_ofpair_ho_spec",
+  "Poly_in_poly_in_of_bytesd'def",
+  "Poly_out_poly_out_of_bytesd'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::49": [
+  "Int_max'def",
+  "Int_b2i'def",
+  "Poly_in_ge0_poly_in_size",
+  "Poly_out_ge0_poly_out_size"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::50": [
+  "Poly_in_ge0_poly_in_size",
+  "Poly_out_ge0_poly_out_size"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::56": [
+  "ge0_pr_zeropol"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::57": [
+  "List_count'def",
+  "Int_b2i'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::58": [
+  "ge0_pr_zeropol"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::59": [
+  "List_filter'def",
+  "List_map'def",
+  "List_has'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::60": [
+  "List_size'def",
+  "List_size_ge0"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::63": [
+  "Step1_2'_SplitD_test'def",
+  "FMap_dom'def",
+  "List_mem'def",
+  "C_ofintd'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::64": [
+  "Block_block_of_bytesd_ho_spec"
+ ],
+ "examples/ChaChaPoly/ske.ec::1": [
+  "SKE_RND_CCA_CPA_UFCMA_dec_enc",
+  "FMap_dom'def",
+  "FMap_mem_set",
+  "Logic_Some_sort"
+ ],
+ "examples/ChaChaPoly/ske.ec::2": [
+  "List_mem'def",
+  "FMap_dom'def",
+  "Logic_None_sort"
+ ],
+ "examples/ChaChaPoly/ske.ec::3": [
+  "List_mem'def",
+  "Logic_None_sort",
+  "Logic_Some_sort",
+  "Logic_Some_proj_1_sort"
+ ],
+ "examples/ChaChaPoly/ske.ec::4": [
+  "FMap_dom'def",
+  "Logic_None_sort",
+  "Logic_Some_sort",
+  "Logic_option_inversion"
+ ],
+ "examples/FundamentalLemma.ec::6": [
+  "max'def"
+ ],
+ "examples/FundamentalLemma.ec::7": [
+  "max'def"
+ ],
+ "examples/FundamentalLemma.ec::8": [
+  "Distr_ge0_mu"
+ ],
+ "examples/FundamentalLemma.ec::9": [
+  "Distr_ge0_mu"
+ ],
+ "examples/MEE-CBC/FunctionalSpec.ec::1": [
+  "Int_max'def",
+  "List_size'def",
+  "pad_length'def"
+ ],
+ "examples/MEE-CBC/FunctionalSpec.ec::2": [
+  "Int_max'def",
+  "pad_length'def"
+ ],
+ "examples/MEE-CBC/FunctionalSpec.ec::4": [
+  "IntDiv_divz_eq",
+  "IntDiv_divz_small",
+  "IntDiv_modz_small"
+ ],
+ "examples/MEE-CBC/FunctionalSpec.ec::13": [
+  "ge0_n"
+ ],
+ "examples/MEE-CBC/RCPA_CMA.ec::1": [
+  "Distr_is_lossless'def",
+  "Distr_is_losslessP"
+ ],
+ "examples/MEE-CBC/RCPA_CMA.ec::2": [
+  "Distr_is_lossless'def",
+  "Distr_is_losslessP"
+ ],
+ "examples/MEE-CBC/RCPA_CMA.ec::3": [
+  "FSet_fcard1",
+  "FSet_fcardI1",
+  "FSet_fcardD1",
+  "FSet_fcardUI",
+  "FSet_fcard_eq1"
+ ],
+ "examples/MEE-CBC/RCPA_CMA.ec::4": [
+  "Logic_option_inversion"
+ ],
+ "examples/MEE-CBC/RCPA_CMA.ec::7": [
+  "Distr_is_lossless'def",
+  "Distr_is_losslessP"
+ ],
+ "examples/MEE-CBC/RCPA_CMA.ec::8": [
+  "Distr_is_lossless'def",
+  "Distr_MUnit_dunit'def",
+  "Distr_MUnit_dunit_ll"
+ ],
+ "examples/MEE-CBC/RCPA_CMA.ec::9": [
+  "FSet_mem'def",
+  "Logic_Some_sort",
+  "Logic_Some_proj_1'def",
+  "FSet_fset1'def",
+  "FSet_in_fset1",
+  "Logic_None_sort"
+ ],
+ "examples/MEE-CBC/RCPA_CMA.ec::13": [
+  "FSet_mem_ho_spec",
+  "FSet_fset0I",
+  "FSet_fset1I",
+  "FSet_fsetU0",
+  "FSet_fsetI0",
+  "FSet_fsetI1"
+ ],
+ "examples/PIR.ec::1": [
+  "Logic_associative'def"
+ ],
+ "examples/PIR.ec::2": [],
+ "examples/PIR.ec::3": [
+  "Logic_left_id'def",
+  "BS_offun'def"
+ ],
+ "examples/PIR.ec::5": [
+  "Distr_MUniform_duniform'def",
+  "Logic_pred1_ho_spec"
+ ],
+ "examples/PIR.ec::8": [
+  "sxor2'def",
+  "sxor'def"
+ ],
+ "examples/PIR.ec::10": [
+  "Distr_MUniform_duniform'def",
+  "Logic_predT_ho_spec",
+  "Distr_support'def"
+ ],
+ "examples/PIR.ec::18": [
+  "Distr_MUniform_duniform'def",
+  "is_restr'def",
+  "FSet_oflist_sort"
+ ],
+ "examples/PIR.ec::19": [
+  "is_restr'def",
+  "FSet_oflist_sort",
+  "N_pos"
+ ],
+ "examples/PIR.ec::21": [
+  "is_restr'def",
+  "FSet_mem'def",
+  "FSet_oflist_sort",
+  "restr'def"
+ ],
+ "examples/PIR.ec::23": [
+  "is_restr'def",
+  "N_pos"
+ ],
+ "examples/PIR.ec::24": [
+  "is_restr'def",
+  "FSet_oflist_sort",
+  "N_pos"
+ ],
+ "examples/PIR.ec::27": [
+  "is_restr'def",
+  "FSet_mem'def",
+  "FSet_oflist_sort",
+  "Logic_pred1_ho_spec"
+ ],
+ "examples/PIR.ec::35": [],
+ "examples/PIR.ec::36": [
+  "FSet_mem'def",
+  "is_restr'def",
+  "restr'def"
+ ],
+ "examples/PIR.ec::37": [
+  "FSet_mem'def",
+  "is_restr'def",
+  "is_restrS"
+ ],
+ "examples/PIR.ec::39": [
+  "Logic_predT_ho_spec",
+  "is_restrS",
+  "is_restr_addS",
+  "is_restr'def"
+ ],
+ "examples/PIR.ec::40": [
+  "Logic_predT_ho_spec",
+  "Distr_MUniform_duniform'def",
+  "is_restr'def"
+ ],
+ "examples/PIR.ec::42": [
+  "Distr_MUniform_duniform'def",
+  "is_restr'def",
+  "FSet_oflist_sort"
+ ],
+ "examples/PIR.ec::43": [
+  "is_restr'def",
+  "FSet_oflist_sort",
+  "N_pos"
+ ],
+ "examples/PIR.ec::45": [
+  "is_restr'def",
+  "FSet_mem'def",
+  "FSet_oflist_sort",
+  "restr'def"
+ ],
+ "examples/PIR.ec::47": [
+  "is_restr'def",
+  "N_pos"
+ ],
+ "examples/PIR.ec::48": [
+  "is_restr'def",
+  "FSet_oflist_sort",
+  "N_pos"
+ ],
+ "examples/PIR.ec::51": [
+  "is_restr'def",
+  "FSet_oflist_sort",
+  "FSet_mem'def",
+  "FSet_fset1'def"
+ ],
+ "examples/PIR.ec::52": [
+  "is_restr'def",
+  "FSet_mem'def",
+  "FSet_oflist_sort",
+  "FSet_mem_ho_spec"
+ ],
+ "examples/PIR.ec::62": [
+  "FSet_mem'def",
+  "is_restr'def",
+  "FSet_oflist_sort"
+ ],
+ "examples/PIR.ec::64": [
+  "FSet_mem'def",
+  "is_restr'def",
+  "FSet_oflist_cons"
+ ],
+ "examples/PIR.ec::66": [
+  "is_restr'def",
+  "Logic_predT_ho_spec",
+  "Distr_MUniform_duniform'def",
+  "FSet_mem_ho_spec",
+  "is_restrS",
+  "is_restr_addS",
+  "FSet_`_`'def"
+ ],
+ "examples/PIR.ec::67": [
+  "Logic_predT_ho_spec",
+  "is_restr'def"
+ ],
+ "examples/PIR.ec::68": [
+  "Bool_^^'def",
+  "FSet_mem'def",
+  "is_restr'def",
+  "is_restr_restr"
+ ],
+ "examples/PIR.ec::69": [
+  "is_restr'def",
+  "FSet_oflist_sort",
+  "FSet_mem'def"
+ ],
+ "examples/PIR.ec::70": [
+  "is_restr'def",
+  "FSet_mem'def",
+  "FSet_oflist_sort",
+  "is_restr_restr"
+ ],
+ "examples/PIR.ec::71": [
+  "is_restr'def",
+  "FSet_oflist_sort",
+  "FSet_mem'def",
+  "restr'def"
+ ],
+ "examples/PRG.ec::1": [
+  "Distr_mu_bounded"
+ ],
+ "examples/PRG.ec::12": [
+  "Distr_MUniform_duniform'def",
+  "List_size'def",
+  "List_size_ge0"
+ ],
+ "examples/PRG.ec::17": [
+  "FMap_dom'def",
+  "FMap_fdom'def",
+  "FSet_card'def"
+ ],
+ "examples/PRG.ec::19": [
+  "Distr_MUniform_duniform'def",
+  "FMap_fdom'def",
+  "FSet_card'def",
+  "ge0_qF",
+  "ge0_qP"
+ ],
+ "examples/PRG.ec::20": [
+  "Support_card_gt0"
+ ],
+ "examples/PRG.ec::25": [
+  "Support_card_gt0"
+ ],
+ "examples/UC/composition.ec::1": [
+  "Real_`___'def"
+ ],
+ "examples/UC/composition.ec::7": [
+  "Logic_obind'def",
+  "Logic_omap'def",
+  "Logic_option_inversion"
+ ],
+ "examples/UC/composition.ec::8": [
+  "Logic_obind'def",
+  "Logic_omap'def",
+  "Logic_option_inversion"
+ ],
+ "examples/UC/composition.ec::12": [
+  "Logic_option_inversion",
+  "Logic_obind'def",
+  "Logic_omap'def"
+ ],
+ "examples/UC/composition.ec::13": [
+  "Logic_option_inversion",
+  "Logic_obind'def",
+  "Logic_omap'def"
+ ],
+ "examples/UC/composition.ec::16": [
+  "Logic_option_inversion",
+  "Logic_obind'def",
+  "Logic_omap'def"
+ ],
+ "examples/UC/composition.ec::17": [
+  "Logic_obind'def",
+  "Logic_omap'def",
+  "Logic_option_inversion"
+ ],
+ "examples/UC/composition.ec::23": [
+  "Logic_obind'def",
+  "Logic_omap'def",
+  "Logic_option_inversion"
+ ],
+ "examples/UC/composition.ec::24": [
+  "Logic_obind'def",
+  "Logic_omap'def",
+  "Logic_option_inversion"
+ ],
+ "examples/UC/composition.ec::28": [
+  "Logic_option_inversion",
+  "Logic_obind'def",
+  "Logic_omap'def"
+ ],
+ "examples/UC/composition.ec::29": [
+  "Logic_option_inversion",
+  "Logic_obind'def",
+  "Logic_omap'def"
+ ],
+ "examples/UC/composition.ec::32": [
+  "Logic_option_inversion",
+  "Logic_obind'def",
+  "Logic_omap'def"
+ ],
+ "examples/UC/composition.ec::33": [
+  "Logic_obind'def",
+  "Logic_omap'def",
+  "Logic_option_inversion"
+ ],
+ "examples/UC/composition.ec::36": [
+  "Logic_obind'def",
+  "Logic_omap'def",
+  "Logic_option_inversion"
+ ],
+ "examples/UC/composition.ec::37": [
+  "Logic_obind'def",
+  "Logic_omap'def",
+  "Logic_option_inversion"
+ ],
+ "examples/UC/composition.ec::44": [
+  "Logic_option_inversion"
+ ],
+ "examples/UC/composition.ec::45": [
+  "Logic_obind'def",
+  "Logic_omap'def",
+  "Logic_option_inversion"
+ ],
+ "examples/UC/composition.ec::48": [
+  "Logic_obind'def",
+  "Logic_omap'def",
+  "Logic_option_inversion"
+ ],
+ "examples/UC/composition.ec::49": [
+  "Logic_obind'def",
+  "Logic_omap'def",
+  "Logic_option_inversion"
+ ],
+ "examples/UC/composition.ec::56": [
+  "Logic_option_inversion",
+  "Logic_obind'def",
+  "Logic_omap'def"
+ ],
+ "examples/UC/composition.ec::57": [
+  "Logic_obind'def",
+  "Logic_omap'def",
+  "Logic_option_inversion"
+ ],
+ "examples/UC/dh_enc.ec::1": [
+  "DH_G_*_ho_spec",
+  "Logic_Some_sort",
+  "Ch_Available_sort",
+  "Ch_Blocked2_sort"
+ ],
+ "examples/UC/dh_enc.ec::2": [
+  "Composition_Left_sort",
+  "Composition_Right_sort",
+  "Logic_Some_sort",
+  "Logic_option_inversion"
+ ],
+ "examples/UC/dh_enc.ec::3": [
+  "Ch_Available_sort",
+  "Ch_Blocked2_sort",
+  "Ch_Init_sort",
+  "DHKE_HybFChan_unblock'def",
+  "DH_GP_^'def",
+  "Logic_Some_sort",
+  "Composition_Right_sort",
+  "Composition_Left_sort"
+ ],
+ "examples/UC/dh_enc.ec::5": [
+  "DHKE_FKE_party_start'def",
+  "DHKE_HybFChan_F2Auth_FAuthLR_set_msg'def",
+  "DHKE_HybFChan_F2Auth_FAuthRL_set_msg'def",
+  "Logic_option_inversion",
+  "Composition_sum_inversion"
+ ],
+ "examples/UC/dh_enc.ec::6": [
+  "Ch_Available_sort",
+  "Ch_Blocked2_sort",
+  "Ch_Init_sort",
+  "Logic_None_sort"
+ ],
+ "examples/UC/dh_enc.ec::9": [
+  "DHKE_staterel'def",
+  "DHKE_FKE_leak'def",
+  "Logic_omap'def",
+  "Logic_odflt'def",
+  "Composition_Left_sort",
+  "Logic_Some_sort",
+  "Logic_None_sort",
+  "Logic_option_inversion"
+ ],
+ "examples/UC/dh_enc.ec::13": [
+  "Ch_Available_sort",
+  "Ch_Blocked2_sort",
+  "Ch_Init_sort",
+  "DHKE_HybFChan_unblock'def",
+  "DHKE_SimAuth_FAuthRL_set_msg'def"
+ ],
+ "examples/UC/dh_enc.ec::22": [
+  "DHKE_staterel'def",
+  "Logic_None_sort",
+  "Logic_Some_sort",
+  "Logic_Some_proj_1_sort",
+  "Ch_Init_sort",
+  "stlkg_inversion"
+ ],
+ "examples/UC/dh_enc.ec::29": [
+  "DHKE_FKE_FKEAuth_FChan_get_msg'def",
+  "Composition_getl'def",
+  "Composition_getr'def",
+  "Logic_omap'def",
+  "Logic_Some_proj_1'def",
+  "Ch_Blocked2_proj_1'def",
+  "Ch_Init_sort",
+  "Composition_sum_inversion"
+ ],
+ "examples/UC/dh_enc.ec::38": [
+  "Composition_sum_inversion",
+  "FMap_dom'def",
+  "Logic_odflt'def",
+  "DHKE_FKE_FKEAuth_FChan_unblock'def"
+ ],
+ "examples/UC/dh_enc.ec::41": [
+  "DHKE_FKE_leak'def",
+  "Logic_omap'def",
+  "Logic_odflt'def",
+  "Composition_Left_sort",
+  "Composition_Right_sort",
+  "FMap_dom'def",
+  "Logic_Some_sort",
+  "Logic_option_inversion"
+ ],
+ "examples/UC/dh_enc.ec::46": [
+  "DH_GP_^_ho_spec"
+ ],
+ "examples/UC/dh_enc.ec::47": [
+  "Distr_MUniform_duniform'def",
+  "Distr_is_uniform'def",
+  "List_map'def",
+  "List_Range_range'def"
+ ],
+ "examples/UC/dh_enc.ec::48": [
+  "Distr_is_lossless'def",
+  "Distr_MUniform_duniform'def",
+  "List_map'def",
+  "List_Range_range'def"
+ ],
+ "examples/UC/dh_enc.ec::49": [],
+ "examples/UC/dh_enc.ec::50": [],
+ "examples/UC/dh_enc.ec::51": [
+  "DH_GP_^'def",
+  "DH_GP_loge'def"
+ ],
+ "examples/Upto.ec::2": [
+  "qO_pos"
+ ],
+ "examples/Upto.ec::4": [
+  "Distr_ge0_mu"
+ ],
+ "examples/WF-examp.ec::2": [
+  "List_size'def",
+  "Int_max'def"
+ ],
+ "examples/WF-examp.ec::6": [
+  "Int_b2i'def",
+  "List_size'def"
+ ],
+ "examples/WF-examp.ec::7": [
+  "List_size'def",
+  "List_size_ge0"
+ ],
+ "examples/async-while.ec::1": [
+  "gt0_k"
+ ],
+ "examples/async-while.ec::2": [
+  "gt0_k"
+ ],
+ "examples/br93.ec::1": [
+  "FMap_dom'def",
+  "FMap_domE",
+  "FMap_dom_ho_sort",
+  "FMap_dom_restr"
+ ],
+ "examples/br93.ec::2": [
+  "BR93_pr_Game2_OW"
+ ],
+ "examples/br93.ec::3": [
+  "gt0_k",
+  "gt0_l"
+ ],
+ "examples/br93.ec::4": [
+  "Distr_MUniform_duniform'def",
+  "Distr_is_full'def",
+  "Distr_is_uniform'def",
+  "Plaintext_Enum_ptxtn'def",
+  "Plaintext_mkptxt_ho_spec"
+ ],
+ "examples/br93.ec::5": [
+  "Distr_is_lossless'def",
+  "Distr_is_uniform'def",
+  "Distr_MUniform_duniform'def",
+  "List_map'def",
+  "Randomness_Enum_randn'def"
+ ],
+ "examples/cramer-shoup/bad_abs.ec::1": [
+  "Real_`___'def"
+ ],
+ "examples/cramer-shoup/bad_abs.ec::3": [
+  "Distr_mu_bounded"
+ ],
+ "examples/cramer-shoup/bad_abs.ec::4": [
+  "Real_`___'def"
+ ],
+ "examples/cramer-shoup/bad_abs.ec::6": [
+  "Distr_mu_bounded"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::1": [
+  "List_size'def"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::4": [
+  "List_size'def",
+  "Real_`___'def"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::5": [
+  "Real_`___'def",
+  "List_size'def"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::7": [
+  "List_size'def",
+  "gt1_q"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::8": [
+  "gt1_q",
+  "List_size'def"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::10": [
+  "Real_`___'def",
+  "List_size'def"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::11": [
+  "List_mem'def",
+  "Logic_Some_sort",
+  "Logic_None_sort",
+  "List_size'def",
+  "List_::_proj_1_sort",
+  "List_::_proj_2_sort",
+  "Logic_Some_proj_1_sort"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::12": [
+  "List_mem'def",
+  "Logic_Some_sort",
+  "Logic_None_sort",
+  "List_size'def",
+  "List_::_proj_1_sort",
+  "List_::_proj_2_sort",
+  "Logic_Some_proj_1_sort"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::14": [
+  "List_size'def"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::17": [
+  "Distr_MUniform_duniform'def",
+  "Distr_MUniform_duniform_sort"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::21": [
+  "Logic_pred1_ho_sort",
+  "Logic_pred1_ho_spec"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::23": [
+  "List_size'def",
+  "Logic_Some_sort",
+  "Logic_Some_proj_1'def"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::24": [
+  "DH_GP_ZModE_inzmod_ho_spec",
+  "Distr_MUniform_duniform'def",
+  "Distr_support'def",
+  "List_Range_range'def"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::27": [
+  "List_size'def",
+  "CoreInt_absz'def",
+  "Real_le_fromint"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::28": [
+  "List_size'def"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::29": [
+  "List_size'def",
+  "Real_le_fromint"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::31": [
+  "List_size'def"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::32": [
+  "List_size'def"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::33": [
+  "Distr_mu_bounded"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::35": [
+  "Real_RField_exp'def",
+  "List_size'def",
+  "Logic_Some_sort"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::37": [
+  "List_size'def",
+  "Real_le_fromint"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::40": [
+  "Real_RField_exp'def",
+  "Real_`___'def"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::41": [
+  "Real_RField_exp'def",
+  "Real_`___'def"
+ ],
+ "examples/ehoare/adversary.ec::1": [],
+ "examples/ehoare/adversary.ec::3": [
+  "StdOrder_RealOrder_invr_ge0",
+  "test_ho_spec"
+ ],
+ "examples/ehoare/adversary.ec::4": [
+  "Xreal_Rp_of_reald'def",
+  "Xreal_Rp_inv'def"
+ ],
+ "examples/ehoare/adversary.ec::5": [
+  "Xreal_Rp_inv'def",
+  "Xreal_Rp_of_reald'def",
+  "dr_mu_test"
+ ],
+ "examples/ehoare/adversary.ec::6": [
+  "dr_mu_test",
+  "test_ho_spec"
+ ],
+ "examples/ehoare/adversary.ec::7": [
+  "List_size'def"
+ ],
+ "examples/ehoare/adversary.ec::8": [
+  "List_size_ge0"
+ ],
+ "examples/ehoare/adversary.ec::9": [
+  "dr_mu_test",
+  "test_ho_spec"
+ ],
+ "examples/ehoare/adversary.ec::10": [
+  "eps_ge0",
+  "List_size_ge0"
+ ],
+ "examples/ehoare/adversary.ec::11": [
+  "eps_ge0"
+ ],
+ "examples/ehoare/adversary.ec::12": [
+  "dr_mu1",
+  "List_size_ge0",
+  "Xreal_Rp_%pos'def",
+  "eps_ge0"
+ ],
+ "examples/ehoare/adversary.ec::13": [
+  "Xreal_Rpbar_xle'def",
+  "Xreal_Rp_of_reald'def",
+  "Xreal_Rp_+'def"
+ ],
+ "examples/ehoare/adversary.ec::14": [
+  "Xreal_Rpbar_xle'def",
+  "Xreal_Rp_of_reald'def",
+  "Xreal_Rp_+'def"
+ ],
+ "examples/ehoare/adversary.ec::18": [
+  "Xreal_Rp_+'def",
+  "Xreal_Rp_*'def",
+  "Xreal_Rp_of_reald'def",
+  "dr_mu_test",
+  "test_ho_spec"
+ ],
+ "examples/ehoare/adversary.ec::20": [
+  "Xreal_Rpbar_xle'def",
+  "Xreal_Rp_of_reald'def",
+  "Xreal_Rp_+'def"
+ ],
+ "examples/ehoare/adversary.ec::21": [
+  "Xreal_Rpbar_xle'def",
+  "Xreal_Rp_of_reald'def",
+  "Xreal_Rpbar_xle0x"
+ ],
+ "examples/ehoare/adversary.ec::22": [
+  "Xreal_Rp_%pos'def",
+  "Xreal_Rpbar_xle'def",
+  "test_ho_spec"
+ ],
+ "examples/ehoare/adversary.ec::23": [
+  "Xreal_Rp_%pos'def",
+  "Xreal_Rpbar_xle'def",
+  "test_ho_spec"
+ ],
+ "examples/ehoare/qselect/qselect.ec::2": [],
+ "examples/ehoare/qselect/qselect.ec::3": [],
+ "examples/ehoare/qselect/qselect.ec::5": [],
+ "examples/ehoare/qselect/qselect.ec::6": [],
+ "examples/ehoare/qselect/qselect.ec::10": [
+  "Partition0_<='def",
+  "Array_size'def"
+ ],
+ "examples/ehoare/qselect/qselect.ec::12": [],
+ "examples/ehoare/qselect/qselect.ec::17": [
+  "Partition0_<=_ho_spec"
+ ],
+ "examples/ehoare/qselect/qselect.ec::18": [
+  "Partition0_<=_ho_spec",
+  "Partition0_sindex'def"
+ ],
+ "examples/ehoare/qselect/qselect.ec::21": [],
+ "examples/ehoare/qselect/qselect.ec::22": [
+  "Partition0_partition_on'def",
+  "Partition0_perm_eq_on'def"
+ ],
+ "examples/ehoare/qselect/qselect.ec::23": [
+  "Array_size'def",
+  "Partition0_<='def",
+  "Partition0_partition_on'def"
+ ],
+ "examples/ehoare/qselect/qselect.ec::24": [
+  "Array_size'def"
+ ],
+ "examples/ehoare/qselect/qselect.ec::25": [
+  "Xreal_Rp_%pos'def"
+ ],
+ "examples/ehoare/qselect/qselect.ec::26": [],
+ "examples/ehoare/qselect/qselect.ec::29": [
+  "Xreal_Rp_+'def",
+  "Xreal_Rp_of_reald'def",
+  "Xreal_Rpbar_xadd'def"
+ ],
+ "examples/ehoare/qselect/qselect.ec::45": [
+  "Xreal_Rp_%pos'def"
+ ],
+ "examples/ehoare/random_boolean_matrix.ec::5": [
+  "cell_eq_upto'def"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp1.ec::3": [
+  "Logic_pred1_ho_spec",
+  "mu1_dt",
+  "Ring_IntID_exp'def"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp1.ec::4": [
+  "Logic_predT_ho_spec",
+  "Distr_support'def",
+  "dt_ll"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::1": [
+  "ge1_m"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::5": [
+  "ge1_m"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::20": [
+  "FMap_dom'def",
+  "Logic_None_sort",
+  "Logic_Some_sort"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::21": [
+  "FMap_dom'def",
+  "Logic_odflt'def",
+  "Logic_option_inversion"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::22": [
+  "Logic_odflt'def",
+  "Logic_odflt_sort",
+  "FMap_get_set_sameE",
+  "FMap_ofmap_sort"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::23": [],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::24": [],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::25": [
+  "Logic_Some_sort",
+  "FMap_dom'def",
+  "Logic_Some_proj_1'def"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::26": [],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::32": [
+  "FMap_dom'def",
+  "Logic_None_sort",
+  "Logic_Some_sort",
+  "Logic_Some_proj_1_sort"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::33": [
+  "FMap_dom'def",
+  "Logic_odflt'def",
+  "Logic_option_inversion"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::34": [
+  "FMap_dom'def",
+  "Logic_odflt'def",
+  "Logic_option_inversion"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::35": [],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::36": [],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::37": [],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::38": [],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::39": [],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::40": [],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::42": [
+  "ge1_m"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::45": [
+  "ge1_m"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::46": [
+  "ge1_m"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::47": [
+  "ge1_m"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::48": [
+  "ge1_m"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::49": [
+  "ge1_m"
+ ],
+ "examples/hashed_elgamal_generic.ec::1": [
+  "FMap_dom'def",
+  "FSet_card'def",
+  "FSet_fset1'def"
+ ],
+ "examples/hashed_elgamal_generic.ec::2": [
+  "DiffieHellman_GP_ZModE_inzmod_ho_spec"
+ ],
+ "examples/hashed_elgamal_generic.ec::3": [
+  "FMap_dom'def",
+  "FSet_card'def",
+  "FSet_fset1'def"
+ ],
+ "examples/hashed_elgamal_generic.ec::4": [
+  "Reduction"
+ ],
+ "examples/hashed_elgamal_std.ec::1": [
+  "StdOrder_RealOrder_ler_dist_add"
+ ],
+ "examples/plug-and-pray/Plug_and_Pray_example.ec::1": [
+  "List_Range_range'def"
+ ],
+ "examples/plug-and-pray/Plug_and_Pray_example.ec::2": [
+  "Int_max'def"
+ ],
+ "examples/plug-and-pray/Plug_and_Pray_example.ec::4": [
+  "gt0_q"
+ ],
+ "examples/plug-and-pray/Plug_and_Pray_example.ec::5": [
+  "gt0_q"
+ ],
+ "examples/plug-and-pray/Plug_and_Pray_example.ec::7": [
+  "gt0_q"
+ ],
+ "examples/prg-tutorial/PRGc.ec::5": [
+  "Distr_mu_bounded"
+ ],
+ "examples/prg-tutorial/PRGc.ec::7": [
+  "Distr_mu_bounded"
+ ],
+ "examples/prg-tutorial/PRGc.ec::8": [
+  "List_Range_range'def",
+  "List_mem'def"
+ ],
+ "examples/prg-tutorial/PRGc.ec::9": [
+  "Logic___o'def",
+  "Logic___o_ho_sort",
+  "Logic___o_ho_spec"
+ ],
+ "examples/prg-tutorial/PRGc.ec::12": [
+  "ge0_qN"
+ ],
+ "examples/prg-tutorial/PRGc.ec::14": [
+  "Logic_pred1_ho_spec",
+  "Distr_mu_bounded"
+ ],
+ "examples/upto_syntaxtic.ec::1": [
+  "Distr_mu_bounded"
+ ],
+ "examples/upto_syntaxtic.ec::2": [
+  "Distr_mu_bounded"
+ ],
+ "examples/upto_syntaxtic.ec::3": [
+  "Distr_mu_bounded",
+  "StdOrder_RealOrder_maxr'def"
+ ],
+ "examples/upto_syntaxtic.ec::4": [
+  "StdOrder_RealOrder_maxr'def"
+ ],
+ "the-joy-of-easycrypt/03-ambient-logic/ambient-logic.ec::3": [
+  "RealExp_logK",
+  "RealExp_logM",
+  "RealExp_log_ge0",
+  "RealExp_log_le0",
+  "RealExp_log_mono",
+  "RealExp_log_mono_ltr",
+  "RealExp_rpow_ge0"
+ ]
+}

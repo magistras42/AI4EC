@@ -1,0 +1,40 @@
+[
+ {
+  "file": "examples/hashed_elgamal_generic.ec",
+  "system": "default",
+  "ok": 1,
+  "seconds": 2.77,
+  "sites": 4,
+  "kept": "-",
+  "reverted": "-",
+  "union_size": "-",
+  "rounds": 1,
+  "tail": ""
+ },
+ {
+  "file": "examples/hashed_elgamal_generic.ec",
+  "sites": 4,
+  "kept": 3,
+  "reverted": 1,
+  "union_size": 3,
+  "rounds": 2,
+  "ok": 1,
+  "seconds": 2.76,
+  "tail": "",
+  "system": "oracle",
+  "demangle_dropped": 1
+ },
+ {
+  "file": "examples/hashed_elgamal_generic.ec",
+  "sites": 4,
+  "kept": 1,
+  "reverted": 3,
+  "union_size": 1,
+  "rounds": 4,
+  "ok": 1,
+  "seconds": 2.71,
+  "tail": "",
+  "system": "qwen",
+  "demangle_dropped": 4
+ }
+]

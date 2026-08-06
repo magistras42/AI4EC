@@ -1,9 +1,0 @@
-{
-  "path": "theories/distributions/DBool.ec",
-  "confidence": "verified_current_source (whole file, 205 lines)",
-  "caveat": "No true git-diff was possible. This is a structural snapshot of the file's CURRENT (main-branch) content plus any changelog-confirmed version deltas.",
-  "current_content_summary": "dbool (the uniform {0,1} distribution) is defined by CLONING Distr.MFinite at type bool with enum <- [true; false] and card <- 2, RENAMING the clone's dunifin to dbool and its dunifinE to dboolE_count. dboolE and dbool_leq are then proved directly. A `Biased` sub-theory defines dbiased p (a p-weighted coin, via clamp to keep p in [0,1]), with dbiased1E/dbiasedE/supp_dbiased/dbiased_ll/dbiased_fu, dmap_pred (relating dmap of a lossless distribution to a dbiased), and marginal_sampling_pred. `FixedBiased` is an abstract theory fixing p once via an axiom-like op declaration. `MUniFinFunBiased` handles biased-coin-per-index reasoning over a finite function type.",
-  "import_repair_note": "The names dbool and dbool1E (etc.) are NOT primitive -- they are a renamed clone of Distr.MFinite's dunifin/dunifinE. A proof citing `dunifin`/`dunifinE` directly against DBool would need `dbool`/`dboolE_count` instead.",
-  "requires": "AllCore, List, Distr, Ring, Number, StdRing, StdOrder, StdBigop, RealSeq, RealSeries; Bigop, Bigalg.",
-  "version_diffs_found": "None found by exact name 'DBool' in the scanned changelog window."
-}

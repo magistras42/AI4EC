@@ -1,0 +1,34 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/UC/dh_enc.ec::6
+source file: examples/UC/dh_enc.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (forall ((et1 (tuple2 (tuple2 role (Logic_option DH_G_group)) memory)) (et2 (tuple2 role memory))) (=> (match (DHKE_FKE_kst (DHKE_FKE_FKE_slst (proj2_1 et2))) ( (DHKE_FKE_KE_Init (and (= (DHKE_DHKE_Initiator_slst (proj2_1 et1)) DHKE_IInit) (and (= (DHKE_DHKE_Responder_slst (proj2_1 et1)) DHKE_RWaiting) (and (= (DHKE_HybFChan_F2Auth_FAuthLR_FAuth_slst (proj2_1 et1)) (as Ch_Init (stlkg (tuple3 party party DH_G_group)))) (and (= (DHKE_HybFChan_F2Auth_FAuthRL_FAuth_slst (proj2_1 et1)) (as Ch_Init (stlkg (tuple3 party party DH_G_group)))) (and (= (DHKE_SimAuth_FAuthLR_FAuth_slst (proj2_1 et2)) (as Ch_Init (stlkg (tuple3 party party DH_G_group)))) (and (= (DHKE_SimAuth_FAuthRL_FAuth_slst (proj2_1 et2)) (as Ch_Init (stlkg (tuple3 party party DH_G_group)))) (and (= (DHKE_DHKE_Initiator_sl_K (proj2_1 et1)) (as Logic_None (Logic_option DH_G_group))) (= (DHKE_DHKE_Responder_sl_K (proj2_1 et1)) (as Logic_None (Logic_option DH_G_group))))))))))) ((DHKE_FKE_KE_Blocked1 x) (and (= (DHKE_DHKE_Initiator_slp (proj2_1 et1)) x) (and (= (DHKE_DHKE_Initiator_slst (proj2_1 et1)) DHKE_ISent) (and (= (DHKE_DHKE_Responder_slst (proj2_1 et1)) DHKE_RWaiting) (and (= (DHKE_HybFChan_F2Auth_FAuthLR_FAuth_slst (proj2_1 et1)) (Ch_Blocked2 (Tuple3 (proj3_0 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_1 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (DHKE_DHKE_SIM_sl_X (proj2_1 et2))))) (and (= (DHKE_HybFChan_F2Auth_FAuthRL_FAuth_slst (proj2_1 et1)) (as Ch_Init (stlkg (tuple3 party party DH_G_group)))) (and (= (DHKE_SimAuth_FAuthLR_FAuth_slst (proj2_1 et2)) (as Ch_Init (stlkg (tuple3 party party DH_G_group)))) (and (= (DHKE_SimAuth_FAuthRL_FAuth_slst (proj2_1 et2)) (as Ch_Init (stlkg (tuple3 party party DH_G_group)))) (and (= (DHKE_DHKE_Initiator_sl_K (proj2_1 et1)) (as Logic_None (Logic_option DH_G_group))) (= (DHKE_DHKE_Responder_sl_K (proj2_1 et1)) (as Logic_None (Logic_option DH_G_group)))))))))))) ((DHKE_FKE_KE_Wait x1) (and (= (DHKE_DHKE_Initiator_slp (proj2_1 et1)) x1) (and (= (DHKE_DHKE_Initiator_slst (proj2_1 et1)) DHKE_ISent) (and (= (DHKE_DHKE_Responder_slst (proj2_1 et1)) DHKE_RWaiting) (and (= (DHKE_HybFChan_F2Auth_FAuthLR_FAuth_slst (proj2_1 et1)) (Ch_Available (Tuple3 (proj3_0 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_1 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (DHKE_DHKE_SIM_sl_X (proj2_1 et2))))) (and (= (DHKE_HybFChan_F2Auth_FAuthRL_FAuth_slst (proj2_1 et1)) (as Ch_Init (stlkg (tuple3 party party DH_G_group)))) (and (= (DHKE_SimAuth_FAuthLR_FAuth_slst (proj2_1 et2)) (Ch_Available (Tuple3 (proj3_0 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_1 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (DHKE_DHKE_SIM_sl_X (proj2_1 et2))))) (and (= (DHKE_SimAuth_FAuthRL_FAuth_slst (proj2_1 et2)) (as Ch_Init (stlkg (tuple3 party party DH_G_group)))) (and (= (DHKE_DHKE_Initiator_sl_K (proj2_1 et1)) (as Logic_None (Logic_option DH_G_group))) (= (DHKE_DHKE_Responder_sl_K (proj2_1 et1)) (as Logic_None (Logic_option DH_G_group)))))))))))) ((DHKE_FKE_KE_Blocked2 x2) (and (= (DHKE_DHKE_Initiator_slp (proj2_1 et1)) x2) (and (= (DHKE_DHKE_Initiator_slst (proj2_1 et1)) DHKE_ISent) (and (= (DHKE_DHKE_Responder_slst (proj2_1 et1)) DHKE_RDone) (and (= (DHKE_HybFChan_F2Auth_FAuthLR_FAuth_slst (proj2_1 et1)) (Ch_Available (Tuple3 (proj3_0 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_1 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (DHKE_DHKE_SIM_sl_X (proj2_1 et2))))) (and (or (= (DHKE_SimAuth_FAuthRL_FAuth_slst (proj2_1 et2)) (as Ch_Init (stlkg (tuple3 T
+
+CANDIDATE LEMMAS (20 names):
+- Ch_Available_proj_1'def
+- Ch_Available_proj_1_sort
+- Ch_Available_sort
+- Ch_Blocked1_proj_1'def
+- Ch_Blocked1_proj_1_sort
+- Ch_Blocked1_sort
+- Ch_Blocked2_proj_1'def
+- Ch_Blocked2_proj_1_sort
+- Ch_Blocked2_sort
+- Ch_Init_sort
+- Ch_Wait_proj_1'def
+- Ch_Wait_proj_1_sort
+- Ch_Wait_sort
+- DHKE_FKE_party_output'def
+- Logic_None_sort
+- Logic_Some_proj_1'def
+- Logic_Some_proj_1_sort
+- Logic_Some_sort
+- Logic_option_inversion
+- stlkg_inversion
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

@@ -1,0 +1,111 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/ChaChaPoly/chacha_poly.ec::49
+source file: examples/ChaChaPoly/chacha_poly.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (= (Int_max 0 (+ (+ Poly_in_poly_in_size Poly_out_poly_out_size) (- Poly_in_poly_in_size))) Poly_out_poly_out_size)))
+
+CANDIDATE LEMMAS (97 names):
+- DList_dlist'def
+- DList_dlist_sort
+- Distr_MRat_drat'def
+- Distr_MRat_drat_sort
+- Distr_MRat_mrat'def
+- Distr_MRat_mrat_ho_sort
+- Distr_MRat_mrat_ho_spec
+- Distr_MUniform_duniform'def
+- Distr_MUniform_duniform_sort
+- Distr_MUnit_dunit'def
+- Distr_MUnit_dunit_ho_sort
+- Distr_MUnit_dunit_ho_spec
+- Distr_MUnit_dunit_sort
+- Distr_`*`'def
+- Distr_`*`_sort
+- Distr_dlet'def
+- Distr_dlet_sort
+- Distr_dmap'def
+- Distr_dmap_sort
+- Distr_mk_sort
+- Distr_mlet'def
+- Distr_mlet_ho_sort
+- Distr_mlet_ho_spec
+- Distr_mprod'def
+- Distr_mprod_ho_sort
+- Distr_mprod_ho_spec
+- Distr_support'def
+- Extra_block_ge0_extra_block_size
+- Int_IterOp_iter'def
+- Int_IterOp_iter_sort
+- Int_IterOp_iteri_sort
+- Int_b2i'def
+- Int_max'def
+- List_++'def
+- List_++_sort
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_count'def
+- List_drop'def
+- List_drop_sort
+- List_filter'def
+- List_filter_sort
+- List_foldr'def
+- List_foldr_sort
+- List_list_inversion
+- List_map'def
+- List_map_sort
+- List_mem'def
+- List_size'def
+- List_take'def
+- List_take_sort
+- List_undup'def
+- List_undup_sort
+- List_uniq'def
+- Logic_None_sort
+- Logic_Some_proj_1'def
+- Logic_Some_proj_1_sort
+- Logic_Some_sort
+- Logic___o'def
+- Logic___o_ho_sort
+- Logic___o_ho_spec
+- Logic___o_sort
+- Logic_cancel'def
+- Logic_odflt'def
+- Logic_odflt_sort
+- Logic_option_inversion
+- Logic_pred1_ho_sort
+- Logic_pred1_ho_spec
+- Logic_predT_ho_sort
+- Logic_predT_ho_spec
+- Poly_in_ge0_poly_in_size
+- Poly_in_poly_in_of_bytesd'def
+- Poly_out_ge0_poly_out_size
+- Poly_out_poly_out_of_bytesd'def
+- RealSeries_neg'def
+- RealSeries_neg_ho_sort
+- RealSeries_neg_ho_spec
+- RealSeries_pos'def
+- RealSeries_pos_ho_sort
+- RealSeries_pos_ho_spec
+- RealSeries_psum'def
+- RealSeries_psum_pred'def
+- RealSeries_psum_pred_ho_sort
+- RealSeries_psum_pred_ho_spec
+- RealSeries_sum'def
+- RealSeries_summable'def
+- Real_`___'def
+- StdBigop_Bigreal_BRA_big'def
+- Step1_2_SplitC2_ofpair'def
+- Step1_2_SplitC2_ofpair_ho_spec
+- Step1_2_SplitC2_topair'def
+- Step1_2_SplitC2_topair_ho_spec
+- TPoly_poly_of_bytesd'def
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

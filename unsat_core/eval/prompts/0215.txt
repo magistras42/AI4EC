@@ -1,0 +1,52 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/ehoare/qselect/qselect.ec::26
+source file: examples/ehoare/qselect/qselect.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (Xreal_Rpbar_xle (ite (= (proj5_4 (proj2_0 ethr)) (proj5_1 (proj2_0 ethr))) (Xreal_bqbrbq (ite (and (and (and (and (<= 0 (proj5_4 (proj2_0 ethr))) (<= (proj5_4 (proj2_0 ethr)) (proj5_1 (proj2_0 ethr)))) (<= (proj5_1 (proj2_0 ethr)) (proj5_4 (proj2_0 ethr)))) (< (proj5_4 (proj2_0 ethr)) (Array_size1 (proj5_0 (proj2_0 ethr))))) (and (and (<= (proj5_4 (proj2_0 ethr)) (proj5_1 (proj2_0 ethr))) (<= (proj5_1 (proj2_0 ethr)) (proj5_4 (proj2_0 ethr)))) (Partition0_uniq_on1 (proj5_0 (proj2_0 ethr)) (proj5_4 (proj2_0 ethr)) (proj5_4 (proj2_0 ethr))))) true false) (Xreal_Rpbar_rp (Xreal_Rp_of_reald (to_real (QS_slc (proj2_1 ethr)))))) (ite (< (proj5_4 (proj2_0 ethr)) (proj5_1 (proj2_0 ethr))) (Xreal_bqbrbq (ite (and (and (and (<= 0 (+ (proj5_4 (proj2_0 ethr)) 1)) (<= (+ (proj5_4 (proj2_0 ethr)) 1) (proj5_1 (proj2_0 ethr)))) (< (proj5_3 (proj2_0 ethr)) (Array_size1 (proj5_0 (proj2_0 ethr))))) (and (<= (+ (proj5_4 (proj2_0 ethr)) 1) (proj5_1 (proj2_0 ethr))) (Partition0_uniq_on1 (proj5_0 (proj2_0 ethr)) (+ (proj5_4 (proj2_0 ethr)) 1) (proj5_3 (proj2_0 ethr))))) true false) (Xreal_Rpbar_rp (Xreal_Rp_pl (Xreal_Rp_of_reald (to_real (QS_slc (proj2_1 ethr)))) (Xreal_Rp_of_reald (to_real (* 4 (+ (proj5_3 (proj2_0 ethr)) (- (+ (proj5_4 (proj2_0 ethr)) 1))))))))) (Xreal_bqbrbq (ite (and (and (<= (proj5_1 (proj2_0 ethr)) (+ (proj5_4 (proj2_0 ethr)) (- 1))) (< (+ (proj5_4 (proj2_0 ethr)) (- 1)) (Array_size1 (proj5_0 (proj2_0 ethr))))) (and (<= (proj5_1 (proj2_0 ethr)) (+ (proj5_4 (proj2_0 ethr)) (- 1))) (Partition0_uniq_on1 (proj5_0 (proj2_0 ethr)) (proj5_2 (proj2_0 ethr)) (+ (proj5_4 (proj2_0 ethr)) (- 1))))) true false) (Xreal_Rpbar_rp (Xreal_Rp_pl (Xreal_Rp_of_reald (to_real (QS_slc (proj2_1 ethr)))) (Xreal_Rp_of_reald (to_real (* 4 (+ (+ (proj5_4 (proj2_0 ethr)) (- 1)) (- (proj5_2 (proj2_0 ethr)))))))))))) (ite (= (proj5_4 (proj2_0 ethr)) (proj5_1 (proj2_0 ethr))) (Xreal_Rpbar_rp (Xreal_Rp_of_reald (to_real (QS_slc (proj2_1 ethr))))) (ite (< (proj5_4 (proj2_0 ethr)) (proj5_1 (proj2_0 ethr))) (Xreal_Rpbar_rp (Xreal_Rp_pl (Xreal_Rp_of_reald (to_real (QS_slc (proj2_1 ethr)))) (Xreal_Rp_of_reald (to_real (* 4 (+ (proj5_3 (proj2_0 ethr)) (- (+ (proj5_4 (proj2_0 ethr)) 1)))))))) (Xreal_Rpbar_rp (Xreal_Rp_pl (Xreal_Rp_of_reald (to_real (QS_slc (proj2_1 ethr)))) (Xreal_Rp_of_reald (to_real (* 4 (+ (+ (proj5_4 (proj2_0 ethr)) (- 1)) (- (proj5_2 (proj2_0 ethr))))))))))))))
+
+CANDIDATE LEMMAS (38 names):
+- Array___[_]'def
+- Array___[_]_sort
+- Array_mkarray_sort
+- Array_ofarray_sort
+- Array_offun'def
+- Array_offun_sort
+- Array_size'def
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_list_inversion
+- List_map'def
+- List_map_sort
+- List_mem'def
+- List_mkseq'def
+- List_mkseq_sort
+- List_nth'def
+- List_nth_sort
+- List_size'def
+- List_uniq'def
+- Logic_None_sort
+- Logic_Some_proj_1'def
+- Logic_Some_proj_1_sort
+- Logic_Some_sort
+- Logic_odflt'def
+- Logic_odflt_sort
+- Logic_option_inversion
+- Partition0_array_sub'def
+- Partition0_array_sub_sort
+- Partition0_uniq_on'def
+- Partition0_uniq_on_sub
+- Xreal_Rp_+'def
+- Xreal_Rp_of_reald'def
+- Xreal_Rpbar_xle'def
+- Xreal_`_`'def
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

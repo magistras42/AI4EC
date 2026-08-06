@@ -1,0 +1,33 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/ChaChaPoly/ske.ec::4
+source file: examples/ChaChaPoly/ske.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (forall ((k_R SKE_RND_key) (gs_R SKE_RND_CCA_CPA_UFCMA_globS)) (=> (SKE_RND_CCA_CPA_UFCMA_valid_key k_R) (and (forall ((c SKE_RND_ciphertext)) (=> (FMap_dom1 (FMap_ofmap1 (const2 (as Logic_None (Logic_option SKE_RND_plaintext)))) c) (= (SKE_RND_CCA_CPA_UFCMA_dec gs_R k_R c) (FMap___lb_rb1 (FMap_ofmap1 (const2 (as Logic_None (Logic_option SKE_RND_plaintext)))) c)))) (=> (forall ((c SKE_RND_ciphertext)) (=> (FMap_dom1 (FMap_ofmap1 (const2 (as Logic_None (Logic_option SKE_RND_plaintext)))) c) (= (SKE_RND_CCA_CPA_UFCMA_dec gs_R k_R c) (FMap___lb_rb1 (FMap_ofmap1 (const2 (as Logic_None (Logic_option SKE_RND_plaintext)))) c)))) (forall ((result_L Bool) (result_R Bool) (A_L A) (A_R A) (lc_R (List_list SKE_RND_ciphertext)) (log_R (FMap_fmap SKE_RND_ciphertext SKE_RND_plaintext))) (=> (=> (not (exists ((c SKE_RND_ciphertext)) (and (List_mem1 lc_R c) (not (= (SKE_RND_CCA_CPA_UFCMA_dec gs_R k_R c) (as Logic_None (Logic_option SKE_RND_plaintext))))))) (and (= (= result_L true) (= result_R true)) (and (= A_L A_R) (forall ((c SKE_RND_ciphertext)) (=> (FMap_dom1 log_R c) (= (SKE_RND_CCA_CPA_UFCMA_dec gs_R k_R c) (FMap___lb_rb1 log_R c))))))) (=> (not (exists ((c SKE_RND_ciphertext)) (and (List_mem1 lc_R c) (not (= (SKE_RND_CCA_CPA_UFCMA_dec gs_R k_R c) (as Logic_None (Logic_option SKE_RND_plaintext))))))) (= (= result_L true) (= result_R true)))))))))))
+
+CANDIDATE LEMMAS (19 names):
+- FMap___[_]'def
+- FMap___[_]_sort
+- FMap_dom'def
+- FMap_mem_empty
+- FMap_ofmap_sort
+- FMap_tomap_sort
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_list_inversion
+- List_mem'def
+- Logic_None_sort
+- Logic_Some_proj_1'def
+- Logic_Some_proj_1_sort
+- Logic_Some_sort
+- Logic_option_inversion
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

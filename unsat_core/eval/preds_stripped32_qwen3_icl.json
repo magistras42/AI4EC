@@ -1,0 +1,132 @@
+{
+ "examples/ChaChaPoly/chacha_poly.ec::Z3:6": [
+  "List_nseq'def",
+  "List_size'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::CVC5:1": [
+  "Int_min'def"
+ ],
+ "examples/ChaChaPoly/ske.ec::Z3:1": [],
+ "examples/FundamentalLemma.ec::CVC5:6": [
+  "max'def"
+ ],
+ "examples/MEE-CBC/FunctionalSpec.ec::CVC5:1": [
+  "Int_max'def",
+  "pad_length'def"
+ ],
+ "examples/MEE-CBC/RCPA_CMA.ec::Z3:3": [
+  "is_restr'def",
+  "FSet_mem'def"
+ ],
+ "examples/MEE-CBC/RCPA_CMA.ec::CVC5:8": [
+  "Distr_is_lossless'def"
+ ],
+ "examples/PIR.ec::Z3:5": [
+  "sxor2'def"
+ ],
+ "examples/PIR.ec::CVC5:8": [
+  "sxor2'def"
+ ],
+ "examples/PRG.ec::Z3:12": [
+  "List_size'def",
+  "List_size_ge0"
+ ],
+ "examples/UC/dh_enc.ec::CVC5:31": [
+  "Composition_sum_inversion",
+  "FMap_dom'def",
+  "Logic_odflt'def"
+ ],
+ "examples/UC/dh_enc.ec::Z3:5": [
+  "Composition_Left_proj_1'def",
+  "Composition_Right_proj_1'def",
+  "Logic_option_inversion",
+  "Composition_sum_inversion",
+  "Logic_Some_proj_1'def"
+ ],
+ "examples/Upto.ec::Z3:4": [
+  "Core_<='def",
+  "Distr_mu1_le_eq",
+  "Distr_mu1_le_eq_mu1"
+ ],
+ "examples/WF-examp.ec::CVC5:7": [
+  "List_size'def",
+  "IntDiv_divz_eq0"
+ ],
+ "examples/async-while.ec::Z3:1": [
+  "Real_fromint0",
+  "Real_fromint1",
+  "Real_RField_mul1r"
+ ],
+ "examples/br93.ec::CVC5:2": [
+  "Core_<='def"
+ ],
+ "examples/br93.ec::Z3:1": [
+  "FMap_dom'def",
+  "List_mem'def"
+ ],
+ "examples/cramer-shoup/bad_abs.ec::CVC5:3": [
+  "Core_<='def",
+  "Real_RField_add0r",
+  "Real_RField_subr0",
+  "Real_RField_addIr",
+  "Real_RField_subrr"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::Z3:21": [
+  "Real_`___'def"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::CVC5:10": [
+  "List_size_ge0"
+ ],
+ "examples/ehoare/adversary.ec::CVC5:1": [
+  "Core_<='def"
+ ],
+ "examples/ehoare/qselect/qselect.ec::CVC5:2": [
+  "Array_size'def",
+  "Array_size_ge0"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp1.ec::CVC5:3": [
+  "Distr_mu1_le_eq",
+  "Distr_mu1_uni"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::Z3:20": [
+  "FMap_dom'def"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::CVC5:21": [],
+ "examples/hashed_elgamal_generic.ec::CVC5:1": [
+  "FMap_dom'def",
+  "FSet_card'def"
+ ],
+ "examples/hashed_elgamal_generic.ec::Z3:2": [
+  "DiffieHellman_GP_ZModE_inzmod_ho_spec",
+  "List_Range_range'def",
+  "Distr_MUniform_duniform1E_uniq",
+  "DiffieHellman_GP_ZModE_inzmod'def",
+  "DiffieHellman_GP_ZModE_inzmod_ho_spec"
+ ],
+ "examples/hashed_elgamal_std.ec::CVC5:1": [
+  "Core_<='def"
+ ],
+ "examples/old/trapdoor.ec::CVC5:1": [
+  "Real_RField_mulr0",
+  "Real_RField_mulr1",
+  "StdOrder_RealOrder_ler_def"
+ ],
+ "examples/plug-and-pray/Plug_and_Pray_example.ec::CVC5:1": [
+  "List_Range_range'def"
+ ],
+ "examples/prg-tutorial/PRGc.ec::CVC5:5": [
+  "Core_<='def",
+  "Distr_mu1_le_eq",
+  "Distr_mu1_le_eq_mu1"
+ ],
+ "examples/upto_syntaxtic.ec::CVC5:1": [
+  "Core_<='def",
+  "Distr_mu1_le_eq",
+  "Distr_+'def",
+  "Distr_dscale'def"
+ ],
+ "examples/upto_syntaxtic.ec::Z3:3": [
+  "Core_<='def",
+  "StdOrder_RealOrder_maxr'def"
+ ]
+}

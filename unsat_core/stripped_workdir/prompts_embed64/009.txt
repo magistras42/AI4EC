@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/PRG.ec::Z3:12
+source file: examples/PRG.ec
+
+GOAL:
+(assert (not (forall ((et2 (tuple2 (tuple5 seed output output Int seed) memory)) (r10 seed)) (=> (Distr_support1 (Distr_MUniform_duniform1 Support_enum) r10) (and (and (and (= (+ 1 (List_size1 (P_sllogP (proj2_1 et2)))) (+ (List_size1 (P_sllogP (proj2_1 et2))) 1)) (<= 0 (List_size1 (P_sllogP (proj2_1 et2))))) (=> (< 0 (List_size1 (P_sllogP (proj2_1 et2)))) (< 0 (+ 1 (List_size1 (P_sllogP (proj2_1 et2))))))) (forall ((logP_R (List_list seed))) (=> (not (< (List_size1 logP_R) (List_size1 (P_sllogP (proj2_1 et2))))) (=> (not (and (< (List_size1 logP_R) (+ 1 (List_size1 (P_sllogP (proj2_1 et2))))) (< (List_size1 logP_R) (List_size1 (P_sllogP (proj2_1 et2)))))) (=> (= (+ 1 (List_size1 (P_sllogP (proj2_1 et2)))) (+ (List_size1 (P_sllogP (proj2_1 et2))) 1)) (=> (<= (List_size1 logP_R) (List_size1 (P_sllogP (proj2_1 et2)))) (= (List_size1 logP_R) (List_size1 (P_sllogP (proj2_1 et2))))))))))))))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- Distr_MUniform_supp_duniform
+- dseed1E
+- supp_dseed
+- dseedE
+- Distr_MUniform_finite_duniform
+- Distr_supp_djoin_cons
+- Distr_djoin_fu
+- Distr_mu_dlet_le
+- Distr_supp_djoin
+- Distr_dmap_uni_in_inj
+- Distr_is_uniform'def
+- Distr_MUniform_duniform_fu
+- Distr_mu1_uni
+- Distr_supp_djoinmap
+- Distr_MUniform_duniform1E
+- Distr_MUniform_duniform1E_uniq
+- Distr_dmap_bij
+- Distr_mu_le
+- Distr_MUniform_eq_duniformP
+- Distr_witness_support
+- Distr_dmap_supp
+- Distr_in_dmap1E_can
+- Distr_mu0_false
+- Distr_mu_eq_support
+- Distr_supp_djoin_size
+- Distr_supp_dlet
+- Distr_supportPn
+- dseed_fu
+- Distr_MUniform_duniformE
+- Distr_supportP
+- Distr_uniform_pmaxE
+- Distr_dprod1E
+- Distr_eq0_mu
+- Distr_exp_cond_dlet_ilvt
+- Distr_exp_cond_ge0
+- Distr_in_eq_dlet
+- Distr_supp_dprod
+- Distr_uniform_finite
+- Distr_MRat_supp_drat
+- Distr_MUniform_duniform'def
+- Distr_mu_in_weight
+- Distr_neq0_mu
+- Distr_supp_dmap
+- Distr_exp_cond_eq0
+- Distr_eq_dmap_in
+- Distr_pmax_gt0
+- Distr_supp_drestrict
+- dseed_uni
+- Distr_ptt_in_pred
+- Distr_DScalar_supp_dscalar
+- Distr_MUniform_duniform_ll
+- Distr_MUniform_duniform_uni
+- Distr_dmap_id_eq_in
+- Distr_in_ler_exp_cond
+- Distr_iscpl_dlet
+- Distr_mu1_uni_ll
+- Distr_eq_exp
+- Distr_exp_ge0
+- Distr_partition'def
+- Distr_support'def
+- Distr_distr_0Vmem
+- Distr_exp_duniform
+- dseed_funi
+- dseed_ll
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

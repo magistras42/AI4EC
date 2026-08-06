@@ -1,0 +1,32 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/ChaChaPoly/chacha_poly.ec::59
+source file: examples/ChaChaPoly/chacha_poly.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (= (List_has1 unamed_lambda (List_map1 unamed_lambda1 (List_filter1 unamed_lambda2 lc))) (List_has1 unamed_lambda (List_map1 unamed_lambda1 (List_filter1 unamed_lambda2 (List_filter1 unamed_lambda3 lc)))))))
+
+CANDIDATE LEMMAS (18 names):
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_filter'def
+- List_filter_predI
+- List_filter_sort
+- List_has'def
+- List_list_inversion
+- List_map'def
+- List_map_sort
+- List_size'def
+- Logic_predI'def
+- Logic_predI_ho_sort
+- Logic_predI_ho_spec
+- valid_topol'def
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

@@ -1,0 +1,27 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/cramer-shoup/cramer_shoup.ec::23
+source file: examples/cramer-shoup/cramer_shoup.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (forall ((ethr (tuple2 (tuple7 (tuple4 DH_G_group DH_G_group DH_G_group DH_G_group) (Logic_option DH_G_group) DH_G_group DH_G_group DH_G_group DH_G_group DH_GP_ZModE_exp) memory))) (=> (and (<= (List_size1 (G3_slcilog (proj2_1 ethr))) (List_size1 (G1_sllog (proj2_1 ethr)))) (<= (List_size1 (G1_sllog (proj2_1 ethr))) PKE__qD)) (ite (and (< (List_size1 (G1_sllog (proj2_1 ethr))) PKE__qD) (not (= (Logic_Some (proj7_0 (proj2_0 ethr))) (G1_slcstar (proj2_1 ethr))))) (and (<= (List_size1 (ite (= (G1_slcstar (proj2_1 ethr)) (as Logic_None (Logic_option (tuple4 DH_G_group DH_G_group DH_G_group DH_G_group)))) (List_clcl (proj7_0 (proj2_0 ethr)) (G3_slcilog (proj2_1 ethr))) (G3_slcilog (proj2_1 ethr)))) (+ 1 (List_size1 (G1_sllog (proj2_1 ethr))))) (<= (+ 1 (List_size1 (G1_sllog (proj2_1 ethr)))) PKE__qD)) (and (<= (List_size1 (G3_slcilog (proj2_1 ethr))) (List_size1 (G1_sllog (proj2_1 ethr)))) (<= (List_size1 (G1_sllog (proj2_1 ethr))) PKE__qD)))))))
+
+CANDIDATE LEMMAS (13 names):
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_list_inversion
+- List_size'def
+- Logic_None_sort
+- Logic_Some_proj_1'def
+- Logic_Some_proj_1_sort
+- Logic_Some_sort
+- Logic_option_inversion
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

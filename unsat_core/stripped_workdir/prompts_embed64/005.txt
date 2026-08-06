@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/MEE-CBC/RCPA_CMA.ec::CVC5:8
+source file: examples/MEE-CBC/RCPA_CMA.ec
+
+GOAL:
+(assert (not (forall ((p EtM_leaks)) (Distr_is_lossless1 (Distr_bqasbq1 (EtM_dC p) (Distr_MUnit_dunit1 witness2))))))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- EtM_dC_ll
+- Distr_dprod_ll_auto
+- EtM_SKEa_dC_ll
+- Distr_dmap_cst
+- Distr_dprod_ll
+- MtE_SKEa_dC_ll
+- MtE_Sec_dC_ll
+- Distr_djoin_ll
+- Distr_dmap_ll
+- Distr_mu1_le_eq_mu1
+- MtE_dC_ll
+- Distr_is_losslessP
+- Distr_is_lossless'def
+- Distr_dlet_cst
+- Distr_dlet_ll
+- Distr_dopt_ll
+- Distr_mu_le_eq
+- Distr_eq1_mu
+- Distr_mu1_le_eq
+- Distr_dscale_ll
+- Distr_DScalar_dscalar_ll
+- Distr_MUniform_duniform_ll
+- Distr_DConditional_dcond_ll
+- Distr_dprod_dunit
+- Distr_funi_ll_full
+- Distr_dprod_cross
+- Distr_eq_funi_ll
+- Distr_le_dprod_or
+- Distr_dprod_dlet
+- Distr_mu1_uni_ll
+- Distr_dlet_d_unit
+- Distr_dprod1E
+- Distr_dprodEl
+- Distr_`*`_sort
+- Distr_dmap_dprodR
+- Distr_dprodEr
+- Distr_ll_dbin
+- Distr_dlet_unit
+- Distr_dmap_dprod
+- Distr_dmap_dprodL
+- Distr_dmap_dprod_comp
+- Distr_dprodE
+- Distr_MUnit_dunit_sort
+- Distr_dprod_def
+- Distr_supportPn
+- Distr_weight_dprod
+- Distr_`*`'def
+- Distr_dprod_marginalL
+- Distr_eq0_mu
+- Distr_mu0_false
+- Distr_support'def
+- Distr_MUnit_dunit1xx
+- Distr_MUnit_dunitE
+- Distr_dmap'def
+- Distr_dmap_dprodE
+- Distr_dmap_dprodE_swap
+- Distr_dprod_marginalR
+- Distr_exp_cond_dlet_ilvt
+- Distr_exp_cond_ge0
+- Distr_mode_ge
+- Distr_MUnit_dunit'def
+- Distr_MUnit_dunit1E
+- Distr_ge0_isdistr
+- Distr_mode'def
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

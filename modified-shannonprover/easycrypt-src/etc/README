@@ -1,2 +1,0 @@
-; All .conf files in this directory are automatically loaded by EasyCrypt at startup.
-; They are processed in alphanumeric order, based on their filenames.

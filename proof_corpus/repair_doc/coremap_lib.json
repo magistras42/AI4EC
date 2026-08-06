@@ -1,7 +1,0 @@
-{
-  "path": "theories/core/CoreMap.ec",
-  "confidence": "verified_current_source (whole file, 9 lines)",
-  "caveat": "No true git-diff was possible. This is a structural snapshot of the file's CURRENT (main-branch) content plus any changelog-confirmed version deltas.",
-  "current_content_summary": "Extremely small: declares the abstract total-map type ('a,'b) map plus three SMT-bound primitives -- cst (constant map), and the get/set notations `.[_]` / `.[_ <- _]`. The file's own comment says explicitly not to use these directly and to use the (user-facing) Map theory instead -- in the current tree that user-facing theory is SmtMap (see the SmtMap library file already produced), which re-exposes exactly these three primitives plus tofun/offun/eq_except/merge.",
-  "version_diffs_found": "None found by name in the scanned changelog window."
-}

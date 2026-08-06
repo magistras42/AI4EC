@@ -1,0 +1,28 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/global-hybrid/GlobalHybridExamp2.ec::35
+source file: examples/global-hybrid/GlobalHybridExamp2.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (forall ((et1 (tuple2 (tuple7 (tuple3 key key key) exp exp exp exp exp exp) memory)) (et2 (tuple2 (tuple10 (tuple3 key key key) exp exp exp ro_in_t exp ro_in_t exp ro_in_t exp) memory))) (=> (exists ((m_R (FMap_fmap ro_in_t exp))) (and (= (FullRO_RO_slm (proj2_1 et2)) (FMap___lb_lsmn_rb1 m_R (proj10_6 (proj2_0 et2)) (proj10_7 (proj2_0 et2)))) (and (= (proj10_2 (proj2_0 et2)) (Logic_odflt1 witness2 (FMap___lb_rb1 (FullRO_RO_slm (proj2_1 et2)) (proj10_6 (proj2_0 et2))))) (and (= (proj10_8 (proj2_0 et2)) C) (exists ((m_R1 (FMap_fmap ro_in_t exp))) (and (= m_R (FMap___lb_lsmn_rb1 m_R1 (proj10_4 (proj2_0 et2)) (proj10_5 (proj2_0 et2)))) (and (= (proj10_1 (proj2_0 et2)) (Logic_odflt1 witness2 (FMap___lb_rb1 m_R (proj10_4 (proj2_0 et2))))) (and (= (proj10_6 (proj2_0 et2)) B) (and (and (and (and (and (= (Hybrid_Or_slctr (proj2_1 et1)) (RO_Disting2_Or_slctr (proj2_1 et2))) (and (and (<= 1 (Hybrid_Or_slctr (proj2_1 et1))) (<= (Hybrid_Or_slctr (proj2_1 et1)) (+ m 1))) (and (= (Hybrid_sli (proj2_1 et1)) iqt) (and (= (RO_Disting2_sli (proj2_1 et2)) iqt) (=> (<= (Hybrid_Or_slctr (proj2_1 et1)) iqt) (= m_R1 (FMap_ofmap1 (const2 (as Logic_None (Logic_option exp)))))))))) (<= (Hybrid_Or_slctr (proj2_1 et1)) m)) (not (< (Hybrid_Or_slctr (proj2_1 et1)) (Hybrid_sli (proj2_1 et1))))) (= (Hybrid_Or_slctr (proj2_1 et1)) (Hybrid_sli (proj2_1 et1)))) (and (= (proj7_4 (proj2_0 et1)) (proj10_5 (proj2_0 et2))) (and (= (proj7_5 (proj2_0 et1)) (proj10_7 (proj2_0 et2))) (and (= (proj7_6 (proj2_0 et1)) (proj10_9 (proj2_0 et2))) (= (proj10_4 (proj2_0 et2)) A))))))))))))) (and (and (= (cf g (proj7_4 (proj2_0 et1))) (cf g (proj10_1 (proj2_0 et2)))) (and (= (cf g (proj7_5 (proj2_0 et1))) (cf g (proj10_2 (proj2_0 et2)))) (= (cf g (proj7_6 (proj2_0 et1))) (cf g (Logic_odflt1 witness2 (FMap___lb_rb1 (FMap___lb_lsmn_rb1 (FullRO_RO_slm (proj2_1 et2)) (proj10_8 (proj2_0 et2)) (proj10_9 (proj2_0 et2))) (proj10_8 (proj2_0 et2)))))))) (and (= (+ (Hybrid_Or_slctr (proj2_1 et1)) 1) (+ (RO_Disting2_Or_slctr (proj2_1 et2)) 1)) (and (and (<= 1 (+ (Hybrid_Or_slctr (proj2_1 et1)) 1)) (<= (+ (Hybrid_Or_slctr (proj2_1 et1)) 1) (+ m 1))) (and (= (Hybrid_sli (proj2_1 et1)) iqt) (and (= (RO_Disting2_sli (proj2_1 et2)) iqt) (=> (<= (+ (Hybrid_Or_slctr (proj2_1 et1)) 1) iqt) (= (FMap___lb_lsmn_rb1 (FullRO_RO_slm (proj2_1 et2)) (proj10_8 (proj2_0 et2)) (proj10_9 (proj2_0 et2))) (FMap_ofmap1 (const2 (as Logic_None (Logic_option exp)))))))))))))))
+
+CANDIDATE LEMMAS (14 names):
+- FMap___[_<-_]'def
+- FMap___[_<-_]_sort
+- FMap___[_]'def
+- FMap___[_]_sort
+- FMap_get_set_sameE
+- FMap_ofmap_sort
+- FMap_tomap_sort
+- Logic_None_sort
+- Logic_Some_proj_1'def
+- Logic_Some_proj_1_sort
+- Logic_Some_sort
+- Logic_odflt'def
+- Logic_odflt_sort
+- Logic_option_inversion
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

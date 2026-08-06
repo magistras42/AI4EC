@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/MEE-CBC/RCPA_CMA.ec::Z3:3
+source file: examples/MEE-CBC/RCPA_CMA.ec
+
+GOAL:
+(assert (not (forall ((et1 (tuple2 (tuple8 MtE_ptxt MtE_ctxt (tuple2 MtE_eK MtE_mK) MtE_ptxt MtE_eK MtE_mK MtE_ctxt MtE_tag) memory)) (et2 (tuple2 (tuple5 MtE_ptxt MtE_ctxt MtE_tag MtE_ptxt MtE_tag) memory))) (=> (and (not (= (MtE_MACa_WUF_CMA_WUF_Wrap_slwin (proj2_1 et2)) true)) (and (= (proj8_0 (proj2_0 et1)) (proj5_0 (proj2_0 et2))) (and (and (= (E2 (proj2_1 et1)) (E2 (proj2_1 et2))) (= (M2 (proj2_1 et1)) (M2 (proj2_1 et2)))) (and (= (MtE_Sec_PTXT_PTXT_Wrap_slk (proj2_1 et1)) (Tuple2 (MtE_RCPA_WUF_PTXT_CMAa_slek (proj2_1 et2)) (MtE_MACa_WUF_CMA_WUF_Wrap_slk (proj2_1 et2)))) (and (forall ((p MtE_ptxt)) (= (FSet_mem1 (MtE_Sec_PTXT_PTXT_Wrap_sls (proj2_1 et1)) p) (FSet_mem1 (MtE_MACa_WUF_CMA_WUF_Wrap_sls (proj2_1 et2)) p))) (=> (= (MtE_Sec_PTXT_PTXT_Wrap_slwin (proj2_1 et1)) true) (= (MtE_MACa_WUF_CMA_WUF_Wrap_slwin (proj2_1 et2)) true))))))) (and (and (and (= (proj2_1 (MtE_Sec_PTXT_PTXT_Wrap_slk (proj2_1 et1))) (MtE_MACa_WUF_CMA_WUF_Wrap_slk (proj2_1 et2))) (= (proj8_0 (proj2_0 et1)) (proj5_0 (proj2_0 et2)))) (= (M2 (proj2_1 et1)) (M2 (proj2_1 et2)))) (forall ((result_L MtE_tag) (result_R MtE_tag) (M_L M) (M_R M)) (=> (and (= result_L result_R) (= M_L M_R)) (and (and (and (= (proj2_0 (MtE_Sec_PTXT_PTXT_Wrap_slk (proj2_1 et1))) (MtE_RCPA_WUF_PTXT_CMAa_slek (proj2_1 et2))) (and (= (proj8_0 (proj2_0 et1)) (proj5_0 (proj2_0 et2))) (= result_L result_R))) (= (E2 (proj2_1 et1)) (E2 (proj2_1 et2)))) (forall ((result_L1 MtE_ctxt) (result_R1 MtE_ctxt) (E_L E) (E_R E)) (=> (and (= result_L1 result_R1) (= E_L E_R)) (=> (not (= (MtE_MACa_WUF_CMA_WUF_Wrap_slwin (proj2_1 et2)) true)) (and (= result_L1 result_R1) (and (and (= E_L E_R) (= M_L M_R)) (and (= (MtE_Sec_PTXT_PTXT_Wrap_slk (proj2_1 et1)) (Tuple2 (MtE_RCPA_WUF_PTXT_CMAa_slek (proj2_1 et2)) (MtE_MACa_WUF_CMA_WUF_Wrap_slk (proj2_1 et2)))) (and (forall ((p MtE_ptxt)) (= (FSet_mem1 (FSet_bqbrbq1 (MtE_Sec_PTXT_PTXT_Wrap_sls (proj2_1 et1)) (FSet_fset12 (proj8_0 (proj2_0 et1)))) p) (FSet_mem1 (FSet_bqbrbq1 (MtE_MACa_WUF_CMA_WUF_Wrap_sls (proj2_1 et2)) (FSet_fset12 (proj5_0 (proj2_0 et2)))) p))) (=> (= (MtE_Sec_PTXT_PTXT_Wrap_slwin (proj2_1 et1)) true) (= (MtE_MACa_WUF_CMA_WUF_Wrap_slwin (proj2_1 et2)) true)))))))))))))))))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- FSet_productP
+- List_assoc_head
+- List_assoc_cons
+- List_assoc_get_mem
+- List_assocP
+- List_assoc_none
+- List_mem_assoc_uniq
+- List_mem_zip
+- List_assoc_some
+- List_mem_zip_fst
+- List_mem_zip_snd
+- List_zip'def
+- List_allpairsP
+- List_mem_map_snd
+- List_mem_map_fst
+- List_mem_zip_mapr
+- List_mem_zip_nseqL
+- Distr_mprod'def
+- FSet_fset_ind
+- FSet_in_filter
+- FSet_disjointP
+- FSet_foldC
+- FSet_in_fsetI
+- FSet_in_fsetI1
+- FSet_perm_to_rem
+- FSet_mem_pick
+- FSet_properP
+- FSet_in_eq_fset0
+- FSet_in_fsetD1
+- FSet_in_fsetU1
+- FSet_filter_pred1
+- FSet_imageP
+- FSet_mem_ho_spec
+- FSet___subset'def
+- FSet_elems_fset1
+- FSet_fset1I
+- FSet_in_fsetD
+- FSet_in_fsetU
+- FSet_mem_image
+- FSet_fsetI1
+- FSet_mem'def
+- FSet_memE
+- FSet_elems_eq_fset1
+- FSet_fsetDDr
+- FSet_fsetDIr
+- FSet_fsetUIr
+- FSet_fsetUK
+- FSet_sub1set
+- FSet_filterU
+- FSet_fsetDDl
+- FSet_fsetKU
+- FSet_fsetUIl
+- FSet_in_fset0
+- FSet_filter1
+- FSet_fsetDUr
+- FSet_fsetIUl
+- FSet_fsetIUr
+- FSet_fsetKI
+- FSet_fsetP
+- FSet_fsetUUl
+- FSet_imageU
+- FSet_fset1D
+- FSet_fsetID
+- FSet_fsetIK
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

@@ -1,0 +1,277 @@
+preflight: verifying environment assumptions...
+preflight OK: easycrypt + solvers ['Alt-Ergo', 'Z3', 'CVC5'] all verified end-to-end
+
+warmup: baseline compile of 49 file(s) in-tree (builds .eco dep caches)
+  [warmup] examples/ChaChaPoly/chacha_poly.ec                           OK       0.3s
+  [warmup] examples/docgen/docgenbasic.ec                               OK       0.5s
+  [warmup] examples/UC/MapAux.ec                                        OK       0.7s
+  [warmup] examples/cramer-shoup/bad_abs.ec                             OK       1.9s
+  [warmup] examples/ChaChaPoly/ske.ec                                   OK       1.9s
+  [warmup] examples/Dice4_6.ec                                          OK       2.3s
+  [warmup] examples/incomplete/FDH.ec                                   FAIL     0.3s
+  [warmup] examples/global-hybrid/GlobalHybridExamp1.ec                 OK       2.4s
+  [warmup] examples/ehoare/adversary.ec                                 OK       3.1s
+  [warmup] examples/global-hybrid/GlobalHybridExamp2.ec                 OK       0.3s
+  [warmup] examples/old/list-ddh/DDH.ec                                 FAIL     2.1s
+  [warmup] examples/FundamentalLemma.ec                                 OK       2.4s
+  [warmup] examples/UC/RndO.ec                                          OK       4.0s
+  [warmup] examples/PIR.ec                                              OK       0.3s
+  [warmup] examples/old/trapdoor.ec                                     FAIL     2.4s
+  [warmup] examples/old/list-ddh/DDH_indexed.ec                         FAIL     1.7s
+  [warmup] examples/ehoare/qselect/qselect.ec                           OK       7.4s
+  [warmup] examples/old/list-ddh/RandOracle.ec                          FAIL     1.3s
+  [warmup] examples/old/list-ddh/list_ddh_no_inner.ec                   FAIL     0.2s
+  [warmup] examples/MEE-CBC/FunctionalSpec.ec                           OK       8.0s
+  [warmup] examples/plug-and-pray/Plug_and_Pray_example.ec              OK       2.3s
+  [warmup] examples/tactics/inline.ec                                   OK       0.2s
+  [warmup] examples/to-port/RingCloning.ec                              FAIL     0.3s
+  [warmup] examples/tactics/simplify_if.ec                              OK       0.7s
+  [warmup] examples/UC/composition.ec                                   OK       4.6s
+  [warmup] examples/PRG.ec                                              OK       4.5s
+  [warmup] examples/UC/dh_enc.ec                                        OK       0.3s
+  [warmup] the-joy-of-easycrypt/02-easycrypt-intro/abstract-ind-ror.ec  OK       1.3s
+  [warmup] examples/to-port/hashed_elgamal.ec                           FAIL     2.5s
+  [warmup] examples/prg-tutorial/PRGc.ec                                OK       3.5s
+  [warmup] the-joy-of-easycrypt/05-relational-hoare-logic/relational-hoare-logic.ec OK       0.5s
+  [warmup] examples/Pedersen.ec                                         OK       2.3s
+  [warmup] the-joy-of-easycrypt/03-ambient-logic/ambient-logic.ec       OK       2.7s
+  [warmup] the-joy-of-easycrypt/04-hoare-logic/hoare-logic.ec           OK       2.9s
+  [warmup] examples/RWhileSampling.ec                                   OK       2.0s
+  [warmup] examples/ehoare/random_boolean_matrix.ec                     FAIL    12.4s
+  [warmup] examples/cramer-shoup/cramer_shoup.ec                        OK      13.7s
+  [warmup] examples/SchnorrPK.ec                                        OK       2.1s
+  [warmup] examples/Upto.ec                                             OK       2.5s
+  [warmup] examples/MEE-CBC/RCPA_CMA.ec                                 OK      10.5s
+  [warmup] examples/WF-examp.ec                                         OK       1.6s
+  [warmup] examples/WhileSampling.ec                                    OK       1.6s
+  [warmup] examples/async-while.ec                                      OK       1.5s
+  [warmup] examples/async_while.ec                                      OK       0.7s
+  [warmup] examples/br93.ec                                             OK       3.7s
+  [warmup] examples/elgamal.ec                                          OK       1.8s
+  [warmup] examples/hashed_elgamal_generic.ec                           OK       3.2s
+  [warmup] examples/hashed_elgamal_std.ec                               OK       2.7s
+  [warmup] examples/upto_syntaxtic.ec                                   OK       1.7s
+warmup done (9 baseline failures — kept, they are data)
+
+note: 1 file(s) have warmup-failed local deps — flagged deps_warmup_ok=0, excluded from headline stats
+
+sweep: 49 file(s) x 4 config(s) = 196 runs, jobs=8
+  examples/ChaChaPoly/ske.ec                                   Alt-Ergo       OK       1.8s
+  examples/ChaChaPoly/ske.ec                                   default(all)   OK       1.9s
+  examples/ChaChaPoly/ske.ec                                   CVC5           OK       1.9s
+  examples/ChaChaPoly/ske.ec                                   Z3             OK       2.0s
+  examples/Dice4_6.ec                                          Alt-Ergo       OK       2.0s
+  examples/Dice4_6.ec                                          default(all)   OK       2.2s
+  examples/Dice4_6.ec                                          Z3             OK       2.2s
+  examples/Dice4_6.ec                                          CVC5           FAIL     2.2s
+  examples/FundamentalLemma.ec                                 Alt-Ergo       FAIL     1.8s
+  examples/FundamentalLemma.ec                                 default(all)   OK       2.0s
+  examples/FundamentalLemma.ec                                 Z3             OK       2.0s
+  examples/FundamentalLemma.ec                                 CVC5           OK       2.0s
+  examples/ChaChaPoly/chacha_poly.ec                           CVC5           FAIL    13.7s
+  examples/MEE-CBC/FunctionalSpec.ec                           Alt-Ergo       OK       7.8s
+  examples/MEE-CBC/FunctionalSpec.ec                           default(all)   OK       8.2s
+  examples/MEE-CBC/FunctionalSpec.ec                           Z3             OK       8.4s
+  examples/ChaChaPoly/chacha_poly.ec                           Alt-Ergo       FAIL    18.1s
+  examples/MEE-CBC/RCPA_CMA.ec                                 Alt-Ergo       OK       6.1s
+  examples/MEE-CBC/FunctionalSpec.ec                           CVC5           FAIL    13.8s
+  examples/ChaChaPoly/chacha_poly.ec                           Z3             FAIL    20.2s
+  examples/MEE-CBC/RCPA_CMA.ec                                 default(all)   OK       9.4s
+  examples/MEE-CBC/RCPA_CMA.ec                                 CVC5           OK       9.2s
+  examples/PIR.ec                                              Alt-Ergo       OK       7.6s
+  examples/PIR.ec                                              default(all)   OK       9.4s
+  examples/MEE-CBC/RCPA_CMA.ec                                 Z3             FAIL    13.8s
+  examples/PRG.ec                                              default(all)   OK       4.9s
+  examples/PIR.ec                                              CVC5           OK       9.0s
+  examples/Pedersen.ec                                         default(all)   OK       2.0s
+  examples/Pedersen.ec                                         Alt-Ergo       OK       2.1s
+  examples/Pedersen.ec                                         Z3             OK       2.0s
+  examples/Pedersen.ec                                         CVC5           OK       2.0s
+  examples/RWhileSampling.ec                                   default(all)   OK       2.0s
+  examples/PIR.ec                                              Z3             FAIL    12.1s
+  examples/PRG.ec                                              CVC5           OK       4.8s
+  examples/PRG.ec                                              Z3             OK       5.2s
+  examples/RWhileSampling.ec                                   Alt-Ergo       OK       2.0s
+  examples/RWhileSampling.ec                                   CVC5           OK       1.7s
+  examples/RWhileSampling.ec                                   Z3             OK       1.9s
+  examples/SchnorrPK.ec                                        default(all)   OK       2.3s
+  examples/SchnorrPK.ec                                        Alt-Ergo       OK       2.1s
+  examples/UC/MapAux.ec                                        Alt-Ergo       OK       0.8s
+  examples/UC/MapAux.ec                                        default(all)   OK       0.9s
+  examples/SchnorrPK.ec                                        Z3             OK       2.1s
+  examples/UC/MapAux.ec                                        Z3             OK       0.9s
+  examples/UC/MapAux.ec                                        CVC5           OK       0.9s
+  examples/SchnorrPK.ec                                        CVC5           OK       2.1s
+  examples/PRG.ec                                              Alt-Ergo       FAIL    13.8s
+  examples/UC/RndO.ec                                          default(all)   OK       3.7s
+  examples/UC/RndO.ec                                          Z3             OK       3.7s
+  examples/UC/RndO.ec                                          Alt-Ergo       OK       3.8s
+  examples/UC/RndO.ec                                          CVC5           OK       4.2s
+  examples/UC/composition.ec                                   Alt-Ergo       OK       4.4s
+  examples/UC/composition.ec                                   default(all)   OK       4.8s
+  examples/Upto.ec                                             default(all)   OK       2.9s
+  examples/UC/composition.ec                                   CVC5           OK       4.9s
+  examples/Upto.ec                                             Alt-Ergo       OK       2.4s
+  examples/Upto.ec                                             Z3             OK       3.0s
+  examples/WF-examp.ec                                         default(all)   OK       1.6s
+  examples/Upto.ec                                             CVC5           OK       2.7s
+  examples/WF-examp.ec                                         Alt-Ergo       OK       1.6s
+  examples/UC/composition.ec                                   Z3             FAIL    12.2s
+  examples/WF-examp.ec                                         Z3             OK       1.6s
+  examples/WhileSampling.ec                                    default(all)   OK       1.6s
+  examples/WhileSampling.ec                                    Alt-Ergo       OK       1.6s
+  examples/WhileSampling.ec                                    Z3             OK       1.5s
+  examples/WhileSampling.ec                                    CVC5           OK       1.8s
+  examples/async-while.ec                                      default(all)   OK       1.6s
+  examples/UC/dh_enc.ec                                        CVC5           FAIL    15.1s
+  examples/async-while.ec                                      Z3             OK       1.6s
+  examples/ChaChaPoly/chacha_poly.ec                           default(all)   OK      56.2s
+  examples/async-while.ec                                      CVC5           OK       1.6s
+  examples/UC/dh_enc.ec                                        Alt-Ergo       FAIL    18.2s
+  examples/async_while.ec                                      default(all)   OK       0.7s
+  examples/async_while.ec                                      Alt-Ergo       OK       0.7s
+  examples/async_while.ec                                      Z3             OK       0.9s
+  examples/async_while.ec                                      CVC5           OK       0.7s
+  examples/br93.ec                                             Alt-Ergo       OK       4.0s
+  examples/br93.ec                                             default(all)   OK       4.3s
+  examples/WF-examp.ec                                         CVC5           FAIL    11.7s
+  examples/br93.ec                                             CVC5           OK       3.9s
+  examples/cramer-shoup/bad_abs.ec                             Alt-Ergo       OK       1.8s
+  examples/cramer-shoup/bad_abs.ec                             default(all)   OK       2.0s
+  examples/cramer-shoup/bad_abs.ec                             Z3             OK       1.9s
+  examples/cramer-shoup/bad_abs.ec                             CVC5           OK       1.9s
+  examples/async-while.ec                                      Alt-Ergo       FAIL    11.5s
+  examples/docgen/docgenbasic.ec                               default(all)   OK       0.6s
+  examples/docgen/docgenbasic.ec                               Alt-Ergo       OK       0.5s
+  examples/docgen/docgenbasic.ec                               Z3             OK       0.5s
+  examples/docgen/docgenbasic.ec                               CVC5           OK       0.5s
+  examples/ehoare/adversary.ec                                 default(all)   OK       3.0s
+  examples/br93.ec                                             Z3             FAIL    12.5s
+  examples/ehoare/adversary.ec                                 Alt-Ergo       FAIL     1.8s
+  examples/ehoare/adversary.ec                                 CVC5           FAIL     1.6s
+  examples/cramer-shoup/cramer_shoup.ec                        CVC5           FAIL    10.2s
+  examples/ehoare/adversary.ec                                 Z3             OK       4.8s
+  examples/cramer-shoup/cramer_shoup.ec                        Alt-Ergo       OK      12.0s
+  examples/cramer-shoup/cramer_shoup.ec                        default(all)   OK      13.1s
+  examples/ehoare/qselect/qselect.ec                           default(all)   OK       8.0s
+  examples/UC/dh_enc.ec                                        default(all)   OK      42.9s
+  examples/ehoare/qselect/qselect.ec                           CVC5           OK       7.6s
+  examples/cramer-shoup/cramer_shoup.ec                        Z3             OK      20.6s
+  examples/ehoare/random_boolean_matrix.ec                     CVC5           FAIL     1.5s
+  examples/ehoare/random_boolean_matrix.ec                     Z3             FAIL     3.4s
+  examples/elgamal.ec                                          default(all)   OK       2.1s
+  examples/UC/dh_enc.ec                                        Z3             FAIL    46.4s
+  examples/elgamal.ec                                          Alt-Ergo       OK       2.1s
+  examples/elgamal.ec                                          Z3             OK       1.7s
+  examples/global-hybrid/GlobalHybridExamp1.ec                 default(all)   OK       1.8s
+  examples/ehoare/qselect/qselect.ec                           Z3             FAIL    13.4s
+  examples/elgamal.ec                                          CVC5           OK       2.2s
+  examples/global-hybrid/GlobalHybridExamp1.ec                 Alt-Ergo       OK       2.1s
+  examples/ehoare/random_boolean_matrix.ec                     default(all)   FAIL    12.3s
+  examples/global-hybrid/GlobalHybridExamp1.ec                 Z3             OK       1.9s
+  examples/ehoare/qselect/qselect.ec                           Alt-Ergo       FAIL    16.0s
+  examples/global-hybrid/GlobalHybridExamp1.ec                 CVC5           OK       2.1s
+  examples/hashed_elgamal_generic.ec                           default(all)   OK       3.5s
+  examples/global-hybrid/GlobalHybridExamp2.ec                 Alt-Ergo       OK       5.0s
+  examples/hashed_elgamal_generic.ec                           Alt-Ergo       OK       3.5s
+  examples/hashed_elgamal_generic.ec                           Z3             OK       3.4s
+  examples/ehoare/random_boolean_matrix.ec                     Alt-Ergo       FAIL    12.0s
+  examples/global-hybrid/GlobalHybridExamp2.ec                 default(all)   OK       5.8s
+  examples/global-hybrid/GlobalHybridExamp2.ec                 CVC5           OK       5.6s
+  examples/incomplete/FDH.ec                                   default(all)   FAIL     0.2s
+  examples/incomplete/FDH.ec                                   Alt-Ergo       FAIL     0.3s
+  examples/incomplete/FDH.ec                                   Z3             FAIL     0.3s
+  examples/incomplete/FDH.ec                                   CVC5           FAIL     0.3s
+  examples/global-hybrid/GlobalHybridExamp2.ec                 Z3             OK       7.0s
+  examples/hashed_elgamal_generic.ec                           CVC5           OK       3.6s
+  examples/hashed_elgamal_std.ec                               Alt-Ergo       OK       2.8s
+  examples/hashed_elgamal_std.ec                               Z3             OK       2.9s
+  examples/hashed_elgamal_std.ec                               default(all)   OK       3.1s
+  examples/old/list-ddh/DDH.ec                                 Alt-Ergo       FAIL     1.7s
+  examples/old/list-ddh/DDH.ec                                 default(all)   FAIL     1.9s
+  examples/hashed_elgamal_std.ec                               CVC5           OK       3.0s
+  examples/old/list-ddh/DDH.ec                                 CVC5           FAIL     1.7s
+  examples/old/list-ddh/DDH.ec                                 Z3             FAIL     2.0s
+  examples/old/list-ddh/DDH_indexed.ec                         default(all)   FAIL     1.7s
+  examples/old/list-ddh/RandOracle.ec                          default(all)   FAIL     1.4s
+  examples/old/list-ddh/RandOracle.ec                          Alt-Ergo       FAIL     1.4s
+  examples/old/list-ddh/list_ddh_no_inner.ec                   default(all)   FAIL     0.3s
+  examples/old/list-ddh/DDH_indexed.ec                         Z3             FAIL     1.7s
+  examples/old/list-ddh/DDH_indexed.ec                         CVC5           FAIL     1.7s
+  examples/old/list-ddh/list_ddh_no_inner.ec                   Alt-Ergo       FAIL     0.3s
+  examples/old/list-ddh/list_ddh_no_inner.ec                   Z3             FAIL     0.2s
+  examples/old/list-ddh/DDH_indexed.ec                         Alt-Ergo       FAIL     1.9s
+  examples/old/list-ddh/list_ddh_no_inner.ec                   CVC5           FAIL     0.3s
+  examples/old/list-ddh/RandOracle.ec                          Z3             FAIL     1.4s
+  examples/old/list-ddh/RandOracle.ec                          CVC5           FAIL     1.3s
+  examples/plug-and-pray/Plug_and_Pray_example.ec              default(all)   OK       2.1s
+  examples/plug-and-pray/Plug_and_Pray_example.ec              Alt-Ergo       OK       2.0s
+  examples/old/trapdoor.ec                                     Alt-Ergo       FAIL     2.3s
+  examples/old/trapdoor.ec                                     default(all)   FAIL     2.4s
+  examples/plug-and-pray/Plug_and_Pray_example.ec              Z3             OK       2.1s
+  examples/plug-and-pray/Plug_and_Pray_example.ec              CVC5           OK       2.1s
+  examples/tactics/inline.ec                                   default(all)   OK       0.3s
+  examples/tactics/inline.ec                                   Alt-Ergo       OK       0.3s
+  examples/tactics/inline.ec                                   Z3             OK       0.3s
+  examples/tactics/inline.ec                                   CVC5           OK       0.3s
+  examples/tactics/simplify_if.ec                              Alt-Ergo       OK       0.7s
+  examples/tactics/simplify_if.ec                              default(all)   OK       0.7s
+  examples/tactics/simplify_if.ec                              CVC5           OK       0.6s
+  examples/tactics/simplify_if.ec                              Z3             OK       0.6s
+  examples/to-port/RingCloning.ec                              default(all)   FAIL     0.3s
+  examples/prg-tutorial/PRGc.ec                                CVC5           FAIL     2.8s
+  examples/to-port/RingCloning.ec                              Z3             FAIL     0.2s
+  examples/to-port/RingCloning.ec                              CVC5           FAIL     0.3s
+  examples/prg-tutorial/PRGc.ec                                Alt-Ergo       OK       3.5s
+  examples/prg-tutorial/PRGc.ec                                Z3             OK       3.6s
+  examples/prg-tutorial/PRGc.ec                                default(all)   OK       3.9s
+  examples/to-port/hashed_elgamal.ec                           default(all)   FAIL     2.3s
+  examples/upto_syntaxtic.ec                                   default(all)   OK       1.7s
+  examples/to-port/hashed_elgamal.ec                           Alt-Ergo       FAIL     2.7s
+  examples/to-port/hashed_elgamal.ec                           Z3             FAIL     2.4s
+  examples/to-port/hashed_elgamal.ec                           CVC5           FAIL     2.4s
+  examples/upto_syntaxtic.ec                                   Alt-Ergo       OK       1.6s
+  examples/upto_syntaxtic.ec                                   Z3             OK       1.8s
+  the-joy-of-easycrypt/02-easycrypt-intro/abstract-ind-ror.ec  default(all)   OK       1.4s
+  the-joy-of-easycrypt/02-easycrypt-intro/abstract-ind-ror.ec  Alt-Ergo       OK       1.3s
+  examples/upto_syntaxtic.ec                                   CVC5           OK       1.7s
+  examples/to-port/RingCloning.ec                              Alt-Ergo       FAIL     0.2s
+  the-joy-of-easycrypt/02-easycrypt-intro/abstract-ind-ror.ec  Z3             OK       1.3s
+  the-joy-of-easycrypt/02-easycrypt-intro/abstract-ind-ror.ec  CVC5           OK       1.4s
+  the-joy-of-easycrypt/03-ambient-logic/ambient-logic.ec       Alt-Ergo       OK       2.2s
+  examples/old/trapdoor.ec                                     Z3             FAIL    12.0s
+  the-joy-of-easycrypt/03-ambient-logic/ambient-logic.ec       default(all)   OK       2.5s
+  the-joy-of-easycrypt/03-ambient-logic/ambient-logic.ec       Z3             OK       2.3s
+  examples/old/trapdoor.ec                                     CVC5           FAIL    12.2s
+  the-joy-of-easycrypt/05-relational-hoare-logic/relational-hoare-logic.ec Alt-Ergo       OK       0.5s
+  the-joy-of-easycrypt/04-hoare-logic/hoare-logic.ec           Alt-Ergo       OK       1.8s
+  the-joy-of-easycrypt/05-relational-hoare-logic/relational-hoare-logic.ec default(all)   OK       0.6s
+  the-joy-of-easycrypt/05-relational-hoare-logic/relational-hoare-logic.ec Z3             OK       0.5s
+  the-joy-of-easycrypt/05-relational-hoare-logic/relational-hoare-logic.ec CVC5           OK       0.5s
+  the-joy-of-easycrypt/04-hoare-logic/hoare-logic.ec           default(all)   OK       2.9s
+  the-joy-of-easycrypt/03-ambient-logic/ambient-logic.ec       CVC5           FAIL     3.1s
+  the-joy-of-easycrypt/04-hoare-logic/hoare-logic.ec           Z3             FAIL    10.6s
+  the-joy-of-easycrypt/04-hoare-logic/hoare-logic.ec           CVC5           FAIL    10.7s
+
+wrote results/sweep.csv
+
+NOTE: sweep timings ran under parallel load — treat as noisy; final H1/H2 numbers come from the serial --retime phase.
+
+================ SUMMARY ================
+excluded (warmup-failed local deps)   : 1 file(s)
+default(all)   solved  40/48   mean time (solved): 5.61s
+Alt-Ergo       solved  33/48   mean time (solved): 2.87s
+Z3             solved  32/48   mean time (solved): 3.00s
+CVC5           solved  30/48   mean time (solved): 2.88s
+
+union of single solvers (VBS) solves : 38/48
+files where solvers DISAGREE          : 16  <- solver choice matters here (H1)
+files solved by EXACTLY ONE solver    : 3
+    examples/ehoare/adversary.ec  (only Z3)
+    examples/ehoare/qselect/qselect.ec  (only CVC5)
+    the-joy-of-easycrypt/04-hoare-logic/hoare-logic.ec  (only Alt-Ergo)
+
+on files solved by both baseline & VBS (38):
+    baseline total time :   125.29s
+    VBS total time      :   113.85s
+    -> perfect per-file solver selection saves 9.1% (upper bound for LLM-based selection, H2)

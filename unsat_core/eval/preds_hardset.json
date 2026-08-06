@@ -1,0 +1,36 @@
+{
+ "examples/ChaChaPoly/chacha_poly.ec::65": [
+  "Int_max'def",
+  "List_size'def"
+ ],
+ "examples/MEE-CBC/FunctionalSpec.ec::5": [
+  "IntDiv_%_'def",
+  "IntDiv_dvdzE",
+  "IntDiv_dvdzP",
+  "IntDiv_dvdzD",
+  "IntDiv_dvdz_mull",
+  "IntDiv_divz_eq",
+  "IntDiv_modzE",
+  "IntDiv_dvdz_modzDl"
+ ],
+ "examples/old/trapdoor.ec::2": [
+  "GP_expgK",
+  "GP_loge'def",
+  "GP_^'def",
+  "G_log_spec'def",
+  "GP_ZModE_inzmod'def",
+  "G_^'def",
+  "G_log'def",
+  "Logic_choiceb_sort"
+ ],
+ "the-joy-of-easycrypt/04-hoare-logic/hoare-logic.ec::1": [
+  "Int_mulzC",
+  "Int_lez_trans",
+  "Int_mulzDl",
+  "Int_mulzDr",
+  "Int_subz_ge0",
+  "Int_addz_ge0",
+  "Ring_IntID_sqrrD",
+  "Ring_IntID_expr2"
+ ]
+}

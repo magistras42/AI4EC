@@ -1,0 +1,97 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/br93.ec::4
+source file: examples/br93.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (and (Distr_is_lossless1 (Distr_MUniform_duniform1 (List_map1 Plaintext_mkptxt_ho (Plaintext_Enum_ptxtn k)))) (and (Distr_is_full1 (Distr_MUniform_duniform1 (List_map1 Plaintext_mkptxt_ho (Plaintext_Enum_ptxtn k)))) (Distr_is_uniform1 (Distr_MUniform_duniform1 (List_map1 Plaintext_mkptxt_ho (Plaintext_Enum_ptxtn k))))))))
+
+CANDIDATE LEMMAS (83 names):
+- Distr_MRat_drat'def
+- Distr_MRat_drat_sort
+- Distr_MRat_mrat'def
+- Distr_MRat_mrat_ho_sort
+- Distr_MRat_mrat_ho_spec
+- Distr_MUniform_duniform'def
+- Distr_MUniform_duniform_sort
+- Distr_is_full'def
+- Distr_is_funiform'def
+- Distr_is_lossless'def
+- Distr_is_uniform'def
+- Distr_mk_sort
+- Distr_support'def
+- Finite_is_finite'def
+- Finite_is_finite_for'def
+- Finite_to_seq'def
+- Finite_to_seq_sort
+- Int_b2i'def
+- List_++'def
+- List_++_ho_ho_sort
+- List_++_ho_ho_spec
+- List_++_sort
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_all'def
+- List_count'def
+- List_foldl'def
+- List_foldl_sort
+- List_foldr'def
+- List_foldr_sort
+- List_list_inversion
+- List_map'def
+- List_map_sort
+- List_mem'def
+- List_mem_ho_ho_sort
+- List_mem_ho_ho_spec
+- List_mkseq'def
+- List_mkseq_sort
+- List_perm_eq'def
+- List_size'def
+- List_undup'def
+- List_undup_sort
+- List_uniq'def
+- Logic_None_sort
+- Logic_Some_proj_1'def
+- Logic_Some_proj_1_sort
+- Logic_Some_sort
+- Logic_choiceb_sort
+- Logic_odflt'def
+- Logic_odflt_sort
+- Logic_option_inversion
+- Logic_pred1_ho_sort
+- Logic_pred1_ho_spec
+- Logic_predT_ho_sort
+- Logic_predT_ho_spec
+- Plaintext_DWord_Support_card_gt0
+- Plaintext_DWord_Support_card_size_to_seq
+- Plaintext_DWord_Support_count_mem
+- Plaintext_DWord_Support_enumP
+- Plaintext_DWord_Support_enum_spec
+- Plaintext_DWord_Support_enum_uniq
+- Plaintext_DWord_Support_is_finite
+- Plaintext_DWord_Support_is_finite_for
+- Plaintext_DWord_Support_perm_eq_enum_to_seq
+- Plaintext_DWord_dptxt1E
+- Plaintext_DWord_dptxtE
+- Plaintext_DWord_dptxt_fu
+- Plaintext_DWord_dptxt_funi
+- Plaintext_DWord_dptxt_ll
+- Plaintext_DWord_dptxt_uni
+- Plaintext_DWord_supp_dptxt
+- Plaintext_Enum_WordN_cross'def
+- Plaintext_Enum_WordN_cross1'def
+- Plaintext_Enum_WordN_cross1_sort
+- Plaintext_Enum_WordN_cross_sort
+- Plaintext_Enum_ptxtn'def
+- Plaintext_insubd'def
+- Plaintext_mkptxt'def
+- Plaintext_mkptxt_ho_spec
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/ChaChaPoly/chacha_poly.ec::Z3:6
+source file: examples/ChaChaPoly/chacha_poly.ec
+
+GOAL:
+(assert (not (= (List_size1 (List_nseq1 GenBlock_block_size witness2)) GenBlock_block_size)))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- GenBlock_ge0_block_size
+- List_mask_true
+- List_size_nseq
+- List_onth_some
+- List_all_pred1P
+- List_nth_uniq
+- List_size_ge0
+- List_size_mkseq
+- List_size_drop
+- List_size_eq0
+- List_size_zip
+- List_nseq0_le
+- List_nth_out
+- List_size_take
+- List_size_take_condle
+- List_eq_from_nth
+- List_nseqSr
+- List_nth0
+- List_size2_zip
+- List_map_nseq
+- List_mkseq0_le
+- List_nseqS
+- List_size1_zip
+- List_size_belast
+- List_size_take_le
+- List_has_nseq
+- List_index_size
+- List_mem_nseq
+- List_mem_nth
+- List_mkseq_nth
+- List_nth_change_dfl
+- List_nth_default
+- List_rot_size
+- List_size_takel
+- List_size_trim
+- Bool_BoolFin_card_size_to_seq
+- DBool_Support_card_size_to_seq
+- List_all_nseq
+- List_index_nth
+- List_size_rot
+- List_take_oversize
+- size_map2
+- List_mask_false
+- List_nseq_max0
+- List_nth_nseq
+- List_nth_rev
+- List_onth_some_rg
+- List_rot_oversize
+- List_size_eqD
+- List_size_put
+- List_size_undup
+- List_unzip2_zip
+- List_all_pred0
+- List_drop_oversize
+- List_eq_from_put
+- List_index_mem
+- List_nseq0
+- List_nseq_eq
+- List_nthPn
+- List_perm_eq_size
+- List_perm_eq_small
+- List_size_alltuples
+- List_size_ho_ho_spec
+- List_take_size
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

@@ -1,0 +1,15 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/Upto.ec::2
+source file: examples/Upto.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (forall ((O1_L O1) (O2_R O2)) (=> (I O1_L O2_R) (=> (= (m O2_R) 0) (and (and (<= 0 qO) (= 0 (m O2_R))) (=> (<= 0 qO) (=> (= 0 (m O2_R)) (forall ((result_L ret_adv) (result_R ret_adv) (Adv_L Adv) (O1_L0 O1) (bad_L Bool) (cO_L Int) (Adv_R Adv) (O2_R0 O2) (bad_R Bool) (cO_R Int)) (=> (ite (= bad_R true) (and (<= cO_R qO) (= cO_R (m O2_R0))) (and (= result_L result_R) (and (= Adv_L Adv_R) (and (I O1_L0 O2_R0) (and (and (= cO_L cO_R) (= (= bad_L true) (= bad_R true))) (and (<= cO_R qO) (= cO_R (m O2_R0)))))))) (and (=> (not (= bad_R true)) (= result_L result_R)) (and (<= cO_R qO) (= cO_R (m O2_R0))))))))))))))
+
+CANDIDATE LEMMAS (1 names):
+- qO_pos
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

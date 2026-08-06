@@ -1,0 +1,55 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/UC/dh_enc.ec::29
+source file: examples/UC/dh_enc.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (=> (= (DHKE_FKE_kst (DHKE_FKE_FKE_slst (proj2_1 et1))) (DHKE_FKE_kst (DHKE_FKE_FKE_slst (proj2_1 et2)))) (=> (FMap_dom1 (OTP_GenEager_RO_slm (proj2_1 et2)) Tuple0) (=> (= (DHKE_FKE_key (DHKE_FKE_FKE_slst (proj2_1 et1))) (Logic_odflt1 witness2 (FMap___lb_rb1 (OTP_GenEager_RO_slm (proj2_1 et2)) Tuple0))) (=> (=> (not (= (DHKE_FKE_FKEAuth_FChan_FAuth_FAuth_slst (proj2_1 et2)) (as Ch_Init (stlkg (tuple3 party party DH_G_group))))) (= (DHKE_FKE_key (DHKE_FKE_FKE_slst (proj2_1 et2))) (Logic_odflt1 witness2 (FMap___lb_rb1 (OTP_GenEager_RO_slm (proj2_1 et2)) Tuple0)))) (=> (not (= (proj21_0 (proj2_0 et2)) I)) (=> (not (= (Logic_omap1 Left_ho1 (DHKE_FKE_FKEAuth_FChan_get_msg (DHKE_FKE_FKEAuth_FChan_FAuth_FAuth_slst (proj2_1 et2)) R (Tuple3 (proj3_0 (proj21_1 (proj2_0 et2))) (proj3_1 (proj21_1 (proj2_0 et2))) Tuple0))) (as Logic_None (Logic_option (Composition_sum DH_G_group DH_G_group))))) (= (OTP_dec (Logic_odflt1 witness2 (Composition_getl1 (Logic_odflt2 witness3 (Logic_omap1 Left_ho1 (DHKE_FKE_FKEAuth_FChan_get_msg (DHKE_FKE_FKEAuth_FChan_FAuth_FAuth_slst (proj2_1 et2)) R (Tuple3 (proj3_0 (proj21_1 (proj2_0 et2))) (proj3_1 (proj21_1 (proj2_0 et2))) Tuple0)))))) (Logic_odflt1 witness2 (Composition_getr1 (Logic_odflt2 witness3 (Logic_omap1 Right_ho1 (match (DHKE_FKE_kst (DHKE_FKE_FKE_slst (proj2_1 et1))) ( (DHKE_FKE_KE_Init (as Logic_None (Logic_option DH_G_group))) ((DHKE_FKE_KE_Blocked1 x8) (as Logic_None (Logic_option DH_G_group))) ((DHKE_FKE_KE_Wait x9) (as Logic_None (Logic_option DH_G_group))) ((DHKE_FKE_KE_Blocked2 x10) (Logic_Some (DHKE_FKE_key (DHKE_FKE_FKE_slst (proj2_1 et1))))) ((DHKE_FKE_KE_Available x11) (Logic_Some (DHKE_FKE_key (DHKE_FKE_FKE_slst (proj2_1 et1)))))))))))) (OTP_dec (Logic_odflt1 witness2 (Composition_getl1 (Logic_odflt2 witness3 (Logic_omap1 Left_ho1 (DHKE_FKE_FKEAuth_FChan_get_msg (DHKE_FKE_FKEAuth_FChan_FAuth_FAuth_slst (proj2_1 et2)) R (Tuple3 (proj3_0 (proj21_1 (proj2_0 et2))) (proj3_1 (proj21_1 (proj2_0 et2))) Tuple0)))))) (Logic_odflt1 witness2 (Composition_getr1 (Logic_odflt2 witness3 (Logic_omap1 Right_ho1 (match (DHKE_FKE_kst (DHKE_FKE_FKE_slst (proj2_1 et2))) ( (DHKE_FKE_KE_Init (as Logic_None (Logic_option DH_G_group))) ((DHKE_FKE_KE_Blocked1 x12) (as Logic_None (Logic_option DH_G_group))) ((DHKE_FKE_KE_Wait x13) (as Logic_None (Logic_option DH_G_group))) ((DHKE_FKE_KE_Blocked2 x14) (Logic_Some (DHKE_FKE_key (DHKE_FKE_FKE_slst (proj2_1 et2))))) ((DHKE_FKE_KE_Available x15) (Logic_Some (DHKE_FKE_key (DHKE_FKE_FKE_slst (proj2_1 et2)))))))))))))))))))))
+
+CANDIDATE LEMMAS (41 names):
+- Ch_Available_proj_1'def
+- Ch_Available_proj_1_sort
+- Ch_Available_sort
+- Ch_Blocked1_proj_1'def
+- Ch_Blocked1_proj_1_sort
+- Ch_Blocked1_sort
+- Ch_Blocked2_proj_1'def
+- Ch_Blocked2_proj_1_sort
+- Ch_Blocked2_sort
+- Ch_Init_sort
+- Ch_Wait_proj_1'def
+- Ch_Wait_proj_1_sort
+- Ch_Wait_sort
+- Composition_Left_proj_1'def
+- Composition_Left_proj_1_sort
+- Composition_Left_sort
+- Composition_Right_proj_1'def
+- Composition_Right_proj_1_sort
+- Composition_Right_sort
+- Composition_getl'def
+- Composition_getl_sort
+- Composition_getr'def
+- Composition_getr_sort
+- Composition_sum_inversion
+- DHKE_FKE_FKEAuth_FChan_get_msg'def
+- DHKE_FKE_FKEAuth_FChan_leakpkg'def
+- FMap___[_]'def
+- FMap___[_]_sort
+- FMap_dom'def
+- FMap_tomap_sort
+- Logic_None_sort
+- Logic_Some_proj_1'def
+- Logic_Some_proj_1_sort
+- Logic_Some_sort
+- Logic_odflt'def
+- Logic_odflt_sort
+- Logic_omap'def
+- Logic_omap_sort
+- Logic_option_inversion
+- OTP_dec'def
+- stlkg_inversion
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

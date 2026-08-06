@@ -1,0 +1,62 @@
+[
+ {
+  "id": "examples/ChaChaPoly/chacha_poly.ec::65",
+  "solver": "Z3",
+  "n_sent_env": 97,
+  "n_kept": 2,
+  "full": "timeout",
+  "full_ms": 10199,
+  "llm8": "unsat",
+  "llm8_ms": 30
+ },
+ {
+  "id": "examples/MEE-CBC/FunctionalSpec.ec::5",
+  "solver": "Z3",
+  "n_sent_env": 257,
+  "n_kept": 8,
+  "full": "unsat",
+  "full_ms": 136,
+  "llm8": "unsat",
+  "llm8_ms": 21
+ },
+ {
+  "id": "examples/old/trapdoor.ec::2",
+  "solver": "Z3",
+  "n_sent_env": 31,
+  "n_kept": 8,
+  "full": "unknown",
+  "full_ms": 5351,
+  "llm8": "unknown",
+  "llm8_ms": 2188
+ },
+ {
+  "id": "examples/old/trapdoor.ec::2",
+  "solver": "CVC5",
+  "n_sent_env": 31,
+  "n_kept": 8,
+  "full": "timeout",
+  "full_ms": 10059,
+  "llm8": "unknown",
+  "llm8_ms": 55
+ },
+ {
+  "id": "the-joy-of-easycrypt/04-hoare-logic/hoare-logic.ec::1",
+  "solver": "Z3",
+  "n_sent_env": 223,
+  "n_kept": 8,
+  "full": "timeout",
+  "full_ms": 10072,
+  "llm8": "unsat",
+  "llm8_ms": 24
+ },
+ {
+  "id": "the-joy-of-easycrypt/04-hoare-logic/hoare-logic.ec::1",
+  "solver": "CVC5",
+  "n_sent_env": 223,
+  "n_kept": 8,
+  "full": "timeout",
+  "full_ms": 10059,
+  "llm8": "unsat",
+  "llm8_ms": 108
+ }
+]

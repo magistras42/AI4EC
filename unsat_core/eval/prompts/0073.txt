@@ -1,0 +1,26 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/PIR.ec::8
+source file: examples/PIR.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (ite b (sxor2 (List_clcl (proj7_0 (proj2_0 etm)) (PIR_slsqt (proj2_1 etm))) (PIR_slsqt (proj2_1 etm)) (proj7_0 (proj2_0 etm))) (sxor2 (PIR_slsqt (proj2_1 etm)) (List_clcl (proj7_0 (proj2_0 etm)) (PIR_slsqt (proj2_1 etm))) (proj7_0 (proj2_0 etm))))))
+
+CANDIDATE LEMMAS (12 names):
+- List_++'def
+- List_++_sort
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_list_inversion
+- sxor'def
+- sxor2'def
+- sxor_cons
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

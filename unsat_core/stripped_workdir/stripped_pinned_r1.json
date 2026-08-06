@@ -1,0 +1,299 @@
+[
+ {
+  "id": "examples/ChaChaPoly/chacha_poly.ec::Z3:6",
+  "file": "examples/ChaChaPoly/chacha_poly.ec",
+  "solver": "Z3",
+  "call": 6,
+  "llm8": "timeout",
+  "llm8_ms": 10055,
+  "n_picks": 2
+ },
+ {
+  "id": "examples/ChaChaPoly/chacha_poly.ec::CVC5:1",
+  "file": "examples/ChaChaPoly/chacha_poly.ec",
+  "solver": "CVC5",
+  "call": 1,
+  "llm8": "unsat",
+  "llm8_ms": 85,
+  "n_picks": 8
+ },
+ {
+  "id": "examples/ChaChaPoly/ske.ec::Z3:1",
+  "file": "examples/ChaChaPoly/ske.ec",
+  "solver": "Z3",
+  "call": 1,
+  "llm8": "timeout",
+  "llm8_ms": 10129,
+  "n_picks": 7
+ },
+ {
+  "id": "examples/FundamentalLemma.ec::CVC5:6",
+  "file": "examples/FundamentalLemma.ec",
+  "solver": "CVC5",
+  "call": 6,
+  "llm8": "timeout",
+  "llm8_ms": 10068,
+  "n_picks": 1
+ },
+ {
+  "id": "examples/MEE-CBC/FunctionalSpec.ec::CVC5:1",
+  "file": "examples/MEE-CBC/FunctionalSpec.ec",
+  "solver": "CVC5",
+  "call": 1,
+  "llm8": "timeout",
+  "llm8_ms": 10057,
+  "n_picks": 7
+ },
+ {
+  "id": "examples/MEE-CBC/RCPA_CMA.ec::Z3:3",
+  "file": "examples/MEE-CBC/RCPA_CMA.ec",
+  "solver": "Z3",
+  "call": 3,
+  "llm8": "timeout",
+  "llm8_ms": 10239,
+  "n_picks": 8
+ },
+ {
+  "id": "examples/MEE-CBC/RCPA_CMA.ec::CVC5:8",
+  "file": "examples/MEE-CBC/RCPA_CMA.ec",
+  "solver": "CVC5",
+  "call": 8,
+  "llm8": "timeout",
+  "llm8_ms": 10067,
+  "n_picks": 6
+ },
+ {
+  "id": "examples/PIR.ec::Z3:5",
+  "file": "examples/PIR.ec",
+  "solver": "Z3",
+  "call": 5,
+  "llm8": "timeout",
+  "llm8_ms": 10214,
+  "n_picks": 8
+ },
+ {
+  "id": "examples/PIR.ec::CVC5:8",
+  "file": "examples/PIR.ec",
+  "solver": "CVC5",
+  "call": 8,
+  "llm8": "timeout",
+  "llm8_ms": 10060,
+  "n_picks": 7
+ },
+ {
+  "id": "examples/PRG.ec::Z3:12",
+  "file": "examples/PRG.ec",
+  "solver": "Z3",
+  "call": 12,
+  "llm8": "timeout",
+  "llm8_ms": 10190,
+  "n_picks": 8
+ },
+ {
+  "id": "examples/UC/dh_enc.ec::CVC5:31",
+  "file": "examples/UC/dh_enc.ec",
+  "solver": "CVC5",
+  "call": 31,
+  "llm8": "unsat",
+  "llm8_ms": 46,
+  "n_picks": 6
+ },
+ {
+  "id": "examples/UC/dh_enc.ec::Z3:5",
+  "file": "examples/UC/dh_enc.ec",
+  "solver": "Z3",
+  "call": 5,
+  "llm8": "timeout",
+  "llm8_ms": 10065,
+  "n_picks": 8
+ },
+ {
+  "id": "examples/Upto.ec::Z3:4",
+  "file": "examples/Upto.ec",
+  "solver": "Z3",
+  "call": 4,
+  "llm8": "timeout",
+  "llm8_ms": 10229,
+  "n_picks": 8
+ },
+ {
+  "id": "examples/WF-examp.ec::CVC5:7",
+  "file": "examples/WF-examp.ec",
+  "solver": "CVC5",
+  "call": 7,
+  "llm8": "timeout",
+  "llm8_ms": 10076,
+  "n_picks": 7
+ },
+ {
+  "id": "examples/async-while.ec::Z3:1",
+  "file": "examples/async-while.ec",
+  "solver": "Z3",
+  "call": 1,
+  "llm8": "timeout",
+  "llm8_ms": 10177,
+  "n_picks": 8
+ },
+ {
+  "id": "examples/br93.ec::CVC5:2",
+  "file": "examples/br93.ec",
+  "solver": "CVC5",
+  "call": 2,
+  "llm8": "timeout",
+  "llm8_ms": 10071,
+  "n_picks": 8
+ },
+ {
+  "id": "examples/br93.ec::Z3:1",
+  "file": "examples/br93.ec",
+  "solver": "Z3",
+  "call": 1,
+  "llm8": "timeout",
+  "llm8_ms": 10151,
+  "n_picks": 2
+ },
+ {
+  "id": "examples/cramer-shoup/bad_abs.ec::CVC5:3",
+  "file": "examples/cramer-shoup/bad_abs.ec",
+  "solver": "CVC5",
+  "call": 3,
+  "llm8": "timeout",
+  "llm8_ms": 10069,
+  "n_picks": 2
+ },
+ {
+  "id": "examples/cramer-shoup/cramer_shoup.ec::Z3:21",
+  "file": "examples/cramer-shoup/cramer_shoup.ec",
+  "solver": "Z3",
+  "call": 21,
+  "llm8": "timeout",
+  "llm8_ms": 10057,
+  "n_picks": 0
+ },
+ {
+  "id": "examples/cramer-shoup/cramer_shoup.ec::CVC5:10",
+  "file": "examples/cramer-shoup/cramer_shoup.ec",
+  "solver": "CVC5",
+  "call": 10,
+  "llm8": "timeout",
+  "llm8_ms": 10078,
+  "n_picks": 8
+ },
+ {
+  "id": "examples/ehoare/adversary.ec::CVC5:1",
+  "file": "examples/ehoare/adversary.ec",
+  "solver": "CVC5",
+  "call": 1,
+  "llm8": "timeout",
+  "llm8_ms": 10066,
+  "n_picks": 6
+ },
+ {
+  "id": "examples/ehoare/qselect/qselect.ec::CVC5:2",
+  "file": "examples/ehoare/qselect/qselect.ec",
+  "solver": "CVC5",
+  "call": 2,
+  "llm8": "timeout",
+  "llm8_ms": 10064,
+  "n_picks": 8
+ },
+ {
+  "id": "examples/global-hybrid/GlobalHybridExamp1.ec::CVC5:3",
+  "file": "examples/global-hybrid/GlobalHybridExamp1.ec",
+  "solver": "CVC5",
+  "call": 3,
+  "llm8": "timeout",
+  "llm8_ms": 10076,
+  "n_picks": 8
+ },
+ {
+  "id": "examples/global-hybrid/GlobalHybridExamp2.ec::Z3:20",
+  "file": "examples/global-hybrid/GlobalHybridExamp2.ec",
+  "solver": "Z3",
+  "call": 20,
+  "llm8": "timeout",
+  "llm8_ms": 10374,
+  "n_picks": 7
+ },
+ {
+  "id": "examples/global-hybrid/GlobalHybridExamp2.ec::CVC5:21",
+  "file": "examples/global-hybrid/GlobalHybridExamp2.ec",
+  "solver": "CVC5",
+  "call": 21,
+  "llm8": "timeout",
+  "llm8_ms": 10068,
+  "n_picks": 8
+ },
+ {
+  "id": "examples/hashed_elgamal_generic.ec::CVC5:1",
+  "file": "examples/hashed_elgamal_generic.ec",
+  "solver": "CVC5",
+  "call": 1,
+  "llm8": "timeout",
+  "llm8_ms": 10067,
+  "n_picks": 6
+ },
+ {
+  "id": "examples/hashed_elgamal_generic.ec::Z3:2",
+  "file": "examples/hashed_elgamal_generic.ec",
+  "solver": "Z3",
+  "call": 2,
+  "llm8": "timeout",
+  "llm8_ms": 10060,
+  "n_picks": 6
+ },
+ {
+  "id": "examples/hashed_elgamal_std.ec::CVC5:1",
+  "file": "examples/hashed_elgamal_std.ec",
+  "solver": "CVC5",
+  "call": 1,
+  "llm8": "timeout",
+  "llm8_ms": 10071,
+  "n_picks": 8
+ },
+ {
+  "id": "examples/old/trapdoor.ec::CVC5:1",
+  "file": "examples/old/trapdoor.ec",
+  "solver": "CVC5",
+  "call": 1,
+  "llm8": "timeout",
+  "llm8_ms": 10070,
+  "n_picks": 8
+ },
+ {
+  "id": "examples/plug-and-pray/Plug_and_Pray_example.ec::CVC5:1",
+  "file": "examples/plug-and-pray/Plug_and_Pray_example.ec",
+  "solver": "CVC5",
+  "call": 1,
+  "llm8": "timeout",
+  "llm8_ms": 10066,
+  "n_picks": 8
+ },
+ {
+  "id": "examples/prg-tutorial/PRGc.ec::CVC5:5",
+  "file": "examples/prg-tutorial/PRGc.ec",
+  "solver": "CVC5",
+  "call": 5,
+  "llm8": "timeout",
+  "llm8_ms": 10070,
+  "n_picks": 6
+ },
+ {
+  "id": "examples/upto_syntaxtic.ec::CVC5:1",
+  "file": "examples/upto_syntaxtic.ec",
+  "solver": "CVC5",
+  "call": 1,
+  "llm8": "timeout",
+  "llm8_ms": 10067,
+  "n_picks": 7
+ },
+ {
+  "id": "examples/upto_syntaxtic.ec::Z3:3",
+  "file": "examples/upto_syntaxtic.ec",
+  "solver": "Z3",
+  "call": 3,
+  "llm8": "timeout",
+  "llm8_ms": 10162,
+  "n_picks": 8
+ }
+]

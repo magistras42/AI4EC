@@ -1,0 +1,62 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/PIR.ec::39
+source file: examples/PIR.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (=> (<= 0 (proj7_3 (proj2_0 ethr))) (=> (<= (proj7_3 (proj2_0 ethr)) N) (=> (is_restr (FSet_oflist1 (PIR_sls (proj2_1 ethr))) (proj7_3 (proj2_0 ethr))) (=> (< (proj7_3 (proj2_0 ethr)) N) (and (= (mu1 (Distr_MUniform_duniform1 (List_clcl true (List_clcl false (as List_lbrb (List_list Bool))))) Logic_predT_ho1) 1.0) (=> (= (mu1 (Distr_MUniform_duniform1 (List_clcl true (List_clcl false (as List_lbrb (List_list Bool))))) Logic_predT_ho1) 1.0) (forall ((v Bool)) (=> (Distr_support1 (Distr_MUniform_duniform1 (List_clcl true (List_clcl false (as List_lbrb (List_list Bool))))) v) (and (=> (= v true) (and (and (<= 0 (+ (proj7_3 (proj2_0 ethr)) 1)) (=> (<= 0 (+ (proj7_3 (proj2_0 ethr)) 1)) (<= (+ (proj7_3 (proj2_0 ethr)) 1) N))) (is_restr (FSet_oflist1 (List_clcl (proj7_3 (proj2_0 ethr)) (PIR_sls (proj2_1 ethr)))) (+ (proj7_3 (proj2_0 ethr)) 1)))) (=> (not (= v true)) (and (and (<= 0 (+ (proj7_3 (proj2_0 ethr)) 1)) (=> (<= 0 (+ (proj7_3 (proj2_0 ethr)) 1)) (<= (+ (proj7_3 (proj2_0 ethr)) 1) N))) (is_restr (FSet_oflist1 (PIR_sls (proj2_1 ethr))) (+ (proj7_3 (proj2_0 ethr)) 1)))))))))))))))
+
+CANDIDATE LEMMAS (48 names):
+- DBool_dbool_ll
+- Distr_MRat_drat'def
+- Distr_MRat_drat_sort
+- Distr_MRat_mrat'def
+- Distr_MRat_mrat_ho_sort
+- Distr_MRat_mrat_ho_spec
+- Distr_MUniform_duniform'def
+- Distr_MUniform_duniform_sort
+- Distr_is_lossless'def
+- Distr_mk_sort
+- Distr_support'def
+- FSet_`&`'def
+- FSet_`&`_sort
+- FSet_`_`'def
+- FSet_`_`_sort
+- FSet_elems_sort
+- FSet_fset1'def
+- FSet_fset1_sort
+- FSet_mem'def
+- FSet_mem_ho_sort
+- FSet_mem_ho_spec
+- FSet_oflist_cons
+- FSet_oflist_sort
+- Int_b2i'def
+- List_++'def
+- List_++_sort
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_count'def
+- List_filter'def
+- List_filter_sort
+- List_list_inversion
+- List_mem'def
+- List_size'def
+- List_undup'def
+- List_undup_sort
+- Logic_pred1_ho_sort
+- Logic_pred1_ho_spec
+- Logic_predT_ho_sort
+- Logic_predT_ho_spec
+- is_restr'def
+- is_restrS
+- is_restr_addS
+- restr'def
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

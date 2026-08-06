@@ -1,10 +1,10 @@
 *.eco
-NOTES.md
-*.pdf
-proof_corpus/test-info.csv
-proof_corpus/training-info.csv
-proof_corpus/eval/*
-proof_corpus/functional/*
-proof_corpus/easycrypt
-.env
-shannon-prover/
+
+# local-only material (not pushed): paper drafts, slides, references, archives
+/PAPER.md
+/PAPER.ko.md
+/SLIDES.pptx
+/knowledge/
+/history/
+__pycache__/
+*.pyc

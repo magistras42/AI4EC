@@ -1,0 +1,4 @@
+corpus/the-joy-of-easycrypt/
+corpus/examples/
+*.eco
+__pycache__/

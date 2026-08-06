@@ -1,0 +1,37 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/ehoare/adversary.ec::4
+source file: examples/ehoare/adversary.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (= (Xreal_Rp_pl (Xreal_Rp_as (Xreal_Rp_of_reald (ite (not (test x)) (to_real 1) (to_real 0))) (Xreal_Rp_inv (Xreal_Rp_of_reald (mu1 dr test_ho)))) (Xreal_Rp_of_reald (to_real (+ 1 (List_size1 log))))) (Xreal_Rp_pl (Xreal_Rp_as (Xreal_Rp_inv (Xreal_Rp_of_reald (mu1 dr test_ho))) (Xreal_Rp_of_reald (ite (not (test x)) (to_real 1) (to_real 0)))) (Xreal_Rp_of_reald (to_real (+ 1 (List_size1 log))))))))
+
+CANDIDATE LEMMAS (23 names):
+- Distr_support'def
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_list_inversion
+- List_size'def
+- Logic_None_sort
+- Logic_Some_proj_1'def
+- Logic_Some_proj_1_sort
+- Logic_Some_sort
+- Logic_odflt'def
+- Logic_odflt_sort
+- Logic_option_inversion
+- Logic_pred1_ho_sort
+- Logic_pred1_ho_spec
+- Xreal_Rp_*'def
+- Xreal_Rp_+'def
+- Xreal_Rp_inv'def
+- Xreal_Rp_of_reald'def
+- test_ho_spec
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.
