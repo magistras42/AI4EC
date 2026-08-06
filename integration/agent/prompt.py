@@ -656,6 +656,107 @@ def format_active_goal_shape_hints(goal: str) -> str:
     return _render_hint_block(bullets)
 
 
+#: What EasyCrypt's complaint tells you to change about the SAME tactic. Keyed
+#: on the message text because the message is far more specific than the
+#: `ec_errors` kind: "invalid last instruction" and "invalid first
+#: instruction" are both `tactic_error`, and they call for opposite moves.
+#: Taxonomy measured over 203 failures in runs C+D+E -- ~45% are position
+#: errors inside the RIGHT tactic class, i.e. the tactic was right and only
+#: its target was wrong.
+_ERROR_REPAIR_LADDER: tuple[tuple[str, str], ...] = (
+    ("invalid last instruction",
+     "`rnd` / `wp` consume from the END of the program. The last instruction "
+     "is not what this tactic needs. Keep the tactic and reach the right "
+     "position first -- `seq N M : (inv)` to split off a prefix, or `wp` to "
+     "absorb trailing assignments -- rather than changing tactic."),
+    ("invalid first instruction",
+     "`if` / `rcondt` / `rcondf` address the FIRST instruction. Check the "
+     "'First instruction on the left/right' facts above: apply the tactic to "
+     "the side whose head is actually a conditional (`if{1}` vs `if{2}`), or "
+     "`seq` to bring the conditional to the front."),
+    ("instruction list is not empty",
+     "Code remains, so `skip` cannot apply yet. Same goal, different tactic "
+     "position: consume the remaining statements with `seq` / `wp` / `rnd` / "
+     "`call` first."),
+    ("invalid `position' parameter",
+     "The tactic is right, the INDEX is wrong. Re-read the instruction counts "
+     "above and pick indices within them."),
+    ("invalid split index",
+     "The tactic is right, the INDEX is wrong. Re-read the instruction counts "
+     "above and pick indices within them."),
+    ("invalid arguments",
+     "Right tactic, wrong arguments. Change only the arguments -- the witness "
+     "function for `rnd`, the invariant for `seq`/`while`, the spec for "
+     "`call` -- and keep the head tactic."),
+    ("expecting a goal of the form",
+     "WRONG LOGIC CLASS: this is not a Hoare/pHoare/equiv judgment, so no "
+     "program-logic tactic will apply however it is parameterised. Switch to "
+     "ambient reasoning (`smt`, `progress`, `rewrite`, `move =>`), or "
+     "introduce binders first if the judgment is wrapped in an implication."),
+    ("cannot find theory",
+     "A `require import` no longer resolves. This is an import problem, not a "
+     "tactic problem -- see the library-change notes above."),
+    ("cannot prove goal",
+     "The tactic applied but automation could not close the residual. Give it "
+     "more to work with: `smt(Lemma1 Lemma2)` with named lemmas, or "
+     "`progress` / `simplify` first to decompose."),
+)
+
+
+def format_broken_tactic_repair(tactic: str, error: str | None) -> str:
+    """Tell the model to repair the tactic that broke, not to start over.
+
+    The harness has always shown the original script, but as background
+    material headed "adapt rather than paste" -- and the model treated it that
+    way. Measured on run G's `G2_G3`: 8 of 40 attempts reused an original
+    tactic verbatim, and 19 of 40 were `rnd` variants although the original
+    uses `rnd` exactly once, with a specific witness. It even tried the right
+    tactic, `rnd(fun x => t{1} +^ x)`, but compounded three original lines
+    into one and it failed.
+
+    So this states the repair procedure explicitly and pairs EasyCrypt's own
+    complaint with the edit that complaint calls for. Every rung keeps the
+    tactic and changes one thing about it, except the class-mismatch rung
+    where keeping it is precisely the mistake.
+    """
+    tactic = (tactic or "").strip()
+    if not tactic:
+        return ""
+    cleaned = " ".join((error or "").split())
+    lines = [
+        "## Repair THIS tactic first",
+        "",
+        "The proof replayed cleanly until the tactic below, which is the one "
+        "that stopped working. Your first move should be to REPAIR IT, not to "
+        "invent a different approach: it encodes the original author's intent "
+        "and is usually one edit away from applying.",
+        "",
+        f"    {tactic}",
+    ]
+    if cleaned:
+        lines += ["", f"EasyCrypt said: {cleaned[:400]}"]
+
+    rung = next((advice for needle, advice in _ERROR_REPAIR_LADDER
+                 if needle.lower() in cleaned.lower()), None)
+    if rung:
+        lines += ["", f"What that error calls for: {rung}"]
+
+    lines += [
+        "",
+        "Order of attack, cheapest first:",
+        "1. Same tactic, different ARGUMENTS (witness, invariant, spec).",
+        "2. Same tactic, different POSITION or side (`{1}` / `{2}`, `seq` to "
+        "reach it).",
+        "3. Split a compound `t1; t2; t3.` into separate steps -- a compound "
+        "fails whole even when its first component was right.",
+        "4. Only then a different head tactic.",
+        "",
+        "If a later original tactic is shown below, it tells you what state "
+        "this one is supposed to produce. Use that as the target.",
+    ]
+    return "\n".join(lines)
+
+
 def _render_hint_block(bullets: list[str]) -> str:
     if not bullets:
         return ""
@@ -689,6 +790,8 @@ def build_prompt(
     search_warning: str | None = None,
     recent_failures: list[tuple[str, str]] | None = None,
     noop_tactics: list[str] | None = None,
+    broken_tactic: str | None = None,
+    broken_tactic_error: str | None = None,
 ) -> str:
     sections = [
         "You are an EasyCrypt proof assistant agent. Choose the next tactic or undo.",
@@ -771,6 +874,10 @@ def build_prompt(
             *_goal_section(goal),
         ]
     )
+    if broken_tactic:
+        sections.extend(
+            ["", format_broken_tactic_repair(broken_tactic, broken_tactic_error), ""]
+        )
     active_hints = format_active_goal_shape_hints(goal)
     if active_hints:
         sections.extend(

@@ -76,6 +76,24 @@ _BANNED_TACTIC_MESSAGE = (
     "statements. Find a real proof instead."
 )
 
+def _noop_rejection_message(tactic: str) -> str:
+    """Why a previously-inert tactic is refused at this goal.
+
+    Telling the model in the prompt was not enough. Measured on run G, an
+    already-banned no-op was re-sent 7 times on `G2_G3` (`rnd; skip; smt().`)
+    and 7 times on `INDCPA_HEG_G1` (`auto.`) -- 13 wasted calls, each of which
+    also drove the stuck counter, because a prompt section is advice and the
+    model overrode it. Failed duplicates have always been hard-rejected here;
+    inert ones now are too.
+    """
+    return (
+        f"`{tactic.strip()}` was already applied at THIS goal and left it "
+        "completely unchanged, so it was removed. Repeating it cannot help. "
+        "Choose a tactic that consumes something -- a different head tactic, "
+        "different arguments, or a different code position. It becomes "
+        "available again as soon as the goal actually changes."
+    )
+
 # Small local models occasionally emit a degenerate/runaway generation (e.g.
 # hundreds of blank lines, or stray control bytes) instead of a real tactic.
 # `ProofFile.append_tactic` writes the tactic text as a single logical line,
@@ -322,6 +340,11 @@ def run_agent(
             search_warning=search_warning,
             recent_failures=errors.recent_other(goal),
             noop_tactics=sorted(noop_by_goal.get(_goal_hash(goal), set())),
+            # Only while the replayed prefix is still in place: once the model
+            # has moved the proof on, the original break is no longer "the
+            # tactic to repair" and pinning attention to it would mislead.
+            broken_tactic=config.broken_tactic if step == 1 else None,
+            broken_tactic_error=config.broken_tactic_error if step == 1 else None,
         )
 
         # Checked BEFORE the call, not after: the budget is updated when a
@@ -712,6 +735,29 @@ def run_agent(
                         thought=thought,
                     content=raw_content,
                     )
+                if _check_stuck(config, stuck_counter, run_log, work_copy, step):
+                    return _stuck_result(
+                        config, source, work_copy, step, run_log, llm, trajectory
+                    )
+                continue
+
+            if normalize_tactic(action.tactic) in noop_by_goal.get(
+                _goal_hash(goal), set()
+            ):
+                message = _noop_rejection_message(action.tactic)
+                errors.add(goal, message, action.tactic)
+                logger.info("Tactic rejected as a known no-op here: %s",
+                            action.tactic.strip()[:60])
+                stuck_counter = _increment_stuck(config, stuck_counter)
+                record = dict(
+                    step=step, goal=goal, action="tactic", tactic=action.tactic,
+                    outcome="rejected", error=message,
+                    thought=thought, content=raw_content,
+                )
+                trajectory.append(_step_record(**record))
+                if run_log is not None:
+                    run_log.iteration(top_premises=top, ranked_scores=ranked,
+                                      **record)
                 if _check_stuck(config, stuck_counter, run_log, work_copy, step):
                     return _stuck_result(
                         config, source, work_copy, step, run_log, llm, trajectory

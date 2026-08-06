@@ -1336,3 +1336,77 @@ Three tests pin the traps: `test_resolve_alone_is_not_enough_the_skip_case`,
 `test_raw_alone_is_not_enough_the_proc_case`, and
 `test_goal_text_equality_is_not_proof_of_inertness`, which drives the real
 binary and asserts `skip.` is load-bearing.
+
+
+---
+
+## 15. Run G — first run on the new code, and what it found
+
+Fresh kernel (the previous run had a 22-hour-old one still executing the old
+modules, so runs C-F all tested the same code). Ended early on a DeepSeek
+`402 Insufficient Balance`: 12 complete, 1 stuck, **2 LLM_ERROR**, $0.3978.
+Trials 12 and 14 -- the two that matter most -- did not finish, and trial 14
+never ran a step.
+
+### 15.1 What it established
+
+**No-op detection works.** 26 removals across two lemmas, no false positive
+observed. `progress.` on trial 2 left the goal unchanged, was correctly
+*kept*, and the next step closed the proof -- the exact case the two-view
+conjunction exists for.
+
+**The ban was advisory only, and the model overrode it.** Confirmed twice,
+independently:
+
+| lemma | banned no-op re-sent |
+|---|---|
+| G2_G3 | `rnd; skip; smt().` x7 at one goal |
+| INDCPA_HEG_G1 | `auto.` x7 at one goal |
+
+13 wasted LLM calls, each also driving the stuck counter. `noop_by_goal` fed
+the prompt and nothing else, while *failed* duplicates have always been
+hard-rejected in the loop. That asymmetry is now closed: a tactic already
+proven inert at the current goal is refused before EasyCrypt sees it, with a
+message naming what to change.
+
+**Not concludable:** whether any of this helps. Trial 11 went 8 -> 3 retained
+tactics, but `G2_G3` has swung 19 -> 13 -> 8 across identically configured
+runs, and the unenforced ban plausibly caused the early stop -- so it measured
+the bug, not the fix.
+
+### 15.2 The broken tactic was being under-used
+
+The harness has always shown the failing tactic and the remaining original
+script, headed "adapt rather than paste". Measured on `G2_G3`, the model
+treated it as background:
+
+| | heads |
+|---|---|
+| original remaining script | `auto` 4, `by` 2, `rewrite` 2, `if` 2, `seq` 1, `wp` 1, `rnd` **1** |
+| model attempted | `rnd` **19**, `seq` 8, `wp` 4, `auto` 2 |
+
+**Verbatim reuse: 8 of 40 attempts.** It even tried the right tactic --
+`rnd(fun x => t{1} +^ x)` -- but compounded three original lines into one,
+and it failed.
+
+So the original break is now presented as the *task*: a `## Repair THIS
+tactic first` section carrying the tactic, EasyCrypt's own complaint, and a
+ladder keyed to that complaint. The ladder matters because of the failure
+taxonomy over 203 failures in runs C+D+E:
+
+| category | share | |
+|---|---:|---|
+| wrong logic class | 24% | abandon the tactic |
+| position errors inside the right class | ~45% | **keep the tactic, change where it points** |
+| wrong arguments | 8% | keep the tactic, change its arguments |
+
+Nearly half the failures are the right tactic aimed at the wrong place, which
+is why every rung except the class-mismatch one says keep it and change one
+thing. The section appears on step 1 only -- once the model has moved the
+proof on, the original break is no longer the thing to repair.
+
+### 15.3 Still untested
+
+The first-instruction fact and the sync-goal recovery line, both of which only
+show up on the large lemmas. Trials 12 and 14 need to complete before anything
+can be said about them.

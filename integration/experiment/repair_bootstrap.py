@@ -32,7 +32,7 @@ from pathlib import Path
 from integration.agent import run_agent
 from integration.agent.config import AgentConfig
 from integration.agent.easycrypt import fetch_goal_and_premises, has_open_goals, validate_file
-from integration.agent.ec_errors import classify_error
+from integration.agent.ec_errors import classify_error, strip_warning_lines
 from integration.agent.ec_version import resolve_version_window
 from integration.agent.import_repair import format_for_prompt, repair_imports
 from integration.agent.proof_file import ProofFile, create_working_copy
@@ -428,6 +428,11 @@ def run_replay_bootstrap_trial(
     trial_agent_config = replace(
         agent_config,
         repair_hint=None,
+        # The tactic to repair, handed over as a task rather than as reference
+        # material -- see prompt.format_broken_tactic_repair.
+        broken_tactic=failed_tactic or None,
+        broken_tactic_error=(strip_warning_lines(raw_error) or None)
+        if raw_error else None,
         changelog_hints=changelog_hints or None,
         informal_proof=remaining_text,
         informal_proof_is_formal=True,

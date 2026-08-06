@@ -124,6 +124,15 @@ class AgentConfig:
     proof_tail_lines: int = 20
     log_file: Path | None = None
     repair_hint: str | None = None
+    # The ORIGINAL tactic that stopped working, and EasyCrypt's complaint about
+    # it, set by repair_bootstrap. Passed separately from the remaining script
+    # because it is not reference material -- it is the thing to repair, and
+    # measurement says the model was not treating it that way: on run G's
+    # `G2_G3` it reused an original tactic verbatim in 8 of 40 attempts and
+    # spent 19 attempts on `rnd` variants where the original script uses `rnd`
+    # exactly once.
+    broken_tactic: str | None = None
+    broken_tactic_error: str | None = None
     # Changelog/repair_doc facts for the specific tactic that broke, set by
     # integration/experiment/repair_bootstrap.py when a version-drift-shaped
     # failure occurs during replay. Distinct from repair_hint (the mutated
