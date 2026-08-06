@@ -26,6 +26,7 @@ from integration.agent.config import (
 from integration.experiment.config import ExperimentConfig
 from integration.experiment.corpora.elgamal import ElGamalCorpus
 from integration.experiment.corpora.joy import JoyCorpus
+from integration.experiment.corpora.lq1 import LQ1Corpus
 from integration.experiment.paid_confirm import (
     AGENT_NEVER_CONFIRM_NOTICE,
     confirm_paid_provider_usage,
@@ -84,6 +85,8 @@ def _rebuilt_corpus(corpus, data_dir: Path, sandbox_dir: Path | None):
         kwargs["sandbox_dir"] = sandbox_dir
     if isinstance(corpus, JoyCorpus):
         return JoyCorpus(**kwargs)
+    if isinstance(corpus, LQ1Corpus):
+        return LQ1Corpus(**kwargs)
     if isinstance(corpus, ElGamalCorpus):
         return ElGamalCorpus(**kwargs)
     return corpus
