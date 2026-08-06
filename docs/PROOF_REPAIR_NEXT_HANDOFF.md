@@ -132,39 +132,63 @@ and `ec_goal_parser.py::_compute_seq_suggestions`, which matches CALLs to the
 same procedure across the two sides and proposes the cut point at the match —
 precisely the case where our model guesses indices.
 
-### The blocker, and the way around it
+### The blocker — smaller than I first reported
 
-**The shannon-prover parsers do not read our goal format.** Measured against
-every failed step in three runs:
+**CORRECTION.** An earlier revision of this document said the shannon-prover
+parsers "do not read our goal format", citing `parse_goal` returning zero
+statements on 25/25 failures and 202/202 successes. **That measurement was
+invalid.** `ec_goal_parser._parse_prhl` delegates to
+`core.easycrypt.analysis.swap_align` inside a bare `except Exception: pass`,
+and I ran it without `shannon-prover/` on `sys.path` — so every call was
+silently swallowing an `ImportError` and reporting zeros. The format was never
+the problem in those numbers.
 
+Re-measured with `PYTHONPATH=.:shannon-prover` over 307 real goals:
+
+| | |
+|---|---:|
+| `classify_goal` | 303 pRHL, 4 probability |
+| both extractors found statements | **131** |
+| only ours found them | **111** |
+| only theirs found them | 11 |
+| neither | 54 |
+
+So it parses **131 of our goals correctly, today, with no changes.** The 111 it
+misses are one deliberate early return:
+
+```python
+# Programs-in-sync: EC collapses both sides; no actionable alignment.
+if "[programs are in sync]" in raw_text:
+    return _build_align_result([], [], pre_text, post_text, context_file)
 ```
-classify_goal : returns "pRHL" for 103/108, incl. ALL 25 wrong-class failures
-parse_goal    : left=0 right=0 statements on 25/25 failures AND 202/202 successes
-```
 
-Their docstring says it parses EC's **`-emacs`** output; our harness reads
-`llm -upto` from the patched fork. Side by side on one goal:
+**48% of our goals carry that marker, and 111 of them list statements anyway.**
+That assumption holds for shannon-prover's own corpus and not for ours.
+Stripping the marker before parsing recovers them — verified on a sample: 5
+tested, 5 recovered, 0 still empty, with typed statements and `vars_written`
+populated.
 
-```
-our extractor      : left=5 right=0 statements
-shannon parse_goal : left=0 right=0
-      (1)  q1 <$ dexp
-      (2)  q2 <$ dexp
-      (3)  RO_track.mp <- empty<:group, text>
-```
+So the adaptation is roughly:
 
-**Do not import their parser.** `classify_goal` returning "pRHL" for everything
-would hand the model confident wrong advice.
+1. put `shannon-prover/` on the path (or vendor `swap_align` +
+   `ec_program_statements` + `ec_sampling_statements`);
+2. **remove the bare `except Exception: pass`** in `_parse_prhl` — it hid this
+   for the whole investigation and will hide the next one;
+3. treat `[programs are in sync]` as "both sides identical" rather than "no
+   statements", so a listed program is still parsed.
 
-Do this instead: our `prompt.py::_statement_lines` already extracts those
-statements correctly, it just returns strings. Give it a typed output —
-`{"type": "ASSIGN"|"SAMPLE"|"CALL"|"WHILE"|"IF", "procedure": ...}` — matching
-what `_compute_seq_suggestions` and `ec_asym_seq_hint` consume, then port the
-*analyses* onto our extractor. `ec_program_statements.py` (32 lines) is the
-leaf classifier to copy verbatim; `ec_sampling_statements.py` (67 lines) is the
-`rnd`/sampling equivalent.
+Then `_compute_seq_suggestions` and `ec_asym_seq_hint` have the typed
+`left_stmts` / `right_stmts` they need, and porting the analyses is no longer
+blocked on writing our own structured reader.
 
----
+Two caveats before trusting it further:
+
+- `classify_goal` still calls **all 25 wrong-class failures `pRHL`** (§4). Fixing
+  statement extraction does not fix classification.
+- The one recovered sample came out `left=0 right=5` where our extractor sees
+  `left=5 right=0`. One of the two has the sides swapped for our column layout.
+  Check that before consuming positions — a `seq N M` with N and M transposed
+  is exactly the position error this is meant to prevent.
 
 ## 4. OPEN — 24% wrong logic class, and NEITHER codebase can currently detect it
 
@@ -276,7 +300,9 @@ single run as evidence. This is why the A/B was dropped.
 4. **§4** — retry the wrong-class discriminator with subgoal count in hand.
 5. **§6** — the small items, any time.
 
-Items 1 and 3 both need the same thing first: **a faithful structured read of
-our own goal format.** That is the single dependency worth building well,
-because every analysis in shannon-prover's `analysis/` package consumes it and
-none of them can run against our text today.
+Items 1 and 3 both need a faithful structured read of our goal format — but
+per §3 that is **mostly already available**, not something to build from
+scratch. `swap_align` parses 131 of 307 real goals as-is and 242 of 307 with
+the `[programs are in sync]` early return relaxed. Budget it as an adaptation,
+not a rewrite, and start by deleting the `except Exception: pass` that hid the
+real state of things.
