@@ -261,8 +261,6 @@ def run_agent(
     # the proof returns to the same state the bar returns with it, which is
     # correct -- it is still inert there.
     noop_by_goal: dict[str, set[str]] = {}
-    # The last tactic the script actually kept, for repeat detection.
-    last_accepted_tactic: str | None = None
     continuous_searches = 0
     consecutive_noop_undos = 0
     # Lookup/search always use EasyCrypt Ax.all (lookup_catalog), never an
@@ -922,10 +920,7 @@ def run_agent(
             # ones provably removable. The old detector could not see it: it
             # hashes the proof TAIL, and a no-op still appends a line, so the
             # hash was new and `stuck_counter` reset to zero every time.
-            if confirm_noop(
-                proof, config, goal, inserted_line,
-                last_accepted_tactic, action.tactic,
-            ):
+            if confirm_noop(proof, config, goal, inserted_line):
                 # `confirm_noop` has already removed the line.
                 banned = noop_by_goal.setdefault(_goal_hash(goal), set())
                 banned.add(normalize_tactic(action.tactic))
@@ -963,7 +958,6 @@ def run_agent(
                 seen_proof_states.add(state_hash)
                 stuck_counter = 0
 
-            last_accepted_tactic = action.tactic
             trajectory.append(
                 _step_record(
                     step,
@@ -1116,56 +1110,94 @@ def _goal_hash(goal: str) -> str:
     return hashlib.sha256((goal or "").strip().encode("utf-8")).hexdigest()
 
 
-def confirm_noop(
-    proof: ProofFile,
-    config: AgentConfig,
-    goal_before: str,
-    inserted_line: int,
-    previous_tactic: str | None,
-    tactic: str,
-) -> bool:
-    """Is this tactic an inert REPEAT of the one immediately before it?
+def _current_goal(proof: ProofFile, config: AgentConfig) -> str:
+    """The goal exactly as the loop would show it to the model.
 
-    Scoped deliberately narrowly, because the obvious wider rule is unsound.
-    "The goal text did not change" is *not* proof that a tactic did nothing:
-    on `integration/tests/fixtures/hoare_after_proof.ec`, `skip.` leaves
-    ``resolve_goal`` byte-identical (166 chars before and after) and yet is
-    load-bearing -- delete it and the proof no longer closes (rc=1). The goal
-    display is a lossy view of the proof state, and removing a tactic on the
-    strength of it deletes real progress.
-
-    What the evidence does support is the repetition case. Across three
-    ElGamal runs 60-63% of accepted tactics left the goal unchanged, and the
-    pathology was always a *run* of the same tactic: one lemma ended with 39
-    consecutive bare `wp.`, and deleting all 39 left EasyCrypt in a
-    byte-identical state (goal sha1 293cdab8e3). The first application of a
-    tactic is therefore always kept; only an immediate repeat that moved
-    nothing is rolled back, exactly the way a failed tactic already is.
-
-    This does not claim the repeat is provably inert -- nothing observable
-    proves that. It claims the model has applied the same tactic twice to the
-    same displayed goal, which is a loop whatever the internal state.
-
-    Rolls the repeat back when it returns True; leaves the file untouched
-    otherwise. Fails safe on an empty goal or an unreadable file.
+    Mirrors the loop's own resolution, including the raw fallback: after a run
+    of goal-unchanged tactics `resolve_goal` returns "" (it walks back past
+    each unchanged cursor and gives up), and the loop falls through to the raw
+    `llm -upto` output. Comparing anything else would ask a different question
+    from the one that matters.
     """
-    if inserted_line <= 1 or previous_tactic is None:
-        return False
-    if normalize_tactic(previous_tactic) != normalize_tactic(tactic):
+    goal = resolve_goal(proof, config).strip()
+    if goal:
+        return goal
+    cursor = resolve_goal_cursor(proof, config)
+    return fetch_goal(proof.path, cursor, config).stdout.strip()
+
+
+def confirm_noop(
+    proof: ProofFile, config: AgentConfig, goal_before: str, inserted_line: int
+) -> bool:
+    """Did the tactic on `inserted_line` provably change nothing?
+
+    A tactic compiling is not the same as it doing anything. EasyCrypt accepts
+    a `wp.` with nothing left to consume and says nothing at all about it:
+    against the r2026.06 build the returncode, stdout and stderr of a file
+    with the no-op are byte-identical to the same file without it. The goal is
+    the only available evidence -- but *which* view of the goal matters, and
+    neither available one is sufficient alone:
+
+    ``resolve_goal``      lossy. `skip.` converts a Hoare judgment to an
+                          ambient goal and renders byte-identical either side
+                          (166 chars) -- yet it is load-bearing: delete it and
+                          `fixtures/hoare_after_proof.ec` no longer closes.
+    raw ``fetch_goal``    `llm -upto N` is not a faithful "state after line N"
+                          for `proc.`, which is why ``resolve_goal`` carries
+                          ``_probe_post_proc_goal``. Used alone it calls
+                          `proc.` inert, which would delete the tactic that
+                          opens the procedure bodies.
+
+    Each mis-classifies a tactic the other gets right, so **both must agree**
+    that nothing moved. Measured over the fixture's whole script and the real
+    ElGamal artifacts, the conjunction keeps every productive tactic
+    (`proc.`, `skip.`, `move`, `subst.`, `trivial.`, `if{1}.`) and still
+    catches the trailing `wp.` run that made a lemma 39 lines longer for no
+    change.
+
+    Then it is **verified by removal**: take the line out and re-check. If the
+    goal is still identical without it, it contributed nothing, and because
+    EasyCrypt's state decides what applies next, an identical state also means
+    no later tactic could have depended on it.
+
+    Fails safe -- an empty goal, an unreadable file, anything unexpected keeps
+    the tactic. Costs three extra EasyCrypt calls, negligible against an LLM
+    step: EasyCrypt replays all 301 corpus tactics in ~2.3 minutes, a single
+    model call takes ~116 s.
+
+    Leaves the tactic REMOVED when it returns True, restored byte for byte
+    otherwise.
+    """
+    if inserted_line <= 1:
         return False
     goal_before = (goal_before or "").strip()
     if not goal_before:
         return False
+
     try:
-        after = resolve_goal(proof, config).strip()
+        after = _current_goal(proof, config)
+        # An empty goal is what a discharged or unreachable position looks
+        # like, never evidence of a no-op.
+        if not after or after != goal_before:
+            return False
+        raw_at = fetch_goal(proof.path, inserted_line, config).stdout.strip()
+        raw_prev = fetch_goal(proof.path, inserted_line - 1, config).stdout.strip()
     except OSError:
         return False
-    # An empty goal is what a discharged or unreachable position looks like,
-    # never evidence of a no-op.
-    if not after or after != goal_before:
+    if not raw_at or raw_at != raw_prev:
         return False
+
+    original = proof.path.read_text(encoding="utf-8")
     proof.remove_lines(inserted_line)
-    return True
+    try:
+        without = _current_goal(proof, config)
+    except OSError:
+        proof.path.write_text(original, encoding="utf-8")
+        return False
+    if without and without == after:
+        return True
+    proof.path.write_text(original, encoding="utf-8")
+    return False
 
 
 # ---------------------------------------------------------------------------

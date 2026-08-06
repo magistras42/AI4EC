@@ -1285,57 +1285,54 @@ second priority behind (1), because (1) makes the expensive trials cheaper
 rather than merely running them in parallel.
 
 
-### 14.5 What shipped, and the claim that did not survive testing
+### 14.5 What shipped, and the two false positives that shaped it
 
-§14.4's proposal was to remove any accepted tactic that left the goal
-unchanged, verified by deleting it and re-checking. Implementing it broke two
-existing tests, and the reason matters more than the fix.
+§14.4 proposed removing any accepted tactic that left the goal unchanged,
+verified by deleting it and re-checking. That is what shipped — but only after
+two false positives showed that "the goal" is not one thing.
 
-**Goal-text equality does not prove a tactic did nothing.** On
-`integration/tests/fixtures/hoare_after_proof.ec`:
+**`resolve_goal` is lossy.** On `fixtures/hoare_after_proof.ec`, `skip.` renders
+byte-identical either side (166 chars) and is load-bearing:
 
-```
-after `proc.`   resolve_goal = 166 chars
-after `skip.`   resolve_goal = 166 chars, BYTE-IDENTICAL
-```
-
-and yet:
-
-| tactic sequence | result |
+| sequence | result |
 |---|---|
 | `proc. skip. move => &m H1. subst. trivial.` | closes (rc=0) |
 | the same **without `skip.`** | **does not close (rc=1)** |
 
-`skip.` converts the Hoare judgment to an ambient goal. The displayed goal is
-a *lossy view* of the proof state, so a tactic can change the state without
-changing what is printed. The delete-and-recheck guard did not catch it either
-— with `skip.` removed the goal renders the same as well. Deleting it would
-have destroyed real progress.
+**The raw cursor is lossy too, for a different tactic.** `llm -upto N` is not a
+faithful "state after line N" for `proc.` — which is why `resolve_goal` carries
+`_probe_post_proc_goal`. Used alone it calls `proc.` inert, which would delete
+the tactic that opens the procedure bodies.
 
-An earlier iteration of the same implementation also flagged `proc.` as inert,
-because a raw `fetch_goal` at the cursor is not a faithful "state after line
-N" for it — which is exactly why `resolve_goal` carries
-`_probe_post_proc_goal`. Two independent false positives on the first two
-tactics tried.
+Each view mis-classifies a tactic the other gets right, so the shipped rule
+requires **both** to agree that nothing moved, and then **verifies by removal**:
 
-**What shipped instead** is the repetition case, which the evidence does
-support: the pathology was always a *run* of the same tactic — 39 consecutive
-bare `wp.` in `G1_G2_eq`, all 39 removable for a byte-identical state. So:
+```
+1. resolve_goal unchanged?          (catches the proc. case)
+2. raw `llm -upto` cursor unchanged? (catches the skip. case)
+3. remove the line, re-check         (the proof)
+   -> unchanged: keep it removed
+   -> changed:   restore byte for byte
+```
 
-- the **first** application of any tactic is always kept, whatever the goal does;
-- an **immediate repeat** that moved nothing is rolled back, the way a failed
-  tactic already is;
-- it does not reset `stuck_counter`, since a repeat that moved nothing is the
-  definition of an unproductive step;
-- the tactic is barred **only at that goal hash**, so the bar lifts the moment
-  the goal moves — `wp.` being inert in one state says nothing about the next;
-- the prompt gains a section distinguishing this from a failure, because a
-  model that reads "accepted" simply tries the same thing again.
+Measured against the real binary, this keeps every productive tactic tried
+(`proc.`, `skip.`, `move`, `subst.`, `trivial.`, `if{1}.`) and still catches
+the trailing `wp.` run that made `G1_G2_eq` 39 lines longer for no change.
 
-This does not claim a repeat is *provably* inert — nothing observable proves
-that. It claims the model applied the same tactic twice to the same displayed
-goal, which is a loop whatever the internal state, and rolling back the second
-one cannot lose anything the first did not already do.
+A third defect only the end-to-end check found: after a *run* of unchanged
+tactics `resolve_goal` returns `""` (it walks back past each unchanged cursor
+and gives up), and the loop falls through to the raw output. Comparing
+`resolve_goal` alone saw the empty string and refused to act — so the very
+case this was built for went undetected. `_current_goal` now mirrors the
+loop's own resolution, fallback included.
 
-`test_goal_text_equality_is_not_proof_of_inertness` pins the `skip.` case, so
-any future attempt to widen this back to first applications has to survive it.
+On confirmation the tactic is rolled back the way a failed one already is,
+`stuck_counter` is **not** reset, and the tactic is barred **at that goal hash
+only** — the bar lifts the moment the goal moves, because `wp.` being inert in
+one state says nothing about the next. The prompt gains a section separating
+this from a failure, since a model that reads "accepted" simply tries again.
+
+Three tests pin the traps: `test_resolve_alone_is_not_enough_the_skip_case`,
+`test_raw_alone_is_not_enough_the_proc_case`, and
+`test_goal_text_equality_is_not_proof_of_inertness`, which drives the real
+binary and asserts `skip.` is load-bearing.

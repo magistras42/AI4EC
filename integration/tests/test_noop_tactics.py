@@ -11,10 +11,10 @@ byte-identical, and both STUCK outcomes in run E were a run of them -- one
 lemma ended with 45 of its 58 lines a bare `wp.`, all 39 trailing ones
 provably removable.
 
-What the evidence does support is repetition: the pathology was always a RUN
-of the same tactic (39 consecutive bare `wp.` in one lemma, all removable).
-So only an immediate repeat that moved nothing is rolled back, and the first
-application of any tactic is always kept.
+The fix is not to give up but to use TWO views. `resolve_goal` is lossy for
+`skip.`; the raw `llm -upto` cursor is lossy for `proc.`. Each mis-classifies
+a tactic the other gets right, so both must agree nothing moved -- and then
+removal has to confirm it.
 """
 from __future__ import annotations
 
@@ -64,50 +64,79 @@ def _config() -> AgentConfig:
     return AgentConfig(easycrypt_bin=Path("/nonexistent/ec.exe"))
 
 
-# --- detection: repeats only ------------------------------------------------
+# --- detection: two observables must agree, then removal proves it ---------
 
 
-def test_a_first_application_is_never_touched(proof, monkeypatch):
-    """The safety property. `skip.` moves the goal invisibly and is
-    load-bearing; a rule that removed first applications would delete it."""
-    monkeypatch.setattr(loop_mod, "resolve_goal", lambda p, c: "GOAL A")
-    before = proof.path.read_text(encoding="utf-8")
-    assert loop_mod.confirm_noop(proof, _config(), "GOAL A", 4, None, "wp.") is False
-    assert loop_mod.confirm_noop(proof, _config(), "GOAL A", 4, "skip.", "wp.") is False
-    assert proof.path.read_text(encoding="utf-8") == before
+def _goals(resolve, raw_at, raw_prev):
+    """Patch both views independently."""
+    def fake_resolve(p, c):
+        return resolve() if callable(resolve) else resolve
+    def fake_fetch(path, cursor, config):
+        text = raw_at if cursor == 4 else raw_prev
+        return LlmResult(returncode=0, stdout=text, stderr="")
+    return fake_resolve, fake_fetch
 
 
-def test_an_inert_repeat_is_rolled_back(proof, monkeypatch):
-    monkeypatch.setattr(loop_mod, "resolve_goal", lambda p, c: "GOAL A")
-    assert loop_mod.confirm_noop(proof, _config(), "GOAL A", 4, "wp.", "wp.") is True
+def _patch(monkeypatch, resolve, raw_at, raw_prev):
+    r, f = _goals(resolve, raw_at, raw_prev)
+    monkeypatch.setattr(loop_mod, "resolve_goal", r)
+    monkeypatch.setattr(loop_mod, "fetch_goal", f)
+
+
+def test_both_views_unchanged_and_removal_confirms_is_a_no_op(proof, monkeypatch):
+    _patch(monkeypatch, "GOAL A", "RAW", "RAW")
+    assert loop_mod.confirm_noop(proof, _config(), "GOAL A", 4) is True
     assert "wp." not in proof.path.read_text(encoding="utf-8")
 
 
-def test_a_repeat_that_moves_the_goal_is_kept(proof, monkeypatch):
-    monkeypatch.setattr(loop_mod, "resolve_goal", lambda p, c: "GOAL B")
+def test_resolve_alone_is_not_enough_the_skip_case(proof, monkeypatch):
+    """`skip.` renders byte-identical through resolve_goal and is
+    load-bearing. The raw view sees it, so the conjunction keeps it."""
+    _patch(monkeypatch, "GOAL A", "RAW AFTER", "RAW BEFORE")
     before = proof.path.read_text(encoding="utf-8")
-    assert loop_mod.confirm_noop(proof, _config(), "GOAL A", 4, "wp.", "wp.") is False
+    assert loop_mod.confirm_noop(proof, _config(), "GOAL A", 4) is False
     assert proof.path.read_text(encoding="utf-8") == before
 
 
-def test_repeat_detection_ignores_whitespace_noise(proof, monkeypatch):
-    monkeypatch.setattr(loop_mod, "resolve_goal", lambda p, c: "GOAL A")
-    assert loop_mod.confirm_noop(proof, _config(), "GOAL A", 4, "wp .", " wp. ") is True
+def test_raw_alone_is_not_enough_the_proc_case(proof, monkeypatch):
+    """`llm -upto N` is not a faithful state-after for `proc.`; the raw view
+    calls it inert. resolve_goal sees it, so the conjunction keeps it."""
+    _patch(monkeypatch, "GOAL B", "RAW", "RAW")
+    before = proof.path.read_text(encoding="utf-8")
+    assert loop_mod.confirm_noop(proof, _config(), "GOAL A", 4) is False
+    assert proof.path.read_text(encoding="utf-8") == before
+
+
+def test_removal_that_changes_the_goal_puts_the_tactic_back(proof, monkeypatch):
+    """Stage 3. Both views looked inert, but the state moves once it is gone,
+    so it was load-bearing and is restored untouched."""
+    original = proof.path.read_text(encoding="utf-8")
+    def resolve(p, c):
+        return "GOAL A" if "wp." in Path(p.path).read_text(encoding="utf-8") else "OTHER"
+    monkeypatch.setattr(loop_mod, "resolve_goal", resolve)
+    monkeypatch.setattr(loop_mod, "fetch_goal",
+                        lambda path, cursor, config: LlmResult(0, "RAW", ""))
+    assert loop_mod.confirm_noop(proof, _config(), "GOAL A", 4) is False
+    assert proof.path.read_text(encoding="utf-8") == original
 
 
 def test_an_empty_goal_is_never_treated_as_a_no_op(proof, monkeypatch):
-    """An empty goal is what a discharged or unreachable position looks like."""
-    monkeypatch.setattr(loop_mod, "resolve_goal", lambda p, c: "")
+    _patch(monkeypatch, "", "RAW", "RAW")
     before = proof.path.read_text(encoding="utf-8")
-    assert loop_mod.confirm_noop(proof, _config(), "GOAL A", 4, "wp.", "wp.") is False
+    assert loop_mod.confirm_noop(proof, _config(), "GOAL A", 4) is False
     assert proof.path.read_text(encoding="utf-8") == before
+
+
+def test_an_empty_raw_goal_is_never_a_no_op(proof, monkeypatch):
+    _patch(monkeypatch, "GOAL A", "", "")
+    assert loop_mod.confirm_noop(proof, _config(), "GOAL A", 4) is False
 
 
 def test_the_first_proof_line_is_never_probed(proof, monkeypatch):
     called = []
     monkeypatch.setattr(loop_mod, "resolve_goal",
                         lambda p, c: called.append(1) or "GOAL A")
-    assert loop_mod.confirm_noop(proof, _config(), "GOAL A", 1, "wp.", "wp.") is False
+    assert loop_mod.confirm_noop(proof, _config(), "GOAL A", 1) is False
     assert called == []
 
 
@@ -116,7 +145,7 @@ def test_an_unreadable_file_fails_safe(proof, monkeypatch):
         raise OSError("disk gone")
     monkeypatch.setattr(loop_mod, "resolve_goal", boom)
     before = proof.path.read_text(encoding="utf-8")
-    assert loop_mod.confirm_noop(proof, _config(), "GOAL A", 4, "wp.", "wp.") is False
+    assert loop_mod.confirm_noop(proof, _config(), "GOAL A", 4) is False
     assert proof.path.read_text(encoding="utf-8") == before
 
 
@@ -204,3 +233,16 @@ def test_goal_text_equality_is_not_proof_of_inertness(tmp_path, easycrypt_bin):
         "skip. must be load-bearing here; if this fails the fixture changed "
         "and the narrowing argument needs rechecking"
     )
+
+
+def test_the_goal_view_matches_what_the_loop_shows_the_model(proof, monkeypatch):
+    """After a run of unchanged tactics `resolve_goal` returns "" -- it walks
+    back past each unchanged cursor and gives up -- and the loop falls through
+    to the raw `llm -upto` output. Checking `resolve_goal` alone saw the empty
+    string and refused to act, so the real 39-`wp.` run went undetected."""
+    monkeypatch.setattr(loop_mod, "resolve_goal", lambda p, c: "")
+    monkeypatch.setattr(loop_mod, "resolve_goal_cursor", lambda p, c: 4)
+    monkeypatch.setattr(loop_mod, "fetch_goal",
+                        lambda path, cursor, config: LlmResult(0, "RAW GOAL", ""))
+    assert loop_mod._current_goal(proof, _config()) == "RAW GOAL"
+    assert loop_mod.confirm_noop(proof, _config(), "RAW GOAL", 4) is True
