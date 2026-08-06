@@ -1058,3 +1058,211 @@ than another knob turned.
 Note also that the two failure modes are not equivalent for cost. STUCK stops
 early, so run E cost slightly *less* than run D ($1.4633 against $1.4887)
 despite 1.8x the step budget. Budget headroom that is never used is free.
+
+---
+
+## 14. How the repair actually works, and where it stops
+
+Two halves of the system, documented against run E's artifacts. They are in
+very different states, and the honest summary is that one is finished and the
+other has not yet been shown to do anything.
+
+### 14.1 Import repair: what it changed, and why the file then loaded
+
+Every ElGamal lemma starts unloadable. `INDCPA_HEG_G1` (trial 12) is
+representative — `parse_error` at line 108, so `llm -upto` cannot reach a goal
+and the trial would once have been discarded as `goal_unreachable`.
+
+Four rules fired, each selected against the error EasyCrypt reported *at that
+moment*, and each verified by re-running the compiler before being kept:
+
+| rule | kind | action | selected for | evidence it helped |
+|---|---|---|---|---|
+| `proc-star-removed` | syntax_change | `replace_regex` ×2 | `parse_error` (rel 2) | first error 108 → 127 |
+| `smtmap-symbols-moved-to-fmap-r2025.02` | symbol_moved | `add_require FMap` | `unknown_symbol` (rel 2) | 127 → 357 |
+| `declare-module-ascription` | syntax_change | `replace_regex` ×1 | `parse_error` (rel 2) | kind changed `parse_error` → `unknown` |
+| `old-module-restriction-sets` | syntax_change | `add_pragma +old_mem_restr` | `unknown` (rel 0) | 357 → 453 |
+
+The resulting diff, on a 486-line file that stays 486 lines:
+
+```diff
+-require import AllCore Distr SmtMap DBool FSet.
++pragma +old_mem_restr. require import AllCore Distr SmtMap DBool FSet FMap.
+-  proc * init() : unit
++  proc init() : unit
+-    proc * choose(pubk : group) : text * text {RO.f}
++    proc choose(pubk : group) : text * text {RO.f}
+-declare module Adv : ADV{RO, Adv2LCDHAdv}.
++declare module Adv <: ADV{RO, Adv2LCDHAdv}.
+```
+
+Four separate 2020-era breakages, four different mechanisms:
+
+1. **`proc *`** — a parser feature deleted in r2023.09. Pure syntax.
+2. **`SmtMap` → `FMap`** — 125 declarations moved in r2025.02. The file still
+   requires `SmtMap`, which still exists, so nothing looks wrong until a name
+   fails to resolve. `FMap` is *added* rather than substituted, because
+   `FMap.ec` itself requires `SmtMap` and the file uses both halves.
+3. **`declare module X : T`** — module-system syntax, now `<: T`.
+4. **Unprefixed restriction sets `{RO, Adv}`** — semantics changed; the pragma
+   restores the old reading in one line rather than editing every site, which
+   is what keeps line numbers stable.
+
+**Line-preservation is the load-bearing property.** `ProofCase` records
+absolute lemma line numbers, so a repair that inserted a line would silently
+point every later trial at the wrong lemma. The pragma folds onto line 1, the
+require is extended in place, and the rest are in-place substitutions;
+`apply_actions` asserts the count is unchanged.
+
+The endpoint is the point: `parse_error:108` → `tactic_error:453`. The file now
+loads far enough to open the lemma, and everything still wrong with it is the
+solver's problem. That is `reached_proof`, and it held for 12 of 12 attempts in
+all three runs.
+
+### 14.2 The knowledge base: one part earns its place, one does not
+
+The block handed to the model has three sections. They are not equally useful
+and the artifacts say so plainly.
+
+**The import-repair summary — essential.** The first 14 lines tell the model
+what was changed in its file and why. Without it the model is proving against
+a file it has never seen: a tactic naming `SmtMap.dom` would look inexplicably
+wrong. This is not a "hint" in the retrieval sense, it is the diff.
+
+**Symbol resolution — the most targeted content in the block.**
+
+```
+- `mem_empty` is declared in FMap (`require import FMap.`)
+- `output` is declared in 6 theories: DDH_hybrid, Hybrid, PRG, Pr_half,
+  SDist, TotalProb -- qualify the reference or require the one you mean
+```
+
+Derived from the 6325-symbol index, specific to the failing step, and
+actionable. This is what the index is for.
+
+**Changelog retrieval — no measured contribution.** For trial 14 all four
+entries retrieved were r2023.09 *chore* commits about raw `smt` calls, matched
+on nothing more than the token `smt` appearing in the failing tactic
+`smt(mem_empty).`:
+
+```
+- [r2023.09] (mechanism_change) [chore] fix more raw smt calls  (matched smt)
+- [r2023.09] (mechanism_change) [chore] fix raw smt calls (theories/...)  (matched smt)
+```
+
+Matching a tactic *head* against changelog prose retrieves everything that
+mentions the word. `smt` appears in hundreds of commits and means nothing
+specific.
+
+`hint_uptake` for run E is **0.0** — not one identifier the changelog half
+introduced appeared in a tactic EasyCrypt accepted, across all four scoring
+trials. (That number is only trustworthy since §12.4 stopped it counting
+pre-existing names and English prose; before that it read 50%.)
+
+**So: import repair and the symbol index are doing work. The changelog
+retrieval has not been shown to.** It may still be right for a corpus whose
+breakage is genuinely a documented library change rather than 2020 syntax;
+this one's is not.
+
+### 14.3 Where the harness gets stuck — and it is not where it looked
+
+Run E's two STUCK trials end the same way. `G1_G2_eq`, last 20 steps:
+
+```
+accepted  wp.
+accepted  wp.
+accepted  wp.
+... (20 consecutive, all accepted)
+```
+
+Every one succeeded. And the goal never moved:
+
+```
+23 of 23 consecutive steps saw a BYTE-IDENTICAL goal
+(sha1 293cdab8, 5464 chars, unchanged throughout)
+```
+
+`wp.` is a **no-op** in that state. EasyCrypt returns 0, so the harness records
+`accepted`, appends the line, and shows the model the same goal again. The
+model, reasonably, tries `wp.` again.
+
+This is not rare:
+
+| run | accepted tactics that left the goal unchanged | worst offenders |
+|---|---|---|
+| C | **44 / 73 (60%)** | `auto` 31, `progress` 3, `call` 3 |
+| D | **100 / 164 (61%)** | `wp` 57, `auto` 17, `seq` 9 |
+| E | **113 / 179 (63%)** | `wp` 60, `auto` 25, `if` 6 |
+
+**Around 60% of every "successful" tactic in every run accomplishes nothing.**
+
+The reason the loop does not notice is precise.
+`integration/agent/loop.py` hashes the *proof text*:
+
+```python
+state_hash = _proof_state_hash(proof.tail(config.proof_tail_lines))   # 20 lines
+if state_hash in seen_proof_states:
+    stuck_counter = _increment_stuck(config, stuck_counter)
+else:
+    seen_proof_states.add(state_hash); stuck_counter = 0
+```
+
+A no-op still **appends a line**, so the tail changes, the hash is new, and
+`stuck_counter` resets to zero. Detection only begins once the tail is
+*entirely* identical `wp.` lines — after `proof_tail_lines` (20) wasted steps —
+and then needs `stuck_limit` (20) more to trip. Up to **40 steps of pure waste
+before the harness reacts**, at ~116 s and real money per step.
+
+That fully explains run E: `G1_G2_eq` stopped at 91 of 260 steps with a 6.64
+accept ratio. It was not failing. It was succeeding at nothing, and the
+detector measured the wrong thing.
+
+### 14.4 Proposed features, ranked by the evidence above
+
+**1. Goal-based no-op detection.** *(highest value, smallest change)*
+
+Compare the goal before and after an accepted tactic. Identical goal means the
+tactic did nothing, whatever EasyCrypt's return code says. Then:
+
+- **undo it** — it does not belong in the proof. `G1_G2_eq`'s "58 retained
+  tactics" is inflated by ~20 `wp.` lines that a human would delete on sight,
+  so this improves the *artifact*, not just the search;
+- **do not reset `stuck_counter`** — a no-op is the definition of an
+  unproductive step, and resetting on one is why detection takes 40 steps;
+- **tell the model**: "`wp.` was accepted but left the goal unchanged; it has
+  nothing left to consume here."
+
+Evidence: 60–63% of accepted tactics in all three runs; the direct cause of
+both STUCK outcomes. Attacks wall clock, spend, proof quality and the stuck
+limit simultaneously. `_proof_state_hash` already exists — this is hashing the
+goal instead of the proof tail, plus an undo.
+
+**2. Ban a tactic that just no-op'd, the way failures are already banned.**
+
+`prompt.py::_banned_tactic_strings` exists and lists tactics that *failed*. A
+no-op is recorded as `accepted`, so it never reaches that list, which is why
+the model repeats it 20 times. Extending the ban to no-ops is a few lines and
+depends only on (1).
+
+**3. Narrow changelog retrieval, or stop paying for it.**
+
+Matching on a tactic head retrieves every commit mentioning that word — four
+r2023.09 `smt` chores for a `smt(mem_empty)` failure. Options, cheapest first:
+require the match to be an *identifier* rather than a tactic name; drop entries
+whose `repair_hint` is generic; or gate the whole changelog half behind a
+relevance floor. §14.2 shows the symbol-index half already works, so this is
+about removing noise from a block that also carries signal, not about
+abandoning the knowledge base.
+
+**Explicitly NOT recommended: raising `STUCK_LIMIT`.** It is the obvious knob
+and it would make things worse — it buys more repetitions of a no-op, not more
+progress. Fix the detector first; the limit may then be too *generous* rather
+than too tight.
+
+**Deferred, and why.** Trial-level parallelism is a real ~2.4× on wall clock
+(§throughput analysis: 99.6% of 9.4 h sits in 4 independent trials) but
+`SpendBudget` is shared mutable state checked before each call with no locking,
+so under concurrency the cap becomes approximate — unacceptable on a paid run
+without a reservation model. Worth doing, not worth doing casually. And it is
+second priority behind (1), because (1) makes the expensive trials cheaper
+rather than merely running them in parallel.
