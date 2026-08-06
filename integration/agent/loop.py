@@ -970,9 +970,23 @@ def run_agent(
                 # `confirm_noop` has already removed the line.
                 banned = noop_by_goal.setdefault(_goal_hash(goal), set())
                 banned.add(normalize_tactic(action.tactic))
-                # Deliberately NOT resetting stuck_counter: a step that changed
-                # nothing is the definition of an unproductive one.
-                stuck_counter = _increment_stuck(config, stuck_counter)
+                # Neither reset NOR incremented. Two different claims were
+                # bundled here and the data separated them: "this step was
+                # wasted" is not "this trial is going nowhere". Incrementing
+                # made `G2_G3` die progressively earlier -- 75 steps under the
+                # old code, 44 with detection, 27 with detection+enforcement --
+                # while the share of steps that changed nothing stayed flat at
+                # ~50%. The removals and the ban are what stop the waste; the
+                # counter was just shortening the runway the model had to work
+                # in, and run E reached 8 retained tactics in the steps that
+                # cost bought. Leaving it untouched gives the trial that same
+                # runway without the padded proof script.
+                #
+                # A no-op still cannot loop: the tactic is removed, and barred
+                # at this goal until the goal moves, so the model must try
+                # something else. Genuine stagnation is still caught -- the
+                # proof-state hash below, and failed/rejected steps, all still
+                # drive the counter.
                 trajectory.append(
                     _step_record(
                         step, goal, action="tactic", tactic=action.tactic,

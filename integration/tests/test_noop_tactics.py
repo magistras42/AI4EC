@@ -386,3 +386,24 @@ def test_the_section_only_appears_on_the_first_step():
     from integration.agent import loop as loop_mod
     src = inspect.getsource(loop_mod.run_agent)
     assert "config.broken_tactic if step == 1 else None" in src
+
+
+def test_a_no_op_neither_resets_nor_increments_the_stuck_counter():
+    """Two claims were bundled and the data separated them: "this step was
+    wasted" is not "this trial is going nowhere". Incrementing made G2_G3 die
+    progressively earlier (75 -> 44 -> 27 steps) while the share of steps
+    that changed nothing stayed flat at ~50% -- the counter was shortening the
+    runway, not reducing the waste."""
+    import inspect
+    from integration.agent import loop as loop_mod
+
+    src = inspect.getsource(loop_mod.run_agent)
+    block = src[src.index("if confirm_noop("):src.index("state_hash = _proof_state_hash")]
+    assert "_increment_stuck" not in block, (
+        "a confirmed no-op must not drive the stuck counter"
+    )
+    assert "stuck_counter = 0" not in block, (
+        "nor reset it -- a no-op is not progress either"
+    )
+    # It must still be able to end a trial that is genuinely stuck.
+    assert "_check_stuck" in block

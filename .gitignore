@@ -272,3 +272,8 @@ credentials.json
 # machine-specific paths and hundreds of MB per release. Rebuild with
 # `python3 -m integration.experiment.ec_versions --version rYYYY.MM`.
 integration/extern/.ec_versions/
+
+# shannon-prover reference checkout: it is its own git repo, and
+# committing it as a gitlink records a commit nobody else can resolve.
+# See docs/PROOF_REPAIR_NEXT_HANDOFF.md for what to take from it.
+shannon-prover/
