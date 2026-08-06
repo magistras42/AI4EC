@@ -187,3 +187,91 @@ def test_hop_returns_none_when_no_release_in_range_matches():
     )
     assert matched_version is None
     assert hits == []
+
+
+# --- document-frequency guard on tactic-keyed retrieval ---------------------
+# `by_tactic["smt"]` holds 28 of the catalog's 913 entries (3.1%), and matching
+# on it retrieved four unrelated r2023.09 chore commits. A term that tags 3% of
+# everything ever written does not select the entries relevant to one failing
+# step.
+
+
+def test_a_ubiquitous_tactic_name_is_not_used_for_retrieval():
+    from integration.agent.repair_hints import _discriminative_tactics
+
+    changelog = {
+        "releases": [{"entries": [{}] * 100}],
+        "indexes": {"by_tactic": {"smt": [{}] * 3, "rnd": [{}] * 1}},
+    }
+    assert _discriminative_tactics(changelog, ["smt", "rnd"]) == ["rnd"]
+
+
+def test_a_name_exactly_at_the_threshold_is_kept():
+    from integration.agent.repair_hints import _discriminative_tactics
+
+    changelog = {
+        "releases": [{"entries": [{}] * 100}],
+        "indexes": {"by_tactic": {"seq": [{}] * 2}},
+    }
+    assert _discriminative_tactics(changelog, ["seq"]) == ["seq"]
+
+
+def test_an_empty_catalog_prunes_nothing():
+    """No denominator means no evidence of ubiquity; do not silently drop the
+    whole query."""
+    from integration.agent.repair_hints import _discriminative_tactics
+
+    assert _discriminative_tactics({}, ["smt"]) == ["smt"]
+
+
+def test_the_guard_prunes_the_real_catalogs_generic_names(monkeypatch):
+    """Against the shipped changelog, not a fixture.
+
+    The threshold was chosen from the real catalog's shape -- `smt` 3.07%,
+    `rewrite` 2.96%, `simplify` 2.63%, `proc` 2.52%, then a gap down to `rnd`
+    at 1.31% -- so a fixture proving 2% works on invented numbers would prove
+    nothing. This is the one test here that opts out of the isolation fixture.
+    """
+    from integration.agent.repair_hints import (
+        _discriminative_tactics,
+        _load_retrieve_entries_module,
+        resolve_changelog_path,
+    )
+
+    monkeypatch.delenv("SHANNON_PROOF_CORPUS_DIR", raising=False)
+    repair_hints._retrieve_entries_module_cache = None
+    module = _load_retrieve_entries_module()
+    changelog = module.load_changelog(str(resolve_changelog_path()))
+    names = ["smt", "rewrite", "simplify", "proc", "rnd", "while", "seq"]
+    kept = _discriminative_tactics(changelog, names)
+    assert "smt" not in kept and "rewrite" not in kept
+    assert "simplify" not in kept and "proc" not in kept
+    assert "rnd" in kept and "while" in kept
+
+
+def test_a_step_naming_only_generic_tactics_retrieves_nothing(monkeypatch):
+    """The guard has to be wired into the entry point, not just available.
+
+    Against the real catalog, so that "no hits" cannot pass because the
+    fixture corpus happens to be empty: a `rnd` step still retrieves, and the
+    `smt` step that used to return four unrelated r2023.09 chore commits now
+    returns nothing.
+    """
+    from integration.agent.repair_hints import get_tactic_change_hints_by_release
+
+    monkeypatch.delenv("SHANNON_PROOF_CORPUS_DIR", raising=False)
+    repair_hints._retrieve_entries_module_cache = None
+
+    generic, version = get_tactic_change_hints_by_release(
+        failing_tactic_text="smt().",
+        source_ec_version="r2022.04",
+        target_ec_version="r2026.06",
+    )
+    assert generic == [] and version is None
+
+    specific, _ = get_tactic_change_hints_by_release(
+        failing_tactic_text="rnd (fun x => t{1} +^ x).",
+        source_ec_version="r2022.04",
+        target_ec_version="r2026.06",
+    )
+    assert specific, "a discriminative tactic name must still retrieve"

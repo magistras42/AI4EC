@@ -231,6 +231,49 @@ def _known_tactic_names(changelog: dict[str, Any]) -> set[str]:
     return {str(name) for name in by_tactic}
 
 
+#: Largest share of the whole changelog a tactic's bucket may hold before its
+#: name stops being evidence of anything. A name that tags 3% of every entry
+#: ever written does not select the entries relevant to one failing step -- it
+#: selects whatever that release happened to contain. Measured on the shipped
+#: catalog (913 entries): `smt` 3.07%, `rewrite` 2.96%, `simplify` 2.63%,
+#: `proc` 2.52%, and matching on `smt` retrieved four unrelated r2023.09 chore
+#: commits. The next bucket down is `rnd` at 1.31%, so 2% separates the four
+#: generic names from the 57 discriminative ones without tuning to a hair.
+MAX_TACTIC_DOCUMENT_FREQUENCY = 0.02
+
+
+def _total_entry_count(changelog: dict[str, Any]) -> int:
+    return sum(
+        len(release.get("entries") or [])
+        for release in (changelog.get("releases") or [])
+    )
+
+
+def _discriminative_tactics(
+    changelog: dict[str, Any],
+    names: list[str],
+    *,
+    max_document_frequency: float = MAX_TACTIC_DOCUMENT_FREQUENCY,
+) -> list[str]:
+    """Drop tactic names too common in the catalog to select anything.
+
+    Standard document-frequency pruning: retrieval by a term that appears
+    everywhere returns the corpus, not an answer. Returning nothing is the
+    better outcome -- the prompt simply carries no changelog section, instead
+    of four confident-looking entries about an unrelated release.
+    """
+    total = _total_entry_count(changelog)
+    if total <= 0:
+        return names
+    by_tactic = (changelog.get("indexes") or {}).get("by_tactic") or {}
+    kept = []
+    for name in names:
+        bucket = by_tactic.get(name) or []
+        if len(bucket) / total <= max_document_frequency:
+            kept.append(name)
+    return kept
+
+
 def _tactics_mentioned(text: str, known: set[str]) -> list[str]:
     """Which known tactic names appear in the failing step, longest first.
 
@@ -274,6 +317,12 @@ def get_tactic_change_hints_by_release(
 
     changelog = module.load_changelog(str(resolve_changelog_path()))
     names = _tactics_mentioned(failing_tactic_text, _known_tactic_names(changelog))
+    # A step naming only ubiquitous tactics retrieves noise, so it retrieves
+    # nothing. `hint_uptake` for this path is currently 0.0 -- no identifier
+    # the changelog half introduced has ever appeared in an accepted tactic --
+    # which is the outcome to expect when the query terms select 3% of the
+    # catalog at random.
+    names = _discriminative_tactics(changelog, names)
     if not names:
         return [], None
 

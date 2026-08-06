@@ -1,0 +1,18 @@
+RO.mp <- empty<:group, text>          ( 1--)  RO_track.mp <- empty<:group, text>
+q <$ dexp                             ( 2--)  q1 <$ dexp
+r <$ dexp                             ( 3--)  q2 <$ dexp
+(pubk, privk) <- (g ^ q, q)           ( 4--)  RO_track.badHappened <- false
+(x1, x2) <@                           ( 5--)  RO_track.bad_grp <- g ^ (q1 * q2)
+choice <$ {0,1}                       ( 6--)  (x1, x2) <@ G1.A.choose(g ^ q1)
+pubk0 <- pubk                         ( 7--)  choice <$ {0,1}
+t <- if choice then x1 else x2        ( 8--)  t <- if choice then x1 else x2
+x <- pubk0 ^ r                        ( 9--)  if (g ^ (q1 * q2) \notin RO_track.mp) {
+                                      ( 9.1)    y <$ dtext
+                                      ( 9.2)    RO_track.mp <-
+                                      (    )      RO_track.mp.[g ^ (q1 * q2) <- y]
+if (x \notin RO.mp) {                 (10--)  u <- oget RO_track.mp.[g ^ (q1 * q2)]
+  y <$ dtext                          (10.1)
+  RO.mp <- RO.mp.[x <- y]             (10.2)
+u <- oget RO.mp.[x]                   (11--)  c <- (g ^ q2, t +^ u)
+c <- (g ^ r, t +^ u)                  (12--)  guess <@ G1.A.guess(c)
+guess <@ INDCPA(HEG, Adv).A.guess(c)  (13--)

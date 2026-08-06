@@ -237,6 +237,48 @@ def test_goal_text_equality_is_not_proof_of_inertness(tmp_path, easycrypt_bin):
     )
 
 
+@pytest.mark.integration
+def test_subgoal_count_does_not_rescue_the_skip_case(tmp_path, easycrypt_bin):
+    """Why `confirm_noop` still uses two goal-text views and not a count.
+
+    The handoff `docs/PROOF_REPAIR_NEXT_HANDOFF.md` §2 proposed replacing the
+    primary signal with the subgoal count from shannon-prover's
+    `ec_state_diff.py`, on the reading that its `PROGRESS_DECOMPOSITION` arm
+    "is exactly the `skip.` case". It is not. `skip.` converts a Hoare
+    judgment into an ambient goal WITHOUT splitting it, so the count is 1 on
+    both sides -- in both views -- and a count-primary detector calls it inert
+    and deletes it, which the test above shows breaks the proof.
+
+    Running their `compute_state_diff` on this transition returns
+    NEUTRAL_OR_NO_CHANGE, not PROGRESS_DECOMPOSITION, for both views.
+    """
+    from integration.agent.easycrypt import fetch_goal, resolve_goal
+    from integration.agent.goal_diff import subgoal_count
+    from integration.agent.proof_file import create_working_copy
+
+    src = Path(__file__).resolve().parent / "fixtures" / "hoare_after_proof.ec"
+    cfg = AgentConfig(easycrypt_bin=easycrypt_bin)
+
+    w = tmp_path / "a.ec"
+    create_working_copy(src, w)
+    p = ProofFile(w)
+    p.append_tactic("proc.")
+    resolve_before = resolve_goal(p, cfg).strip()
+    raw_before = fetch_goal(w, p.last_tactic_line(), cfg).stdout.strip()
+
+    p.append_tactic("skip.")
+    resolve_after = resolve_goal(p, cfg).strip()
+    raw_after = fetch_goal(w, p.last_tactic_line(), cfg).stdout.strip()
+
+    # The count is blind to it in BOTH views ...
+    assert subgoal_count(resolve_before) == subgoal_count(resolve_after) == 1
+    assert subgoal_count(raw_before) == subgoal_count(raw_after) == 1
+    # ... and the raw view is the only observable that moves at all, which is
+    # precisely the conjunction `confirm_noop` relies on.
+    assert resolve_before == resolve_after
+    assert raw_before != raw_after
+
+
 def test_the_goal_view_matches_what_the_loop_shows_the_model(proof, monkeypatch):
     """After a run of unchanged tactics `resolve_goal` returns "" -- it walks
     back past each unchanged cursor and gives up -- and the loop falls through
@@ -407,3 +449,96 @@ def test_a_no_op_neither_resets_nor_increments_the_stuck_counter():
     )
     # It must still be able to end a trial that is genuinely stuck.
     assert "_check_stuck" in block
+
+
+# --- the stuck budget, behaviourally (§5) -----------------------------------
+# `docs/PROOF_REPAIR_NEXT_HANDOFF.md` §5 records that no-ops were removed from
+# the stuck counter after run H and that NO run has executed with the change.
+# The end-to-end ElGamal measurement it asks for needs a solver LLM and is not
+# runnable here (see the doc). What IS testable is the mechanism the concern is
+# about: whether a run of inert steps eats the runway. The test above pins the
+# accounting by reading the source; this one pins the consequence.
+
+
+def _scripted_run(monkeypatch, tmp_path, tactics, *, inert, stuck_limit, max_steps):
+    """Drive `run_agent` with EasyCrypt and the model both stubbed."""
+    from types import SimpleNamespace
+
+    from integration.agent import loop as loop_mod
+    from integration.agent.llm import LlmDecision, TacticAction
+
+    proof = tmp_path / "p.ec"
+    proof.write_text("lemma x : true.\nproof.\n", encoding="utf-8")
+    config = AgentConfig(
+        easycrypt_bin=Path("/nonexistent/ec.exe"),
+        max_steps=max_steps, stuck_limit=stuck_limit, output_dir=tmp_path,
+    )
+
+    seen = {"calls": 0}
+
+    class FakeLlm:
+        def decide(self, _prompt, **_kwargs):
+            i = seen["calls"]
+            seen["calls"] += 1
+            return LlmDecision(action=TacticAction(tactic=tactics[i % len(tactics)]))
+
+    monkeypatch.setattr(loop_mod, "LlmClient", lambda _c: FakeLlm())
+    monkeypatch.setattr(loop_mod, "_startup", lambda *a, **k: None)
+    monkeypatch.setattr(loop_mod, "_build_premise_index", lambda *a, **k: ({}, {}, {}))
+    monkeypatch.setattr(loop_mod, "EmbeddingClient",
+                        lambda *a, **k: SimpleNamespace(embed=lambda t: None))
+    monkeypatch.setattr(loop_mod, "rank_by_cosine", lambda *a, **k: [])
+    monkeypatch.setattr(loop_mod, "top_premises", lambda *a, **k: {})
+    monkeypatch.setattr(loop_mod, "resolve_goal", lambda *a, **k: "goal: x = x")
+    monkeypatch.setattr(loop_mod, "resolve_goal_cursor", lambda *a, **k: 1)
+    monkeypatch.setattr(loop_mod, "fetch_goal", lambda *a, **k:
+                        SimpleNamespace(returncode=0, stdout="goal", stderr=""))
+    monkeypatch.setattr(loop_mod, "validate_file", lambda *a, **k:
+                        SimpleNamespace(returncode=0, stdout="", stderr=""))
+    monkeypatch.setattr(loop_mod, "is_proof_discharged", lambda *a, **k: False)
+    monkeypatch.setattr(loop_mod, "tactic_discharged_proof", lambda *a, **k: False)
+    monkeypatch.setattr(loop_mod, "is_no_active_proof", lambda *a, **k: False)
+    monkeypatch.setattr(loop_mod, "is_proof_complete_at_cursor", lambda *a, **k: False)
+    monkeypatch.setattr(loop_mod, "confirm_noop", lambda *a, **k: inert)
+
+    result = loop_mod.run_agent(proof, config, work_copy=tmp_path / "w.agent.ec")
+    return result, loop_mod, seen["calls"]
+
+
+def test_a_run_of_no_ops_keeps_the_full_runway(monkeypatch, tmp_path):
+    """Eight consecutive inert steps against a stuck limit of 3.
+
+    This is the change run H has never exercised. Coupling "this step was
+    wasted" to "this trial is going nowhere" made G2_G3 die progressively
+    earlier -- 75 steps, then 44, then 27 -- while the share of steps that
+    changed nothing stayed flat near 50%, so the counter was shortening the
+    runway rather than reducing the waste.
+    """
+    # Eight DISTINCT tactics: each is a fresh no-op at this goal, never a
+    # repeat of a banned one. Repeats are a different charge, and the test
+    # below is the one that pins them.
+    result, loop_mod, calls = _scripted_run(
+        monkeypatch, tmp_path,
+        ["wp.", "auto.", "simplify.", "trivial.", "progress.", "sp.",
+         "subst.", "smt()."],
+        inert=True, stuck_limit=3, max_steps=8,
+    )
+    assert result.reason is loop_mod.ExitReason.MAX_STEPS, (
+        f"a run of fresh no-ops ended the trial early as {result.reason}"
+    )
+    assert calls == 8, "the trial must keep its whole step budget"
+
+
+def test_repeating_one_banned_no_op_still_ends_the_trial(monkeypatch, tmp_path):
+    """The other half, and the reason the counter can be spared no-ops safely.
+
+    A no-op is removed and barred at its goal, so proposing it again is a hard
+    rejection and DOES drive the counter. Sparing the first occurrence costs
+    nothing, because a model that cannot move on is still caught here -- which
+    matters, since the proof-state hash cannot catch it: a no-op appends a line
+    before it is removed, so the tail hash is new every time.
+    """
+    result, loop_mod, _ = _scripted_run(
+        monkeypatch, tmp_path, ["wp."], inert=True, stuck_limit=3, max_steps=20,
+    )
+    assert result.reason is loop_mod.ExitReason.STUCK

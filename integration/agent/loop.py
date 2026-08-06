@@ -28,6 +28,7 @@ from .easycrypt import (
 from .ec_errors import strip_warning_lines
 from .embeddings import EmbeddingClient, rank_by_cosine, top_premises
 from .error_history import ErrorHistory
+from .goal_diff import format_state_diff
 from .lemma_search import (
     filter_catalog_by_theory,
     search_lemmas as run_lemma_search,
@@ -279,6 +280,11 @@ def run_agent(
     # the proof returns to the same state the bar returns with it, which is
     # correct -- it is still inert there.
     noop_by_goal: dict[str, set[str]] = {}
+    # (goal before, tactic) for the last ACCEPTED tactic, so the next prompt can
+    # describe what it structurally did. Cleared by an undo and by a no-op: in
+    # both cases the tactic is no longer in the script and diffing across it
+    # would attribute the move to a line that is not there.
+    last_accepted: tuple[str, str] | None = None
     continuous_searches = 0
     consecutive_noop_undos = 0
     # Lookup/search always use EasyCrypt Ax.all (lookup_catalog), never an
@@ -320,8 +326,18 @@ def run_agent(
         top = top_premises(premises_catalog, ranked)
 
         search_warning = _search_budget_warning(config, continuous_searches)
+        # What the previous accepted tactic did to get us here. Empty unless
+        # the move is one the structural metrics can actually name -- see
+        # `goal_diff.format_state_diff`.
+        state_diff = (
+            format_state_diff(last_accepted[0], goal, last_accepted[1])
+            if last_accepted
+            else ""
+        )
+
         prompt = build_prompt(
             goal=goal,
+            state_diff=state_diff,
             top_premises=top,
             failed_tactics=errors.get(goal),
             proof_tail=proof.tail(config.proof_tail_lines),
@@ -471,6 +487,7 @@ def run_agent(
 
         if isinstance(action, UndoAction):
             continuous_searches = 0
+            last_accepted = None
             undone = proof.undo_last_tactic(action.count)
             if undone == 0:
                 logger.info("Undo requested but no tactic to remove")
@@ -968,6 +985,7 @@ def run_agent(
             # hash was new and `stuck_counter` reset to zero every time.
             if confirm_noop(proof, config, goal, inserted_line):
                 # `confirm_noop` has already removed the line.
+                last_accepted = None
                 banned = noop_by_goal.setdefault(_goal_hash(goal), set())
                 banned.add(normalize_tactic(action.tactic))
                 # Neither reset NOR incremented. Two different claims were
@@ -1010,6 +1028,8 @@ def run_agent(
                         config, source, work_copy, step, run_log, llm, trajectory
                     )
                 continue
+
+            last_accepted = (goal, action.tactic)
 
             state_hash = _proof_state_hash(proof.tail(config.proof_tail_lines))
             if state_hash in seen_proof_states:

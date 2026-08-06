@@ -6,6 +6,12 @@ import re
 from pathlib import Path
 from typing import Any
 
+from .ec_program import (
+    ProgramPair,
+    common_prefix_length,
+    parse_program_block,
+    seq_candidates,
+)
 from .error_history import normalize_tactic
 from .llm import action_response_format_spec
 
@@ -278,7 +284,13 @@ def _program_statement_block(goal: str) -> str:
     if "pre =" not in text or "post =" not in text:
         return ""
     mid = text.split("pre =", 1)[1].split("post =", 1)[0]
-    return "\n".join(_statement_lines(mid)).strip()
+    # `strip("\n")`, not `strip()`: leading spaces on the FIRST line are the
+    # left column of the two-column dump being empty, and a bare `.strip()`
+    # deletes them, shifting that row's shared index marker out of alignment
+    # with every other row. `ec_program` locates the index column by agreement
+    # across rows, so one misaligned row cost the whole block -- 25 of 683 real
+    # blocks parsed as unindexed for this reason alone.
+    return "\n".join(_statement_lines(mid)).strip("\n")
 
 
 def _statement_lines(region: str) -> list[str]:
@@ -452,6 +464,52 @@ def _goal_section(goal: str) -> list[str]:
     ]
 
 
+def _seq_position_bullets(pair: ProgramPair) -> list[str]:
+    """State the `seq` positions that exist, and where the good cuts are.
+
+    Three facts, in the order they are needed: the valid range, where the two
+    programs stop agreeing, and any cut that lands on a shared procedure call.
+    The last is ported from shannon-prover's `_compute_seq_suggestions` and is
+    the one the model cannot read off the dump -- matching a call at left 13 to
+    the same call at right 12 is what makes `seq 13 12` the cut rather than a
+    guess.
+    """
+    n_left, n_right = len(pair.left), len(pair.right)
+    bullets = [
+        f"Instruction counts — left: {n_left}, right: {n_right} (counted from "
+        "EasyCrypt's own instruction indices, so these are the exact bounds). "
+        f"`seq N M : (inv)` splits the FIRST N (left) and M (right) "
+        f"instructions: N must be 0..{n_left} and M must be 0..{n_right}. "
+        "Any other index is `invalid 'position' parameter`."
+    ]
+    if not pair.is_equiv:
+        return bullets
+
+    prefix = common_prefix_length(pair)
+    if prefix and prefix < max(n_left, n_right):
+        bullets.append(
+            f"The two programs agree for their first {prefix} instructions and "
+            f"diverge at position {prefix + 1}. `seq {prefix} {prefix} : "
+            "(={...})` cuts exactly at that divergence, which keeps the "
+            "matching prefix in one subgoal."
+        )
+    elif n_left != n_right:
+        bullets.append(
+            f"The sides are asymmetric ({n_left} vs {n_right} instructions), "
+            "so a symmetric tactic will not apply. Align them with `seq` (or "
+            "a one-sided `while{1}` / `if{2}` / `rnd{1}`) before pairing them."
+        )
+
+    for candidate in seq_candidates(pair)[:3]:
+        bullets.append(
+            f"Both sides call `{candidate.procedure}` — left at position "
+            f"{candidate.left_pos}, right at position {candidate.right_pos}. "
+            f"`{candidate.tactic}` cuts exactly there, so the prefixes can be "
+            "discharged together with `call` / `auto`."
+        )
+    return bullets
+
+
 def format_active_goal_shape_hints(goal: str) -> str:
     """Proactive, shape-conditioned hints for the current EasyCrypt goal.
 
@@ -560,24 +618,76 @@ def format_active_goal_shape_hints(goal: str) -> str:
         # 10x "invalid last instruction", "left instruction list is not empty").
         left_stmts = _statement_lines(left)
         right_stmts = _statement_lines(right)
-        if left_stmts or right_stmts:
+        pair = parse_program_block(block)
+        if pair.indexed:
+            # Counted from EasyCrypt's own index column rather than by counting
+            # instruction-shaped lines. The line count treats a statement's
+            # nested body as more statements: on 503 of 654 real indexed goals
+            # it OVERSTATED the maximum, every time, and the sentence it
+            # decorated tells the model not to exceed it. One measured goal was
+            # reported as `left: 15, right: 15` when `seq` accepted at most
+            # 13 and 12 -- an `invalid 'position' parameter` handed to the
+            # model as a fact.
+            bullets.extend(_seq_position_bullets(pair))
+        elif left_stmts or right_stmts:
+            # No index column printed, so no position is known. Say nothing
+            # about counts rather than quote the line tally.
             bullets.append(
-                f"Instruction counts — left: {len(left_stmts)}, "
-                f"right: {len(right_stmts)}. `seq N M : (inv)` splits the "
-                "FIRST N (left) and M (right) instructions; N/M must not "
-                "exceed these counts."
+                "`seq N M : (inv)` splits the FIRST N (left) and M (right) "
+                "instructions. EasyCrypt printed no instruction indices for "
+                "this goal, so check the listing above before choosing N/M."
             )
-            for label, side in (("left", left), ("right", right)):
-                # Both ends, because the tactics divide on exactly that: `rnd`
-                # and `wp` consume from the END, `if` / `rcondt` / `rcondf`
-                # from the FRONT. Naming only the tail left every `if` to
-                # guesswork -- 13 of 78 failures in the 2026-08-05 run.
-                first = _first_statement_kind(side)
-                if first:
-                    bullets.append(f"First instruction on the {label}: {first}.")
-                kind = _last_statement_kind(side)
-                if kind:
-                    bullets.append(f"Last instruction on the {label}: {kind}.")
+
+        if pair.indexed:
+            sides = (
+                ("left", [s.text for s in pair.left]),
+                ("right", [s.text for s in pair.right]),
+            )
+        else:
+            sides = (("left", [left]), ("right", [right]))
+        for label, texts in sides:
+            # Both ends, because the tactics divide on exactly that: `rnd`
+            # and `wp` consume from the END, `if` / `rcondt` / `rcondf`
+            # from the FRONT. Naming only the tail left every `if` to
+            # guesswork -- 13 of 78 failures in the 2026-08-05 run.
+            if not texts:
+                continue
+            first = _first_statement_kind("\n".join(texts))
+            if first:
+                bullets.append(f"First instruction on the {label}: {first}.")
+            kind = _last_statement_kind("\n".join(texts))
+            if kind:
+                bullets.append(f"Last instruction on the {label}: {kind}.")
+
+        if not pair.indexed and subgoals == 2:
+            # The nearest thing to a wrong-logic-class discriminator that any
+            # measurement has found. 24% of failures are a program-logic tactic
+            # aimed at a goal whose judgment is already discharged, and neither
+            # classifier sees it: `goal_looks_program_logic` says program-logic
+            # on 91% of them and shannon-prover's `classify_goal` says pRHL on
+            # all 25 it was tested against.
+            #
+            # Subgoal count ALONE does not separate them either -- the handoff
+            # proposed it and the rates are 21.6% (accepted) vs 50.7% (wrong)
+            # at two open goals, nowhere near a rule. Conjoined with "EasyCrypt
+            # printed no instruction index column" it reaches 58% precision at
+            # 45% recall over 568 labelled steps, ~5x the 11.8% base rate, and
+            # its precision beat the base rate in all 9 runs measured.
+            #
+            # 58% is a hint, not a fact, so this is phrased as something to try
+            # first and cheap to be wrong about -- NOT as "this goal is
+            # ambient". Two in five of these really are program-logic goals.
+            bullets.append(
+                "Note: this goal prints `pre`/`post` but EasyCrypt listed no "
+                "instruction indices for it, and there are 2 open goals. On "
+                "measured runs that combination is a discharged judgment about "
+                "half the time — the program logic is already done and only an "
+                "ambient residual is left. If your program-logic tactic "
+                "answers `expecting a goal of the form: hoare[S], ehoare[S], "
+                "phoare[S], equiv[S]`, do not retry it or vary its arguments: "
+                "switch to `smt` / `progress` / `rewrite` / `move =>` "
+                "immediately."
+            )
 
         if _programs_in_sync(goal):
             # The marker means both sides hold IDENTICAL code, so EasyCrypt
@@ -792,6 +902,7 @@ def build_prompt(
     noop_tactics: list[str] | None = None,
     broken_tactic: str | None = None,
     broken_tactic_error: str | None = None,
+    state_diff: str | None = None,
 ) -> str:
     sections = [
         "You are an EasyCrypt proof assistant agent. Choose the next tactic or undo.",
@@ -874,6 +985,13 @@ def build_prompt(
             *_goal_section(goal),
         ]
     )
+    if state_diff:
+        # Directly under the goal, because it is the caption for it: what the
+        # last accepted tactic did to produce what is printed above. The
+        # harness has always been able to say a tactic did NOTHING and never
+        # able to say what a productive one did, so a `seq` that triples the
+        # subgoal count reads to the model exactly like a regression.
+        sections.extend([state_diff, ""])
     if broken_tactic:
         sections.extend(
             ["", format_broken_tactic_repair(broken_tactic, broken_tactic_error), ""]
