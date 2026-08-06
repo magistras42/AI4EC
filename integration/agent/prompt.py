@@ -688,6 +688,7 @@ def build_prompt(
     past_steps: list[dict[str, Any]] | None = None,
     search_warning: str | None = None,
     recent_failures: list[tuple[str, str]] | None = None,
+    noop_tactics: list[str] | None = None,
 ) -> str:
     sections = [
         "You are an EasyCrypt proof assistant agent. Choose the next tactic or undo.",
@@ -800,6 +801,28 @@ def build_prompt(
                 "argument, or break a compound into separate steps.",
                 "Banned tactics at this goal:",
                 *[f"- `{tactic}`" for tactic in banned],
+            ]
+        )
+    if noop_tactics:
+        # A distinct section from the ban list above, because the failure mode
+        # is the opposite and the model needs to know which it is looking at.
+        # These tactics did not error -- EasyCrypt accepted them and said
+        # nothing -- they simply left the goal untouched, so they were removed
+        # from the script. Without being told, a model reads "accepted" and
+        # tries the same thing again; that is how one lemma ended with 45 of
+        # its 58 lines a bare `wp.`.
+        sections.extend(
+            [
+                "",
+                "## Tactics that compiled but did NOTHING here",
+                (
+                    "Each of these was accepted by EasyCrypt and then verified "
+                    "to leave the goal byte-identical, so it was removed from "
+                    "the script. Do not repeat them at THIS goal -- they have "
+                    "nothing left to consume. They become available again as "
+                    "soon as the goal changes:"
+                ),
+                *[f"- `{tactic}`" for tactic in noop_tactics],
             ]
         )
     prior = _format_recent_other_failures(recent_failures or [], failed_tactics)

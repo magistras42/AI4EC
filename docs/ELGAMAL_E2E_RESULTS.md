@@ -1038,6 +1038,18 @@ shape as run C's `G1_G2_eq` (§12.3b): a trial cut off mid-backtrack leaves the
 file worse than the bootstrap left it, and the number is not a measure of
 anything.
 
+**Correction: `G1_G2_eq`'s "+40" is almost entirely inert.** Of its 58 tactic
+lines, 39 are a trailing run of consecutive bare `wp.`, and §14.3's experiment
+proves them removable — deleting all 39 leaves EasyCrypt in a byte-identical
+state (goal sha1 `293cdab8e3`, 5464 chars). Roughly 19 lines are substantive,
+so the model contributed on the order of **+1** here, not +40. The `68% of
+original` figure in the table should be read the same way.
+
+To be clear about what this does *not* say: a bare `wp.` is not padding by
+itself. The 2020 authors' own `correctness` contains 11 bare `wp.`/`auto.`
+lines and has **zero** goal-unchanged tactics (§14.3). What is inert is the
+*repetition* — the same tactic re-applied to a state it has already exhausted.
+
 **Retained tactics rose 237 -> 249 (+12)**, which is inside the noise. `G2_G3`
 alone swung 19 -> 13 between two *identically configured* runs, so a 12-tactic
 difference across a whole run separates nothing.
@@ -1219,6 +1231,11 @@ detector measured the wrong thing.
 
 ### 14.4 Proposed features, ranked by the evidence above
 
+> **Implemented, but NARROWER than proposed here — see §14.5.** The rule
+> below assumes "goal text unchanged" proves a tactic did nothing. It does
+> not, and this repo's own fixture disproves it. What shipped only rolls back
+> inert *repeats*.
+
 **1. Goal-based no-op detection.** *(highest value, smallest change)*
 
 Compare the goal before and after an accepted tactic. Identical goal means the
@@ -1266,3 +1283,59 @@ so under concurrency the cap becomes approximate — unacceptable on a paid run
 without a reservation model. Worth doing, not worth doing casually. And it is
 second priority behind (1), because (1) makes the expensive trials cheaper
 rather than merely running them in parallel.
+
+
+### 14.5 What shipped, and the claim that did not survive testing
+
+§14.4's proposal was to remove any accepted tactic that left the goal
+unchanged, verified by deleting it and re-checking. Implementing it broke two
+existing tests, and the reason matters more than the fix.
+
+**Goal-text equality does not prove a tactic did nothing.** On
+`integration/tests/fixtures/hoare_after_proof.ec`:
+
+```
+after `proc.`   resolve_goal = 166 chars
+after `skip.`   resolve_goal = 166 chars, BYTE-IDENTICAL
+```
+
+and yet:
+
+| tactic sequence | result |
+|---|---|
+| `proc. skip. move => &m H1. subst. trivial.` | closes (rc=0) |
+| the same **without `skip.`** | **does not close (rc=1)** |
+
+`skip.` converts the Hoare judgment to an ambient goal. The displayed goal is
+a *lossy view* of the proof state, so a tactic can change the state without
+changing what is printed. The delete-and-recheck guard did not catch it either
+— with `skip.` removed the goal renders the same as well. Deleting it would
+have destroyed real progress.
+
+An earlier iteration of the same implementation also flagged `proc.` as inert,
+because a raw `fetch_goal` at the cursor is not a faithful "state after line
+N" for it — which is exactly why `resolve_goal` carries
+`_probe_post_proc_goal`. Two independent false positives on the first two
+tactics tried.
+
+**What shipped instead** is the repetition case, which the evidence does
+support: the pathology was always a *run* of the same tactic — 39 consecutive
+bare `wp.` in `G1_G2_eq`, all 39 removable for a byte-identical state. So:
+
+- the **first** application of any tactic is always kept, whatever the goal does;
+- an **immediate repeat** that moved nothing is rolled back, the way a failed
+  tactic already is;
+- it does not reset `stuck_counter`, since a repeat that moved nothing is the
+  definition of an unproductive step;
+- the tactic is barred **only at that goal hash**, so the bar lifts the moment
+  the goal moves — `wp.` being inert in one state says nothing about the next;
+- the prompt gains a section distinguishing this from a failure, because a
+  model that reads "accepted" simply tries the same thing again.
+
+This does not claim a repeat is *provably* inert — nothing observable proves
+that. It claims the model applied the same tactic twice to the same displayed
+goal, which is a loop whatever the internal state, and rolling back the second
+one cannot lose anything the first did not already do.
+
+`test_goal_text_equality_is_not_proof_of_inertness` pins the `skip.` case, so
+any future attempt to widen this back to first applications has to survive it.

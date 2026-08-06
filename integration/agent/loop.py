@@ -52,6 +52,7 @@ from .prompt import (
     build_prompt,
     goal_is_implication_before_hl,
     goal_looks_program_logic,
+    normalize_tactic,
 )
 from .proof_file import ProofFile, create_working_copy, promote_working_copy
 from .run_log import AgentRunLog
@@ -254,6 +255,14 @@ def run_agent(
     provider_failures = 0
     seen_proof_states: set[str] = set()
     stuck_counter = 0
+    # Tactics proven inert AT a given goal, keyed by that goal's hash. Scoped
+    # rather than global on purpose: `wp.` doing nothing in one state says
+    # nothing about the next, so the bar lifts the moment the goal moves. If
+    # the proof returns to the same state the bar returns with it, which is
+    # correct -- it is still inert there.
+    noop_by_goal: dict[str, set[str]] = {}
+    # The last tactic the script actually kept, for repeat detection.
+    last_accepted_tactic: str | None = None
     continuous_searches = 0
     consecutive_noop_undos = 0
     # Lookup/search always use EasyCrypt Ax.all (lookup_catalog), never an
@@ -314,6 +323,7 @@ def run_agent(
             ),
             search_warning=search_warning,
             recent_failures=errors.recent_other(goal),
+            noop_tactics=sorted(noop_by_goal.get(_goal_hash(goal), set())),
         )
 
         # Checked BEFORE the call, not after: the budget is updated when a
@@ -905,6 +915,47 @@ def run_agent(
                 _log_finish(run_log, result)
                 return result
 
+            # Compiling is not progress. Measured across three ElGamal runs,
+            # 60-63% of ACCEPTED tactics left the goal byte-identical, and both
+            # STUCK outcomes in the last run were a run of such tactics -- one
+            # lemma ended with 45 of its 58 lines a bare `wp.`, all 39 trailing
+            # ones provably removable. The old detector could not see it: it
+            # hashes the proof TAIL, and a no-op still appends a line, so the
+            # hash was new and `stuck_counter` reset to zero every time.
+            if confirm_noop(
+                proof, config, goal, inserted_line,
+                last_accepted_tactic, action.tactic,
+            ):
+                # `confirm_noop` has already removed the line.
+                banned = noop_by_goal.setdefault(_goal_hash(goal), set())
+                banned.add(normalize_tactic(action.tactic))
+                # Deliberately NOT resetting stuck_counter: a step that changed
+                # nothing is the definition of an unproductive one.
+                stuck_counter = _increment_stuck(config, stuck_counter)
+                trajectory.append(
+                    _step_record(
+                        step, goal, action="tactic", tactic=action.tactic,
+                        outcome="no_op", thought=thought, content=raw_content,
+                    )
+                )
+                if run_log is not None:
+                    run_log.iteration(
+                        step=step, goal=goal, top_premises=top,
+                        ranked_scores=ranked, action="tactic",
+                        tactic=action.tactic, outcome="no_op",
+                        thought=thought, content=raw_content,
+                    )
+                logger.info(
+                    "Step %d: %s compiled but left the goal unchanged; "
+                    "removed and barred until the goal moves",
+                    step, action.tactic.strip()[:60],
+                )
+                if _check_stuck(config, stuck_counter, run_log, work_copy, step):
+                    return _stuck_result(
+                        config, source, work_copy, step, run_log, llm, trajectory
+                    )
+                continue
+
             state_hash = _proof_state_hash(proof.tail(config.proof_tail_lines))
             if state_hash in seen_proof_states:
                 stuck_counter = _increment_stuck(config, stuck_counter)
@@ -912,6 +963,7 @@ def run_agent(
                 seen_proof_states.add(state_hash)
                 stuck_counter = 0
 
+            last_accepted_tactic = action.tactic
             trajectory.append(
                 _step_record(
                     step,
@@ -1058,6 +1110,62 @@ def _write_timeout_retrospective(
 
 def _proof_state_hash(proof_tail: str) -> str:
     return hashlib.sha256(proof_tail.encode("utf-8")).hexdigest()
+
+
+def _goal_hash(goal: str) -> str:
+    return hashlib.sha256((goal or "").strip().encode("utf-8")).hexdigest()
+
+
+def confirm_noop(
+    proof: ProofFile,
+    config: AgentConfig,
+    goal_before: str,
+    inserted_line: int,
+    previous_tactic: str | None,
+    tactic: str,
+) -> bool:
+    """Is this tactic an inert REPEAT of the one immediately before it?
+
+    Scoped deliberately narrowly, because the obvious wider rule is unsound.
+    "The goal text did not change" is *not* proof that a tactic did nothing:
+    on `integration/tests/fixtures/hoare_after_proof.ec`, `skip.` leaves
+    ``resolve_goal`` byte-identical (166 chars before and after) and yet is
+    load-bearing -- delete it and the proof no longer closes (rc=1). The goal
+    display is a lossy view of the proof state, and removing a tactic on the
+    strength of it deletes real progress.
+
+    What the evidence does support is the repetition case. Across three
+    ElGamal runs 60-63% of accepted tactics left the goal unchanged, and the
+    pathology was always a *run* of the same tactic: one lemma ended with 39
+    consecutive bare `wp.`, and deleting all 39 left EasyCrypt in a
+    byte-identical state (goal sha1 293cdab8e3). The first application of a
+    tactic is therefore always kept; only an immediate repeat that moved
+    nothing is rolled back, exactly the way a failed tactic already is.
+
+    This does not claim the repeat is provably inert -- nothing observable
+    proves that. It claims the model has applied the same tactic twice to the
+    same displayed goal, which is a loop whatever the internal state.
+
+    Rolls the repeat back when it returns True; leaves the file untouched
+    otherwise. Fails safe on an empty goal or an unreadable file.
+    """
+    if inserted_line <= 1 or previous_tactic is None:
+        return False
+    if normalize_tactic(previous_tactic) != normalize_tactic(tactic):
+        return False
+    goal_before = (goal_before or "").strip()
+    if not goal_before:
+        return False
+    try:
+        after = resolve_goal(proof, config).strip()
+    except OSError:
+        return False
+    # An empty goal is what a discharged or unreachable position looks like,
+    # never evidence of a no-op.
+    if not after or after != goal_before:
+        return False
+    proof.remove_lines(inserted_line)
+    return True
 
 
 # ---------------------------------------------------------------------------
