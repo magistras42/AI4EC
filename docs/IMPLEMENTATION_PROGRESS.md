@@ -6,7 +6,9 @@ provider architecture that lets DeepSeek, a local model (Gemma via LM Studio),
 or Claude act as the repair agent.
 
 Companion document: [`ELGAMAL_E2E_RESULTS.md`](ELGAMAL_E2E_RESULTS.md) — what
-the end-to-end run actually produced.
+the end-to-end runs actually produced. Latest: **run E** (§13), which tested
+raising the step budget and found it is not the binding constraint — two
+trials stopped on `STUCK_LIMIT` without using it.
 
 ---
 

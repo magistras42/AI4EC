@@ -889,6 +889,11 @@ discharged, go ambient"), matching the existing `skip.` fallback.
 
 ### 12.5b The step budget, not the model, ended all three
 
+> **Superseded by §13.** This section's recommendation — raise the multiplier
+> to 2.5 — was tested in run E and did **not** help. Two trials then stopped
+> on `STUCK_LIMIT` without using their enlarged budget, one of them after only
+> 35% of it. Read §13.2 before acting on anything below.
+
 Every unfinished lemma exhausted its budget exactly:
 
 | lemma | tactic lines | budget (1.4x) | steps used | cost | $/step |
@@ -935,3 +940,121 @@ finished neither of the three hard ones; §12.3b shows two of those three going
 *backwards* in run D and one going far forwards. The first-instruction fact
 addresses 13 of 78 failures deterministically, but whether that changes
 outcomes needs another run, and per §6 one run cannot settle it.
+
+---
+
+## 13. Run E — the step-budget experiment, and its answer
+
+Run D's §12.5b raised `ADAPTIVE_MULTIPLIER` 1.4 -> 2.5 on the grounds that all
+three unfinished lemmas had exhausted their budget exactly, so the harness
+rather than the model looked like the binding constraint. Run E tested that.
+Same spec, model, seed and corpus; only the multiplier changed. The spend cap
+stayed at $5.00.
+
+**The answer is no.** More steps did not buy repaired proofs.
+
+### 13.1 Headline, against both prior runs
+
+| | run C (1.4x) | run D (1.4x) | **run E (2.5x)** |
+|---|---|---|---|
+| complete / stuck / max-steps | 12 / 0 / 2 | 12 / 0 / 3 | **12 / 2 / 1** |
+| tactics retained | 192 | 237 | **249** |
+| spend | $1.0074 (capped) | $1.4887 | $1.4633 |
+| wall clock | 7.5 h | 9.4 h | 9.8 h |
+| import_repair resolved | 12/12 | 12/12 | **12/12** |
+
+Twelve lemmas complete in all three runs, and `import_repair` resolves 12 of 12
+in all three — that half of the system is stable and finished.
+
+### 13.2 The failure mode moved from MAX_STEPS to STUCK
+
+This is the result. Two trials stopped **without using their enlarged budget**:
+
+| lemma | budget | steps used | outcome | |
+|---|---:|---:|---|---|
+| G2_G3 | 75 | 75 | MAX_STEPS | used it all |
+| INDCPA_HEG_G1 | 137 | **104** | **STUCK** | 76% of budget |
+| G1_G2_eq | 260 | **91** | **STUCK** | **35% of budget** |
+
+`G1_G2_eq` is the lemma the whole change was aimed at — it was cut off at
+139/145 in run D with 51 tactics added. Given 260 steps it stopped at 91. The
+budget was never the thing stopping it; twenty consecutive unproductive
+iterations (`STUCK_LIMIT`) was.
+
+### 13.3 And the model was performing *better* while it happened
+
+| accepted / failed | run C | run D | **run E** |
+|---|---|---|---|
+| G2_G3 | 9/31 = 0.29 | 19/18 = 1.06 | **43/27 = 1.59** |
+| INDCPA_HEG_G1 | 56/13 = 4.31 | 34/34 = 1.00 | **62/33 = 1.88** |
+| G1_G2_eq | 7/9 = 0.78 | 110/25 = 4.40 | **73/11 = 6.64** |
+
+`G1_G2_eq` at 6.64 accepted per failure is the best ratio recorded on that
+lemma in any run, and it still went stuck holding fewer tactics than run D's
+attempt. A high accept ratio and an early stop are not contradictory: the model
+was landing most of what it tried, ran into something it could not get past,
+and burned its stuck allowance there.
+
+So §12.5b's diagnostic — "if the accept ratio collapses first, the answer is
+not steps at all" — returns an answer it did not anticipate. The ratio did not
+collapse. The run stopped anyway.
+
+### 13.4 Tactics in the fixed proofs
+
+`original` is the 2020 script, `replayed` how much still compiles verbatim,
+`FIXED` what the repaired file holds at the end.
+
+| # | lemma | original | replayed | FIXED | by model | % of original | outcome |
+|---|---|---:|---:|---:|---:|---:|---|
+| 0 | enc_stateless | 1 | 1 | 1 | +0 | 100% | COMPLETE |
+| 1 | INDCPA_Sec | 1 | 1 | 1 | +0 | 100% | COMPLETE |
+| 2 | INDCPA_Security | 2 | 1 | 2 | **+1** | 100% | COMPLETE |
+| 3 | log_gen | 3 | 3 | 3 | +0 | 100% | COMPLETE |
+| 4 | gen_log | 3 | 3 | 3 | +0 | 100% | COMPLETE |
+| 5 | grexpAll | 5 | 5 | 5 | +0 | 100% | COMPLETE |
+| 6 | RO_track_f_ll | 8 | 8 | 8 | +0 | 100% | COMPLETE |
+| 7 | G1_G2 | 5 | 5 | 5 | +0 | 100% | COMPLETE |
+| 8 | G3_true | 16 | 16 | 16 | +0 | 100% | COMPLETE |
+| 9 | RO_LCDHAdv | 17 | 17 | 17 | +0 | 100% | COMPLETE |
+| 10 | G2_bad_ub | 15 | 15 | 15 | +0 | 100% | COMPLETE |
+| 11 | G2_G3 | 30 | 13 | **8** | **−5** | 27% | MAX_STEPS |
+| 12 | INDCPA_HEG_G1 | 52 | 21 | **49** | **+28** | 94% | STUCK |
+| 13 | correctness | 58 | 58 | 58 | +0 | 100% | COMPLETE |
+| 14 | G1_G2_eq | 85 | 18 | **58** | **+40** | 68% | STUCK |
+| | **TOTAL** | **301** | **185** | **249** | **+64** | **83%** | |
+
+Calibration passed: every trial that replayed verbatim with zero agent
+iterations counts exactly its replayed prefix (see §12.3's counting note).
+
+Three things the outcome column hides.
+
+**`INDCPA_HEG_G1` reached 94% of the original script** — 49 of 52 tactics, 28
+of them added by the model — and is still recorded as a failure. It is three
+tactics short. That is the closest any run has come to a large repair.
+
+**`G2_G3` ended BELOW its replayed prefix** (8 against 13, −5). Five `undone`
+events and MAX_STEPS arrived before the model rebuilt what it had removed. Same
+shape as run C's `G1_G2_eq` (§12.3b): a trial cut off mid-backtrack leaves the
+file worse than the bootstrap left it, and the number is not a measure of
+anything.
+
+**Retained tactics rose 237 -> 249 (+12)**, which is inside the noise. `G2_G3`
+alone swung 19 -> 13 between two *identically configured* runs, so a 12-tactic
+difference across a whole run separates nothing.
+
+### 13.5 What run E establishes
+
+**Does.** `max_steps` was not the binding constraint. The lemma with the most
+headroom used 35% of it. Raising the multiplier is not the lever, and §12.5b's
+recommendation is superseded by this section.
+
+**Does not.** That `STUCK_LIMIT` is the lever instead. That is the obvious next
+knob and this run does not justify turning it: three runs, one seed each, and
+§6's measured spread exceeds every difference in §13.1. What the run does
+justify is *looking at* the point where `G1_G2_eq` went stuck at 91 steps with
+a 6.64 accept ratio — a specific, reproducible state, which is better evidence
+than another knob turned.
+
+Note also that the two failure modes are not equivalent for cost. STUCK stops
+early, so run E cost slightly *less* than run D ($1.4633 against $1.4887)
+despite 1.8x the step budget. Budget headroom that is never used is free.
