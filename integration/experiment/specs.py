@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from integration.experiment.corpora.elgamal import ElGamalCorpus
 from integration.experiment.corpora.joy import JoyCorpus
+from integration.experiment.corpora.lq1 import LQ1Corpus
 from integration.experiment.informal import InformalConfig
 from integration.experiment.mutations.tactics import TacticMutationSet
 from integration.experiment.protocols import (
@@ -42,6 +43,15 @@ def register_default_specs(data_dir) -> None:
             ExperimentSpec(
                 name="elgamal-broken-repair",
                 corpus=ElGamalCorpus(data_dir=data),
+                mutations=None,
+                broken_formal=BrokenFormalConfig(),
+            )
+        )
+    if "lq1-broken-repair" not in list(SPECS.names()):
+        SPECS.register(
+            ExperimentSpec(
+                name="lq1-broken-repair",
+                corpus=LQ1Corpus(data_dir=data),
                 mutations=None,
                 broken_formal=BrokenFormalConfig(),
             )
