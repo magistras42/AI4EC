@@ -115,7 +115,38 @@ pre-detection runs, since the latter report zero no-ops by construction.
 implies count equality (0 counterexamples in 525 transitions), and a
 count-first rule wrongly calls 113 of those 525 inert. See `goal_diff.py`.
 
-### 3.3 Stuck accounting
+### 3.3 The replayed prefix is protected from bulk undo
+
+`repair_bootstrap` leaves the replayed original tactics in the working copy.
+They **compile against the current build** — the one that broke is the next
+one — so they are verified work, not the model's guesses. Nothing distinguished
+them, and `undo_last_tactic` walked straight through them.
+
+Measured on run `20260807T031032Z` before the fix:
+
+| trial | undo actions | tactics removed | bootstrap → final |
+|---|---:|---:|---|
+| `G2_G3` | 10 | 37 | 13 → 12 |
+| `INDCPA_HEG_G1` | 13 | 53 | 21 → 9 |
+| `G1_G2_eq` | — | 12 **at step 2** | 18 → 6 |
+
+`G1_G2_eq` is the clearest case: one `undo(count=12)` erased 12 of 18 replayed
+tactics at step two, prompted by a single failed `smt(mem_rng_empty)`. Two of
+the three trials finished holding *fewer* tactics than they were handed, and no
+conventional counter showed it — accepted, failed and no-op all looked ordinary.
+
+`ProofFile.protected_prefix` now clamps a **multi-tactic** undo at the prefix
+boundary. It is not a floor: single-step undos are unrestricted, so a repair
+that genuinely needs to reach back (a `seq` whose invariant is too weak
+compiles and strands the proof later) still can — it just takes a sequence of
+decisions rather than one number. The prompt states which tactics are verified
+and that the clamp exists.
+
+`run_log.finish` records `tactics_retained`, `replayed_prefix` and
+`net_tactics_vs_bootstrap`. **A negative net is the signal**; it is the only
+measure that caught this.
+
+### 3.4 Stuck accounting
 
 `stuck_counter` increments on failures, rejections and repeated proof states —
 **not** on no-ops. Coupling "this step was wasted" to "this trial is going
@@ -156,6 +187,45 @@ Assembled per step. Notable sections:
 The third row is the open 24% "wrong logic class" bucket. Best known
 discriminator: no instruction index column **and** 2 open goals → 57.7%
 precision at 44.8% recall (base rate 11.8%). Shipped as a hedge, not a rule.
+
+### 4.2 How `smt` is actually used — the reverse of the obvious guess
+
+Measured over every `agent_log.json` in `integration/output/experiments/`:
+124 tactics invoke `smt`.
+
+| form | goal | n | accepted | failed | no-op |
+|---|---|---:|---:|---:|---:|
+| bare `smt()` | program-logic | 5 | 1 | 4 | 0 |
+| bare `smt()` | **ambient** | 27 | **0** | 25 | 0 |
+| compound (`…; smt()`) | program-logic | 89 | **19** | 51 | 11 |
+| compound | ambient | 3 | 0 | 3 | 0 |
+
+**76% of `smt` use is aimed at program-logic goals, and that is where every
+success comes from.** The productive idiom is a compound that reduces the
+judgment first and then calls the solver (`wp; skip; smt().`). It is not
+misuse — it is the agent's main working pattern.
+
+**Bare `smt()` at an ambient goal is 0 for 27.** The ambient residuals this
+corpus produces are not the arithmetic `smt` closes easily: 16 of 30 carry a
+quantifier, 12 have more than three top-level connectives, 3 contain `Pr[…]`.
+26 of the 28 failures are `cannot prove goal (strict)` — the solver reaching
+its limit, not a syntax error.
+
+**Compounds mostly fail before `smt` runs.** Of 55 failed `…; smt()`
+compounds, **40 died in the first segment** — 24 `invalid last instruction`
+(the `rnd`) and 16 `left instruction list is not empty` (the `skip`). Only 7
+reached the solver and lost there. So the error text on a failed compound is
+usually about position, not about `smt`.
+
+Both facts are now stated in the prompt (`format_active_goal_shape_hints`
+ambient branch, and rung 3 of the repair ladder).
+
+> **Measurement trap, hit while producing this table.** EasyCrypt prints
+> file-level `[warning]` lines *before* the `[critical]` one, so taking
+> `error.splitlines()[0]` attributes the failure to a warning. A first pass
+> here reported "9× global axiom Adv_choose_ll in section" as an `smt` failure
+> mode; it does not exist. Always apply `ec_errors.strip_warning_lines` first —
+> the loop does, so the model never saw the wrong text, but the analysis did.
 
 ---
 

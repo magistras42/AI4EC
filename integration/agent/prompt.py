@@ -798,6 +798,24 @@ def format_active_goal_shape_hints(goal: str) -> str:
         "`trivial`, ...). Do not apply `proc` / `wp` / `skip` / `while` / "
         "`call`."
     )
+    # Measured over every run in integration/output/experiments: bare `smt()`
+    # on an ambient goal is 0 accepted of 27 attempts, and 26 of the 28
+    # failures are `cannot prove goal (strict)` -- the solver reaching its
+    # limit, not a syntax problem. These residuals are not the arithmetic
+    # `smt` closes easily: 16 of 30 carry a quantifier and 12 have more than
+    # three top-level connectives. The productive idiom on this corpus is the
+    # opposite one -- a compound that REDUCES a program-logic goal first and
+    # then calls smt (`wp; skip; smt().`), which is where all 20 of the
+    # successes come from.
+    bullets.append(
+        "Note: on this corpus a BARE `smt()` at an ambient goal has never "
+        "succeeded (0 of 27 attempts; 26 of the failures were `cannot prove "
+        "goal (strict)`). These residuals carry quantifiers and several "
+        "connectives, so the solver runs out of room. Give it help rather "
+        "than repeating it: name lemmas — `smt(Lemma1, Lemma2)` — or reduce "
+        "the goal first with `move => ...` / `progress.` / `simplify.`, or "
+        "cut an intermediate fact with `have h : P by smt(). smt(h).`"
+    )
     if "=>" in conclusion or conclusion.lower().startswith("forall"):
         bullets.append(
             "Detected: ambient implication or quantifiers. Introduce with "
@@ -935,7 +953,11 @@ def format_broken_tactic_repair(tactic: str, error: str | None) -> str:
         "2. Same tactic, different POSITION or side (`{1}` / `{2}`, `seq` to "
         "reach it).",
         "3. Split a compound `t1; t2; t3.` into separate steps -- a compound "
-        "fails whole even when its first component was right.",
+        "fails whole even when its first component was right. Measured: of 55 "
+        "failed compounds ending in `smt()`, 40 died in the FIRST segment "
+        "(24 `invalid last instruction` from `rnd`, 16 `left instruction list "
+        "is not empty` from `skip`), so `smt` never ran and the error you are "
+        "reading is not about it.",
         "4. Only then a different head tactic.",
         "",
         "If a later original tactic is shown below, it tells you what state "
