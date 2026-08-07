@@ -101,19 +101,15 @@ def register_default_specs(data_dir) -> None:
             )
         )
     if "joy-changelog-repair" not in list(SPECS.names()):
-        # Joy under replay-until-failure. NOTE the limitation, measured before
-        # registering: every Joy proof compiles AND closes against the current
-        # build, so replay reaches the end with nothing to repair and the agent
-        # is never invoked. That is the correct outcome for this corpus -- it
-        # has no version drift to repair -- and it makes this spec a
-        # *regression check* (does the replay path still complete cleanly?)
-        # rather than a test of repair ability.
+        # Joy under replay-until-failure. This DOES produce real repair work
+        # and so exercises the prefix clamp; an earlier comment here said the
+        # opposite, from sampling 4 of the 33 cases before registering.
         #
-        # It therefore does NOT exercise the prefix clamp: a fully-replayed
-        # trial returns before `run_agent`. Use `lq1-changelog-repair` or
-        # `elgamal-changelog-repair` for that. Registered anyway because a
-        # corpus that SHOULD fully replay is a useful control: if it ever stops
-        # replaying, either EasyCrypt or the replay path has regressed.
+        # Caveat on what a break MEANS here. Joy proofs compile against the
+        # current build, so a replay failure is not version drift -- treat a
+        # repair as evidence the machinery works, not as evidence about
+        # repairing real drift. `elgamal-changelog-repair` is the only corpus
+        # with genuine drift.
         SPECS.register(
             ExperimentSpec(
                 name="joy-changelog-repair",

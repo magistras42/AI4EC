@@ -379,3 +379,83 @@ def test_fully_replayed_requires_the_proof_to_close():
     src = inspect.getsource(rb.run_replay_bootstrap_trial)
     assert "is_proof_complete(" in src, "fully_replayed must check completion"
     assert "fully_replayed = accepted_count == len(tactics) and is_proof_complete" in src
+
+
+# --- comments are not tactics ----------------------------------------------
+# `_original_tactics` split the tactic block on `.<whitespace>` WITHOUT
+# stripping comments first. Comment prose contains sentence dots, so a comment
+# was shredded into fragments and replayed as if it were a script.
+#
+# Joy's `games_quadruple` ends with
+#     (* auto can replace wp. simplify. trivial  *)
+# which turned 5 real tactics into 8: the replay "broke" on
+# `(* auto can replace wp.`, truncating the verified prefix at 5/8 and handing
+# the model comment text as the tactic to repair.
+#
+# Corpus-wide, before the fix: 19 of 33 Joy cases carried fake tactics
+# (`two_to_ten` 60 -> 27, `ten_to_two` 31 -> 11, `triple1` 18 -> 5) and so did
+# `INDCPA_HEG_G1` on ElGamal (52 -> 51), so this inflated the denominator of
+# every "replayed N/M" figure that corpus produced.
+
+
+def test_a_trailing_comment_is_not_three_tactics():
+    from integration.experiment.repair_bootstrap import _strip_ec_comments
+
+    block = "trivial.\n(* auto can replace wp. simplify. trivial  *)"
+    assert "auto can replace" not in _strip_ec_comments(block)
+    assert "trivial." in _strip_ec_comments(block)
+
+
+def test_a_comment_before_a_tactic_keeps_the_tactic():
+    """`(* note *) trivial.` IS a tactic -- dropping whole comment-bearing
+    lines is the mistake the handoff records the tactic counter making."""
+    from integration.experiment.repair_bootstrap import _strip_ec_comments
+
+    assert _strip_ec_comments("(* note *) trivial.").strip() == "trivial."
+
+
+def test_nested_comments_are_removed_whole():
+    """EasyCrypt comments nest, so a regex stopping at the first `*)` would
+    leave ` c *)` behind as tactic text."""
+    from integration.experiment.repair_bootstrap import _strip_ec_comments
+
+    assert _strip_ec_comments("(* a (* b *) c *) wp.").strip() == "wp."
+
+
+def test_an_unterminated_comment_runs_to_the_end():
+    from integration.experiment.repair_bootstrap import _strip_ec_comments
+
+    assert _strip_ec_comments("wp. (* oops").strip() == "wp."
+
+
+def test_qualified_names_survive_comment_stripping():
+    from integration.experiment.repair_bootstrap import _strip_ec_comments
+
+    assert _strip_ec_comments("smt(G1.bad).") == "smt(G1.bad)."
+
+
+def test_the_real_joy_case_yields_five_tactics_not_eight():
+    from integration.experiment.corpora.joy import JoyCorpus
+    from integration.experiment.repair_bootstrap import _original_tactics
+
+    case = next(c for c in JoyCorpus(data_dir=Path("data")).load_cases()
+                if c.name == "games_quadruple")
+    tactics = _original_tactics(case, case.file.read_text().splitlines())
+    assert tactics == ["proc.", "inline *.", "wp.", "simplify.", "trivial."]
+
+
+def test_no_corpus_case_replays_a_comment_as_a_tactic():
+    """The invariant, across every corpus: nothing handed to append_tactic may
+    contain comment syntax."""
+    from integration.experiment.corpora.elgamal import ElGamalCorpus
+    from integration.experiment.corpora.joy import JoyCorpus
+    from integration.experiment.corpora.lq1 import LQ1Corpus
+    from integration.experiment.repair_bootstrap import _original_tactics
+
+    offenders = []
+    for cls in (JoyCorpus, LQ1Corpus, ElGamalCorpus):
+        for case in cls(data_dir=Path("data")).load_cases():
+            for tactic in _original_tactics(case, case.file.read_text().splitlines()):
+                if "(*" in tactic or "*)" in tactic:
+                    offenders.append((case.name, tactic[:50]))
+    assert not offenders, f"comment text replayed as a tactic: {offenders[:5]}"

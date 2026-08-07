@@ -86,14 +86,57 @@ def _original_tactics(case: ProofCase, lines: list[str]) -> list[str]:
     first split point as a failure even when the original proof is fine.
     Same splitting rule shannon-prover's chain-replay bootstrap uses: split
     on '.<whitespace>' (preserves dots inside identifiers like `G1.bad`),
-    re-appending the trailing '.' to each piece."""
-    block = "\n".join(lines[i - 1] for i in case.tactic_lines)
+    re-appending the trailing '.' to each piece.
+
+    Comments are stripped BEFORE splitting. A comment's prose contains
+    sentence dots, so splitting first shreds it into fragments that are then
+    replayed as if they were tactics. Joy's `games_quadruple` ends with
+
+        (* auto can replace wp. simplify. trivial  *)
+
+    which turned 5 real tactics into 8: the replay "broke" on
+    `(* auto can replace wp.`, truncating the verified prefix at 5/8 and
+    handing the model comment text as the tactic to repair.
+
+    Stripping rather than dropping whole lines, because `(* note *) trivial.`
+    is a tactic -- the mistake `docs/PROOF_REPAIR_NEXT_HANDOFF.md` §7 records
+    the tactic counter making three separate times."""
+    block = _strip_ec_comments("\n".join(lines[i - 1] for i in case.tactic_lines))
     tactics: list[str] = []
     for part in _TACTIC_SPLIT_RE.split(block.strip()):
         part = part.strip().rstrip(".")
         if part:
             tactics.append(part + ".")
     return tactics
+
+
+def _strip_ec_comments(text: str) -> str:
+    """Remove `(* ... *)` comments, honouring EasyCrypt's NESTED comments.
+
+    A regex cannot do this: EasyCrypt nests, so `(* a (* b *) c *)` must be
+    removed whole rather than up to the first `*)`. An unterminated comment
+    runs to the end, which is what EasyCrypt itself does.
+    """
+    out: list[str] = []
+    depth = 0
+    i = 0
+    length = len(text)
+    while i < length:
+        if text.startswith("(*", i):
+            depth += 1
+            i += 2
+            continue
+        if text.startswith("*)", i) and depth:
+            depth -= 1
+            i += 2
+            # Keep a separator so `(*x*)trivial.` does not glue onto the
+            # previous token.
+            out.append(" ")
+            continue
+        if not depth:
+            out.append(text[i])
+        i += 1
+    return "".join(out)
 
 
 def _oldest_cataloged_release() -> str:
