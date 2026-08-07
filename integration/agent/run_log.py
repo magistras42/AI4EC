@@ -92,12 +92,37 @@ class AgentRunLog:
             fields["content"] = content
         self.record("iteration", **fields)
 
-    def finish(self, *, reason: str, message: str, steps: int) -> None:
+    def finish(
+        self,
+        *,
+        reason: str,
+        message: str,
+        steps: int,
+        tactics_retained: int | None = None,
+        replayed_prefix: int | None = None,
+    ) -> None:
+        """Record the trial outcome.
+
+        `tactics_retained` vs `replayed_prefix` is the only measure that caught
+        the agent dismantling its own verified prefix. On run 20260807T031032Z
+        every conventional counter looked ordinary while two of three trials
+        finished with FEWER tactics than the bootstrap handed them
+        (`G2_G3` 13 -> 12, `INDCPA_HEG_G1` 21 -> 9). A negative `net` is the
+        signal; accepted/failed counts do not show it.
+        """
+        net = (
+            tactics_retained - replayed_prefix
+            if tactics_retained is not None and replayed_prefix is not None
+            else None
+        )
         self.record(
             "finish",
             reason=reason,
             message=message,
             steps=steps,
+            tactics_retained=tactics_retained,
+            replayed_prefix=replayed_prefix,
+            net_tactics_vs_bootstrap=net,
             token_usage=self.usage.as_dict() if self.usage is not None else None,
         )
 

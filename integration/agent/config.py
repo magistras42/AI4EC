@@ -74,6 +74,25 @@ DEFAULT_THINKING_FAILURE_WINDOW = 5
 THINKING_FAILURE_OUTCOMES = frozenset(
     {"failed", "rejected", "search_limited", "format_error"}
 )
+
+#: Think deliberately by default; hand depth back to the window heuristic once
+#: the trajectory shows the model is not converging. Distinct from `adaptive`,
+#: which starts from *no* thinking and only switches it on after a failure.
+THINKING_HIGH_UNLESS_STUCK = "high_unless_stuck"
+THINKING_MODES = frozenset(
+    {"enabled", "disabled", "adaptive", THINKING_HIGH_UNLESS_STUCK}
+)
+#: Outcomes that mean the step bought nothing. Wider than
+#: THINKING_FAILURE_OUTCOMES because a no-op is not a failure -- EasyCrypt
+#: accepted it -- yet it is exactly as unproductive, and on the measured runs
+#: inert steps outnumbered failures on the lemma that stalled.
+STRUGGLE_OUTCOMES = THINKING_FAILURE_OUTCOMES | {"no_op", "undone"}
+DEFAULT_STRUGGLE_WINDOW = 6
+#: Unproductive steps within the window before the model counts as struggling.
+#: 4 of 6 rather than "any", because one bad step in six is ordinary proof
+#: search: on the measured runs the *median* step is unproductive, so a looser
+#: rule would report struggling essentially always.
+DEFAULT_STRUGGLE_THRESHOLD = 4
 DEFAULT_LLM_MAX_TOKENS = 16384
 
 
@@ -118,6 +137,11 @@ class AgentConfig:
     llm_thinking: str | None = None
     llm_reasoning_effort: str | None = None
     thinking_failure_window: int = DEFAULT_THINKING_FAILURE_WINDOW
+    # Effort used while the model is converging, under
+    # `llm_thinking="high_unless_stuck"`. Ignored by every other mode.
+    llm_effort_when_healthy: str = "high"
+    struggle_window: int = DEFAULT_STRUGGLE_WINDOW
+    struggle_threshold: int = DEFAULT_STRUGGLE_THRESHOLD
     work_copy_suffix: str = ".agent.ec"
     output_dir: Path = field(default_factory=lambda: DEFAULT_OUTPUT_DIR)
     promote_on_success: bool = False
@@ -133,6 +157,13 @@ class AgentConfig:
     # exactly once.
     broken_tactic: str | None = None
     broken_tactic_error: str | None = None
+    # How many original tactics the replay bootstrap left in the working copy.
+    # Those COMPILE against the current build, so they are verified work, and
+    # the agent was destroying them: across run 20260807T031032Z's three agent
+    # trials, undos removed 37, 53 and 12 tactics, and two trials finished
+    # holding fewer than the bootstrap handed them. Drives both the undo clamp
+    # (`ProofFile.protected_prefix`) and the prompt note that says so.
+    replayed_prefix: int = 0
     # Changelog/repair_doc facts for the specific tactic that broke, set by
     # integration/experiment/repair_bootstrap.py when a version-drift-shaped
     # failure occurs during replay. Distinct from repair_hint (the mutated
@@ -170,7 +201,14 @@ class AgentConfig:
     # reasoning). Bounded separately from the stuck counter because it is
     # an infrastructure signal, not a proof-progress one. None disables.
     max_consecutive_provider_failures: int | None = 5
-    history_steps: int = 20
+    # Trajectory entries carried in the prompt. Cut 20 -> 15 after measuring
+    # per-step latency on run 20260806T194914Z: mean gap rose 93s (steps 1-10)
+    # -> 193s (11-20) -> 235s (21-30) and then PLATEAUED at ~235-278s, i.e. it
+    # stopped growing exactly where this window fills. Two trials starting two
+    # hours apart traced the same curve against step number rather than clock
+    # time, and no rate-limit error appears anywhere in the run, so the cost is
+    # prompt size (or the reasoning it provokes), not throttling.
+    history_steps: int = 15
     right_fix: str | None = None
     retrospective_file: Path | None = None
     # Attempt a verified, line-preserving import/syntax repair when the file
@@ -363,6 +401,43 @@ def deepseek_thinking(config: AgentConfig) -> str:
     return configured_thinking(config)
 
 
+def is_struggling(
+    config: AgentConfig,
+    trajectory: list[dict[str, Any]] | None = None,
+) -> bool:
+    """Is the model failing to convert calls into progress?
+
+    True when at least ``struggle_threshold`` of the last ``struggle_window``
+    steps produced nothing usable -- a failure, a rejection, an undo, or a
+    tactic EasyCrypt accepted that changed the goal not at all.
+    """
+    window = max(0, int(config.struggle_window))
+    if window <= 0 or not trajectory:
+        return False
+    recent = trajectory[-window:]
+    unproductive = sum(
+        1 for step in recent if step.get("outcome") in STRUGGLE_OUTCOMES
+    )
+    return unproductive >= max(1, int(config.struggle_threshold))
+
+
+def resolve_effort_for_step(
+    config: AgentConfig,
+    trajectory: list[dict[str, Any]] | None = None,
+) -> str | None:
+    """Reasoning effort for one call, or None to send none.
+
+    Only ``high_unless_stuck`` varies it. Every other mode returns the
+    configured effort unchanged, so this is safe to call unconditionally.
+    """
+    if configured_thinking(config) != THINKING_HIGH_UNLESS_STUCK:
+        return config.llm_reasoning_effort
+    if is_struggling(config, trajectory):
+        # Let the provider pick its own depth rather than pinning it high.
+        return None
+    return config.llm_effort_when_healthy
+
+
 def resolve_thinking_for_step(
     config: AgentConfig,
     trajectory: list[dict[str, Any]] | None = None,
@@ -383,10 +458,17 @@ def resolve_thinking_for_step(
     mode = configured_thinking(config)
     if mode in {"enabled", "disabled"}:
         return mode
-    if mode != "adaptive":
+    if mode == THINKING_HIGH_UNLESS_STUCK:
+        # Deliberate by default. Once the trajectory says the model is not
+        # converging, stop forcing depth on every call and defer to the window
+        # heuristic below -- repeated deep passes over a goal the model has
+        # already failed at were not buying anything.
+        if not is_struggling(config, trajectory):
+            return "enabled"
+    elif mode != "adaptive":
         raise ValueError(
-            "llm_thinking must be 'enabled', 'disabled', or 'adaptive', "
-            f"got {mode!r}"
+            "llm_thinking must be one of "
+            f"{', '.join(sorted(THINKING_MODES))}, got {mode!r}"
         )
     window = max(0, int(config.thinking_failure_window))
     if window <= 0 or not trajectory:

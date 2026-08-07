@@ -12,7 +12,11 @@ from pathlib import Path
 
 import numpy as np
 
-from .config import AgentConfig, resolve_thinking_for_step
+from .config import (
+    AgentConfig,
+    resolve_effort_for_step,
+    resolve_thinking_for_step,
+)
 from .easycrypt import (
     fetch_goal,
     fetch_goal_and_premises,
@@ -212,7 +216,7 @@ def run_agent(
         )
     elif not work_copy.exists():
         create_working_copy(source, work_copy=work_copy)
-    proof = ProofFile(work_copy)
+    proof = ProofFile(work_copy, protected_prefix=config.replayed_prefix)
     errors = ErrorHistory(
         work_copy.with_name(f".{work_copy.stem}.error_history.json")
     )
@@ -296,7 +300,7 @@ def run_agent(
         goal = resolve_goal(proof, config)
         if is_proof_discharged(goal) or tactic_discharged_proof(proof, goal, config):
             result = _complete(config, source, work_copy, step - 1, already=False)
-            _log_finish(run_log, result)
+            _log_finish(run_log, result, proof)
             return result
 
         cursor = resolve_goal_cursor(proof, config)
@@ -308,14 +312,14 @@ def run_agent(
                 steps=step - 1,
                 work_copy=work_copy,
             )
-            _log_finish(run_log, result)
+            _log_finish(run_log, result, proof)
             return result
 
         if not goal:
             goal = goal_result.stdout.strip()
         if is_no_active_proof(goal):
             result = _complete(config, source, work_copy, step - 1, already=False)
-            _log_finish(run_log, result)
+            _log_finish(run_log, result, proof)
             return result
 
         ranked = rank_by_cosine(
@@ -361,6 +365,10 @@ def run_agent(
             # tactic to repair" and pinning attention to it would mislead.
             broken_tactic=config.broken_tactic if step == 1 else None,
             broken_tactic_error=config.broken_tactic_error if step == 1 else None,
+            # Unlike `broken_tactic`, this is NOT first-step-only: the prefix
+            # stays verified for the whole trial, and the bulk undos that
+            # destroyed it happened at steps 2, 20 and beyond.
+            replayed_prefix=config.replayed_prefix,
         )
 
         # Checked BEFORE the call, not after: the budget is updated when a
@@ -378,11 +386,20 @@ def run_agent(
                 work_copy=work_copy,
             )
             logger.info("Budget exhausted: %s", config.spend_budget.status())
-            _log_finish(run_log, result)
+            _log_finish(run_log, result, proof)
             return result
 
         try:
             thinking = resolve_thinking_for_step(config, trajectory)
+            # Effort is read off the config by `chat_completion_kwargs`, so the
+            # per-step choice is applied by setting it here rather than by
+            # threading another argument through the whole decide chain. Safe
+            # because the config is per-run and this loop is single-threaded;
+            # every mode except `high_unless_stuck` resolves to the configured
+            # value, so this is a no-op for them.
+            config.llm_reasoning_effort = resolve_effort_for_step(
+                config, trajectory
+            )
             decision = llm.decide(prompt, thinking=thinking)
         except LlmFormatError as exc:
             # Two very different things arrive here. LlmProviderError means the
@@ -453,7 +470,7 @@ def run_agent(
                     steps=step - 1,
                     work_copy=work_copy,
                 )
-                _log_finish(run_log, result)
+                _log_finish(run_log, result, proof)
                 return result
 
             if _check_stuck(config, stuck_counter, run_log, work_copy, step):
@@ -478,7 +495,7 @@ def run_agent(
                     outcome="llm_error",
                     error=str(exc),
                 )
-            _log_finish(run_log, result)
+            _log_finish(run_log, result, proof)
             return result
 
         action = decision.action
@@ -973,7 +990,7 @@ def run_agent(
                         thought=thought,
                     content=raw_content,
                     )
-                _log_finish(run_log, result)
+                _log_finish(run_log, result, proof)
                 return result
 
             # Compiling is not progress. Measured across three ElGamal runs,
@@ -1080,7 +1097,7 @@ def run_agent(
         llm=llm,
         trajectory=trajectory,
     )
-    _log_finish(run_log, result)
+    _log_finish(run_log, result, proof)
     return result
 
 
@@ -1497,7 +1514,16 @@ def _probe_prefix_subgoal(
                 )
                 break
 
-            subgoal = resolve_goal(proof, config).strip()
+            # `_current_goal`, not `resolve_goal`: after a segment that leaves
+            # the goal unchanged `resolve_goal` walks back past each unchanged
+            # cursor and returns "", which this code then read as "discharged".
+            # Observed on G2_G3 step 30, `rnd; wp; skip; smt().` -- the
+            # diagnostic reported "Step 1/4 `rnd.` OK -- no open goal" while
+            # the real error, printed directly above it, was `left instruction
+            # list is not empty`. `rnd.` was inert, not closing; the same
+            # tactic alone at step 31 was confirmed a no-op. The model was
+            # handed two contradictory statements about the same state.
+            subgoal = _current_goal(proof, config).strip()
             if not subgoal or is_proof_discharged(subgoal):
                 trace.append(
                     f"Step {index}/{len(segments)} `{segment}` OK — "
@@ -1671,7 +1697,15 @@ def _stuck_result(
         llm=llm,
         trajectory=trajectory,
     )
-    _log_finish(run_log, result)
+    # Rebuilt from the path rather than threaded in: this helper is reached
+    # from callers that do not hold the loop's ProofFile, and the STUCK path
+    # is where the retained-tactics metric matters most -- INDCPA_HEG_G1
+    # exited STUCK holding 9 of the 21 tactics it was handed.
+    _log_finish(
+        run_log,
+        result,
+        ProofFile(work_copy, protected_prefix=config.replayed_prefix),
+    )
     return result
 
 
@@ -1769,13 +1803,25 @@ def _build_lemma_search_index(
     return cached
 
 
-def _log_finish(run_log: AgentRunLog | None, result: AgentResult) -> None:
+def _log_finish(
+    run_log: AgentRunLog | None,
+    result: AgentResult,
+    proof: ProofFile | None = None,
+) -> None:
     if run_log is None:
         return
+    retained = None
+    if proof is not None:
+        try:
+            retained = proof.tactic_count()
+        except OSError:
+            retained = None
     run_log.finish(
         reason=result.reason.name,
         message=result.message,
         steps=result.steps,
+        tactics_retained=retained,
+        replayed_prefix=proof.protected_prefix if proof is not None else None,
     )
 
 

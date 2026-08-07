@@ -471,3 +471,60 @@ def test_truncation_message_does_not_blame_backslashes():
     with pytest.raises(LlmFormatError) as exc:
         LlmClient(AgentConfig(), backend=backend).decide("g", thinking="disabled")
     assert "output-token cap" in str(exc.value)
+
+
+# --- transport failures must not end a trial --------------------------------
+# One `Connection error.` (a laptop suspend) killed G2_G3 after 38 productive
+# steps and 100 minutes on run 20260806T194914Z. `APIConnectionError` is not an
+# `LlmFormatError`, so it reached loop.py's catch-all `except Exception` and
+# exited terminally, bypassing `max_consecutive_provider_failures` entirely.
+# The same class of bug is already documented in llm.py for the no-choices
+# case; the fix had never been extended to the transport layer.
+
+
+def test_transport_errors_are_provider_errors_not_fatal():
+    import httpx
+    from openai import APIConnectionError, APITimeoutError, RateLimitError
+
+    from integration.agent.llm import LlmProviderError, TRANSPORT_ERRORS
+
+    req = httpx.Request("POST", "https://api.deepseek.com/chat/completions")
+    for exc in (
+        APIConnectionError(request=req),
+        APITimeoutError(request=req),
+    ):
+        assert isinstance(exc, TRANSPORT_ERRORS)
+    # And a provider error is catchable as a format error, which is what the
+    # loop's retry branch keys on.
+    assert issubclass(LlmProviderError, Exception)
+    assert RateLimitError in TRANSPORT_ERRORS
+
+
+def test_an_auth_failure_still_fails_fast():
+    """A bad key must NOT be retried five times -- it will never succeed."""
+    from openai import AuthenticationError
+
+    from integration.agent.llm import TRANSPORT_ERRORS
+
+    assert AuthenticationError not in TRANSPORT_ERRORS
+
+
+def test_a_connection_error_reaches_the_loop_as_a_provider_error(monkeypatch):
+    """End to end through the backend: the raised type decides whether the
+    trial survives."""
+    import httpx
+    from openai import APIConnectionError
+
+    from integration.agent.config import AgentConfig
+    from integration.agent.llm import LlmProviderError, OpenAICompatBackend
+
+    config = AgentConfig(llm_provider="lm_studio", llm_model="m")
+    backend = OpenAICompatBackend(config)
+    req = httpx.Request("POST", "http://localhost:1234/v1/chat/completions")
+
+    def boom(**_kwargs):
+        raise APIConnectionError(request=req)
+
+    monkeypatch.setattr(backend, "_create", boom)
+    with pytest.raises(LlmProviderError):
+        backend.complete(system=None, user="hi")

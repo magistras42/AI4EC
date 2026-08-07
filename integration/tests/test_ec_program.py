@@ -178,12 +178,26 @@ q2 <$ dexp      ( 2)  q2 <$ dexp"""
 # --- what the model is told -------------------------------------------------
 
 
-def test_the_prompt_states_the_exact_seq_bounds():
+def test_the_prompt_states_the_counts_as_a_ceiling_not_a_range():
+    """The counts are necessary, not sufficient, and saying otherwise is false.
+
+    Measured on INDCPA_HEG_G1 (run 20260806T194914Z): of 12 failed `seq`
+    attempts, 11 used indices INSIDE these counts and were rejected anyway,
+    twice with EasyCrypt naming a far smaller limit of its own (`invalid split
+    index: ^<5` and `^<4` against counts of 13/12). An earlier version of this
+    test pinned the wording "N must be 0..13 and M must be 0..12 ... any other
+    index is `invalid position parameter`" -- which the data disproved.
+    """
     from integration.agent.prompt import _seq_position_bullets
 
     text = " ".join(_seq_position_bullets(parse_program_block(REAL_BLOCK)))
     assert "left: 13, right: 12" in text
-    assert "N must be 0..13 and M must be 0..12" in text
+    assert "can never exceed 13 and 12" in text
+    # It must NOT promise that staying inside the counts is enough.
+    assert "does NOT guarantee" in text
+    assert "N must be 0..13" not in text
+    # EasyCrypt's own limit is better information than ours; point at it.
+    assert "^<K" in text
     assert "15" not in text
 
 
@@ -274,3 +288,42 @@ def test_the_hint_stays_silent_at_a_single_goal():
         "&1 (left ) : {c : cipher} [programs are in sync]\n\npost = ={res}"
     )
     assert "no instruction indices" not in format_active_goal_shape_hints(goal)
+
+
+def test_the_ladder_does_not_cite_counts_that_may_not_exist():
+    """`[programs are in sync]` goals print no statement list, so no counts
+    appear -- 48% of measured goals carry that marker. The old rung told the
+    model to "re-read the instruction counts above"; on G2_G3 step 1 there were
+    none, and it guessed `5 5`, `7 7`, `6 6` in turn."""
+    from integration.agent.prompt import format_broken_tactic_repair
+
+    text = format_broken_tactic_repair(
+        "seq 4 3 : (={glob Adv}).", "[critical] invalid `position' parameter")
+    assert "Re-read the instruction counts" not in text
+    assert "If no counts are shown" in text
+    assert "ORIGINAL tactic used" in text
+
+
+def test_the_split_index_rung_uses_easycrypts_own_limit():
+    from integration.agent.prompt import format_broken_tactic_repair
+
+    text = format_broken_tactic_repair(
+        "seq 4 4 : (inv).", "[critical] invalid split index: ^<5")
+    assert "strictly less than K" in text
+
+
+def test_an_asymmetric_cut_is_flagged_as_information():
+    """The original G2_G3 tactic is `seq 4 3`; every model attempt was
+    symmetric (5 5, 7 7, 6 6), discarding the author's alignment."""
+    from integration.agent.prompt import format_broken_tactic_repair
+
+    text = format_broken_tactic_repair("seq 4 3 : (={glob Adv}).", None)
+    assert "ASYMMETRIC" in text
+    assert "seq 4 4" in text and "seq 3 3" in text
+    assert "ONE side at a time" in text
+
+
+def test_a_symmetric_cut_gets_no_such_note():
+    from integration.agent.prompt import format_broken_tactic_repair
+
+    assert "ASYMMETRIC" not in format_broken_tactic_repair("seq 5 5 : (inv).", None)

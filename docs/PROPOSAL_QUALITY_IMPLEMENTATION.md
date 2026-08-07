@@ -204,13 +204,294 @@ segment as inert, not as "no open goal".
 
 ---
 
+## 5b. Three more defects found during run `20260806T194914Z`
+
+All three are independent of §3/§4 and worth fixing before any further
+measurement run, because each one corrupts what a run would tell you.
+
+### 5b.1 A single transport error kills a trial
+
+`G2_G3` exited `LLM_ERROR` after **38 productive steps and 100 minutes** on one
+`Connection error.`
+
+**Known trigger: the laptop was closed.** This was a host suspend, not DeepSeek
+flakiness — do not go looking for provider reliability problems. It matters for
+two reasons. First, the earlier `LLM_ERROR` rows in the run history
+(`G1_G2_eq` at 0, 0 and 3 steps; see §5b.1a) are probably the same cause and
+not evidence about the corpus. Second, it lowers the *likelihood* of
+spontaneous recurrence but not the severity: any transient transport error
+still ends a trial, and long trials run for hours unattended.
+
+### 5b.1a `LLM_ERROR` is over-represented in the run history
+
+`G1_G2_eq` across seven runs: `LLM_ERROR` (0 steps), `STUCK` (6), `LLM_ERROR`
+(3), `BUDGET_EXHAUSTED` (18), `MAX_STEPS` (145), `STUCK` (91), `LLM_ERROR` (0).
+Three of seven died on `LLM_ERROR`, two of them before completing a single
+step. Once §5b.1 is fixed, re-read this history — some of that variance is
+almost certainly infrastructure, not the agent, and the handoff's
+"run-to-run variance exceeds most effects" warning may be partly an artifact
+of this bug.
+
+`openai.APIConnectionError` is not an `LlmFormatError`, so it misses the
+provider-failure branch in `loop.py` (~line 445) and lands in the catch-all
+`except Exception` (~line 463), which returns `ExitReason.LLM_ERROR`
+immediately. **`max_consecutive_provider_failures` is bypassed entirely** — the
+bound never gets a chance to apply.
+
+This is a recurrence of a bug the code already documents. `llm.py` ~line 377
+says:
+
+> "`response.choices[0]` then raises TypeError, which is NOT an
+> LlmFormatError, so loop.py's catch-all turns a transient hiccup into a
+> terminal LLM_ERROR -- observed killing trials after 31 and 70 productive
+> iterations."
+
+That fix was applied to the no-choices case only. Network exceptions were left
+on the fatal path.
+
+**Fix.** Classify transport-level exceptions as provider-side so they go
+through the retry bound. Catch `openai.APIConnectionError`,
+`APITimeoutError`, `RateLimitError` and `InternalServerError` (5xx) and re-raise
+as `LlmProviderError`. Do NOT widen the catch-all — an authentication failure
+must still terminate promptly rather than retry five times.
+
+**Test.** A backend raising `APIConnectionError` twice then succeeding must
+finish the run, not exit `LLM_ERROR`. Mirror the existing
+`test_provider_failures_do_not_exhaust_the_stuck_limit`.
+
+### 5b.2 The repair ladder cites information the prompt did not print
+
+At `G2_G3` step 1 the model was told:
+
+> "The tactic is right, the INDEX is wrong. **Re-read the instruction counts
+> above** and pick indices within them."
+
+There were no instruction counts above. The goal was a `[programs are in sync]`
+case: EasyCrypt prints no statement list, `_program_statement_block` returns
+`""`, `parse_program_block` correctly reports `indexed=False`, and
+`_seq_position_bullets` never ran. With nothing to read, the model guessed —
+`seq 5 5`, `seq 7 7`, `seq 6 6`, `seq 5 5`.
+
+**48% of our goals carry the sync marker**, so this is the common case, not an
+edge case.
+
+**Fix.** In `prompt.py::_ERROR_REPAIR_LADDER`, the `invalid 'position'
+parameter` rung must branch on whether counts are available. When they are not,
+say so and direct the model to the *original* tactic's indices, which encode the
+author's structural knowledge, instead of implying a table it cannot see.
+
+### 5b.3 An asymmetric cut is silently replaced by a symmetric guess
+
+The original `G2_G3` tactic is `seq 4 3 : (…)` — deliberately asymmetric,
+because the two programs are. Every model attempt was symmetric: `5 5`, `7 7`,
+`6 6`, `5 5`.
+
+**Fix.** When `config.broken_tactic` is a `seq N M` with `N != M`,
+`format_broken_tactic_repair` should state that the asymmetry is information and
+that collapsing it to `N N` discards the author's alignment. Cheap, and it
+targets the largest failure category.
+
+---
+
+## 5c. CORRECTION — the `seq` bounds hint does not prevent position errors
+
+Measured live on `INDCPA_HEG_G1`, run `20260806T194914Z`. **Do not build on the
+assumption that correct instruction counts fix position errors. They do not.**
+
+Of 12 failed `seq` attempts, 11 had exact bounds printed in the prompt (the
+12th was a sync goal with none). **Every one used indices inside those
+bounds and was still rejected:**
+
+| step | tried | my bounds L/R | in range | EasyCrypt said |
+|---:|---|---|---|---|
+| 26–34 | `seq 1 1`, `2 2`, `3 4` | 11/10 | yes | ``invalid `position' parameter`` |
+| 36 | `seq 4 4` | 13/12 | yes | `invalid split index: ^<5` |
+| 38 | `seq 3 3` | 13/12 | yes | `invalid split index: ^<4` |
+
+Steps 36 and 38 are the informative ones: EasyCrypt states its own limit, and
+it is **far smaller** than the statement count (`<5` and `<4` against a
+computed 13/12). The goal at step 26 was verified by hand to be a genuine
+equiv with 11 and 10 top-level statements — the parse is right; the *model of
+the precondition* is wrong.
+
+**What is still true.** `ec_program.py` counts top-level statements correctly,
+and the old line-counting overstated the maximum on 503 of 654 goals. That
+measurement stands and the fix is worth keeping.
+
+**What is now known false.** That `0..len(side)` is the admissible range for
+`seq N M`. It is necessary, not sufficient. The prompt currently asserts
+"N must be 0..13 and M must be 0..12. Any other index is `invalid 'position'
+parameter`" — which is a **false statement** when EasyCrypt will only accept
+N < 5.
+
+**Action.** Either derive the real precondition (start from EasyCrypt's
+`invalid split index: ^<K` message, which names K directly, and from `seq`'s
+implementation in the fork) or soften the claim to a hard upper bound rather
+than an admissible range. Do not leave the prompt asserting a range EasyCrypt
+does not honour. Until then, treat the `^<K` error as the authoritative source
+of K and feed it back on retry — it is strictly better information than
+anything currently computed.
+
+---
+
+## 5d. Latency is prompt-driven, not throttling (diagnosed and acted on)
+
+Per-step latency on `INDCPA_HEG_G1` roughly tripled during the run. Four lines
+of evidence say the cause is prompt size (or the reasoning it provokes), not
+the provider:
+
+| steps | mean gap |
+|---|---:|
+| 1–10 | 93 s |
+| 11–20 | 193 s |
+| 21–30 | 235 s |
+| 31–40 | 278 s |
+| 41–49 | 237 s |
+
+1. **It plateaus** at ~235–278 s, exactly where `history_steps` fills. A
+   throttle degrades continuously.
+2. **Two trials two hours apart trace the same curve against step number**, not
+   clock time: `G2_G3` (20:15Z) 139 → 155 → 167 → 280 s; `INDCPA_HEG_G1`
+   (22:15Z) 93 → 193 → 235 → 278 s.
+3. **No rate limiting.** A naive grep "found" `429` six times; every hit was
+   digits inside a cosine score (`0.5938940372504027`). There are no HTTP 429s.
+   Match on the error field, not the whole event blob.
+4. **Correlations point at accumulated context**: r(latency, step) = +0.60,
+   r(latency, reply size) = +0.34, r(latency, goal size) = **−0.14**.
+
+No stalls: median gap 225 s, largest 7 min, 49 steps in 2.79 h.
+
+**Acted on.** `history_steps` 20 → 15, and a new thinking mode
+`high_unless_stuck` (`config.py`): thinking enabled at effort `high` while the
+model converts calls into progress, effort released once ≥4 of the last 6 steps
+were unproductive (`STRUGGLE_OUTCOMES` includes `no_op` and `undone`, not just
+failures). Set via `THINKING_MODE = "high_unless_stuck"` in the notebook.
+
+**Caveat, unresolved.** "Prompt length" is the proximate cause; the mechanism
+may be reasoning tokens, since adaptive thinking can scale depth with a longer
+history of failures. The two are not separable from what is logged today —
+`reasoning_tokens` is only recorded in the trial-level aggregate. **Log
+per-call `reasoning_tokens` in the iteration event** before tuning this
+further; it is a one-line change and it settles the question.
+
+---
+
+## 5e. What this run says about the harness overall
+
+Read this before planning more harness work.
+
+**93% of all COMPLETE trials required zero agent work.** Across ten runs: 100
+COMPLETE, of which 93 were verbatim replays where the agent was never invoked.
+
+**The model has repaired exactly one distinct lemma, ever** — `INDCPA_Security`,
+a 2-line proof, in all seven runs where it was reached. No other lemma has ever
+been repaired by the model.
+
+The fair denominator is 3, not 15: only `INDCPA_Security` (1/2 replayed),
+`G2_G3` (13/30) and `INDCPA_HEG_G1` (21/52) fail to replay. So the score is
+**1 of 3, unchanged across ten runs and every configuration change** — no-op
+detection, enforcement, prompt fixes, repair-first, and everything in this
+document's companion.
+
+The implication for §3 is uncomfortable and should be stated plainly: probing
+targets *waste*, and waste has never been the binding constraint on solve rate.
+It will make runs cheaper and faster. There is no evidence it will make them
+succeed.
+
+---
+
 ## 6. Implementation order
 
-1. **§5** — the `_current_goal` fix. Small, self-contained, and it is currently
-   feeding the model false statements.
-2. **§4.1** — structural block on a stuck goal. No new machinery.
-3. **§3.3** — phase 1 probing, bare tactics only.
-4. Measure (§7). Only then consider **§3.4** and **§4.2**.
+0. **§5c** — the prompt currently asserts a `seq` index range EasyCrypt does
+   not honour. It is stating something false to the model on every equiv goal.
+   Fix or soften before anything else here.
+1. **§5b.1** — network exceptions must go through the retry bound. It
+   destroyed a 100-minute trial; the known trigger was a laptop suspend, so it
+   is less likely to recur spontaneously than first assessed, but any transient
+   transport error still ends a trial.
+2. **§5b.2** — the ladder's dangling reference to absent instruction counts.
+   Affects the 48% of goals carrying the sync marker.
+3. **§5** — the `_current_goal` fix in `_probe_compound_subgoal`. Small,
+   self-contained, currently feeding the model false statements.
+4. **§5b.3** — asymmetric-`seq` note in the repair prompt. One paragraph.
+5. **§4.1** — structural block on a stuck goal. No new machinery.
+6. **§3.3** — phase 1 probing, bare tactics only.
+7. Measure (§7). Only then consider **§3.4** and **§4.2**.
+
+Items 1–4 are small and independently testable. Do them before any measurement
+run: each one corrupts what a run would tell you, and 1 can end a run outright.
+
+**Status 2026-08-07: items 0–4 are DONE**, along with §5d's latency work.
+Shipped: the `seq` ceiling wording and both position rungs (`prompt.py`), the
+asymmetric-cut note, `TRANSPORT_ERRORS` → `LlmProviderError` (`llm.py`),
+`_current_goal` in `_probe_compound_subgoal` (`loop.py`), `history_steps` 15,
+and `high_unless_stuck` (`config.py`). Suite: 488 passed, 1 skipped. Items 5–7
+(§4.1 structural block, §3.3 probing) remain.
+
+---
+
+## 9. Future work
+
+### 9.1 What would it actually take to close `G2_G3`?
+
+**This is the highest-value open question in the project, and it is not a
+harness question.** Ten runs have tuned the harness around a metric that has
+not moved. Before building more, find out what the gap actually is.
+
+`G2_G3` is the tractable unsolved case: 30 original tactics, 13 replay
+cleanly, the 14th (`seq 4 3 : (…)`) is where it stops. Best observed run
+reached 14 accepted tactics in 38 steps before dying on a laptop suspend.
+
+Method — deliberately *not* a harness run:
+
+1. Work it by hand, or with a strong model and no step budget, no ban list, no
+   prompt scaffolding. Just the goal, EasyCrypt, and as many attempts as it
+   takes.
+2. Record what closed it: how many steps, which tactics, and — the point of
+   the exercise — **what information was needed that the harness never
+   supplies.**
+3. Classify the gap into one of: (a) proposal quality, which probing and
+   prompt work can address; (b) missing lemma/library knowledge, which needs
+   retrieval, not reasoning; (c) something structural about the proof that no
+   step-at-a-time agent can find.
+
+Only (a) justifies continuing the current line of work. If it is (b) or (c),
+this document's §3 is the wrong investment and should be dropped.
+
+Do the same for `INDCPA_HEG_G1` (21/52 replayed) if `G2_G3` closes.
+
+### 9.2 Escalating to a more expensive model
+
+The corpus runs on `deepseek-v4-flash` at ~$0.0035/call. Total spend across the
+entire ten-run history is a few dollars. **Cost is not the constraint and never
+has been** — wall-clock and solve rate are.
+
+That makes a capability escalation cheap to try, and it should be tried as a
+*measurement*, not a config change:
+
+* **Ladder, in order:** `deepseek-v4-pro` (~3× the flash rate), then
+  `claude-sonnet-5`, then `claude-opus-5` ($5/$25 per Mtok in/out — roughly
+  100× flash on output). Even at Opus rates a full `G2_G3` trial at 75 steps
+  is single-digit dollars.
+* **Run the escalation on `G2_G3` alone**, not the suite. 12 of 15 lemmas are
+  free replays and tell you nothing; spending Opus tokens on them is pure
+  waste. Point the spec at the one lemma that matters.
+* **Raise `COST_LIMIT_USD` before switching.** The $5.00 cap was sized for
+  flash; at Opus rates it would stop a single trial partway and produce an
+  uninterpretable result — which already happened once at $1.00
+  (`BUDGET_EXHAUSTED` at 18 steps).
+* **`llm_max_tokens` is provider-sensitive.** The notebook sets 32768 after
+  measuring ~13.2k mean output against a 16384 cap; re-measure per model rather
+  than carrying that number across.
+* **Anthropic is not a base-URL swap.** `apply_anthropic_provider` handles the
+  different client, message shape and thinking/effort parameters; Opus 5 takes
+  no `temperature` at all. Thinking defaults to `adaptive` there and Claude
+  scales depth itself — `resolve_thinking_for_step` deliberately passes it
+  through untouched, so `high_unless_stuck` is a DeepSeek-only policy.
+
+The question this answers is the one in §9.1: if a frontier model closes
+`G2_G3` from the same prompt, the gap is proposal quality and §3 is worth
+building. If it does not, no amount of harness engineering will.
 
 ---
 

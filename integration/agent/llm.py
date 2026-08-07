@@ -34,7 +34,13 @@ import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Literal, Protocol, Union
 
-from openai import OpenAI
+from openai import (
+    APIConnectionError,
+    APITimeoutError,
+    InternalServerError,
+    OpenAI,
+    RateLimitError,
+)
 
 from .config import (
     LLM_PROVIDER_ANTHROPIC,
@@ -95,6 +101,22 @@ AgentAction = Union[
 
 class LlmFormatError(ValueError):
     """Malformed or empty LLM reply that the agent loop can recover from."""
+
+
+#: Transport-level failures: the request never produced an answer, and the
+#: model is not implicated. These MUST surface as `LlmProviderError` so the
+#: loop's `max_consecutive_provider_failures` bound gets a chance to apply.
+#: Left uncaught they reach loop.py's catch-all `except Exception`, which ends
+#: the trial outright -- one `Connection error.` (a laptop suspend) destroyed
+#: G2_G3 after 38 productive steps and 100 minutes on run 20260806T194914Z.
+#: Deliberately NOT including auth or 400-class errors: a bad key or a
+#: malformed request should fail fast rather than retry five times.
+TRANSPORT_ERRORS = (
+    APIConnectionError,
+    APITimeoutError,
+    RateLimitError,
+    InternalServerError,
+)
 
 
 class LlmProviderError(LlmFormatError):
@@ -362,13 +384,26 @@ class OpenAICompatBackend:
 
         try:
             response = self._create(**kwargs)
+        except TRANSPORT_ERRORS as exc:
+            # Retryable: the request never reached a model, or the server had
+            # nothing to give. Raised as a provider error so the loop counts it
+            # against `max_consecutive_provider_failures` instead of ending the
+            # trial on the first one.
+            raise LlmProviderError(
+                f"{type(exc).__name__}: {exc}"
+            ) from exc
         except Exception:
             # A server that rejects response_format still gets one plain
             # attempt rather than failing the whole trial.
             if response_format is None:
                 raise
             kwargs.pop("response_format", None)
-            response = self._create(**kwargs)
+            try:
+                response = self._create(**kwargs)
+            except TRANSPORT_ERRORS as exc:
+                raise LlmProviderError(
+                    f"{type(exc).__name__}: {exc}"
+                ) from exc
 
         # A provider can return a well-formed HTTP 200 whose body carries no
         # choices at all (DeepSeek does this intermittently, and more often

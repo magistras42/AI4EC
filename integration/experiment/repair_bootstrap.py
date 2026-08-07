@@ -433,6 +433,10 @@ def run_replay_bootstrap_trial(
         broken_tactic=failed_tactic or None,
         broken_tactic_error=(strip_warning_lines(raw_error) or None)
         if raw_error else None,
+        # The tactics already in `work_copy`. They compiled against the current
+        # build during replay, so they are verified work; without this the
+        # agent was bulk-undoing them (see ProofFile.protected_prefix).
+        replayed_prefix=accepted_count,
         changelog_hints=changelog_hints or None,
         informal_proof=remaining_text,
         informal_proof_is_formal=True,

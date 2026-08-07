@@ -464,6 +464,43 @@ def _goal_section(goal: str) -> list[str]:
     ]
 
 
+def format_replayed_prefix_note(replayed_prefix: int) -> str:
+    """Tell the model which tactics are verified work, not its own guesses.
+
+    Nothing previously distinguished the replayed prefix from tactics the model
+    had added itself, and it destroyed the prefix routinely. On run
+    20260807T031032Z one `undo` of count 12 erased 12 of `G1_G2_eq`'s 18
+    replayed tactics at step 2, after a single failed `smt`; across that run's
+    three agent trials undos removed 37, 53 and 12 tactics, and two trials
+    ended holding fewer tactics than the bootstrap had handed them.
+
+    Deliberately not a prohibition. The bootstrap stops at the FIRST failure,
+    and an earlier tactic can be the real cause -- a `seq` whose invariant is
+    too weak compiles and strands the proof later -- so reaching back is
+    sometimes correct. It should just be a decision, not a reflex.
+    """
+    if replayed_prefix < 1:
+        return ""
+    return (
+        "## The first "
+        f"{replayed_prefix} tactic(s) are the original proof, already verified\n"
+        f"The proof script you are continuing already contains {replayed_prefix} "
+        "tactic(s) from the original proof. They were replayed one at a time "
+        "against the CURRENT EasyCrypt build and every one of them compiled — "
+        "they are not guesses, and the tactic that broke is the NEXT one.\n"
+        "\n"
+        "Undoing them throws away verified work. `undo` removes tactics from "
+        "the END of the script, so a large count reaches back into this "
+        "prefix; the harness will stop a multi-step undo at its boundary "
+        "rather than let one number erase it.\n"
+        "\n"
+        "If you believe a tactic INSIDE the prefix is the real cause — a `seq` "
+        "whose invariant is too weak will compile and strand the proof later — "
+        "you can still reach it, by undoing one step at a time. Say why in "
+        "your reasoning first."
+    )
+
+
 def _seq_position_bullets(pair: ProgramPair) -> list[str]:
     """State the `seq` positions that exist, and where the good cuts are.
 
@@ -475,12 +512,22 @@ def _seq_position_bullets(pair: ProgramPair) -> list[str]:
     guess.
     """
     n_left, n_right = len(pair.left), len(pair.right)
+    # Stated as a CEILING, not an admissible range. Measured on
+    # INDCPA_HEG_G1 (run 20260806T194914Z): of 12 failed `seq` attempts, 11
+    # used indices inside these counts and were rejected anyway -- twice with
+    # EasyCrypt naming its own far smaller limit (`invalid split index: ^<5`
+    # and `^<4` against counts of 13/12). The earlier wording promised
+    # "N must be 0..13 ... any other index is `invalid position parameter`",
+    # which is simply false. Claim only what the counts actually support.
     bullets = [
         f"Instruction counts — left: {n_left}, right: {n_right} (counted from "
-        "EasyCrypt's own instruction indices, so these are the exact bounds). "
-        f"`seq N M : (inv)` splits the FIRST N (left) and M (right) "
-        f"instructions: N must be 0..{n_left} and M must be 0..{n_right}. "
-        "Any other index is `invalid 'position' parameter`."
+        "EasyCrypt's own instruction indices). `seq N M : (inv)` splits the "
+        "FIRST N (left) and M (right) instructions, so N and M can never "
+        f"exceed {n_left} and {n_right}. Being within that ceiling does NOT "
+        "guarantee the index is legal — EasyCrypt applies further restrictions "
+        "at the current proof position. If it answers `invalid split index: "
+        "^<K`, K is the real limit: use an index strictly below K rather than "
+        "guessing again."
     ]
     if not pair.is_equiv:
         return bullets
@@ -788,12 +835,24 @@ _ERROR_REPAIR_LADDER: tuple[tuple[str, str], ...] = (
      "Code remains, so `skip` cannot apply yet. Same goal, different tactic "
      "position: consume the remaining statements with `seq` / `wp` / `rnd` / "
      "`call` first."),
+    # Neither rung may tell the model to "re-read the instruction counts
+    # above": on a `[programs are in sync]` goal EasyCrypt prints no statement
+    # list at all, so no counts appear -- 48% of measured goals carry that
+    # marker, and on G2_G3 step 1 the model was sent to consult a table that
+    # was not there and guessed `5 5`, `7 7`, `6 6` in turn. And when counts
+    # ARE printed, staying inside them is not sufficient: 11 of 12 failed `seq`
+    # attempts on INDCPA_HEG_G1 were within the printed counts.
     ("invalid `position' parameter",
-     "The tactic is right, the INDEX is wrong. Re-read the instruction counts "
-     "above and pick indices within them."),
+     "The tactic is right, the POSITION is wrong. If instruction counts are "
+     "shown above, stay within them -- but note they are only a ceiling, not "
+     "a guarantee. If no counts are shown, this goal prints no statement list "
+     "(`[programs are in sync]` does this), so do not guess indices: start "
+     "from the indices the ORIGINAL tactic used, which encode the author's "
+     "alignment, and adjust one side at a time."),
     ("invalid split index",
-     "The tactic is right, the INDEX is wrong. Re-read the instruction counts "
-     "above and pick indices within them."),
+     "The POSITION is wrong, and EasyCrypt has told you the limit: the "
+     "`^<K` in its message means the index must be strictly less than K. Use "
+     "K-1 or lower rather than trying another guess."),
     ("invalid arguments",
      "Right tactic, wrong arguments. Change only the arguments -- the witness "
      "function for `rnd`, the invariant for `seq`/`while`, the spec for "
@@ -851,6 +910,24 @@ def format_broken_tactic_repair(tactic: str, error: str | None) -> str:
     if rung:
         lines += ["", f"What that error calls for: {rung}"]
 
+    # An asymmetric cut is information, and the model discards it by default.
+    # The original G2_G3 tactic is `seq 4 3` -- deliberately uneven, because
+    # the two programs are -- and every model attempt was symmetric: 5 5, 7 7,
+    # 6 6, 5 5. Collapsing N M to N N throws away the author's alignment and
+    # then searches for it again from scratch.
+    asym = re.match(r"seq\s+(\d+)\s+(\d+)", tactic)
+    if asym and asym.group(1) != asym.group(2):
+        left, right = asym.group(1), asym.group(2)
+        lines += [
+            "",
+            f"NOTE: this cut is ASYMMETRIC ({left} on the left, {right} on the "
+            "right). That is deliberate -- the two programs are not aligned "
+            "statement for statement, and these indices record where the "
+            f"author matched them. Do not collapse it to `seq {left} {left}` "
+            f"or `seq {right} {right}`: adjust ONE side at a time and keep the "
+            "offset unless you have a reason to believe it changed.",
+        ]
+
     lines += [
         "",
         "Order of attack, cheapest first:",
@@ -903,6 +980,7 @@ def build_prompt(
     broken_tactic: str | None = None,
     broken_tactic_error: str | None = None,
     state_diff: str | None = None,
+    replayed_prefix: int = 0,
 ) -> str:
     sections = [
         "You are an EasyCrypt proof assistant agent. Choose the next tactic or undo.",
@@ -992,6 +1070,12 @@ def build_prompt(
         # able to say what a productive one did, so a `seq` that triples the
         # subgoal count reads to the model exactly like a regression.
         sections.extend([state_diff, ""])
+    prefix_note = format_replayed_prefix_note(replayed_prefix)
+    if prefix_note:
+        # Directly before the repair block: "these N compile, the next one is
+        # your task" is one thought, and splitting it across the prompt is how
+        # the model came to treat the whole script as its own scratch work.
+        sections.extend(["", prefix_note, ""])
     if broken_tactic:
         sections.extend(
             ["", format_broken_tactic_repair(broken_tactic, broken_tactic_error), ""]

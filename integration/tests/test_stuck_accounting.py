@@ -124,3 +124,85 @@ def test_a_usable_reply_resets_the_provider_streak(monkeypatch, tmp_path):
     result, loop_mod = _run(monkeypatch, tmp_path, backend, stuck_limit=50, max_steps=6,
                             max_consecutive_provider_failures=4)
     assert result.reason is not loop_mod.ExitReason.LLM_ERROR
+
+
+# --- deliberate by default, back off when it is not converging --------------
+# Latency on run 20260806T194914Z rose 93s -> 235s per step as the trajectory
+# window filled and then plateaued, so depth is not free. `high_unless_stuck`
+# spends it while the model is converting calls into progress and stops
+# forcing it once the trajectory says otherwise.
+
+
+def _traj(*outcomes):
+    return [{"outcome": o} for o in outcomes]
+
+
+def test_high_effort_while_the_model_is_converging(monkeypatch):
+    from integration.agent.config import (
+        THINKING_HIGH_UNLESS_STUCK,
+        resolve_effort_for_step,
+        resolve_thinking_for_step,
+    )
+
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "sk-test")
+    config = apply_deepseek_provider(
+        AgentConfig(), thinking=THINKING_HIGH_UNLESS_STUCK
+    )
+    traj = _traj("accepted", "accepted", "failed", "accepted")
+    assert resolve_thinking_for_step(config, traj) == "enabled"
+    assert resolve_effort_for_step(config, traj) == "high"
+
+
+def test_effort_is_released_once_the_model_is_struggling(monkeypatch):
+    """4 unproductive steps in the 6-step window. A no-op counts: EasyCrypt
+    accepted it, so it is not a failure, but it bought nothing."""
+    from integration.agent.config import (
+        THINKING_HIGH_UNLESS_STUCK,
+        resolve_effort_for_step,
+    )
+
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "sk-test")
+    config = apply_deepseek_provider(
+        AgentConfig(), thinking=THINKING_HIGH_UNLESS_STUCK
+    )
+    traj = _traj("failed", "no_op", "accepted", "undone", "failed", "accepted")
+    assert resolve_effort_for_step(config, traj) is None
+
+
+def test_one_bad_step_in_six_is_not_struggling(monkeypatch):
+    """The median step on the measured runs is unproductive, so an `any`
+    rule would report struggling essentially always."""
+    from integration.agent.config import THINKING_HIGH_UNLESS_STUCK, is_struggling
+
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "sk-test")
+    config = apply_deepseek_provider(
+        AgentConfig(), thinking=THINKING_HIGH_UNLESS_STUCK
+    )
+    assert not is_struggling(config, _traj("accepted", "failed", "accepted"))
+
+
+def test_other_thinking_modes_keep_their_configured_effort(monkeypatch):
+    """`resolve_effort_for_step` is called unconditionally by the loop, so it
+    must be a no-op for every mode that does not opt in."""
+    from integration.agent.config import resolve_effort_for_step
+
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "sk-test")
+    for mode in ("adaptive", "enabled", "disabled"):
+        config = apply_deepseek_provider(
+            AgentConfig(), thinking=mode, reasoning_effort="max"
+        )
+        assert resolve_effort_for_step(config, _traj("failed") * 6) == "max"
+
+
+def test_an_unknown_thinking_mode_is_still_rejected():
+    from integration.agent.config import resolve_thinking_for_step
+
+    config = AgentConfig(llm_provider="deepseek", llm_thinking="sometimes")
+    with pytest.raises(ValueError, match="llm_thinking must be one of"):
+        resolve_thinking_for_step(config, [])
+
+
+def test_the_history_window_was_cut_to_15():
+    """Prompt size drove per-step latency (93s -> 235s, plateauing exactly
+    where this window fills), and it is the only lever that shortens it."""
+    assert AgentConfig().history_steps == 15

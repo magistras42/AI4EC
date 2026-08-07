@@ -24,6 +24,22 @@ class ProofBounds:
 @dataclass
 class ProofFile:
     path: Path
+    #: How many tactics the replay bootstrap put in before the agent started.
+    #: Those tactics COMPILE against the current EasyCrypt build -- the one
+    #: that broke is the next one -- so undoing them discards verified work.
+    #:
+    #: Not a hard floor. The bootstrap stops at the FIRST failure, and that
+    #: failure is sometimes caused by an earlier tactic (a `seq` whose
+    #: invariant is too weak compiles fine and strands the proof later), so a
+    #: legitimate repair can need to reach back into the prefix. What this
+    #: stops is doing it *by accident, in bulk*: see `undo_last_tactic`.
+    #:
+    #: Measured on run 20260807T031032Z, where nothing protected it:
+    #:   G2_G3           10 undo actions removed 37 tactics; ended 13 -> 12
+    #:   INDCPA_HEG_G1   13 undo actions removed 53 tactics; ended 21 ->  9
+    #:   G1_G2_eq        ONE undo at step 2 removed 12 of 18, after a single
+    #:                   failed `smt(mem_rng_empty)`
+    protected_prefix: int = 0
 
     def read_lines(self) -> list[str]:
         return self.path.read_text(encoding="utf-8").splitlines()
@@ -70,14 +86,42 @@ class ProofFile:
         del lines[start_idx : start_idx + count]
         self.write_lines(lines)
 
+    def tactic_count(self) -> int:
+        """How many tactic lines stand between ``proof.`` and the end."""
+        bounds = self.bounds()
+        lines = self.read_lines()
+        count = 0
+        for index in range(bounds.proof_start_line, len(lines)):
+            line = lines[index].strip()
+            if not line or QED_RE.search(line):
+                continue
+            count += 1
+        return count
+
     def undo_last_tactic(self, count: int = 1) -> int:
         """Remove up to ``count`` trailing tactics. Returns how many were undone.
 
-        Never removes the lemma signature or the ``proof.`` line. If fewer than
-        ``count`` tactics remain, undoes as many as possible.
+        Never removes the lemma signature or the ``proof.`` line.
+
+        A multi-tactic undo stops at ``protected_prefix``: it will take the
+        script down to the replayed prefix and no further, however many were
+        asked for. Crossing into the prefix is still possible, one undo action
+        at a time, because a repair sometimes genuinely needs to -- but it now
+        takes a deliberate sequence of decisions rather than a single number.
+
+        The behaviour this exists to stop, from run 20260807T031032Z: one
+        `undo(count=12)` on `G1_G2_eq` erased 12 of the 18 replayed tactics at
+        step 2, prompted by a single failed `smt`. Across that run's three
+        agent trials, undos removed 37, 53 and 12 tactics; two of the three
+        finished holding FEWER tactics than the bootstrap had handed them.
         """
         if count < 1:
             return 0
+        # One-at-a-time undos keep their old, unrestricted behaviour: the model
+        # asking repeatedly is exactly the deliberate act we want to allow.
+        if count > 1 and self.protected_prefix > 0:
+            removable = max(0, self.tactic_count() - self.protected_prefix)
+            count = min(count, removable) if removable else 1
         undone = 0
         for _ in range(count):
             bounds = self.bounds()
