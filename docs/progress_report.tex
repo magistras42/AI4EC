@@ -281,6 +281,9 @@ The intended use case for this system is proof repair: a user supplies a broken 
 
 This design ensures that the proof goal is never LLM-manufactured: every trial starts from a lemma that EasyCrypt has already verified, so a successful reconstruction is a genuine proof of the intended statement. As collaborators contribute corpora of genuinely broken EasyCrypt proofs, the informal sketch step can be bypassed entirely and the agent evaluated against real repair tasks without structural changes to the pipeline.
 
+\paragraph{Historical syntax compatibility.}
+During corpus validation, we found that some historical EasyCrypt repositories use proof-block syntax not covered by the initial extraction heuristic. In particular, AutoCrypt terminates explicit proof blocks with the legacy \texttt{save.} command rather than \texttt{qed.}. As a result, the initial parser reported zero extracted proofs for the repository. We extended the proof-block extractor to recognize \texttt{save.} before computing repository-level proof complexity.
+
 \subsection{Prompts and Retrieved Context}
 
 The solver agent uses retrieval-augmented in-context prompting rather than model fine-tuning. Every prompt iteration contains: a system instruction to emit a single structured action, the informal proof sketch, a fixed block of EasyCrypt proof-pattern examples, the current EasyCrypt goal state, a ranked list of candidate premises, a history of tactics that failed at the current goal, and the most recent lines of the proof in progress.
@@ -351,6 +354,11 @@ The primary goal of the initial experiments was to validate the end-to-end pipel
 \paragraph{Infrastructure validation.} The pipeline executed correctly end-to-end: corpora were cloned and indexed, sandbox files were constructed, informal sketches were generated and screened for contamination, premise manifests including red herrings were built and embedded, and the agent loop ran to termination for every trial. The patched EasyCrypt binary correctly provided goal states and premise lists at requested file positions.
 
 A completion detection bug was discovered during result analysis, however, which invalidates all reported \textsc{Complete} outcomes from the current runs. The bug causes the agent to incorrectly declare a proof complete when the working file still contains an open proof obligation. Because the sandbox files retain all preceding lemmas from the same source chapter---each with their own closed proof blocks---the heuristic used to detect proof closure identifies an earlier lemma's closing marker as belonging to the target proof. The result is that EasyCrypt finds no active proof at the probed location, not because the target proof is finished, but because it is examining a position that belongs to a different, already-closed lemma. Direct verification confirms that none of the working copies flagged as complete actually contain a closed proof. This bug is documented separately and a fix is in progress; it does not affect the validity of \textsc{Stuck}, \textsc{MaxSteps}, or \textsc{LLMError} outcomes.
+
+\paragraph{Corpus extraction validation.}
+The compatibility update recovered five explicit AutoCrypt proofs with estimated proof depths of 10, 4, 16, 8, and 6. This changed the repository's proof-complexity score from zero to 12.02 and propagated into the complexity-scaled historical-version penalty. As a cross-repository sanity check, the same extractor identified 25 proofs in LQ-1 and 27 proofs in the CS591 Project repository, suggesting that the unsupported legacy \texttt{save.} terminator was the primary parsing issue among the repositories examined.
+
+The extractor remains heuristic rather than a complete EasyCrypt parser. In particular, inline forms such as \texttt{equiv ... by ...} are not covered as comprehensively as explicit proof blocks, so the recovered count should be interpreted as improved coverage rather than complete extraction.
 
 \paragraph{Failure taxonomy.} Setting aside the spurious completions, the trials produced four distinct and well-documented failure modes.
 
