@@ -79,4 +79,49 @@ def register_default_specs(data_dir) -> None:
         )
 
 
+    if "lq1-changelog-repair" not in list(SPECS.names()):
+        # Same corpus as lq1-broken-repair, but replay-until-failure rather
+        # than admit-and-reconstruct -- so the agent starts from a VERIFIED
+        # prefix and the prefix clamp / prompt note / net_tactics_vs_bootstrap
+        # metric have something to act on. `broken_formal` strips every tactic
+        # first, so none of that machinery is reachable there.
+        #
+        # Viable only because `sampling_bound`'s 5 tactics all replay while the
+        # proof still does not close: `validate_file` exit 0 means the tactics
+        # PARSED, not that the goal was discharged. That gives a 5-tactic
+        # prefix plus real work left to do -- exactly the shape the clamp
+        # needs. (Before the `is_proof_complete` fix in repair_bootstrap this
+        # was miscounted as fully replayed and reported COMPLETE with steps=0.)
+        SPECS.register(
+            ExperimentSpec(
+                name="lq1-changelog-repair",
+                corpus=LQ1Corpus(data_dir=data),
+                mutations=None,
+                replay_bootstrap=ReplayBootstrapConfig(),
+            )
+        )
+    if "joy-changelog-repair" not in list(SPECS.names()):
+        # Joy under replay-until-failure. NOTE the limitation, measured before
+        # registering: every Joy proof compiles AND closes against the current
+        # build, so replay reaches the end with nothing to repair and the agent
+        # is never invoked. That is the correct outcome for this corpus -- it
+        # has no version drift to repair -- and it makes this spec a
+        # *regression check* (does the replay path still complete cleanly?)
+        # rather than a test of repair ability.
+        #
+        # It therefore does NOT exercise the prefix clamp: a fully-replayed
+        # trial returns before `run_agent`. Use `lq1-changelog-repair` or
+        # `elgamal-changelog-repair` for that. Registered anyway because a
+        # corpus that SHOULD fully replay is a useful control: if it ever stops
+        # replaying, either EasyCrypt or the replay path has regressed.
+        SPECS.register(
+            ExperimentSpec(
+                name="joy-changelog-repair",
+                corpus=JoyCorpus(data_dir=data),
+                mutations=None,
+                replay_bootstrap=ReplayBootstrapConfig(),
+            )
+        )
+
+
 register_default_specs("data")

@@ -41,6 +41,7 @@ from integration.experiment.config import ExperimentConfig
 from integration.experiment.proof_extract import apply_lines, strip_tactics
 from integration.experiment.protocols import ProofCase, ReplayBootstrapConfig
 from integration.experiment.runner import TrialResult, TokenUsage, _cost_for_usage
+from integration.experiment.verify import is_proof_complete
 
 logger = logging.getLogger(__name__)
 
@@ -294,7 +295,20 @@ def run_replay_bootstrap_trial(
             break
         accepted_count += 1
 
-    fully_replayed = accepted_count == len(tactics)
+    # Every tactic applied AND the proof actually closes. The second half is
+    # not redundant: `validate_file` runs `llm -lastgoals`, whose exit 0 means
+    # the tactics PARSED, not that the goal was discharged -- the distinction
+    # this repo already pins in
+    # `test_goal_state.py::test_validate_file_success_does_not_imply_complete`.
+    #
+    # LQ1's `sampling_bound` is exactly that case: all 5 original tactics
+    # replay with returncode 0 while `is_proof_complete` is False. Counting it
+    # as fully replayed reported a proof that does not close as COMPLETE with
+    # steps=0 and skipped the agent entirely -- a false success, and the reason
+    # a replay spec on that corpus appeared to have nothing to repair.
+    fully_replayed = accepted_count == len(tactics) and is_proof_complete(
+        work_copy, agent_config
+    )
     (trial_dir / "bootstrap_result.json").write_text(
         json.dumps(
             {

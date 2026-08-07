@@ -216,3 +216,166 @@ def test_no_ambient_note_on_a_program_logic_goal():
     goal = ("Current goal\n\npre = x = 1\n\nq <$ dexp   ( 1)  q <$ dexp\n\n"
             "post = x = 2")
     assert "0 of 27" not in format_active_goal_shape_hints(goal)
+
+
+# --- the notebook support module --------------------------------------------
+# Three notebooks now drive the same harness. The traps in the handoff's §7 are
+# mostly NOTEBOOK traps (stale kernel, reused output_dir, a preflight that
+# passes while the run cannot start), so the parts that must not drift live in
+# one module rather than being copied per notebook.
+
+
+def test_the_staleness_check_passes_on_the_working_tree():
+    from integration.experiment.notebook_support import verify_working_tree_is_live
+
+    assert verify_working_tree_is_live() == []
+
+
+def test_the_staleness_check_names_what_is_stale(monkeypatch):
+    """It must FAIL on stale code rather than pass quietly -- that is its whole
+    reason to exist.
+
+    Simulated by reverting one shipped behaviour (the prefix note) to what the
+    pre-change code did, which is exactly what a stale kernel would serve.
+    Patching a dataclass default would not work: defaults are baked into
+    `__init__` when the class is created, so the constructor ignores it.
+    """
+    import integration.agent.prompt as prompt_mod
+    from integration.experiment.notebook_support import verify_working_tree_is_live
+
+    monkeypatch.setattr(prompt_mod, "format_replayed_prefix_note", lambda n: "")
+    assert "prefix note present" in verify_working_tree_is_live()
+
+
+def test_each_run_gets_a_fresh_output_dir(tmp_path):
+    """Reusing a stale output_dir overwrites a previous run in place; it has
+    already mixed two runs' events into one file."""
+    import time
+
+    from integration.experiment.notebook_support import build_config
+
+    kw = dict(
+        provider="lm_studio", model="m", thinking="adaptive", reasoning_effort=None,
+        embed_model="e", trials=1, adaptive_multiplier=2.5, min_steps=10,
+        stuck_limit=20, top_k=10, llm_max_tokens=1024, llm_timeout_s=180,
+        cost_limit_usd=5.0, data_dir=tmp_path,
+    )
+    a = build_config(spec_name="joy-tactic-repair", **kw)
+    time.sleep(1.1)
+    b = build_config(spec_name="joy-tactic-repair", **kw)
+    assert a.output_dir != b.output_dir
+
+
+def test_a_local_provider_gets_no_cost_cap(tmp_path):
+    """A cap is meaningless for a free local model."""
+    from integration.experiment.notebook_support import build_config
+
+    exp = build_config(
+        spec_name="joy-tactic-repair", provider="lm_studio", model="m",
+        thinking="adaptive", reasoning_effort=None, embed_model="e", trials=1,
+        adaptive_multiplier=2.5, min_steps=10, stuck_limit=20, top_k=10,
+        llm_max_tokens=1024, llm_timeout_s=180, cost_limit_usd=5.0,
+        data_dir=tmp_path,
+    )
+    assert exp.agent.spend_budget is None
+
+
+def test_the_timeout_reaches_the_agent_config(tmp_path):
+    from integration.experiment.notebook_support import build_config
+
+    exp = build_config(
+        spec_name="joy-tactic-repair", provider="lm_studio", model="m",
+        thinking="adaptive", reasoning_effort=None, embed_model="e", trials=1,
+        adaptive_multiplier=2.5, min_steps=10, stuck_limit=20, top_k=10,
+        llm_max_tokens=1024, llm_timeout_s=180, cost_limit_usd=None,
+        data_dir=tmp_path,
+    )
+    assert exp.agent.lm_studio_timeout == 180
+
+
+@pytest.mark.parametrize("spec", ["joy-tactic-repair", "lq1-broken-repair"])
+def test_both_new_specs_build_and_load_cases(spec, tmp_path):
+    from integration.experiment.notebook_support import build_config, build_spec
+
+    exp = build_config(
+        spec_name=spec, provider="lm_studio", model="m", thinking="adaptive",
+        reasoning_effort=None, embed_model="e", trials=1,
+        adaptive_multiplier=2.5, min_steps=10, stuck_limit=20, top_k=10,
+        llm_max_tokens=1024, llm_timeout_s=180, cost_limit_usd=None,
+        data_dir=Path("data"),
+    )
+    built = build_spec(exp, Path("data"))
+    assert built.name == spec
+    assert list(built.corpus.load_cases()), "corpus loaded no cases"
+
+
+def test_neither_new_spec_uses_replay_bootstrap():
+    """Pins the scope decision: the prefix clamp and net_tactics metric are
+    replay-only, so these two specs must not silently acquire a prefix."""
+    from integration.experiment.specs import SPECS, register_default_specs
+
+    register_default_specs("data")
+    for name in ("joy-tactic-repair", "lq1-broken-repair"):
+        assert SPECS.get(name).replay_bootstrap is None
+
+
+# --- replay-bootstrap specs for the other two corpora -----------------------
+
+
+def test_the_new_changelog_specs_use_replay_bootstrap():
+    """Only replay_bootstrap produces a verified prefix, so only it can
+    exercise the clamp. broken_formal and mutations strip every tactic first."""
+    from integration.experiment.specs import SPECS, register_default_specs
+
+    register_default_specs("data")
+    for name in ("lq1-changelog-repair", "joy-changelog-repair",
+                 "elgamal-changelog-repair"):
+        assert SPECS.get(name).replay_bootstrap is not None, name
+    for name in ("lq1-broken-repair", "joy-tactic-repair"):
+        assert SPECS.get(name).replay_bootstrap is None, name
+
+
+@pytest.mark.parametrize("spec", ["lq1-changelog-repair", "joy-changelog-repair"])
+def test_the_new_specs_load_cases(spec):
+    from integration.experiment.specs import SPECS, register_default_specs
+
+    register_default_specs("data")
+    assert list(SPECS.get(spec).corpus.load_cases())
+
+
+def test_a_parsing_replay_is_not_a_complete_proof(tmp_path, easycrypt_bin):
+    """The bug that made a replay spec on LQ1 look pointless.
+
+    `validate_file` runs `llm -lastgoals`, whose exit 0 means the tactics
+    PARSED. `repair_bootstrap` treated "every tactic applied" as fully
+    replayed, so LQ1's `sampling_bound` -- 5 tactics that all apply while the
+    goal stays open -- was reported COMPLETE with steps=0 and the agent was
+    never invoked.
+    """
+    from integration.agent.config import AgentConfig
+    from integration.agent.easycrypt import validate_file
+    from integration.agent.proof_file import ProofFile, create_working_copy
+    from integration.experiment.verify import is_proof_complete
+
+    src = Path(__file__).resolve().parent / "fixtures" / "hoare_after_proof.ec"
+    cfg = AgentConfig(easycrypt_bin=easycrypt_bin)
+    work = tmp_path / "w.ec"
+    create_working_copy(src, work_copy=work)
+    proof = ProofFile(work)
+    proof.append_tactic("proc.")
+
+    # Parses fine ...
+    assert validate_file(work, cfg).returncode == 0
+    # ... but the proof is nowhere near closed.
+    assert is_proof_complete(work, cfg) is False
+
+
+def test_fully_replayed_requires_the_proof_to_close():
+    """Pins the fix so a returncode-only check cannot come back."""
+    import inspect
+
+    from integration.experiment import repair_bootstrap as rb
+
+    src = inspect.getsource(rb.run_replay_bootstrap_trial)
+    assert "is_proof_complete(" in src, "fully_replayed must check completion"
+    assert "fully_replayed = accepted_count == len(tactics) and is_proof_complete" in src
