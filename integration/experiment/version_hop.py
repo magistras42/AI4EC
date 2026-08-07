@@ -47,7 +47,7 @@ from typing import Any, Callable, Protocol, Sequence
 
 from integration.agent.config import AgentConfig
 from integration.agent.ec_errors import classify_error, strip_warning_lines
-from integration.agent.easycrypt import validate_file
+from integration.agent.easycrypt import check_file_compat
 
 from .ec_versions import EcVersionProvisioner, ProvisioningError
 
@@ -143,7 +143,12 @@ def probe_version(
     hop_config = copy.copy(config)
     hop_config.easycrypt_bin = binary
 
-    result = validate_file(file_path, hop_config)
+    # `compile`, not `llm -lastgoals`: the `llm` subcommand is fork-local and
+    # absent from 11 of the 14 release tags, which blocked hopping outright.
+    # Hopping only asks "does this check out at release R", which upstream
+    # `compile` answers everywhere -- verified to agree with `llm -lastgoals`
+    # on both a passing and a failing proof.
+    result = check_file_compat(file_path, hop_config)
     if result.returncode == 0:
         return VersionProbe(version="", verdict=HOLDS)
 

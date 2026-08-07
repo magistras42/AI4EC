@@ -6,6 +6,7 @@ import re
 from pathlib import Path
 from typing import Any
 
+from .ec_context import format_context_note
 from .ec_program import (
     ProgramPair,
     common_prefix_length,
@@ -501,7 +502,9 @@ def format_replayed_prefix_note(replayed_prefix: int) -> str:
     )
 
 
-def _seq_position_bullets(pair: ProgramPair) -> list[str]:
+def _seq_position_bullets(
+    pair: ProgramPair, split_limit: int | None = None
+) -> list[str]:
     """State the `seq` positions that exist, and where the good cuts are.
 
     Three facts, in the order they are needed: the valid range, where the two
@@ -525,10 +528,24 @@ def _seq_position_bullets(pair: ProgramPair) -> list[str]:
         "FIRST N (left) and M (right) instructions, so N and M can never "
         f"exceed {n_left} and {n_right}. Being within that ceiling does NOT "
         "guarantee the index is legal — EasyCrypt applies further restrictions "
-        "at the current proof position. If it answers `invalid split index: "
-        "^<K`, K is the real limit: use an index strictly below K rather than "
-        "guessing again."
+        "at the current proof position."
     ]
+    if split_limit is not None:
+        # EasyCrypt already told us the real bound at THIS goal, and it is far
+        # tighter than the counts: `^<5` against a count of 13 on
+        # INDCPA_HEG_G1. Stating it beats restating the ceiling the model has
+        # already been rejected inside of.
+        bullets.append(
+            f"EasyCrypt has ALREADY reported the real limit at this goal: "
+            f"`invalid split index: ^<{split_limit}`. N must be strictly less "
+            f"than {split_limit} — i.e. at most {split_limit - 1}, not "
+            f"{n_left}. Do not try an index at or above {split_limit} again."
+        )
+    else:
+        bullets.append(
+            "If EasyCrypt answers `invalid split index: ^<K`, K is the real "
+            "limit: use an index strictly below K rather than guessing again."
+        )
     if not pair.is_equiv:
         return bullets
 
@@ -557,7 +574,9 @@ def _seq_position_bullets(pair: ProgramPair) -> list[str]:
     return bullets
 
 
-def format_active_goal_shape_hints(goal: str) -> str:
+def format_active_goal_shape_hints(
+    goal: str, split_limit: int | None = None
+) -> str:
     """Proactive, shape-conditioned hints for the current EasyCrypt goal.
 
     These are intentionally pattern-level (program-logic vs ambient, loops,
@@ -675,7 +694,7 @@ def format_active_goal_shape_hints(goal: str) -> str:
             # reported as `left: 15, right: 15` when `seq` accepted at most
             # 13 and 12 -- an `invalid 'position' parameter` handed to the
             # model as a fact.
-            bullets.extend(_seq_position_bullets(pair))
+            bullets.extend(_seq_position_bullets(pair, split_limit))
         elif left_stmts or right_stmts:
             # No index column printed, so no position is known. Say nothing
             # about counts rather than quote the line tally.
@@ -812,7 +831,8 @@ def format_active_goal_shape_hints(goal: str) -> str:
         "succeeded (0 of 27 attempts; 26 of the failures were `cannot prove "
         "goal (strict)`). These residuals carry quantifiers and several "
         "connectives, so the solver runs out of room. Give it help rather "
-        "than repeating it: name lemmas — `smt(Lemma1, Lemma2)` — or reduce "
+        "than repeating it: name lemmas — `smt(Lemma1 Lemma2)`, SPACE-separated, "
+        "since a comma is a parse error — or reduce "
         "the goal first with `move => ...` / `progress.` / `simplify.`, or "
         "cut an intermediate fact with `have h : P by smt(). smt(h).`"
     )
@@ -1003,6 +1023,7 @@ def build_prompt(
     broken_tactic_error: str | None = None,
     state_diff: str | None = None,
     replayed_prefix: int = 0,
+    split_limit: int | None = None,
 ) -> str:
     sections = [
         "You are an EasyCrypt proof assistant agent. Choose the next tactic or undo.",
@@ -1102,7 +1123,7 @@ def build_prompt(
         sections.extend(
             ["", format_broken_tactic_repair(broken_tactic, broken_tactic_error), ""]
         )
-    active_hints = format_active_goal_shape_hints(goal)
+    active_hints = format_active_goal_shape_hints(goal, split_limit)
     if active_hints:
         sections.extend(
             [
@@ -1111,6 +1132,13 @@ def build_prompt(
                 "",
             ]
         )
+    # Which names exist and of what kind. Every fact here is already on screen
+    # in the goal's context block; the model was shown it and did not act on
+    # it -- 10 of 16 measured name/scope failures are re-introducing `&1`/`&2`
+    # or a hypothesis the block already lists.
+    context_note = format_context_note(goal)
+    if context_note:
+        sections.extend([context_note, ""])
     sections.extend(
         [
             "## Top relevant premises",

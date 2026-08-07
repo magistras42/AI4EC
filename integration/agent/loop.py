@@ -29,6 +29,9 @@ from .easycrypt import (
     tactic_discharged_proof,
     validate_file,
 )
+from .ec_context import unknown_name_hint
+from .ec_names import name_advice
+from .ec_program import split_index_limit
 from .ec_errors import strip_warning_lines
 from .embeddings import EmbeddingClient, rank_by_cosine, top_premises
 from .error_history import ErrorHistory
@@ -284,6 +287,12 @@ def run_agent(
     # the proof returns to the same state the bar returns with it, which is
     # correct -- it is still inert there.
     noop_by_goal: dict[str, set[str]] = {}
+    # EasyCrypt's own `invalid split index: ^<K` per goal. Strictly better
+    # information than the computed statement counts -- 11 of 12 failed
+    # `seq` attempts on INDCPA_HEG_G1 were INSIDE the counts, and twice EC
+    # named a far smaller K (`^<5` against a count of 13). It was being
+    # discarded with the rest of the error text.
+    split_limit_by_goal: dict[str, int] = {}
     # (goal before, tactic) for the last ACCEPTED tactic, so the next prompt can
     # describe what it structurally did. Cleared by an undo and by a no-op: in
     # both cases the tactic is no longer in the script and diffing across it
@@ -369,6 +378,7 @@ def run_agent(
             # stays verified for the whole trial, and the bulk undos that
             # destroyed it happened at steps 2, 20 and beyond.
             replayed_prefix=config.replayed_prefix,
+            split_limit=split_limit_by_goal.get(_goal_hash(goal)),
         )
 
         # Checked BEFORE the call, not after: the budget is updated when a
@@ -898,6 +908,25 @@ def run_agent(
                 error_msg = _enrich_error(
                     error_msg, action.tactic, goal, diagnostic=diagnostic
                 )
+                # `cannot find lemma 'X'` when X is a local hypothesis is a
+                # namespace confusion, not a missing name. Measured on
+                # G2_bad_ub: `smt(hpre)` failed this way while `hpre` was
+                # printed in the goal's own context block with its full
+                # statement. The stock message sends the model looking for a
+                # lemma that was never the point.
+                # Name resolution: which of the names this tactic used are
+                # local facts, and which the catalog has never heard of. The
+                # catalog-miss half is gated on the error looking like a name
+                # error, because Ax.all has false negatives -- `rpow_hmono`
+                # is absent from it yet works.
+                limit = split_index_limit(error_msg)
+                if limit is not None:
+                    split_limit_by_goal[_goal_hash(goal)] = limit
+                scope_note = name_advice(
+                    action.tactic, goal, lookup_catalog, error_msg
+                )
+                if scope_note:
+                    error_msg = f"{error_msg}\n[names] {scope_note}"
                 errors.add(goal, error_msg, action.tactic)
                 logger.info("Tactic failed: %s", error_msg)
                 stuck_counter = _increment_stuck(config, stuck_counter)
@@ -1199,6 +1228,28 @@ def _write_timeout_retrospective(
     return config.retrospective_file
 
 
+_SCOPE_NAME_RE = re.compile(r"(?:cannot find|unknown) (?:lemma|symbol) `([^']+)'")
+
+
+def _scope_hint_for_error(error_msg: str, goal: str) -> str:
+    """Explain a missing-lemma error when the name is in scope after all.
+
+    EasyCrypt says ``cannot find lemma `hpre'`` whether the name does not
+    exist or exists as something that is not a lemma. Those need opposite
+    responses -- search the catalog, versus stop naming it -- and the message
+    does not distinguish them. Measured on G2_bad_ub, where `hpre` was printed
+    in the goal's own context block with its full statement while `smt(hpre)`
+    was reported as a missing lemma.
+
+    Returns "" when the name genuinely is not in scope, leaving the existing
+    lookup advice to stand.
+    """
+    match = _SCOPE_NAME_RE.search(error_msg or "")
+    if not match:
+        return ""
+    return unknown_name_hint(goal, match.group(1))
+
+
 def _proof_state_hash(proof_tail: str) -> str:
     return hashlib.sha256(proof_tail.encode("utf-8")).hexdigest()
 
@@ -1322,7 +1373,7 @@ _ERROR_HINTS: list[tuple[re.Pattern, str]] = [
             "This usually means the goal is nonlinear (e.g. products, squares, "
             "exponents, or logs), involves a type the solver does not handle well, "
             "or simply needs a named lemma hint. "
-            "Try: (1) supply a hint — smt(lemma_name). "
+            "Try: (1) supply a hint — smt(lemma_name), or several SPACE-separated as smt(lem1 lem2); a COMMA between them is a parse error, not a failed proof. "
             "(2) if the goal is still in Hoare/program-logic form (you see "
             "'pre =' and 'post ='), apply 'wp.' then 'skip.' first, then retry smt(). "
             "(3) if the goal is already ambient but busy, try 'progress.' / "

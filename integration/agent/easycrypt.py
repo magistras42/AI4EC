@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import subprocess
 import tempfile
 from dataclasses import dataclass
@@ -54,6 +55,26 @@ def fetch_goal_and_premises(
 
 def validate_file(file_path: Path, config: AgentConfig) -> LlmResult:
     return run_llm(["llm", "-lastgoals", str(file_path)], config)
+
+
+def check_file_compat(file_path: Path, config: AgentConfig) -> LlmResult:
+    """Does this file check out? Works on binaries without the `llm` command.
+
+    `llm` is fork-local, added in `da4935c9` (2026-04-11), so **11 of the 14
+    buildable release tags do not have it** and `validate_file` cannot run
+    against them at all. That blocked version hopping entirely.
+
+    But hopping never needed the goal printer. `version_hop.probe_version`
+    asks one question -- does this file still check out at release R -- and
+    upstream `compile` answers it at every release. Verified against both
+    binaries: `llm -lastgoals` and `compile` return the same code on a passing
+    and on a failing proof with the modern build, and `compile` works on the
+    r2025.02 build where `llm` is an unknown option.
+
+    Used only on the hop path. The agent loop keeps `validate_file`, whose
+    stdout it also reads for goal text.
+    """
+    return run_llm(["compile", str(file_path)], config)
 
 
 def split_goal_and_premises(stdout: str) -> GoalAndPremises:
@@ -230,3 +251,52 @@ def _probe_post_proc_goal(proof: ProofFile, config: AgentConfig) -> str:
     finally:
         temp_path.unlink(missing_ok=True)
     return ""
+
+# ---------------------------------------------------------------------------
+# Logic-class probe (8c.3)
+# ---------------------------------------------------------------------------
+
+#: The one error that means "this is not a program-logic goal". Any OTHER
+#: failure means the probe tactic was wrong for this goal, not that the goal
+#: is ambient -- `wp.` fails on plenty of live program-logic goals.
+_WRONG_CLASS_RE = re.compile(
+    r"expecting a goal of the form", re.IGNORECASE
+)
+
+
+def probe_is_program_logic(proof: ProofFile, config: AgentConfig) -> bool | None:
+    """Ask EasyCrypt whether the goal is still a program-logic judgment.
+
+    Text classification cannot answer this. A discharged judgment still prints
+    `pre`/`post`, so `prompt.goal_looks_program_logic` calls 91% of them
+    program-logic and shannon-prover's `classify_goal` says pRHL on all 25 it
+    was tested against. The best text discriminator found is 57.7% precision.
+
+    So stop inferring it. Append a tactic that only a live program-logic goal
+    accepts, read the error, then remove it. ~1.5 s against a ~170 s model
+    call, and decisive rather than probabilistic.
+
+    Returns True (program-logic), False (judgment already discharged), or None
+    when the probe was inconclusive -- callers must treat None as "unknown"
+    and fall back to the text heuristic rather than assuming either way.
+
+    Leaves the file byte-identical.
+    """
+    original = proof.path.read_text(encoding="utf-8")
+    try:
+        proof.append_tactic("wp.")
+        result = validate_file(proof.path, config)
+    except OSError:
+        return None
+    finally:
+        proof.path.write_text(original, encoding="utf-8")
+
+    if result.returncode == 0:
+        # `wp.` applied, so there was a program-logic goal to apply it to.
+        return True
+    combined = f"{result.stderr}\n{result.stdout}"
+    if _WRONG_CLASS_RE.search(combined):
+        return False
+    # `wp.` failed for a reason of its own (no assignment to consume, wrong
+    # shape). That says nothing about the class.
+    return None

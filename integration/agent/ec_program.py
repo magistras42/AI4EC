@@ -266,3 +266,25 @@ def common_prefix_length(pair: ProgramPair) -> int:
             break
         length += 1
     return length
+
+# ---------------------------------------------------------------------------
+# EasyCrypt's own position limit
+# ---------------------------------------------------------------------------
+
+#: `invalid split index: ^<5` -- EasyCrypt naming the largest index it will
+#: accept, exclusive.
+_SPLIT_LIMIT_RE = re.compile(r"invalid split index:\s*\^<\s*(\d+)")
+
+
+def split_index_limit(error: str) -> int | None:
+    """The exclusive upper bound EasyCrypt reported, or None.
+
+    The statement counts this module derives are a CEILING, not an admissible
+    range: 11 of 12 failed `seq` attempts on `INDCPA_HEG_G1` used indices
+    inside the counts and were rejected anyway. Twice EasyCrypt named its own
+    far smaller limit -- `^<5` and `^<4` against counts of 13 and 12 -- which
+    is strictly better information than anything computed here, and was being
+    discarded with the rest of the error text.
+    """
+    match = _SPLIT_LIMIT_RE.search(error or "")
+    return int(match.group(1)) if match else None
