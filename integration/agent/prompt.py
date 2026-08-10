@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from .ec_context import format_context_note
+from .ec_context import format_context_note, format_introduction_note
 from .ec_program import (
     ProgramPair,
     common_prefix_length,
@@ -1139,6 +1139,13 @@ def build_prompt(
     context_note = format_context_note(goal)
     if context_note:
         sections.extend([context_note, ""])
+    # What `move =>` can actually take. The context block alone was not
+    # enough: 4 of 8 measured `move` failures on G2_bad_ub had `&1` in the
+    # CONCLUSION (`forall &1 &2, ...`) rather than as a context entry, so the
+    # names-in-scope note stayed silent while EasyCrypt said "already exists".
+    intro_note = format_introduction_note(_goal_conclusion(active_goal_text(goal)))
+    if intro_note:
+        sections.extend(["## Introducing hypotheses", "", intro_note, ""])
     sections.extend(
         [
             "## Top relevant premises",

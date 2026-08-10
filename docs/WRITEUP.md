@@ -30,6 +30,38 @@ A trial that replays every original tactic never invokes the agent at all
 (`fully_replayed: true`, zero LLM calls). **This is the common case — 93% of
 COMPLETE trials across ten runs.**
 
+> ### Step 2 is load-bearing for everything after it
+>
+> **The whole harness rests on being able to port a file's syntax forward to
+> the target EasyCrypt before any proof repair is attempted.** Step 2 is not a
+> convenience: if `import_repair` cannot make the file load, `llm -upto`
+> returns nonzero, `repair_bootstrap` records `skip_reason="goal_unreachable"`,
+> and the trial ends **before a single tactic is tried**. No replay, no
+> changelog evidence, no agent. Steps 3–5 are unreachable.
+>
+> That dependency is easy to miss because it has never failed here — 94 trials,
+> `resolved=True` every time, zero `goal_unreachable` skips. But that is a fact
+> about this corpus, not about the harness. On ElGamal the entire porting job
+> was one added theory:
+>
+> ```diff
+> -require import AllCore Distr SmtMap DBool FSet.
+> +require import AllCore Distr SmtMap DBool FSet FMap.
+> ```
+>
+> and that single declaration change is what makes nine lemmas close (§8bb).
+> Measured directly, 12 of the 15 ElGamal proofs do **not** close as shipped.
+> So on this corpus the dominant repair is *syntax porting*, not proof repair —
+> the agent's contribution sits on top of it.
+>
+> The porting vocabulary is fixed and narrow (`add_require`,
+> `replace_require`, `remove_require`, `rename_symbol`, `replace_regex`,
+> `add_pragma`). A corpus whose **module**, `clone`, `op`/`type` or `axiom`
+> declarations drifted would exhaust those rules, fail to load, and be recorded
+> as a skip rather than as a class of breakage nobody can repair. See §8bb for
+> the proposed fix, which is to make that case *visible* before extending the
+> vocabulary.
+
 ### 1.1 Trial artifacts
 
 | file | contents |
@@ -146,6 +178,68 @@ and that the clamp exists.
 `net_tactics_vs_bootstrap`. **A negative net is the signal**; it is the only
 measure that caught this.
 
+**Does the agent rebuild a prefix it undoes into? No — measured, it does not.**
+That is the argument for the clamp, because "it can just redo them" would
+otherwise make the whole thing unnecessary.
+
+Measured by comparing the surviving script's head against the original,
+tactic by tactic:
+
+| run | trial | prefix | removals | head verbatim | outcome |
+|---|---|---:|---:|---|---|
+| **clamp ON** | `G2_G3` | 13 | 12 | **13/13** | intact |
+| **clamp ON** | `G2_bad_ub` | 15 | 7 | **14/15** | lost 1: `auto.` → `progress.` |
+| clamp OFF | `G2_G3` | 13 | 37 | 5/13 | lost 8 |
+| clamp OFF | `INDCPA_HEG_G1` | 21 | 53 | 5/21 | lost 16 |
+| clamp OFF | `G1_G2_eq` | 18 | 20 | 1/18 | lost 17 |
+
+`G2_G3` under the clamp is the design working: 12 removals, all above the
+boundary, so the agent churned its *own* additions and the original never
+moved. `G2_bad_ub` shows the escape hatch — single-step undos are
+unrestricted, it crossed by exactly one, and it did **not** restore the
+tactic; it substituted `progress.` and carried on.
+
+**It re-attempts the deleted tactic, and the re-attempt fails.** This is the
+strongest argument for the clamp, and it corrects an earlier reading here that
+said the tactic was simply never tried again — byte-exact comparison
+understates it, because the model rewrites spacing. Compared
+whitespace-insensitively:
+
+| trial (clamp OFF) | deleted | re-attempted at | result |
+|---|---|---|---|
+| `G2_G3` | `call(_ : ={RO_track.bad_grp,RO_track.mp}).` | step 33 | **failed** — `the conclusion is not a hoare or an equiv` |
+| `INDCPA_HEG_G1` | `sp.` | steps 23, 38, 64 | — |
+| `G1_G2_eq` | `inline*.` | step 10 | — |
+
+`G2_G3` also made **16** near-miss `call` attempts around the deleted one (9
+accepted, 7 not), spread from step 14 to step 67.
+
+So deleting a prefix tactic does not merely lose the line — it destroys the
+proof *state* in which that line applied. Putting the same tactic back later
+fails, because the surrounding context is gone. The clamp is therefore not
+preventing a recoverable mistake; the mistake is genuinely unrecoverable, and
+the agent burns tens of steps discovering that.
+
+> **Measurement traps, both hit while producing this table.**
+> 1. Compare tactics using the replay's own rule — strip `(* … *)` comments,
+>    then split on `.<whitespace>` — never on physical lines. A single
+>    `seq 5 5 : (…)` wraps across three lines in the original and is one line
+>    in the work copy, so a line-by-line diff reported `G2_bad_ub` as losing 12
+>    of 15 when it lost 1.
+> 2. Compare tactic *text* whitespace-insensitively. `call(_ : ={a,b}).` and
+>    `call (_: ={a, b}).` are the same tactic; byte equality reported zero
+>    re-attempts where there was one.
+>
+> The corrected script is
+> `scratchpad/prefix_survival.py`.
+
+> **Measurement trap.** Compare tactics using the replay's own rule — strip
+> `(* … *)` comments, then split on `.<whitespace>` — never on physical lines.
+> A single `seq 5 5 : (…)` wraps across three lines in the original and is one
+> line in the work copy, so a line-by-line diff reported `G2_bad_ub` as having
+> lost 12 of 15 when it had lost 1. The first run of this very comparison got
+> it wrong that way.
+
 ### 3.4 Stuck accounting
 
 `stuck_counter` increments on failures, rejections and repeated proof states —
@@ -226,6 +320,88 @@ ambient branch, and rung 3 of the repair ladder).
 > here reported "9× global axiom Adv_choose_ll in section" as an `smt` failure
 > mode; it does not exist. Always apply `ec_errors.strip_warning_lines` first —
 > the loop does, so the model never saw the wrong text, but the analysis did.
+
+### 4.3 Names in scope (`agent/ec_context.py`, `agent/ec_names.py`)
+
+16 of 426 measured failures are name/scope errors, and **10 of those are
+`an hypothesis or variable named 'X' already exists`** — the model
+re-introducing `&1`/`&2` or a hypothesis the goal's own context block already
+lists. Nothing needs fetching: EasyCrypt prints every name in scope above the
+dashed rule. The model was shown it and did not act on it.
+
+`ec_context.parse_context` reads that block into typed entries (memory,
+variable, hypothesis) and `format_context_note` states them, naming the exact
+move that would fail (`move => &1 &2`) and the namespace rule below.
+
+**The namespace rule.** On `G2_bad_ub` the model wrote `smt(hpre)` and got
+``cannot find lemma `hpre'`` — while `hpre` was printed in the context with
+its full statement. `smt(...)` takes *library lemma* names; a local hypothesis
+is already part of the goal the solver sees. The error text does not
+distinguish "no such name" from "that name is not a lemma", and those need
+opposite responses.
+
+**`ec_names` never blocks a tactic**, which is measured rather than cautious.
+The Ax.all catalog has false negatives: `rpow_hmono` is absent from it at
+`G2_bad_ub`'s cursor yet is part of that lemma's own original proof and
+replays successfully. Bare basenames are the same — the catalog is keyed by
+qualified path, so `addr0`, `subzz`, `mem_empty`, `dtext_ll` are all absent as
+keys while being usable. **A rejecting pre-check would have blocked working
+tactics**, so this only makes a failure informative:
+
+| situation | response |
+|---|---|
+| name is in the goal's context | explain the kind; never search for it |
+| name absent AND the error is a name error | nearest catalog entries by basename |
+| name absent, error is anything else | **silent** — the catalog may be wrong |
+| no catalog available | **silent** — no basis for any claim |
+
+That third row is the important guard. Ungated, `apply rpow_hmono.` — a
+tactic that works — would be told it used a bad name. A prompt that states
+something false gets believed; the `smt(a, b)` comma below is the proof.
+
+Cost is a handful of dict lookups: a tactic referencing a lemma-position name
+references a median of 1 (max 2) across every run, so there is nothing
+exhaustive about it. Retrieval of *relevant* lemmas is a separate mechanism
+that already exists — `top_premises`, cosine over the Ax.all catalog, `top_k`
+10 — and is untouched by this.
+
+**What `move =>` can introduce** (`ec_context.format_introduction_note`). The
+names-in-scope note above was not sufficient: on `G2_bad_ub`, 8 of 19 failures
+were `move =>` errors and the context note stayed silent on 6 of them.
+
+My first diagnosis was that `progress.`/`split` fanned the goal into branches
+where `&1` was bound in some and not others, so a static snapshot could not
+track it. **That was wrong** — every one of the eight had a *single* subgoal.
+The two real causes are plain shape facts about the conclusion:
+
+| cause | n | what the model wrote | EasyCrypt said |
+|---|---:|---|---|
+| memories read as binders | 4 | `move => &1 &2 hpre` against `forall &1 &2, …` | `'&1' already exists` |
+| no leading binder at all | 4 | `move => hpre` against `(glob Adv){1} = …` | `nothing to introduce` |
+
+`&1`/`&2` are **memories**. A pRHL conclusion can literally read
+`forall &1 &2, …` while those names are already bound, so they are not
+introducible — and because they appear in the *conclusion* rather than as
+context entries, the names-in-scope check never saw them.
+
+`leading_binders` parses the conclusion's binder chain, marks memories, and
+`format_introduction_note` states what is introducible, what must be skipped,
+or that `move =>` will fail outright. **Replayed against the eight recorded
+failures: 8/8 would have been warned.**
+
+Two parsing traps, both caught by tests: `forall (x : int) h,` binds `x` and
+`h`, not `int` (splitting the binder list on whitespace reported the type as a
+name); and `_goal_conclusion` matches EasyCrypt's 72-dash separator *exactly*,
+so a shorter stand-in in a test silently yields the whole dump as the
+"conclusion".
+
+**`smt` argument syntax.** `smt(a, b)` is a PARSE ERROR; the separator is a
+space. Verified against the binary: comma → `parse error`, space → proceeds to
+lemma lookup. Two of five failures on `G2_bad_ub` were this, **and the prompt
+was teaching it** — the ambient advice added in §4.2's work wrote
+`smt(Lemma1, Lemma2)`. Corrected in `prompt.py` and in `loop.py`'s
+`cannot prove goal (strict)` hint, which now says a comma is a parse error
+rather than a failed proof.
 
 ---
 
@@ -352,14 +528,325 @@ Invariants worth knowing before changing anything:
 
 ---
 
+## 8b. A worked example: what `G2_bad_ub` actually leaves open
+
+The most instructive single trial, because it exposes three separate problems
+at once. Run `20260807T151318Z`, trial 010.
+
+**It was reported COMPLETE in all ten previous runs, and never closed.** The
+bootstrap replayed all 19 original tactics, saw `validate_file` exit 0, and
+returned `COMPLETE, steps=0, calls=0`. Exit 0 from `llm -lastgoals` means the
+tactics *parsed*. Once `fully_replayed` also required `is_proof_complete`
+(§3.3), the agent ran for the first time — with a 15/15 verified prefix.
+
+This is not one lemma. **12 of the 15 ElGamal proofs do not close**; only
+`log_gen`, `gen_log` and `grexpAll` do. Every "free replay COMPLETE" for the
+other twelve was a false success, which means the headline counts in §9 and in
+the handoff are inflated and should be rebuilt from a post-fix run.
+
+### What is left open
+
+One pRHL judgment, ~2400 characters, the residual of the `call(_: …)` at the
+original script's lines 681–682:
+
+* **pre** — the invariant the `seq 5 5` established: `q1{1}=q1{2}`, the two
+  random-oracle maps equal, `bad_grp{1} = g^(q1*q2)`, and `badHappened{1}`
+  characterised as membership in the map's domain.
+* **post** — that invariant restated, conjoined with a large `forall` over
+  `result_L/result_R`, both `glob Adv`s, and the maps, unfolding into nested
+  quantifiers over `choiceL/choiceR ∈ {0,1}` and `yL/yR ∈ dtext` whose
+  conjuncts are largely reflexive (`choiceR = choiceR`,
+  `mu1 dtext yR = mu1 dtext yR`).
+
+**It is an ambient goal wearing program-logic clothes.** `skip.` fails here
+with `expecting a goal of the form: hoare[S], ehoare[S], phoare[S], equiv[S]`
+— the judgment is discharged, and what remains is a quantified implication.
+This is exactly the 24% wrong-logic-class bucket of §4.1, caught in the act.
+
+### Three distinct failures, only one of them about proof search
+
+Of the agent's first 15 steps: 4 no-ops, 5 failures.
+
+| step | tactic | error | class |
+|---|---|---|---|
+| 6, 8 | `smt(Top.grexpA, Top.inj)` | `parse error` | **syntax** |
+| 13 | `apply/andP` | ``unknown lemma `andP'`` | **hallucinated name** |
+| 11 | `smt(Top.grexpA Top.inj)` | `cannot prove goal (strict)` | **real solver limit** |
+
+1. **`smt(a, b)` is a parse error.** EasyCrypt separates hint lemmas with a
+   SPACE. Verified directly against the binary: comma → `parse error`, space →
+   proceeds to lemma lookup. Two of the five failures were this, and *the
+   prompt was teaching it* — an earlier revision of the ambient advice in this
+   very document's §4.2 work wrote `smt(Lemma1, Lemma2)`. Fixed in
+   `prompt.py` and in `loop.py`'s `cannot prove goal (strict)` hint, which now
+   says a comma is a parse error rather than a failed proof.
+2. **`andP` does not exist** in this library — an ssreflect name. Nothing in
+   the harness checks a lemma name before it is used, though `lookup_symbol`
+   exists to.
+3. **Only step 11 is a genuine proof-search failure**, and only after the
+   syntax was right.
+
+### Would better `smt` lemmas fix it?
+
+Partly, and not first. The ordering matters:
+
+* The syntax and name errors cost 3 of 5 failures and are free to fix.
+* With correct syntax `smt` still returned `cannot prove goal (strict)`, so at
+  *that* point better or additional lemmas are the right lever.
+* But the goal is ~2400 characters of nested quantifiers, and `smt` scales
+  badly in goal size. `progress.` being a **no-op** here (step 4) is the
+  telling detail — the usual decomposition did nothing, so the residual needs
+  to be broken up another way (`move => &1 &2` to introduce, then `split`, then
+  targeted `smt` per conjunct) before lemma selection becomes the binding
+  constraint.
+
+This matches §4.2's corpus-wide finding: bare `smt` on an ambient residual is
+0-for-27, and the successes come from *reducing first, then* calling the
+solver.
+
+---
+
+## 8bb. What actually solved each lemma, and what import repair is doing
+
+Run `20260807T151318Z`, first ten trials — the first ElGamal run with the
+`fully_replayed` fix, so `COMPLETE` finally means the proof closes.
+
+| trial | lemma | reason | LLM calls | bootstrap | fully |
+|---|---|---|---:|---|---|
+| 0 | `enc_stateless` | COMPLETE | **0** | 1/1 | True |
+| 1 | `INDCPA_Sec` | COMPLETE | **0** | 1/1 | True |
+| 2 | `INDCPA_Security` | COMPLETE | **4** | **1/2** | False |
+| 3–9 | `log_gen`, `gen_log`, `grexpAll`, `RO_track_f_ll`, `G1_G2`, `G3_true`, `RO_LCDHAdv` | COMPLETE | **0** | full | True |
+
+**Only `INDCPA_Security` was repaired by the model.** Its bootstrap is 1/2 —
+the second tactic genuinely broke — and four calls fixed it. Every other trial
+is a zero-call replay.
+
+**The one- and two-line lemmas did NOT get solved by the agent.**
+`enc_stateless` and `INDCPA_Sec` are 1 tactic each, replay 1/1, and complete
+with zero calls. They compile and close *after import repair* — nothing was
+proved by the model.
+
+### The repair that mattered was not a proof repair
+
+Those lemmas do **not** close in the corpus as shipped: measured directly,
+12 of the 15 ElGamal proofs fail `is_proof_complete` on the original file.
+They close in the run because import repair changed a **declaration**:
+
+```diff
+-require import AllCore Distr SmtMap DBool FSet.
++require import AllCore Distr SmtMap DBool FSet FMap.
+```
+
+One added theory, and nine lemmas go from not-closing to closing with no
+tactic touched. So on this corpus the dominant repair mechanism is *non-proof*:
+`import_repair` resolved every file (94 trials, `resolved=True`, and **no trial
+in any run was ever skipped `goal_unreachable`**).
+
+### The gap: non-proof breakage beyond imports
+
+`import_repair` is the only component that repairs anything outside a proof
+body, and its vocabulary is fixed —
+`add_require`, `replace_require`, `remove_require`, `rename_symbol`,
+`replace_regex`, `add_pragma` (`LINE_PRESERVING_OPS`).
+
+Everything else in a `.ec` file is **out of scope for the whole harness**:
+
+* `module` / `module type` declarations whose syntax or signature changed
+* `clone` / `clone import` with renamed or re-typed parameters
+* `op` and `type` declarations
+* `axiom` / `pred` statements
+* section and `declare` structure
+
+`rename_symbol` and `replace_regex` can paper over a simple rename, but nothing
+handles a *structural* change, and nothing detects one: the agent loop only
+ever appends tactics after `proof.`, so a broken module declaration cannot be
+repaired by it even in principle.
+
+**Why this has not bitten yet, and why that is not reassurance.** On this
+corpus every load failure was an import, so `resolved=True` everywhere and
+zero `goal_unreachable` skips. That is a property of the corpus, not of the
+harness. A proof whose *module* definition drifted would fail to load, exhaust
+the manifest's rules, and be skipped as `goal_unreachable` with no repair path
+— and the trial would be recorded as a skip rather than as a class of breakage
+nobody can fix.
+
+**Proposed fix.** Two steps, cheapest first:
+
+1. **Make the gap visible.** When import repair leaves a file unloadable,
+   classify the residual error (`ec_errors` already distinguishes pre-proof
+   from in-proof) and record *which declaration kind* failed, rather than the
+   flat `goal_unreachable`. Costs nothing and turns an invisible class into a
+   counted one.
+2. **Only then** consider extending the repair vocabulary. Adding
+   module/clone rewriting to the manifest is real work and is unjustified
+   until step 1 shows it happening. Note that the same evidence-based
+   discipline already in `import_repair` applies — every edit verified against
+   EasyCrypt and rolled back if it does not measurably improve how far the
+   file loads.
+
+---
+
+## 8c. Open problems, with proposed fixes
+
+Ordered by (evidence it matters) × (confidence the fix works). Each says what
+to build, what it costs, and how to know it worked. Speculative ones are
+marked; do not treat them as equal to the measured items.
+
+### 8c.1 `resolve_goal`'s lossy return is a permanent footgun — CHEAP, CERTAIN
+
+§2.1 records three bugs from callers reading `""` as "discharged". Two are
+fixed and the doc says "any new caller must" use `_current_goal` — which is a
+comment, not a mechanism, and the third bug arrived *after* the first two were
+documented.
+
+**Fix.** A lint test that fails on any direct `resolve_goal(` call outside
+`easycrypt.py` and `loop.py::_current_goal`, with an allowlist. ~15 lines, no
+runtime cost, and it converts a recurring class of bug into a build failure.
+Stronger variant: rename to `resolve_goal_lossy` so the hazard is at every
+call site. Implemented as `test_no_new_lossy_goal_callers` — see §8.
+
+**Validation.** Introduce a direct call in a scratch branch; the test fails.
+
+### 8c.2 `seq` positions: use EasyCrypt's own limit — **DONE**
+
+§5's limitation: the counts are a ceiling, not an admissible range, and 11 of
+12 failed `seq` attempts were *inside* the ceiling. But EasyCrypt names the
+real limit — `invalid split index: ^<5` — and we only tell the model to read
+it, reactively, after it has already guessed.
+
+**Fix.** Parse K out of that error and carry it on the per-goal error history,
+then have `_seq_position_bullets` state `N < K` instead of `N ≤ len(left)`
+once K is known. Two small pieces: a `_split_index_limit(error) -> int | None`
+regex, and a field on the goal-keyed error record.
+
+**Cost.** No EasyCrypt calls; it reuses information already being thrown away.
+
+**Shipped.** `ec_program.split_index_limit` parses K; `loop.run_agent` records
+it per goal hash and feeds it back through `build_prompt(split_limit=…)`. Once
+K is known the prompt states *"N must be strictly less than K — i.e. at most
+K-1, not 13"* instead of restating the ceiling the model has already been
+rejected inside of.
+
+**Still to validate on a run.** Count `invalid split index` failures per trial
+before and after.
+
+### 8c.3 Wrong logic class: ask EasyCrypt instead of guessing — **DONE (probe built, not yet consumed)**
+
+§4.1's 24% bucket. The best text-based discriminator is 57.7% precision, and
+both our classifier and shannon-prover's get these wrong, because *the printed
+form genuinely does not distinguish them* — a discharged judgment still prints
+`pre`/`post`.
+
+**Fix.** Stop inferring it. Probe on a scratch copy: append a tactic that can
+only succeed on a live program-logic goal (`wp.` or `skip.`) and read the
+return code. ~1.5 s against a ~170 s model call, and it is **decisive** rather
+than 57.7% — the same economics as §3's local probing in the companion doc.
+
+**Risk.** A probe tactic that fails for an unrelated reason reads as "ambient".
+Mitigate by treating only the specific `expecting a goal of the form` error as
+the ambient signal, not any failure.
+
+**Shipped.** `easycrypt.probe_is_program_logic` appends `wp.`, reads the
+return code, and restores the file byte-identically. Verified on both known
+cases: a live program-logic goal → `True`; the same proof after `skip.`
+discharges the judgment → `False`. Returns **`None`** when inconclusive —
+`wp.` fails on plenty of live program-logic goals, so only the specific
+`expecting a goal of the form` error counts as ambient, and callers must fall
+back to the text heuristic rather than assume.
+
+**Not yet wired into the prompt.** It costs ~1.5 s per step, so it should
+probably run only when the text heuristic is in its unreliable band (the
+57.7% hedge in §4.1) rather than unconditionally. Re-label the 568-step corpus
+with it before deciding.
+
+### 8c.4 Version hopping was blocked on the wrong question — **DONE**
+
+§6.6: 11 of 14 release tags lack the fork's `llm` subcommand, so hopping cannot
+fetch goals from them. Grafting `da4935c9` onto each release conflicts in four
+files and needs a build per tag (~5 min each).
+
+**Answered, and it deleted the problem.** `version_hop.probe_version` calls
+**only** `validate_file` — it never fetches a goal. That is the single
+question *"does this file still check out at release R"*, and upstream
+`compile` answers it at every release.
+
+Verified against both binaries:
+
+| | `llm -lastgoals` | `compile` |
+|---|---|---|
+| passing proof, modern build | rc 0 | rc 0 |
+| failing proof, modern build | rc 1 | rc 1 |
+| passing proof, **r2025.02** | rc 1 (*unknown option*) | **rc 0** |
+| failing proof, **r2025.02** | — | **rc 1** |
+
+`easycrypt.check_file_compat` runs `compile`, and `probe_version` now uses it.
+**All 14 tags are usable**; no cherry-picking, no per-release conflict
+resolution. The agent loop keeps `validate_file`, whose stdout it also reads
+for goal text.
+
+### 8c.5 Large ambient residuals defeat both `smt` and `progress` — SPECULATIVE
+
+§8b: the goal is ~2400 characters of nested quantifiers whose conjuncts are
+largely reflexive; `smt` returns `cannot prove goal (strict)` and `progress.`
+is a **no-op**, so the usual decomposition does nothing.
+
+**Possible fix**, untested: detect an ambient goal above a size threshold with
+a top-level `forall`/`=>` chain, and advise the explicit ladder — `move => …`
+to introduce, `split` per conjunct, then targeted `smt` on each leaf — rather
+than the current generic "reduce first" advice. The parsing is available
+(`goal_diff` already counts top-level connectives and quantifiers).
+
+**Why it is speculative.** One lemma, one run. It may simply be that this
+obligation needs a lemma the corpus does not contain, in which case no
+decomposition advice helps. Measure how many ambient failures share the shape
+before building anything.
+
+### 8c.6 Proposal quality is still the binding constraint — SEE COMPANION DOC
+
+Everything above makes failures cheaper or more informative. None of it makes
+the model propose better tactics, which is the constraint that has not moved
+across eleven runs. `docs/PROPOSAL_QUALITY_IMPLEMENTATION.md` §3 (local
+probing) and §9.1 (find out what closing `G2_G3` actually requires) remain the
+higher-value work.
+
+### 8c.7 Host suspend is indistinguishable from a hang — TOOLING, NOT HARNESS
+
+Three runs died to the laptop sleeping, and the stall watcher reported one of
+them 216 minutes late because it slept too. A monitor cannot detect a suspend
+it was suspended for.
+
+**Fix.** Record `time.monotonic()` alongside the wall clock in each iteration
+event. A gap where wall-clock advanced but monotonic did not is a suspend; the
+reverse is a hang. One field, and it makes every future post-mortem decidable
+instead of inferred.
+
+---
+
 ## 9. Results to date
 
-**The agent has repaired one distinct lemma, ever.** Across ten runs, 100
-COMPLETE trials, of which 93 required zero agent work. Only three lemmas fail
-to replay; the model has solved `INDCPA_Security` (a 2-line proof) every time
-and neither of the other two, ever — through every configuration change.
+> **These figures are INFLATED and are kept only as a record of what the
+> harness used to report.** They count `fully_replayed` trials as successes,
+> and §8b shows 12 of the 15 ElGamal proofs do not actually close. Rebuild
+> this section from a run made after the `is_proof_complete` fix.
 
-Read any "N complete of 15" headline with that in mind: it mostly reports that
-EasyCrypt still compiles the corpus.
+**As previously reported:** across ten runs, 100 COMPLETE trials, of which 93
+required zero agent work; the model had solved only `INDCPA_Security`.
 
-*(stub — expand with per-lemma detail and the §9.1 investigation once run.)*
+**What that missed:** most of those 93 "free replays" were proofs that parse
+but leave goals open. Only `log_gen`, `gen_log` and `grexpAll` genuinely close
+on replay. So the corpus is far less solved than the numbers said, and
+correspondingly there is far more real repair work available than the "1 of 3
+repairable lemmas" framing suggested.
+
+**Repairs the model has genuinely produced**, both verified to close:
+
+| lemma | corpus | cost |
+|---|---|---|
+| `INDCPA_Security` | ElGamal | 1–10 steps depending on run |
+| `sampling_bound` | LQ1 | 1 step, $0.0008 |
+
+The second was unreachable until the `fully_replayed` fix, which is the reason
+to expect more once the corpus is re-measured honestly.
+
+*(stub — rebuild the table from a post-fix full run.)*

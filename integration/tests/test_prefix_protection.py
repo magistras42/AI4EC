@@ -909,3 +909,73 @@ def test_compile_agrees_with_lastgoals_on_the_modern_binary(tmp_path, easycrypt_
         a = validate_file(path, cfg).returncode == 0
         b = check_file_compat(path, cfg).returncode == 0
         assert a == b, f"{path.name}: lastgoals={a} compile={b}"
+
+
+# --- what `move =>` can actually introduce -----------------------------------
+# The names-in-scope note was not enough. On G2_bad_ub, 8 of 19 failures were
+# `move =>` errors and the note stayed silent on 6 of them, because `&1` was in
+# the CONCLUSION (`forall &1 &2, ...`) rather than a context entry.
+#
+# My first diagnosis -- "the goal fanned into branches and &1 is bound in some
+# of them" -- was WRONG. Every one of the eight had a single subgoal. The two
+# real causes are both plain shape facts about the conclusion.
+
+
+def test_memories_are_recognised_as_uninstantiable_binders():
+    """`forall &1 &2,` reads like binders but memories are already bound in a
+    program-logic goal; introducing them is `already exists`."""
+    from integration.agent.ec_context import leading_binders
+
+    assert leading_binders("forall &1 &2,\n  q2_L = q2{1}") == [
+        ("&1", True), ("&2", True)]
+
+
+def test_a_type_ascription_is_not_a_binder_name():
+    """`forall (x : int) h,` binds x and h -- not `int`. Splitting the binder
+    list on whitespace reported the TYPE as a name."""
+    from integration.agent.ec_context import leading_binders
+
+    assert leading_binders("forall (x : int) h, P x") == [("x", False), ("h", False)]
+    assert leading_binders("forall (x y : int), P") == [("x", False), ("y", False)]
+    assert leading_binders("forall &m (h : bool), P") == [("&m", True), ("h", False)]
+
+
+def test_no_leading_binder_means_nothing_to_introduce():
+    """4 of the 8 failures were `nothing to introduce` -- predictable from the
+    conclusion alone."""
+    from integration.agent.ec_context import format_introduction_note
+
+    note = format_introduction_note("(glob Adv){1} = (glob Adv){2}")
+    assert "nothing to introduce" in note
+    assert "apply" in note and "case:" in note
+
+
+def test_a_memory_only_prefix_says_move_has_nothing_to_take():
+    from integration.agent.ec_context import format_introduction_note
+
+    note = format_introduction_note("forall &1 &2,\n  q2_L = q2{1} /\\ x = y")
+    assert "MEMORIES" in note
+    assert "move => &1 &2" in note
+    assert "already exists" in note
+
+
+def test_ordinary_binders_are_listed_as_introducible():
+    from integration.agent.ec_context import format_introduction_note
+
+    note = format_introduction_note("forall &1 (h : bool), P h")
+    assert "MEMORIES" in note          # &1 flagged
+    assert "Introducible: `h`" in note  # h offered
+
+
+def test_the_note_reaches_the_prompt():
+    from integration.agent.prompt import build_prompt
+
+    # The real 72-dash separator: `_goal_conclusion` matches it exactly, so a
+    # short stand-in silently yields the whole dump as the "conclusion".
+    rule = "-" * 72
+    goal = ("Current goal\n\nType variables: <none>\n\n&m: {}\n"
+            f"{rule}\nforall &1 &2,\n  x{{1}} = y{{2}}")
+    text = build_prompt(goal=goal, top_premises={}, failed_tactics=[],
+                        proof_tail="")
+    assert "## Introducing hypotheses" in text
+    assert "MEMORIES" in text

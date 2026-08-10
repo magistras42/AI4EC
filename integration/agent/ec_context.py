@@ -189,3 +189,90 @@ def unknown_name_hint(goal: str, name: str) -> str:
         f"`{name}` IS in scope as a {entry.kind}, not a lemma. `smt(...)` "
         f"takes library lemma names only."
     )
+
+
+# ---------------------------------------------------------------------------
+# What `move =>` can actually introduce
+# ---------------------------------------------------------------------------
+
+#: A leading `forall <binders>,` on the conclusion.
+_FORALL_RE = re.compile(r"^\s*forall\s+([^,]+),", re.DOTALL)
+
+
+def leading_binders(conclusion: str) -> list[tuple[str, bool]]:
+    """`(name, is_memory)` for each binder `forall` puts at the front.
+
+    Memories are spelled `&1`, `&2`, `&m`. They matter because they are NOT
+    introducible: in a pRHL goal the memories are already bound, so
+    `move => &1 &2` against a conclusion that literally reads
+    `forall &1 &2, ...` fails with `an hypothesis or variable named '&1'
+    already exists`. Four of the eight measured name/scope failures on
+    `G2_bad_ub` were exactly that, and the context-block check missed them
+    because `&1` was not listed as a context ENTRY -- it was in the conclusion.
+    """
+    match = _FORALL_RE.match(conclusion or "")
+    if not match:
+        return []
+    # `forall (x : int) (y : bool) h,` -- a parenthesised group binds the names
+    # BEFORE its colon; splitting on whitespace first would emit `int` as a
+    # binder, which is how the first version of this reported a type as a name.
+    spec = match.group(1)
+    spec = re.sub(r"\(([^:)]*)(?::[^)]*)?\)", r" \1 ", spec)
+    out: list[tuple[str, bool]] = []
+    for token in spec.split():
+        token = token.strip()
+        if not token or token in {":", ","}:
+            continue
+        out.append((token, token.startswith("&")))
+    return out
+
+
+def format_introduction_note(conclusion: str) -> str:
+    """What `move =>` will and will not accept on this conclusion.
+
+    Two failure modes, both predictable from the text and both measured on
+    `G2_bad_ub` (8 of 19 failures, the largest single class):
+
+    * `an hypothesis or variable named '&1' already exists` -- the model tried
+      to introduce a memory. 4 occurrences.
+    * `nothing to introduce` -- no leading binder at all. 4 occurrences.
+    """
+    text = (conclusion or "").strip()
+    if not text:
+        return ""
+    binders = leading_binders(text)
+    if not binders:
+        if "=>" not in text.split("\n")[0]:
+            return (
+                "`move =>` will FAIL here: the conclusion has no leading "
+                "`forall` and no implication, so there is nothing to "
+                "introduce. Work on the goal as it stands — `apply`, "
+                "`case:`, `rewrite`, `smt()`."
+            )
+        return ""
+
+    memories = [n for n, is_mem in binders if is_mem]
+    ordinary = [n for n, is_mem in binders if not is_mem]
+    parts = [
+        "The conclusion begins `forall "
+        + " ".join(n for n, _ in binders) + ",`."
+    ]
+    if memories:
+        parts.append(
+            "WARNING: " + ", ".join(f"`{m}`" for m in memories)
+            + " are MEMORIES, not ordinary binders — they are already bound in "
+            "a program-logic goal, and `move => "
+            + " ".join(memories)
+            + "` fails with `already exists`. Skip them."
+        )
+    if ordinary:
+        parts.append(
+            "Introducible: " + ", ".join(f"`{n}`" for n in ordinary) + "."
+        )
+    elif memories:
+        parts.append(
+            "Everything at the front is a memory, so `move =>` has nothing to "
+            "take yet. Reduce the goal first (`progress.`, `case:`) or work "
+            "on it directly."
+        )
+    return " ".join(parts)
