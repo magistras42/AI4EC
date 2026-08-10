@@ -1,13 +1,212 @@
 # AI4EC harness — features and implementation
 
 **Status:** partial. Sections marked *(stub)* are placeholders.
-**Last updated:** 2026-08-07 · branch `shannon-llm-integration`
+**Last updated:** 2026-08-10 · branch `shannon-llm-integration`
 
 What this system does: take an EasyCrypt proof written against an old release,
 replay it against a current build, and when it stops compiling, drive an LLM to
 repair it. This document describes the machinery. For *what is broken and what
-to do next*, see [`PROOF_REPAIR_NEXT_HANDOFF.md`](PROOF_REPAIR_NEXT_HANDOFF.md)
-and [`PROPOSAL_QUALITY_IMPLEMENTATION.md`](PROPOSAL_QUALITY_IMPLEMENTATION.md).
+to do next*, see [`NEXT_IMPLEMENTATION_PLAN.md`](NEXT_IMPLEMENTATION_PLAN.md),
+[`PROOF_REPAIR_NEXT_HANDOFF.md`](PROOF_REPAIR_NEXT_HANDOFF.md) and
+[`PROPOSAL_QUALITY_IMPLEMENTATION.md`](PROPOSAL_QUALITY_IMPLEMENTATION.md).
+
+---
+
+## 0. Architecture
+
+### 0.1 The central design decision: EasyCrypt is stateless here
+
+Every other choice follows from this one. The harness does **not** hold a live
+EasyCrypt session. It owns a **text file**, and asks a fresh `ec.exe` process
+about it:
+
+```
+ec.exe llm -upto N file.ec        goal state after line N
+ec.exe llm -lastgoals file.ec     validate; non-zero exit = failure
+ec.exe llm -upto N -premises …    goal + ambient premise catalog
+```
+
+`llm` is a **fork-local** subcommand (added in `da4935c9`, 2026-04-11) and does
+not exist upstream. shannon-prover, by contrast, runs a `ReplSessionManager`
+over a persistent EasyCrypt process.
+
+Four consequences run through everything below:
+
+1. **The proof file *is* the state.** No session to desync, no snapshot to
+   maintain, and rollback is deleting a line. §3.3's undo analysis and §8c.7's
+   snapshot evaluation both rest on this.
+2. **Every query re-replays the prefix**, so cost grows with proof length —
+   ~1.5 s on a 741-line file. Still 100× cheaper than a model call (§7), which
+   is what makes local probing viable (`NEXT_IMPLEMENTATION_PLAN` §1.2).
+3. **The goal is only observable through a lossy printer.** `resolve_goal`
+   returns `""` after a goal-unchanged tactic; three separate bugs came from
+   reading that as "discharged" (§2.1).
+4. **Version hopping is bounded by the fork**, not by EasyCrypt: 11 of 14
+   release tags predate the `llm` command (§6.6).
+
+### 0.2 Layers
+
+```
+notebooks/*.ipynb              operator surface; config, confirmation, results
+  └─ experiment/runner.py      trial loop, mode dispatch, artifacts
+       ├─ corpora/*.py         ProofCase: file, proof_start_line, tactic_lines
+       ├─ agent/import_repair  make the file LOAD (syntax porting)   ← §1 callout
+       ├─ repair_bootstrap     replay original tactics one at a time
+       └─ agent/loop.py        the per-step agent loop
+            ├─ easycrypt.py    the four EC invocations above
+            ├─ proof_file.py   append / undo / bounds  (the state)
+            ├─ prompt.py       assemble the per-step prompt
+            │    ├─ ec_program.py   two-column dump → positioned statements
+            │    ├─ ec_context.py   names in scope; what `move =>` can take
+            │    ├─ ec_names.py     lemma-name resolution + suggestions
+            │    └─ goal_diff.py    structural diff across one tactic
+            ├─ llm.py          provider transport (lm_studio/deepseek/anthropic)
+            ├─ embeddings.py   premise ranking — ALWAYS LM Studio
+            ├─ repair_hints.py changelog evidence for the failing tactic
+            └─ run_log.py      per-iteration + finish records
+```
+
+The split is drawn at **transport only** in `llm.py`: reply parsing, JSON
+repair and tactic salvage are provider-independent. Embeddings never leave LM
+Studio — neither hosted provider serves them.
+
+### 0.3 The per-step cycle
+
+```
+resolve goal ──► rank premises ──► build prompt ──► model call ──► action
+                                                                     │
+   ┌─────────────────────────────────────────────────────────────────┤
+   ▼                        ▼                      ▼                 ▼
+ tactic                   undo                lookup/search       (parse fail)
+   │                        │                      │                 │
+ append + validate    pop from end          catalog query        format_error
+   │                   (clamped, §3.3)            │                 │
+ fail → roll back, enrich error                   └──► notes into next prompt
+   │
+ ok → confirm_noop (3 EC calls) → inert? remove + ban at this goal
+   │
+ accepted → state hash → stuck accounting → next step
+```
+
+Termination: `COMPLETE`, `MAX_STEPS`, `STUCK` (unproductive-iteration counter or
+identical-failure limit), `LLM_ERROR`, `BUDGET_EXHAUSTED`.
+
+### 0.4 Invariants the design maintains
+
+| invariant | why it exists |
+|---|---|
+| The work file only grows at the insert point and shrinks from the end | makes it a stack, so undo is exact and snapshots are unnecessary (§3.3) |
+| A failed tactic is rolled back before the next step | the model must never see a script it did not build |
+| Bans are keyed to `(goal hash, tactic)`, never global | `wp.` being inert here says nothing about the next goal |
+| `confirm_noop` fails safe | anything unexpected keeps the tactic; deleting a load-bearing one is unrecoverable |
+| Multi-tactic undo is clamped at the replayed prefix | prefix deletion is one-way (§3.3) |
+| Embeddings never gate correctness | they rank premises; a bad ranking costs quality, not soundness |
+
+---
+
+### 0.5 How the harness changed, and what each change bought
+
+Every row is measured. "Solve rate" is proofs the **model** closed.
+
+### Phase 1 — replay instead of reconstruct
+
+`broken_formal` mode admitted every tactic and asked the model to rebuild the
+proof from scratch. `replay_bootstrap` (§1) replays the original tactic by
+tactic and hands over at the first failure.
+
+**Bought:** the agent starts from a verified prefix instead of nothing. On
+ElGamal that is 185 of 300 tactics already in place before the model is called.
+
+### Phase 2 — stop the model wasting itself (runs E→H)
+
+| change | measured effect |
+|---|---|
+| `confirm_noop` two-view + removal proof | inert tactics **retained in the script** fell 49.2% → 8.8%; catches 93.6% of inert steps |
+| Hard-reject repeats of banned no-ops | 0 leaked repeats, was 7 per lemma |
+| No-ops excluded from the stuck counter | trials stopped dying early (`G2_G3` 75 → 44 → 27 steps reversed) |
+| Repair-first prompt | `rnd` fixation 19 → 1 on `G2_G3` |
+
+**Bought:** proofs stopped accumulating garbage — one lemma had ended with 45
+of its 58 lines a bare `wp.`. **Solve rate: unchanged.**
+
+### Phase 3 — tell the model true things (2026-08-06/07)
+
+| change | evidence |
+|---|---|
+| `ec_program.py` positions | line-counting **overstated** the `seq` maximum on 503 of 654 goals; one goal was reported `left: 15, right: 15` when the true counts were 13 and 12 |
+| `seq` counts stated as a **ceiling**, not a range | 11 of 12 failed `seq` attempts were *inside* the counts — the range claim was false |
+| `smt(a b)` not `smt(a, b)` | comma is a **parse error**; the prompt had been teaching it |
+| `goal_diff.py` state diff | renders on 32% of accepted steps; `PROGRESS_DECOMPOSITION` stops a `seq` that triples subgoals reading as a regression |
+| Changelog DF guard | `smt` tagged 3.07% of the catalog and retrieved unrelated chore commits; now pruned |
+
+**Bought:** the prompt stopped asserting falsehoods. **Solve rate: unchanged.**
+
+### Phase 4 — stop the harness lying to itself (2026-08-07/10)
+
+The most valuable phase, because it invalidated the project's headline numbers.
+
+| change | effect |
+|---|---|
+| `fully_replayed` requires `is_proof_complete` | **12 of 15 ElGamal proofs were being reported COMPLETE without closing.** `validate_file` exit 0 means the tactics *parsed*. `G2_bad_ub` had been a silent false COMPLETE in all ten prior runs |
+| Comment stripping in the replay splitter | `(* … *)` was shredded into fake tactics: 19 of 33 Joy cases, plus `INDCPA_HEG_G1` 52 → 51. Every "replayed N/M" denominator was inflated |
+| Undo clamp (`protected_prefix`) | see below |
+| `net_tactics_vs_bootstrap` | the only metric that detected the agent dismantling its own prefix |
+| Transport errors → `LlmProviderError` | one `Connection error.` had destroyed a 100-minute trial; now retried |
+| `history_steps` 20 → 15, timeout 600 → 180 s | per-step latency stopped climbing (93→235 s plateau removed); tail 1207 s → 353 s |
+
+**The undo clamp is the clearest single result:**
+
+| | prefix survival |
+|---|---|
+| before (run `20260807T031032Z`) | `G2_G3` 5/13, `INDCPA_HEG_G1` 5/21, `G1_G2_eq` 1/18 |
+| after (run `20260810T053405Z`) | `G2_G3` **13/13**, `G2_bad_ub` 14/15, `INDCPA_HEG_G1` 20/21 |
+
+~153 removals requested, ~31 performed. And deletion is **one-way**: the agent
+re-attempted a deleted tactic and it *failed*, because the state it applied in
+was gone (§3.3).
+
+**Bought:** the numbers became trustworthy. 11/15 proofs now genuinely close,
+where the old count was inflated. **Solve rate: unchanged.**
+
+### What thirteen runs say
+
+| | |
+|---|---|
+| proofs closing (honest count) | 11/15 |
+| closed **by the model** | **1** — `INDCPA_Security`, every run |
+| hard lemmas attempted / closed | 12 / 0 |
+| model calls in the last run | 197, for a **net of +1 tactic** |
+
+Four phases of work made failures cheaper, better attributed, non-destructive
+and honestly counted. **None of it moved the solve rate.** That is the finding
+this document exists to record, and the reason
+[`NEXT_IMPLEMENTATION_PLAN.md`](NEXT_IMPLEMENTATION_PLAN.md) puts *"find out
+what closing `G2_G3` actually requires"* above every remaining code change.
+
+### Per-lemma tactic accounting, run `20260810T053405Z`
+
+| lemma | original | replayed | model Δ | final | outcome |
+|---|---:|---:|---:|---:|---|
+| `enc_stateless` | 1 | 1 | +0 | 1 | COMPLETE |
+| `INDCPA_Sec` | 1 | 1 | +0 | 1 | COMPLETE |
+| `INDCPA_Security` | 2 | 1 | **+1** | 2 | COMPLETE (model) |
+| `log_gen` | 3 | 3 | +0 | 3 | COMPLETE |
+| `gen_log` | 3 | 3 | +0 | 3 | COMPLETE |
+| `grexpAll` | 5 | 5 | +0 | 5 | COMPLETE |
+| `G1_G2` | 5 | 5 | +0 | 5 | COMPLETE |
+| `RO_track_f_ll` | 8 | 8 | +0 | 8 | COMPLETE |
+| `G2_bad_ub` | 15 | 15 | +2 | 17 | MAX_STEPS |
+| `G3_true` | 16 | 16 | +0 | 16 | COMPLETE |
+| `RO_LCDHAdv` | 17 | 17 | +0 | 17 | COMPLETE |
+| `G1_G2_eq` | 85 | 18 | **−3** | 15 | STUCK |
+| `G2_G3` | 30 | 13 | +1 | 14 | STUCK |
+| `INDCPA_HEG_G1` | 51 | 21 | +0 | 21 | STUCK |
+| `correctness` | 58 | 58 | +0 | 58 | COMPLETE |
+| **total** | **300** | **185** | **+1** | **186** | |
+
+The replay gap is where the difficulty lives: 115 of 300 tactics fail to
+replay, and 114 of those are in just three lemmas — `G1_G2_eq` (67),
+`INDCPA_HEG_G1` (30), `G2_G3` (17).
 
 ---
 
