@@ -367,11 +367,11 @@ def test_the_probe_does_not_repoint_the_caller_s_config(monkeypatch, tmp_path):
     everything downstream of the hop in a way that is very hard to see."""
     calls = []
 
-    def fake_validate(path, config):
+    def fake_check(path, config):
         calls.append(config.easycrypt_bin)
         return type("R", (), {"returncode": 0, "stdout": "", "stderr": ""})()
 
-    monkeypatch.setattr(version_hop, "validate_file", fake_validate)
+    monkeypatch.setattr(version_hop, "check_file_compat", fake_check)
     config = AgentConfig(easycrypt_bin=Path("/target/ec.exe"))
     version_hop.probe_version(tmp_path / "x.ec", Path("/old/ec.exe"), config)
 
@@ -392,7 +392,7 @@ def test_only_an_in_proof_failure_counts_as_the_tactic_breaking(
     monkeypatch, tmp_path, output, expected
 ):
     monkeypatch.setattr(
-        version_hop, "validate_file",
+        version_hop, "check_file_compat",
         lambda path, config: type(
             "R", (), {"returncode": 1, "stdout": "", "stderr": output}
         )(),
