@@ -146,8 +146,8 @@ def strip_comments(text: str) -> str:
 
     Adapted from benchmark/ec_scanner.py::strip_comments -- without this,
     a commented-out `(* lemma foo. proof. ... qed. *)` block false-positive
-    matches PROOF_BLOCK_RE/INLINE_BY_RE/TACTIC_TOKEN_RE below and gets
-    counted into the depth/complexity/automation-ratio numbers.
+    matches iter_proof_blocks/TACTIC_TOKEN_RE below and gets counted into the
+    depth/complexity/automation-ratio numbers.
     """
     out: list[str] = []
     i = 0
@@ -649,30 +649,114 @@ def compute_automation_ratio(repo_path: Path, exclude_dirs: set[str] | None = No
 
 # --- proof complexity --------------------------------------------------------
 
-PROOF_BLOCK_RE = re.compile(r"\bproof\.(.*?)\b(?:qed|abort|admit)\.", re.DOTALL)
-# EasyCrypt also supports a terse inline form that never uses the word
-# "proof" at all: `lemma foo : P by trivial.` -- very common for short,
-# illustrative, one-tactic-per-example material (exactly what a
-# one-tactic-per-lesson tutorial would lean on). The [^.]*? gap (no
-# periods allowed) between "lemma" and "by" keeps this anchored to the
-# CURRENT lemma's own statement -- a period would end that statement (or
-# an earlier one) before "by" is reached, so this shouldn't cross into an
-# unrelated lemma or match a "by" clause buried inside another lemma's
-# separate proof...qed block.
-INLINE_BY_RE = re.compile(r"\blemma\b[^.]*?\bby\b(.*?)\.", re.DOTALL)
-# A tactic *statement* ends with a period; but EasyCrypt also chains
-# multiple tactics within ONE statement using ';' (e.g. "wp; skip; smt().")
-# and embeds a justification sub-tactic with 'by' (e.g. "rewrite foo by
-# smt()."). Counting periods alone undercounts both forms -- a single
-# top-level statement can still invoke several distinct tactics. Comments
-# are stripped by the caller (see strip_comments) before these run, so a
-# ';' or 'by' inside a `(* ... *)` block is not counted; a semicolon/'by'
-# inside a hint list would still be miscounted, though EasyCrypt hint
-# lists are space-separated, not semicolon-separated, so that's uncommon
-# in practice.
-TACTIC_TERMINATOR_RE = re.compile(r"\.(?:\s|$)")
-SEMICOLON_RE = re.compile(r";")
-BY_KEYWORD_RE = re.compile(r"\bby\b")
+# One scan supplies everything the depth logic needs: bracket motion, statement
+# terminators (a '.' followed by whitespace or end of input), tactic chaining
+# (';') and embedded justifications ('by'). It is a single alternation so the
+# regex engine skips the large uninteresting spans in C -- the corpus is ~51 MB
+# of .ec, which a per-character Python loop would not get through in reasonable
+# time.
+#
+# Tracking bracket depth is not a refinement, it is the correctness condition
+# for all three:
+#   * '.'  -- `RealOrder.lerr_eq` has a dot with identifiers on both sides, so
+#             the terminator also requires trailing whitespace (the same rule
+#             the harness's tactic counter settled on).
+#   * ';'  -- EasyCrypt list literals are semicolon-separated, so
+#             `Array25.of_list witness [W64.of_int 0; W64.of_int 4; ...]` is one
+#             term, not twenty-five tactics. Measured on this corpus, 11.2% of
+#             all semicolons sit inside brackets; counting them inflated depth
+#             worst on exactly the Jasmin-adjacent repos with big array
+#             literals.
+#   * '{}'/'[]' -- a module body `proc f() = { x <- 1; ... }` is one statement
+#             however many semicolons and dots it contains.
+# Comments are stripped by the caller (see strip_comments) before any of this
+# runs, so tokens inside a `(* ... *)` block are never seen.
+_BRACKET_DELTA = {"(": 1, "[": 1, "{": 1, ")": -1, "]": -1, "}": -1}
+# The last alternative is a resync anchor, not a token to count -- see _scan.
+_SCAN_RE = re.compile(
+    r"[()\[\]{}]|\.(?=\s|$)|;|\bby\b|^[ \t]*(?:qed|save|abort|admit)\b", re.M
+)
+_COUNTED_TOKENS = (".", ";", "by")
+
+
+def _scan(text: str):
+    """Yield (token, start, end, bracket_depth) for every terminator, ';' and
+    'by' in `text`. Brackets are consumed to maintain depth and not yielded.
+
+    A line-anchored `qed`/`save`/`abort`/`admit` resets depth to 0 rather than
+    being yielded. Without that resync, ONE unbalanced bracket silently eats
+    the remainder of the file: nothing after it is ever at depth 0 again, so no
+    statement terminates and every later lemma disappears. That is not a
+    hypothetical -- `eval/EasyPIR/puncturableprf.ec:134` really does declare
+    `equiv [PPRF_Real.f ~ ... ==> ={res}.` with no closing bracket, and it cost
+    8 of that file's 10 proofs. This corpus is *made* of broken proofs, so
+    malformed input is the normal case, and the damage from it has to stay
+    bounded to the one lemma that contains it. A line-anchored terminator is
+    a safe anchor: valid EasyCrypt never opens a bracket that survives one.
+    """
+    depth = 0
+    for m in _SCAN_RE.finditer(text):
+        token = m.group(0)
+        delta = _BRACKET_DELTA.get(token)
+        if delta is not None:
+            depth = max(0, depth + delta)
+            continue
+        if token not in _COUNTED_TOKENS:
+            depth = 0
+            continue
+        yield token, m.start(), m.end(), depth
+
+
+def split_statements(text: str) -> list[tuple[int, int]]:
+    """Spans of the top-level statements in `text`, terminating '.' excluded.
+
+    Statement granularity -- rather than line granularity -- is what lets the
+    block scanner below work without the `proof.` keyword: a declaration, each
+    tactic, and the closing `qed` are each exactly one statement, no matter how
+    many lines they wrap across or how many dots their qualified names hold.
+
+    A trailing unterminated fragment is dropped: a real proof script ends at a
+    terminator, so anything after the last one is a truncated file or trailing
+    prose, not a statement whose depth we could honestly count.
+    """
+    spans: list[tuple[int, int]] = []
+    start = 0
+    for token, s, e, depth in _scan(text):
+        if token == "." and depth == 0:
+            if text[start:s].strip():
+                spans.append((start, s))
+            start = e
+    return spans
+
+
+# Declarations that open a proof obligation. `axiom` is deliberately absent --
+# it has no proof to measure. The (?!\s*\[) guard separates the DECLARATION
+# forms `equiv foo : M.f ~ M.g : ...` (1,642 in this corpus) from the FORMULA
+# heads `equiv[ ... ]` / `hoare[ ... ]` / `phoare[ ... ]` (4,058), which are
+# part of some other lemma's statement rather than a declaration of their own.
+DECL_RE = re.compile(
+    r"^(?:(?:local|declare|abstract)\s+)*"
+    r"(lemma|equiv|hoare|phoare|realize)\b(?!\s*\[)"
+    r"(?:\s+nosmt\b)?"
+    r"(?:\s*\[[^\]]*\])?"
+    r"\s+([A-Za-z_][A-Za-z0-9_']*)"
+)
+# `proof.` is OPTIONAL in EasyCrypt: `lemma foo : P.` may be followed directly
+# by tactics and then `qed.`. Anchoring extraction on the keyword (as this
+# module did until the audit in RESEARCH_REPORT.md §"Corpus tooling") made
+# every such lemma invisible -- 12% of the corpus, and 42-57% in the repos that
+# never use it. It is skipped when present, not required.
+PROOF_OPENER_RE = re.compile(r"^proof\b")
+TERMINATOR_RE = re.compile(r"^(?:qed|save|abort|admit)\b")
+# Anything at this list's head cannot be a tactic, so a pending declaration
+# that runs into one was never proved (an `axiom`-like declaration in an
+# abstract theory, a malformed file). Abandon the block rather than swallow the
+# rest of the file into one implausibly deep "lemma".
+ABANDON_RE = re.compile(
+    r"^(?:(?:local|declare|abstract)\s+)*"
+    r"(?:lemma|equiv|hoare|phoare|realize|axiom|op|pred|type|module|theory|"
+    r"section|end|require|import|export|clone|abbrev|const)\b"
+)
 
 # A lemma at or above this depth counts as "long" for reporting purposes.
 LONG_LEMMA_DEPTH_THRESHOLD = 15
@@ -687,55 +771,100 @@ TOP_MEAN_WEIGHT = 0.6
 
 
 def count_tactics(body: str, extra: int = 0) -> int:
-    """Approximate count of individual tactic invocations in a proof body:
-    top-level statements (periods) + chained sub-tactics (';') + embedded
-    justification clauses ('by'). Extracted so estimate_repair_difficulty.py's
-    per-lemma scoring can reuse the exact same depth-counting rule
-    extract_lemma_depths uses at repo granularity, rather than a second,
-    possibly-drifting implementation. ``extra`` accounts for a leading
-    'by' or similar that was consumed by an enclosing regex and isn't
-    present in ``body`` itself (see extract_lemma_depths below)."""
-    return (len(TACTIC_TERMINATOR_RE.findall(body))
-            + len(SEMICOLON_RE.findall(body))
-            + len(BY_KEYWORD_RE.findall(body))
-            + extra)
+    """Approximate count of individual tactic invocations in `body`:
+    statement terminators + chained sub-tactics (';') + embedded justification
+    clauses ('by'), each counted only at bracket depth 0 (see _scan for why
+    that qualifier is the whole correctness argument).
+
+    Extracted so estimate_repair_difficulty.py's per-lemma scoring reuses the
+    exact same depth rule iter_proof_blocks uses at repo granularity, rather
+    than a second, possibly-drifting implementation. ``extra`` accounts for a
+    terminator or 'by' that belongs to this tactic but was consumed by the
+    caller's statement split and so is not present in ``body`` itself.
+    """
+    return extra + sum(1 for _token, _s, _e, depth in _scan(body) if depth == 0)
+
+
+def iter_proof_blocks(text: str) -> list[dict]:
+    """Every proved obligation in `text`, as
+    ``{"name", "body", "extra", "span"}``.
+
+    Comment-stripped text is expected (see strip_comments) -- otherwise a
+    commented-out `(* lemma foo. proof. ... qed. *)` block is counted as real.
+
+    Works at statement granularity, which is what lets it cover all three
+    shapes EasyCrypt actually uses, only the first of which the previous
+    keyword-anchored regex could see:
+
+        lemma foo : P.  proof.  <tactics>  qed.     (explicit opener)
+        lemma foo : P.          <tactics>  qed.     (`proof.` omitted)
+        lemma foo : P by trivial.                   (inline justification)
+        realize foo by admit.                       (cloned-theory obligation)
+
+    `save.` is accepted alongside `qed.` as a terminator: it is the legacy
+    spelling, and repos old enough to use it (AutoCrypt) are exactly the ones
+    whose exposure the ladder most needs to get right.
+
+    NOTE: still a heuristic, not an EasyCrypt parser. Unusual formatting can
+    still be miscounted. Treat depth/lemma-count as directional signal, not
+    ground truth.
+    """
+    blocks: list[dict] = []
+    pending: dict | None = None
+    body_parts: list[str] = []
+
+    for start, end in split_statements(text):
+        stmt = text[start:end]
+        stripped = stmt.strip()
+
+        decl = DECL_RE.match(stripped)
+        if decl:
+            # An unterminated previous declaration is abandoned, not flushed:
+            # nothing between it and here closed a goal.
+            pending, body_parts = None, []
+            inline = next((e for token, _s, e, depth in _scan(stmt)
+                           if token == "by" and depth == 0), None)
+            if inline is not None:
+                # `lemma foo : P by tactic.` -- the justification is the whole
+                # proof. Body starts AFTER the 'by', which extra=1 then counts;
+                # slicing from before it would count that 'by' twice.
+                blocks.append({"name": decl.group(2), "body": stmt[inline:],
+                               "extra": 1, "span": (start, end)})
+                continue
+            pending = {"name": decl.group(2), "start": start}
+            continue
+
+        if pending is None:
+            continue
+        if PROOF_OPENER_RE.match(stripped):
+            continue  # the optional opener is not itself a tactic
+        if TERMINATOR_RE.match(stripped):
+            blocks.append({"name": pending["name"], "body": " ".join(body_parts),
+                           "extra": 0, "span": (pending["start"], end)})
+            pending, body_parts = None, []
+            continue
+        if ABANDON_RE.match(stripped):
+            pending, body_parts = None, []
+            continue
+        # A tactic statement. The split dropped its own terminating '.', so
+        # re-supply it -- otherwise every one-tactic statement counts as zero.
+        body_parts.append(stmt + ".")
+
+    return blocks
 
 
 def extract_lemma_depths(repo_path: Path, exclude_dirs: set[str] | None = None) -> list[int]:
-    """Depth per lemma = approximate count of tactic invocations (see
-    count_tactics) inside its proof body -- whether that's an explicit
-    proof...qed/abort/admit block, or the terser inline 'lemma ... by
-    tactic.' shorthand that never uses the word "proof" at all. A rough
-    proxy for 'how many tactics are required to close the goal', not an
-    exact parse.
-
-    NOTE: this is still a heuristic, not a real EasyCrypt parser -- edge
-    cases (lemmas declared but never proved at all, unusual formatting)
-    can still be missed or miscounted. Treat depth/lemma-count as
-    directional signal, not ground truth."""
+    """Depth per proved obligation across the repo -- see iter_proof_blocks for
+    which shapes are recognised and count_tactics for how depth is measured."""
     depths = []
     for path in iter_ec_files(repo_path, exclude_dirs):
         text = _read_text(path)
         if text is None:
             continue
-        text = strip_comments(text)
-
-        proof_block_spans = []
-        for m in PROOF_BLOCK_RE.finditer(text):
-            proof_block_spans.append(m.span())
-            depth = count_tactics(m.group(1))
+        for block in iter_proof_blocks(strip_comments(text)):
+            depth = count_tactics(block["body"], block["extra"])
             if depth > 0:
                 depths.append(depth)
-
-        for m in INLINE_BY_RE.finditer(text):
-            # skip if this "by" falls inside a proof...qed/abort/admit
-            # block already counted above (a "by" used as a sub-tactic
-            # mid-proof, e.g. "rewrite foo by smt()."), to avoid double
-            # counting the same lemma or miscounting an internal step.
-            if any(start <= m.start() < end for start, end in proof_block_spans):
-                continue
-            depth = count_tactics(m.group(1), extra=1)  # +1 for the "by" clause itself
-            depths.append(depth)
     return depths
 
 

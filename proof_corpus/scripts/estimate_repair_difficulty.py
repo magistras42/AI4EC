@@ -38,7 +38,7 @@ from pathlib import Path
 # "depth" consistent.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from compute_exposure_score import (  # noqa: E402
-    PROOF_BLOCK_RE, INLINE_BY_RE, count_tactics, FRAGILE_TACTICS, TACTIC_TOKEN_RE,
+    iter_proof_blocks, count_tactics, FRAGILE_TACTICS, TACTIC_TOKEN_RE,
     strip_comments,
 )
 
@@ -59,38 +59,18 @@ AUTOMATION_MULTIPLIER = 1.0
 
 
 def find_lemma_blocks(text: str) -> list[dict]:
-    """Extract each lemma's name (best-effort), proof body text, and span,
-    covering both explicit proof...qed/save/abort/admit blocks and the inline
-    'lemma ... by tactic.' shorthand.
+    """Each proved obligation's name, proof body text, and span.
+
+    A thin alias for compute_exposure_score.iter_proof_blocks, which covers the
+    explicit `proof. ... qed.` form, the same block with `proof.` omitted, the
+    inline `lemma ... by tactic.` shorthand, and cloned-theory `realize`
+    obligations -- and reads each block's name from its own declaration rather
+    than scanning backwards for the nearest preceding `lemma`.
 
     Callers should pass comment-stripped text (see strip_comments, imported
     above) -- otherwise a commented-out `(* lemma foo. proof. ... qed. *)`
-    block false-positive-matches here the same way it does in
-    compute_exposure_score.py's extract_lemma_depths."""
-    blocks = []
-
-    proof_spans = []
-    for m in PROOF_BLOCK_RE.finditer(text):
-        proof_spans.append(m.span())
-        name = _nearest_lemma_name(text, m.start())
-        blocks.append({"name": name, "body": m.group(1), "extra": 0, "span": m.span()})
-
-    for m in INLINE_BY_RE.finditer(text):
-        if any(start <= m.start() < end for start, end in proof_spans):
-            continue
-        name = _nearest_lemma_name(text, m.start())
-        blocks.append({"name": name, "body": m.group(1), "extra": 1, "span": m.span()})
-
-    return blocks
-
-
-def _nearest_lemma_name(text: str, pos: int) -> str | None:
-    """Best-effort: find the 'lemma <name>' immediately preceding pos."""
-    preceding = text[:pos]
-    m = None
-    for m in re.finditer(r"\blemma\s+([A-Za-z_][A-Za-z0-9_']*)", preceding):
-        pass  # keep the LAST match before pos
-    return m.group(1) if m else None
+    block is counted as a real proof."""
+    return iter_proof_blocks(text)
 
 
 def compute_fan_out(body: str) -> dict:
