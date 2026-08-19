@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/MEE-CBC/FunctionalSpec.ec::CVC5:1
+source file: examples/MEE-CBC/FunctionalSpec.ec
+
+GOAL:
+(assert (not (= (Int_max 0 (pad_length m)) (+ 16 (- (mod (List_size1 m) 16))))))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- pad_length'def
+- List_size_ge0
+- Int_max'def
+- IntDiv_dvd0z
+- IntDiv_edivzP
+- IntDiv_eqmodE
+- IntDiv_dvd1z
+- IntDiv_dvdz_le
+- IntDiv_dvdzz
+- IntDiv_ltz_mod
+- List_size'def
+- IntDiv_eq_range
+- IntDiv_mem_range_mod
+- IntDiv_dvdz0
+- IntDiv_dvdz2_eq
+- IntDiv_dvdz_exp2l
+- IntDiv_dvdn_le
+- IntDiv_dvdzE
+- IntDiv_eqz_div
+- IntDiv_eqz_mod_dvd
+- IntDiv_%_'def
+- IntDiv_dvdzD
+- IntDiv_eq_div_range
+- IntDiv_eqz_mul
+- IntDiv_dvdzB
+- IntDiv_dvdz_mod_div
+- IntDiv_euclideUl
+- IntDiv_modz_small
+- IntDiv_dvdzN
+- IntDiv_exprD_subz
+- IntDiv_ltz_divRL
+- IntDiv_dvdz1
+- IntDiv_dvdz_modzDl
+- IntDiv_dvdz_modzDr
+- IntDiv_lez_NdivNLR
+- IntDiv_modz_dvd
+- IntDiv_oddP
+- IntDiv_oddPn
+- IntDiv_prime'def
+- IntDiv_Ndvd_pow
+- IntDiv_expz_div
+- IntDiv_lez_divLR
+- IntDiv_euclideU
+- IntDiv_gcd_max
+- IntDiv_ge0_gcd
+- IntDiv_modz0
+- IntDiv_modz_ge0
+- IntDiv_modz_pow_div
+- IntDiv_range_div_range
+- IntDiv_dvdz_eq
+- IntDiv_edivnP
+- IntDiv_ltz_NdivNRL
+- IntDiv_modz_dvd_pow
+- List_Range_range'def
+- IntDiv_coprimeSz
+- IntDiv_divzK
+- IntDiv_divzz
+- IntDiv_dvd_le_pow
+- IntDiv_dvdzP
+- IntDiv_dvdz_oddr
+- IntDiv_dvdz_trans
+- IntDiv_emodz_eq
+- IntDiv_gt0_prime
+- IntDiv_modz_pow2_div
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

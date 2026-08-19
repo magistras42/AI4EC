@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/async-while.ec::Z3:1
+source file: examples/async-while.ec
+
+GOAL:
+(assert (not (=> (<= 0 (* k (proj3_1 (proj2_0 et2)))) (or (and (= (< (* k (proj3_1 (proj2_0 et2))) (* n k)) (< (proj3_1 (proj2_0 et2)) n)) (=> (< (* k (proj3_1 (proj2_0 et2))) (* n k)) (=> (< (proj3_1 (proj2_0 et2)) n) (and (< (to_real (* k (proj3_1 (proj2_0 et2)))) (* (to_real k) (to_real (+ (proj3_1 (proj2_0 et2)) 1)))) (< (to_real (proj3_1 (proj2_0 et2))) (to_real (+ (proj3_1 (proj2_0 et2)) 1))))))) (or (and (< (* k (proj3_1 (proj2_0 et2))) (* n k)) (not (< (* k (proj3_1 (proj2_0 et2))) (* n k)))) (and (< (proj3_1 (proj2_0 et2)) n) (not (< (proj3_1 (proj2_0 et2)) n))))))))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- Real_upto2_abs
+- StdOrder_RealOrder_ltr_nnorml
+- gt0_k
+- StdOrder_RealOrder_upto_maxr
+- ge0_k
+- ge0_n
+- Real_`___'def
+- StdOrder_RealOrder_ler0_def
+- StdOrder_RealOrder_ler_nnorml
+- Real_floor_mono
+- StdOrder_RealOrder_ler0_norm
+- StdOrder_RealOrder_ger0_def
+- StdOrder_RealOrder_ltr_eexpr
+- StdOrder_RealOrder_ltr_norml
+- StdOrder_RealOrder_normE
+- StdOrder_RealOrder_normr_ge0
+- IntMin_ge0_argmax
+- StdBigop_Bigreal_ler_pexpn2r
+- StdOrder_IntOrder_ltr_maxrP
+- StdOrder_RealOrder_ger0_norm
+- StdOrder_RealOrder_ltr_normr
+- StdBigop_Bigreal_sum_expr_le
+- StdOrder_RealOrder_eqr_norml
+- StdOrder_RealOrder_ler_eexpr
+- IntMin_ge_argmax
+- List_find_ge0
+- StdOrder_RealOrder_eqr_norm_id
+- StdOrder_RealOrder_ler_pexp
+- StdOrder_RealOrder_ler_weexpn2r
+- IntMin_argmax_max
+- List_nth_neg
+- StdOrder_RealOrder_ler_norm_maxr
+- StdOrder_RealOrder_normr_idP
+- IntMin_ge0_argmin
+- List_Range_nth_range
+- List_cat_nseq
+- List_nth_nseq
+- Real_leup_intp
+- StdBigop_Bigreal_gt0_prodr_seq
+- StdOrder_RealOrder_normrZ
+- Int_le_b2i
+- List_mem_nseq
+- StdOrder_IntOrder_ler_maxrP
+- StdOrder_RealOrder_eqr_normN
+- StdOrder_RealOrder_gtr0_norm
+- StdOrder_RealOrder_ltr_iexpr
+- StdOrder_IntOrder_ler_maxr_trans
+- StdOrder_RealOrder_exprn_egt1
+- StdOrder_RealOrder_ler0n
+- StdOrder_RealOrder_normr_gt0
+- List_index_ge0
+- Real_floor_bound
+- Real_floor_le
+- StdBigop_Bigreal_prodr_gt0
+- StdBigop_Bigreal_subrXX
+- StdOrder_RealOrder_ltr0_norm
+- StdOrder_RealOrder_ltr0n
+- StdOrder_RealOrder_ltr_le_sub
+- StdOrder_RealOrder_normr_le0
+- StdOrder_RealOrder_normr_lt0
+- IntDiv_euclideU
+- IntMin_argmaxP
+- IntMin_ge_argmin
+- List_maxz_seq
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

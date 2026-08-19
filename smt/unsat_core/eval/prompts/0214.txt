@@ -1,0 +1,41 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/ehoare/qselect/qselect.ec::25
+source file: examples/ehoare/qselect/qselect.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (<= (Xreal_Rp_pcpos (to_real (QS_slc (proj2_1 ethr)))) (+ (Xreal_Rp_pcpos (to_real (QS_slc (proj2_1 ethr)))) (Xreal_Rp_pcpos (to_real (* 4 (+ (proj5_3 (proj2_0 ethr)) (- (proj5_2 (proj2_0 ethr)))))))))))
+
+CANDIDATE LEMMAS (27 names):
+- Array___[_]'def
+- Array___[_]_sort
+- Array_mkarray_sort
+- Array_ofarray_sort
+- Array_offun'def
+- Array_offun_sort
+- Array_size'def
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_list_inversion
+- List_map'def
+- List_map_sort
+- List_mem'def
+- List_mkseq'def
+- List_mkseq_sort
+- List_nth'def
+- List_nth_sort
+- List_size'def
+- List_uniq'def
+- Partition0_array_sub'def
+- Partition0_array_sub_sort
+- Partition0_uniq_on'def
+- Xreal_Rp_%pos'def
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

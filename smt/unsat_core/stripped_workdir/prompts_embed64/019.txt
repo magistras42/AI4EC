@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/cramer-shoup/cramer_shoup.ec::Z3:21
+source file: examples/cramer-shoup/cramer_shoup.ec
+
+GOAL:
+(assert (not (<= 0.0 r)))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- StdOrder_RealOrder_lt0r_neq0
+- StdOrder_RealOrder_ltr0_neq0
+- StdOrder_RealOrder_lt0r
+- StdOrder_RealOrder_ler0N1
+- StdOrder_RealOrder_le0r
+- StdOrder_RealOrder_real_axiom
+- StdOrder_RealOrder_ltr_le_asym
+- StdOrder_RealOrder_ltr0N1
+- StdOrder_RealOrder_invr_ge1
+- StdOrder_RealOrder_oppr_ge0
+- StdOrder_RealOrder_oppr_le0
+- StdOrder_RealOrder_ltrr
+- StdOrder_RealOrder_normr_lt0
+- Int_eqn0Ngt
+- StdOrder_RealOrder_ler_lt_asym
+- Int_lt0n
+- StdOrder_IntOrder_lt0r_neq0
+- StdOrder_IntOrder_ltr0_neq0
+- StdOrder_RealOrder_invr_gt1
+- StdOrder_RealOrder_invr_le1
+- StdOrder_RealOrder_subr_le0
+- Real_RField_lreg_neq0
+- Real_RField_unitrN
+- StdBigop_Bigreal_Num_Domain_unitrN
+- StdOrder_RealOrder_Domain_lreg_neq0
+- StdOrder_RealOrder_Domain_unitrN
+- StdOrder_RealOrder_invr_le0
+- StdOrder_RealOrder_ler_addr
+- StdOrder_RealOrder_ler_nnorml
+- StdOrder_RealOrder_ltr_nnorml
+- StdBigop_Bigreal_Num_Domain_lreg_neq0
+- StdOrder_IntOrder_lt0r
+- StdOrder_RealOrder_ger_addl
+- StdOrder_RealOrder_ger_addr
+- StdOrder_RealOrder_lerNgt
+- StdOrder_IntOrder_le0r
+- StdOrder_RealOrder_invr_ge0
+- StdOrder_RealOrder_invr_lt1
+- StdOrder_RealOrder_ler_addl
+- StdOrder_RealOrder_ltrNge
+- StdOrder_RealOrder_normr_gt0
+- StdOrder_RealOrder_oppr_gt0
+- StdOrder_RealOrder_oppr_lt0
+- StdOrder_RealOrder_subr_ge0
+- StdOrder_IntOrder_ler0N1
+- StdOrder_IntOrder_ltr0N1
+- StdOrder_RealOrder_lerN10
+- StdOrder_RealOrder_ltr_geF
+- Real_RField_lregP
+- StdBigop_Bigreal_Num_Domain_lregP
+- StdOrder_RealOrder_Domain_lregP
+- StdOrder_RealOrder_ler_gtF
+- StdOrder_RealOrder_paddr_eq0
+- StdOrder_IntOrder_oppr_ge0
+- StdOrder_RealOrder_gtr_eqF
+- StdOrder_RealOrder_ltr_addr
+- StdOrder_RealOrder_ltr_eqF
+- StdOrder_RealOrder_ltr_neqAle
+- StdOrder_RealOrder_normr_le0
+- StdOrder_RealOrder_subr_lt0
+- Int_leqn0
+- Int_oppz_ge0
+- Int_oppz_le0
+- StdOrder_IntOrder_exprn_egt1
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

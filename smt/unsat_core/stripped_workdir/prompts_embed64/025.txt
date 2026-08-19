@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/hashed_elgamal_generic.ec::CVC5:1
+source file: examples/hashed_elgamal_generic.ec
+
+GOAL:
+(assert (not (and (=> (not (FMap_dom1 (RO_Lazy_LRO_slm (proj2_1 et2)) (proj6_0 (proj2_0 et2)))) (<= (+ (+ (FSet_card1 (ROC_SetLog_Log_slqs (proj2_1 et2))) 1) (- (FSet_card1 (FSet_bqetbq1 (ROC_SetLog_Log_slqs (proj2_1 et2)) (FSet_fset12 (proj6_0 (proj2_0 et2))))))) qH)) (=> (FMap_dom1 (RO_Lazy_LRO_slm (proj2_1 et2)) (proj6_0 (proj2_0 et2))) (<= (+ (+ (FSet_card1 (ROC_SetLog_Log_slqs (proj2_1 et2))) 1) (- (FSet_card1 (FSet_bqetbq1 (ROC_SetLog_Log_slqs (proj2_1 et2)) (FSet_fset12 (proj6_0 (proj2_0 et2))))))) qH)))))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- FMap_eq_except_set_getlr
+- FMap_fdom_set
+- FMap_set_get_eq
+- FMap_fdomP
+- FMap_get_set_id
+- FMap_get_set_sameE
+- FMap_offsetmapT
+- FMap___[_<-_]'def
+- FMap_get_set_eqE
+- FMap_domE
+- FMap_domNE
+- FMap_get_some
+- FMap_dom'def
+- FMap_fmapP
+- FMap_get_none
+- FMap_offsetmapN
+- FMap_set_get
+- FMap_get_setE
+- FMap_rem_set
+- FMap_rng_set_notin
+- FMap_rng'def
+- FMap_oget_map
+- FMap_FindIn
+- FMap_mem_set
+- FMap_set_union_map_r
+- FMap_FindNotIn
+- FMap_find_not_none
+- FMap_fmapW
+- FMap_get_set_neqE
+- FMap_in_dom_with'def
+- FMap_mapE
+- FMap_restr_set_neq
+- FMap_find_some
+- FMap_get_filter
+- FMap_mem_fdom_set
+- FMap_uniq_find_eq_some
+- FMap___[_<-_]_sort
+- FMap_hasP
+- FMap_find_some_unique
+- FMap_find_spec_ind
+- FMap_remE
+- FMap_eq_exceptP
+- FMap_filter_valE
+- FMap_joinE
+- FMap_mem_filter
+- FMap_restrP
+- Mu_mem_mu_mem_ge
+- FMap_eq_except'def
+- FMap_offset_get
+- Mu_mem_mu_mem_le
+- FMap_bounded_set
+- FMap_eq_in_filter
+- FMap_filterE
+- FMap_getE
+- FMap_le_card_frng_fdom
+- FSet_in_fsetI
+- FSet_subset_fsetI_id
+- FMap_emptyE
+- FMap_fdom_rem
+- FSet_fsetID
+- FSet_fsetIK
+- FMap___[_]'def
+- FMap___[_]_sort
+- FMap_fcollPn
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

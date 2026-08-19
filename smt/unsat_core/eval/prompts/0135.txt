@@ -1,0 +1,34 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/UC/dh_enc.ec::22
+source file: examples/UC/dh_enc.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (forall ((et1 (tuple2 (tuple8 Bool DH_GP_ZModE_exp DH_GP_ZModE_exp DH_GP_ZModE_exp DH_G_group DH_G_group DH_G_group Bool) memory)) (et2 (tuple2 Bool memory))) (=> (and (= (Z2 (proj2_1 et1)) (Z2 (proj2_1 et2))) (and (= (DHKE_HybFChan_F2Auth_FAuthLR_FAuth_slst (proj2_1 et1)) (DHKE_SimAuth_FAuthLR_FAuth_slst (proj2_1 et2))) (and (= (DHKE_HybFChan_F2Auth_FAuthRL_FAuth_slst (proj2_1 et1)) (DHKE_SimAuth_FAuthRL_FAuth_slst (proj2_1 et2))) (and (= (DHKE_SimAuth_FAuthLR_FAuth_slst (proj2_1 et2)) (as Ch_Init (stlkg (tuple3 party party DH_G_group)))) (and (= (DHKE_SimAuth_FAuthRL_FAuth_slst (proj2_1 et2)) (as Ch_Init (stlkg (tuple3 party party DH_G_group)))) (and (= (DHKE_DHKE_Initiator_sl_K (proj2_1 et1)) (as Logic_None (Logic_option DH_G_group))) (and (= (DHKE_DHKE_Responder_sl_K (proj2_1 et1)) (as Logic_None (Logic_option DH_G_group))) (and (= (DHKE_DHKE_Initiator_sl_X (proj2_1 et1)) (DHKE_DHKE_SIM_sl_X (proj2_1 et2))) (and (= (DHKE_DHKE_Responder_sl_Y (proj2_1 et1)) (DHKE_DHKE_SIM_sl_Y (proj2_1 et2))) (and (= (DHKE_DHKE_SIM_sl_Keager (proj2_1 et1)) (DHKE_FKE_key (DHKE_FKE_FKE_slst (proj2_1 et2)))) (and (= (DHKE_DHKE_Initiator_slst (proj2_1 et1)) DHKE_IInit) (and (= (DHKE_DHKE_Responder_slst (proj2_1 et1)) DHKE_RWaiting) (= (DHKE_FKE_kst (DHKE_FKE_FKE_slst (proj2_1 et2))) DHKE_FKE_KE_Init))))))))))))) (and (and (= (Z2 (proj2_1 et1)) (Z2 (proj2_1 et2))) (and (= (DHKE_DHKE_Initiator_sl_X (proj2_1 et1)) (DHKE_DHKE_SIM_sl_X (proj2_1 et2))) (and (= (DHKE_DHKE_Responder_sl_Y (proj2_1 et1)) (DHKE_DHKE_SIM_sl_Y (proj2_1 et2))) (and (= (DHKE_DHKE_SIM_sl_Keager (proj2_1 et1)) (DHKE_FKE_key (DHKE_FKE_FKE_slst (proj2_1 et2)))) (DHKE_staterel (DHKE_DHKE_Initiator_slp (proj2_1 et1)) (DHKE_DHKE_Initiator_slst (proj2_1 et1)) (DHKE_DHKE_Responder_slst (proj2_1 et1)) (DHKE_FKE_kst (DHKE_FKE_FKE_slst (proj2_1 et2))) (DHKE_HybFChan_F2Auth_FAuthLR_FAuth_slst (proj2_1 et1)) (DHKE_HybFChan_F2Auth_FAuthRL_FAuth_slst (proj2_1 et1)) (DHKE_SimAuth_FAuthLR_FAuth_slst (proj2_1 et2)) (DHKE_SimAuth_FAuthRL_FAuth_slst (proj2_1 et2)) (Tuple3 (proj3_0 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_1 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (DHKE_DHKE_Initiator_sl_X (proj2_1 et1))) (Tuple3 (proj3_1 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_0 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (DHKE_DHKE_Responder_sl_Y (proj2_1 et1))) (DHKE_DHKE_Initiator_sl_K (proj2_1 et1)) (DHKE_DHKE_Responder_sl_K (proj2_1 et1)) (DHKE_DHKE_SIM_sl_Keager (proj2_1 et1))))))) (forall ((result_L Bool) (result_R Bool) (Z_L Z) (usK_L (Logic_option DH_G_group)) (p_L (tuple3 party party tuple0)) (st_L DHKE_istate) (usK_L1 (Logic_option DH_G_group)) (st_L1 DHKE_rstate) (st_L2 (stlkg (tuple3 party party DH_G_group))) (st_L3 (stlkg (tuple3 party party DH_G_group))) (Z_R Z) (st_R DHKE_FKE_state) (st_R1 (stlkg (tuple3 party party DH_G_group))) (st_R2 (stlkg (tuple3 party party DH_G_group)))) (=> (and (= (= result_L true) (= result_R true)) (and (= Z_L Z_R) (and (= (DHKE_DHKE_Initiator_sl_X (proj2_1 et1)) (DHKE_DHKE_SIM_sl_X (proj2_1 et2))) (and (= (DHKE_DHKE_Responder_sl_Y (proj2_1 et1)) (DHKE_DHKE_SIM_sl_Y (proj2_1 et2))) (and (= (DHKE_DHKE_SIM_sl_Keager (proj2_1 et1)) (DHKE_FKE_key st_R)) (DHKE_staterel p_L st_L st_L1 (DHKE_FKE_kst st_R) st_L2 st_L3 st_R1 st_R2 (Tuple3 (proj3_0 p_L) (proj3_1 p_L) (DHKE_DHKE_Initiator_sl_X (proj2_1 et1))) (Tuple3 (proj3_1 p_L) (proj3_0 p_L) (DHKE_DHKE_Responder_sl_Y (proj2_1 et1))) usK_L usK_L1 (DHKE_DHKE_SIM_sl_Keager (proj2_1 et1)))))))) (= (= result_L true) (= result_R true)))))))))
+
+CANDIDATE LEMMAS (20 names):
+- Ch_Available_proj_1'def
+- Ch_Available_proj_1_sort
+- Ch_Available_sort
+- Ch_Blocked1_proj_1'def
+- Ch_Blocked1_proj_1_sort
+- Ch_Blocked1_sort
+- Ch_Blocked2_proj_1'def
+- Ch_Blocked2_proj_1_sort
+- Ch_Blocked2_sort
+- Ch_Init_sort
+- Ch_Wait_proj_1'def
+- Ch_Wait_proj_1_sort
+- Ch_Wait_sort
+- DHKE_staterel'def
+- Logic_None_sort
+- Logic_Some_proj_1'def
+- Logic_Some_proj_1_sort
+- Logic_Some_sort
+- Logic_option_inversion
+- stlkg_inversion
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

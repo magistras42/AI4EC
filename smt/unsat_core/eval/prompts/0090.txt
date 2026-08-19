@@ -1,0 +1,36 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/PIR.ec::48
+source file: examples/PIR.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (=> (is_restr x N) (and (<= 0 N) (is_restr (FSet_oflist1 (as List_lbrb (List_list Int))) 0)))))
+
+CANDIDATE LEMMAS (22 names):
+- FSet_`&`'def
+- FSet_`&`_sort
+- FSet_elems_sort
+- FSet_mem'def
+- FSet_mem_ho_sort
+- FSet_mem_ho_spec
+- FSet_oflist_sort
+- FSet_set0E
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_filter'def
+- List_filter_sort
+- List_list_inversion
+- List_mem'def
+- N_pos
+- is_restr'def
+- is_restr_fset0
+- restr'def
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/old/trapdoor.ec::CVC5:1
+source file: examples/old/trapdoor.ec
+
+GOAL:
+(assert (not (forall ((p Real) (q Real) (r Real)) (=> (<= 0.0 r) (=> (<= p q) (<= (* r p) (* r q)))))))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- StdOrder_RealOrder_ler_nmul2r
+- StdOrder_RealOrder_ler_pmul2r
+- StdOrder_RealOrder_ler_wnmul2l
+- StdOrder_RealOrder_ler_wnmul2r
+- StdOrder_RealOrder_ler_wpmul2r
+- StdOrder_RealOrder_ler_nmul2l
+- StdOrder_RealOrder_ler_pmul2l
+- StdOrder_RealOrder_mulr_ge0
+- StdOrder_RealOrder_ler_pmul
+- StdOrder_RealOrder_ler_wpmul2l
+- StdOrder_RealOrder_ler_nemulr
+- StdOrder_RealOrder_divr_ge0
+- StdOrder_RealOrder_ler_nemull
+- StdOrder_RealOrder_mulr_le0
+- StdOrder_RealOrder_mulr_le0_ge0
+- StdOrder_RealOrder_ler_nimull
+- StdOrder_RealOrder_ler_nimulr
+- StdOrder_RealOrder_mulr_ge0_le0
+- StdOrder_RealOrder_ltr_pmul
+- StdOrder_RealOrder_ltr_pmul2r
+- StdOrder_RealOrder_ger_leVge
+- StdOrder_RealOrder_ler_leVge
+- StdOrder_RealOrder_ler_paddr
+- StdOrder_RealOrder_ler_pemulr
+- StdOrder_RealOrder_ltr_nmul2r
+- StdOrder_RealOrder_pmulr_gt0
+- StdOrder_RealOrder_ler_naddr
+- StdOrder_RealOrder_ler_pimulr
+- StdOrder_RealOrder_ltr_nmul2l
+- StdOrder_RealOrder_pmulr_lge0
+- StdOrder_RealOrder_addr_ge0
+- StdOrder_RealOrder_ler_naddl
+- StdOrder_RealOrder_ler_pemull
+- StdOrder_RealOrder_ler_pimull
+- StdOrder_RealOrder_ler_pmull
+- StdOrder_RealOrder_ltr_naddr
+- StdOrder_RealOrder_ltr_pmul2l
+- StdOrder_RealOrder_nmulr_lle0
+- StdOrder_RealOrder_pmulr_lle0
+- StdOrder_RealOrder_ler_gtF
+- StdOrder_RealOrder_ler_paddl
+- StdOrder_RealOrder_ler_pdivr_mull
+- StdOrder_RealOrder_ler_pdivr_mulr
+- StdOrder_RealOrder_ler_pmulr
+- StdOrder_RealOrder_ltr_naddl
+- StdOrder_RealOrder_ltr_paddr
+- StdOrder_RealOrder_ltr_spaddr
+- StdOrder_RealOrder_nmulr_lge0
+- StdOrder_RealOrder_pmulr_rge0
+- StdOrder_RealOrder_ger_nmulr
+- StdOrder_RealOrder_ler_ndivl_mull
+- StdOrder_RealOrder_ler_nmull
+- StdOrder_RealOrder_ler_pdivl_mull
+- StdOrder_RealOrder_ltr_snaddr
+- StdOrder_RealOrder_mulr_gt0
+- StdOrder_RealOrder_ger_addl
+- StdOrder_RealOrder_ger_addr
+- StdOrder_RealOrder_ger_nmull
+- StdOrder_RealOrder_ger_pmull
+- StdOrder_RealOrder_ger_pmulr
+- StdOrder_RealOrder_ler_nmulr
+- StdOrder_RealOrder_ltr_paddl
+- StdOrder_RealOrder_ltr_snaddl
+- StdOrder_RealOrder_mulr_ile1
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

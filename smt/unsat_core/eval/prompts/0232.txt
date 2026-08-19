@@ -1,0 +1,30 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/global-hybrid/GlobalHybridExamp2.ec::34
+source file: examples/global-hybrid/GlobalHybridExamp2.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (forall ((ethr (tuple2 (tuple10 (tuple3 key key key) exp exp exp ro_in_t exp ro_in_t exp ro_in_t exp) memory))) (=> (exists ((m_R (FMap_fmap ro_in_t exp))) (and (= (FullRO_RO_slm (proj2_1 ethr)) (FMap___lb_lsmn_rb1 m_R (proj10_6 (proj2_0 ethr)) (proj10_7 (proj2_0 ethr)))) (and (= (proj10_2 (proj2_0 ethr)) (Logic_odflt1 witness2 (FMap___lb_rb1 (FullRO_RO_slm (proj2_1 ethr)) (proj10_6 (proj2_0 ethr))))) (and (= (proj10_8 (proj2_0 ethr)) C) (exists ((m_R1 (FMap_fmap ro_in_t exp))) (and (= m_R (FMap___lb_lsmn_rb1 m_R1 (proj10_4 (proj2_0 ethr)) (proj10_5 (proj2_0 ethr)))) (and (= (proj10_1 (proj2_0 ethr)) (Logic_odflt1 witness2 (FMap___lb_rb1 m_R (proj10_4 (proj2_0 ethr))))) (and (= (proj10_6 (proj2_0 ethr)) B) (and (and (and (and (and (= (Hybrid_Or_slctr (proj2_1 etm)) (RO_Disting2_Or_slctr (proj2_1 ethr))) (and (and (<= 1 (Hybrid_Or_slctr (proj2_1 etm))) (<= (Hybrid_Or_slctr (proj2_1 etm)) (+ m 1))) (and (= (Hybrid_sli (proj2_1 etm)) iqt) (and (= (RO_Disting2_sli (proj2_1 ethr)) iqt) (=> (<= (Hybrid_Or_slctr (proj2_1 etm)) iqt) (= m_R1 (FMap_ofmap1 (const2 (as Logic_None (Logic_option exp)))))))))) (<= (Hybrid_Or_slctr (proj2_1 etm)) m)) (not (< (Hybrid_Or_slctr (proj2_1 etm)) (Hybrid_sli (proj2_1 etm))))) (= (Hybrid_Or_slctr (proj2_1 etm)) (Hybrid_sli (proj2_1 etm)))) (and (= (proj7_4 (proj2_0 etm)) (proj10_5 (proj2_0 ethr))) (and (= (proj7_5 (proj2_0 etm)) (proj10_7 (proj2_0 ethr))) (and (= (proj7_6 (proj2_0 etm)) (proj10_9 (proj2_0 ethr))) (= (proj10_4 (proj2_0 ethr)) A))))))))))))) (not (FMap_dom1 (FullRO_RO_slm (proj2_1 ethr)) (proj10_8 (proj2_0 ethr))))))))
+
+CANDIDATE LEMMAS (16 names):
+- FMap___[_<-_]'def
+- FMap___[_<-_]_sort
+- FMap___[_]'def
+- FMap___[_]_sort
+- FMap_dom'def
+- FMap_mem_empty
+- FMap_mem_set
+- FMap_ofmap_sort
+- FMap_tomap_sort
+- Logic_None_sort
+- Logic_Some_proj_1'def
+- Logic_Some_proj_1_sort
+- Logic_Some_sort
+- Logic_odflt'def
+- Logic_odflt_sort
+- Logic_option_inversion
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

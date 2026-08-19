@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/FundamentalLemma.ec::CVC5:6
+source file: examples/FundamentalLemma.ec
+
+GOAL:
+(assert (not (<= (Real_bqbr_br (+ (mu1 (G1_slmain Tuple0 etm) unamed_lambda) (- (mu1 (G2_slmain Tuple0 etm) unamed_lambda1)))) (max (mu1 (G1_slmain Tuple0 etm) unamed_lambda) (mu1 (G2_slmain Tuple0 etm) unamed_lambda1)))))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- StdOrder_RealOrder_upto_maxr
+- StdOrder_RealOrder_ler_norm_maxr
+- Real_upto_abs
+- StdBigop_Bigreal_big_normr
+- Real_upto2_abs
+- StdOrder_RealOrder_ler_normr
+- StdOrder_RealOrder_ler_sub_dist
+- StdOrder_RealOrder_ltr_nnorml
+- StdOrder_RealOrder_ler_def
+- StdOrder_RealOrder_ler_norm
+- StdOrder_RealOrder_ler_norm_sub
+- StdOrder_RealOrder_ler_norml
+- StdOrder_RealOrder_ler_dist_add
+- StdOrder_RealOrder_ler_dist_dist
+- Distr_mu_mem_le
+- Distr_mu_has_le
+- max'def
+- StdOrder_RealOrder_ler_norm_add
+- StdOrder_RealOrder_ler_sub_norm_add
+- StdOrder_RealOrder_normr_ge0
+- Distr_exp_norm
+- StdOrder_RealOrder_ger0_def
+- StdOrder_RealOrder_ler_nnorml
+- Distr_p_max'def
+- Distr_ge0_mu1
+- Real_`___'def
+- StdOrder_RealOrder_eqr_norml
+- StdOrder_RealOrder_ler0_def
+- StdOrder_RealOrder_ler_dist_norm_add
+- StdOrder_RealOrder_ger0_norm
+- StdOrder_RealOrder_ltr_normr
+- Distr_pmax_upper_bound
+- StdOrder_RealOrder_ler0_norm
+- StdBigop_BBO_b2r_big
+- Distr_Distr
+- StdOrder_RealOrder_eqr_norm_id
+- StdOrder_RealOrder_ler_maxrP
+- StdOrder_RealOrder_ltr_norml
+- StdOrder_RealOrder_normr_idP
+- Real_upto_le
+- Distr_ge0_weight
+- Distr_mu_sub
+- Distr_le1_mu1_fin
+- StdBigop_Bigreal_sub_ler_sum
+- StdBigop_Bigreal_sumr_norm
+- StdOrder_RealOrder_eqr_normN
+- StdOrder_RealOrder_ltr_maxrP
+- Distr_mopt'def
+- RealExp_exp_mono
+- StdBigop_Bigreal_ler_sum
+- StdBigop_Bigreal_sumr_ge0
+- StdOrder_RealOrder_ler_maxr_trans
+- StdOrder_RealOrder_ler_sub
+- Distr_mu_mem_le_mu1
+- Distr_pmax_ge0
+- RealSeries_abs_neg_ler
+- Real_ub'def
+- StdBigop_Bigreal_prodr_ge0
+- StdOrder_RealOrder_ler_maxr
+- StdOrder_RealOrder_maxr_ub
+- StdOrder_RealOrder_maxrl
+- StdOrder_RealOrder_normE
+- Distr_pmaxE
+- StdBigop_Bigreal_ler_prod
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

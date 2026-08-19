@@ -1,0 +1,266 @@
+[
+ {
+  "id": "examples/ChaChaPoly/chacha_poly.ec::Z3:6",
+  "file": "examples/ChaChaPoly/chacha_poly.ec",
+  "solver": "Z3",
+  "call": 6,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/Z3/examples__ChaChaPoly__chacha_poly.ec/Z3.0006.smt",
+  "goal": "(assert (not (= (Top_List_size1 (Top_List_nseq1 Top_GenBlock_block_size witness2)) Top_GenBlock_block_size)))"
+ },
+ {
+  "id": "examples/ChaChaPoly/chacha_poly.ec::CVC5:1",
+  "file": "examples/ChaChaPoly/chacha_poly.ec",
+  "solver": "CVC5",
+  "call": 1,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__ChaChaPoly__chacha_poly.ec/CVC5.0001.smt",
+  "goal": "(assert (not (=> (and (<= 0 i) (< i (Top_Int_min 0 0))) (= dflc (f dfla dflb)))))"
+ },
+ {
+  "id": "examples/ChaChaPoly/ske.ec::Z3:1",
+  "file": "examples/ChaChaPoly/ske.ec",
+  "solver": "Z3",
+  "call": 1,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/Z3/examples__ChaChaPoly__ske.ec/Z3.0001.smt",
+  "goal": "(assert (not (forall ((et2 (tuple2 (tuple6 Top_SKE_RND_plaintext Top_SKE_RND_ciphertext Top_SKE_RND_plaintext Top_SKE_RND_ciphertext Top_SKE_RND_key Top_SKE_RND_plaintext) memory))) (=> (not (exists ((c Top_SKE_RND_ciphertext)) (and (Top_List_mem1 (Top_SKE_RND_Mem_sllc (proj2_1 et2)) c) (not (= (Top_SKE_RND_CCA_CPA_UFCMA_dec (Top_SKE_RND_CCA_CPA_UFCMA_StLSke_slgs (proj2_1 et2)) (Top_SKE_RND_Mem_slk (proj2_1 et2)) c) (as Top_Logic_None (Top_Logic_option Top_SKE_RND_plaintext))))))) (=> (Top_SKE_RND_CCA_CPA_UFCMA_valid_key (Top_SKE_RND_Mem_slk (proj2_1 et2))) (=> (forall ((c Top_SKE_RND_ciphertext)) (=> (Top_FMap_dom1 (Top_SKE_RND_Mem_sllog (proj2_1 et2)) c) (= (Top_SKE_RND_CCA_CPA_UFCMA_dec (Top_SKE_RND_CCA_CPA_UFCMA_StLSke_slgs (proj2_1 et2)) (Top_SKE_RND_Mem_slk (proj2_1 et2)) c) (Top_FMap___lb_rb1 (Top_SKE_RND_Mem_sllog (proj2_1 et2)) c)))) (forall ((c1 Top_SKE_RND_ciphertext)) (=> (Top_FMap_dom1 (Top_FMap___lb_lsmn_rb1 (Top_SKE_RND_Mem_sllog (proj2_1 et2)) (Top_SKE_RND_CCA_CPA_UFCMA_enc (Top_SKE_RND_CCA_CPA_UFCMA_StLSke_slgs (proj2_1 et2)) (Top_SKE_RND_Mem_slk (proj2_1 et2)) (proj6_0 (proj2_0 et2))) (proj6_0 (proj2_0 et2))) c1) (= (Top_SKE_RND_CCA_CPA_UFCMA_dec (Top_SKE_RND_CCA_CPA_UFCMA_StLSke_slgs (proj2_1 et2)) (Top_SKE_RND_Mem_slk (proj2_1 et2)) c1) (Top_FMap___lb_rb1 (Top_FMap___lb_lsmn_rb1 (Top_SKE_RND_Mem_sllog (proj2_1 et2)) (Top_SKE_RND_CCA_CPA_UFCMA_enc (Top_SKE_RND_CCA_CPA_UFCMA_StLSke_slgs (proj2_1 et2)) (Top_SKE_RND_Mem_slk (proj2_1 et2)) (proj6_0 (proj2_0 et2))) (proj6_0 (proj2_0 et2))) c1))))))))))"
+ },
+ {
+  "id": "examples/FundamentalLemma.ec::CVC5:6",
+  "file": "examples/FundamentalLemma.ec",
+  "solver": "CVC5",
+  "call": 6,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__FundamentalLemma.ec/CVC5.0006.smt",
+  "goal": "(assert (not (<= (Top_Real_bqbr_br (+ (mu1 (G1_slmain Tuple0 etm) unamed_lambda) (- (mu1 (G2_slmain Tuple0 etm) unamed_lambda1)))) (Top_max (mu1 (G1_slmain Tuple0 etm) unamed_lambda) (mu1 (G2_slmain Tuple0 etm) unamed_lambda1)))))"
+ },
+ {
+  "id": "examples/MEE-CBC/FunctionalSpec.ec::CVC5:1",
+  "file": "examples/MEE-CBC/FunctionalSpec.ec",
+  "solver": "CVC5",
+  "call": 1,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__MEE-CBC__FunctionalSpec.ec/CVC5.0001.smt",
+  "goal": "(assert (not (= (Top_Int_max 0 (Top_pad_length m)) (+ 16 (- (mod (Top_List_size1 m) 16))))))"
+ },
+ {
+  "id": "examples/MEE-CBC/RCPA_CMA.ec::Z3:3",
+  "file": "examples/MEE-CBC/RCPA_CMA.ec",
+  "solver": "Z3",
+  "call": 3,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/Z3/examples__MEE-CBC__RCPA_CMA.ec/Z3.0003.smt",
+  "goal": "(assert (not (forall ((et1 (tuple2 (tuple8 Top_MtE_ptxt Top_MtE_ctxt (tuple2 Top_MtE_eK Top_MtE_mK) Top_MtE_ptxt Top_MtE_eK Top_MtE_mK Top_MtE_ctxt Top_MtE_tag) memory)) (et2 (tuple2 (tuple5 Top_MtE_ptxt Top_MtE_ctxt Top_MtE_tag Top_MtE_ptxt Top_MtE_tag) memory))) (=> (and (not (= (Top_MtE_MACa_WUF_CMA_WUF_Wrap_slwin (proj2_1 et2)) true)) (and (= (proj8_0 (proj2_0 et1)) (proj5_0 (proj2_0 et2))) (and (and (= (E2 (proj2_1 et1)) (E2 (proj2_1 et2))) (= (M2 (proj2_1 et1)) (M2 (proj2_1 et2)))) (and (= (Top_MtE_Sec_PTXT_PTXT_Wrap_slk (proj2_1 et1)) (Tuple2 (Top_MtE_RCPA_WUF_PTXT_CMAa_slek (proj2_1 et2)) (Top_MtE_MACa_WUF_CMA_WUF_Wrap_slk (proj2_1 et2)))) (and (forall ((p Top_MtE_ptxt)) (= (Top_FSet_mem1 (Top_MtE_Sec_PTXT_PTXT_Wrap_sls (proj2_1 et1)) p) (Top_FSet_mem1 (Top_MtE_MACa_WUF_CMA_WUF_Wrap_sls (proj2_1 et2)) p))) (=> (= (Top_MtE_Sec_PTXT_PTXT_Wrap_slwin (proj2_1 et1)) true) (= (Top_MtE_MACa_WUF_CMA_WUF_Wrap_slwin (proj2_1 et2)) true))))))) (and (and (and (= (proj2_1 (Top_MtE_Sec_PTXT_PTXT_Wrap_slk (proj2_1 et1))) (Top_MtE_MACa_WUF_CMA_WUF_Wrap_slk (proj2_1 et2))) (= (proj8_0 (proj2_0 et1)) (proj5_0 (proj2_0 et2)))) (= (M2 (proj2_1 et1)) (M2 (proj2_1 et2)))) (forall ((result_L Top_MtE_tag) (result_R Top_MtE_tag) (M_L M) (M_R M)) (=> (and (= result_L result_R) (= M_L M_R)) (and (and (and (= (proj2_0 (Top_MtE_Sec_PTXT_PTXT_Wrap_slk (proj2_1 et1))) (Top_MtE_RCPA_WUF_PTXT_CMAa_slek (proj2_1 et2))) (and (= (proj8_0 (proj2_0 et1)) (proj5_0 (proj2_0 et2))) (= result_L result_R))) (= (E2 (proj2_1 et1)) (E2 (proj2_1 et2)))) (forall ((result_L1 Top_MtE_ctxt) (result_R1 Top_MtE_ctxt) (E_L E) (E_R E)) (=> (and (= result_L1 result_R1) (= E_L E_R)) (=> (not (= (Top_MtE_MACa_WUF_CMA_WUF_Wrap_slwin (proj2_1 et2)) true)) (and (= result_L1 result_R1) (and (and (= E_L E_R) (= M_L M_R)) (and (= (Top_MtE_Sec_PTXT_PTXT_Wrap_slk (proj2_1 et1)) (Tuple2 (Top_MtE_RCPA_WUF_PTXT_CMAa_slek (proj2_1 et2)) (Top_MtE_MACa_WUF_CMA_WUF_Wrap_slk (proj2_1 et2)))) (and (forall ((p Top_MtE_ptxt)) (= (Top_FSet_mem1 (Top_FSet_bqbrbq1 (Top_MtE_Sec_PTXT_PTXT_Wrap_sls (proj2_1 et1)) (Top_FSet_fset12 (proj8_0 (proj2_0 et1)))) p) (Top_FSet_mem1 (Top_FSet_bqbrbq1 (Top_MtE_MACa_WUF_CMA_WUF_Wrap_sls (proj2_1 et2)) (Top_FSet_fset12 (proj5_0 (proj2_0 et2)))) p))) (=> (= (Top_MtE_Sec_PTXT_PTXT_Wrap_slwin (proj2_1 et1)) true) (= (Top_MtE_MACa_WUF_CMA_WUF_Wrap_slwin (proj2_1 et2)) true)))))))))))))))))"
+ },
+ {
+  "id": "examples/MEE-CBC/RCPA_CMA.ec::CVC5:8",
+  "file": "examples/MEE-CBC/RCPA_CMA.ec",
+  "solver": "CVC5",
+  "call": 8,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__MEE-CBC__RCPA_CMA.ec/CVC5.0008.smt",
+  "goal": "(assert (not (forall ((p Top_EtM_leaks)) (Top_Distr_is_lossless1 (Top_Distr_bqasbq1 (Top_EtM_dC p) (Top_Distr_MUnit_dunit1 witness2))))))"
+ },
+ {
+  "id": "examples/PIR.ec::Z3:5",
+  "file": "examples/PIR.ec",
+  "solver": "Z3",
+  "call": 5,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/Z3/examples__PIR.ec/Z3.0005.smt",
+  "goal": "(assert (not (=> (Top_sxor2 (Top_PIR_sls (proj2_1 etm)) (Top_PIR_slsqt (proj2_1 etm)) (proj7_0 (proj2_0 etm))) (forall ((b Bool)) (=> (Top_Distr_support1 (Top_Distr_MUniform_duniform1 (Top_List_clcl true (Top_List_clcl false (as Top_List_lbrb (Top_List_list Bool))))) b) (ite (= (proj7_3 (proj2_0 etm)) (proj7_0 (proj2_0 etm))) (ite (= b true) (ite (<= (+ (proj7_3 (proj2_0 etm)) 1) (proj7_0 (proj2_0 etm))) (= (Top_List_clcl (proj7_3 (proj2_0 etm)) (Top_PIR_sls (proj2_1 etm))) (Top_PIR_slsqt (proj2_1 etm))) (Top_sxor2 (Top_List_clcl (proj7_3 (proj2_0 etm)) (Top_PIR_sls (proj2_1 etm))) (Top_PIR_slsqt (proj2_1 etm)) (proj7_0 (proj2_0 etm)))) (ite (<= (+ (proj7_3 (proj2_0 etm)) 1) (proj7_0 (proj2_0 etm))) (= (Top_PIR_sls (proj2_1 etm)) (Top_List_clcl (proj7_3 (proj2_0 etm)) (Top_PIR_slsqt (proj2_1 etm)))) (Top_sxor2 (Top_PIR_sls (proj2_1 etm)) (Top_List_clcl (proj7_3 (proj2_0 etm)) (Top_PIR_slsqt (proj2_1 etm))) (proj7_0 (proj2_0 etm))))) (ite (= b true) (ite (<= (+ (proj7_3 (proj2_0 etm)) 1) (proj7_0 (proj2_0 etm))) (= (Top_PIR_sls (proj2_1 etm)) (Top_PIR_slsqt (proj2_1 etm))) (Top_sxor2 (Top_List_clcl (proj7_3 (proj2_0 etm)) (Top_PIR_sls (proj2_1 etm))) (Top_List_clcl (proj7_3 (proj2_0 etm)) (Top_PIR_slsqt (proj2_1 etm))) (proj7_0 (proj2_0 etm)))) (ite (<= (+ (proj7_3 (proj2_0 etm)) 1) (proj7_0 (proj2_0 etm))) (= (Top_PIR_sls (proj2_1 etm)) (Top_PIR_slsqt (proj2_1 etm))) (Top_sxor2 (Top_PIR_sls (proj2_1 etm)) (Top_PIR_slsqt (proj2_1 etm)) (proj7_0 (proj2_0 etm)))))))))))"
+ },
+ {
+  "id": "examples/PIR.ec::CVC5:8",
+  "file": "examples/PIR.ec",
+  "solver": "CVC5",
+  "call": 8,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__PIR.ec/CVC5.0008.smt",
+  "goal": "(assert (not (ite b (Top_sxor2 (Top_List_clcl (proj7_0 (proj2_0 etm)) (Top_PIR_slsqt (proj2_1 etm))) (Top_PIR_slsqt (proj2_1 etm)) (proj7_0 (proj2_0 etm))) (Top_sxor2 (Top_PIR_slsqt (proj2_1 etm)) (Top_List_clcl (proj7_0 (proj2_0 etm)) (Top_PIR_slsqt (proj2_1 etm))) (proj7_0 (proj2_0 etm))))))"
+ },
+ {
+  "id": "examples/PRG.ec::Z3:12",
+  "file": "examples/PRG.ec",
+  "solver": "Z3",
+  "call": 12,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/Z3/examples__PRG.ec/Z3.0012.smt",
+  "goal": "(assert (not (forall ((et2 (tuple2 (tuple5 Top_seed Top_output Top_output Int Top_seed) memory)) (r10 Top_seed)) (=> (Top_Distr_support1 (Top_Distr_MUniform_duniform1 Top_Support_enum) r10) (and (and (and (= (+ 1 (Top_List_size1 (Top_P_sllogP (proj2_1 et2)))) (+ (Top_List_size1 (Top_P_sllogP (proj2_1 et2))) 1)) (<= 0 (Top_List_size1 (Top_P_sllogP (proj2_1 et2))))) (=> (< 0 (Top_List_size1 (Top_P_sllogP (proj2_1 et2)))) (< 0 (+ 1 (Top_List_size1 (Top_P_sllogP (proj2_1 et2))))))) (forall ((logP_R (Top_List_list Top_seed))) (=> (not (< (Top_List_size1 logP_R) (Top_List_size1 (Top_P_sllogP (proj2_1 et2))))) (=> (not (and (< (Top_List_size1 logP_R) (+ 1 (Top_List_size1 (Top_P_sllogP (proj2_1 et2))))) (< (Top_List_size1 logP_R) (Top_List_size1 (Top_P_sllogP (proj2_1 et2)))))) (=> (= (+ 1 (Top_List_size1 (Top_P_sllogP (proj2_1 et2)))) (+ (Top_List_size1 (Top_P_sllogP (proj2_1 et2))) 1)) (=> (<= (Top_List_size1 logP_R) (Top_List_size1 (Top_P_sllogP (proj2_1 et2)))) (= (Top_List_size1 logP_R) (Top_List_size1 (Top_P_sllogP (proj2_1 et2))))))))))))))"
+ },
+ {
+  "id": "examples/UC/dh_enc.ec::CVC5:31",
+  "file": "examples/UC/dh_enc.ec",
+  "solver": "CVC5",
+  "call": 31,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__UC__dh_enc.ec/CVC5.0031.smt",
+  "goal": "(assert (not (forall ((et1 (tuple2 (Top_Composition_sum Top_role (Top_Composition_sum tuple0 tuple0)) memory)) (et2 (tuple2 (Top_Composition_sum Top_role (Top_Composition_sum tuple0 tuple0)) memory))) (=> (and (= (proj2_0 et1) (proj2_0 et2)) (and (and (= (Top_DHKE_FKE_FKEAuth_FChan_FAuth_FAuth_slst (proj2_1 et1)) (Top_DHKE_FKE_FKEAuth_FChan_FAuth_FAuth_slst (proj2_1 et2))) (and (= (Top_OTP_OTP_Initiator_slp (proj2_1 et1)) (Top_OTP_OTP_Initiator_slp (proj2_1 et2))) (= (Top_OTP_OTP_Initiator_slst (proj2_1 et1)) (Top_OTP_OTP_Initiator_slst (proj2_1 et2))))) (and (= (Top_DHKE_FKE_kst (Top_DHKE_FKE_FKE_slst (proj2_1 et1))) (Top_DHKE_FKE_kst (Top_DHKE_FKE_FKE_slst (proj2_1 et2)))) (and (Top_FMap_dom1 (Top_OTP_GenEager_RO_slm (proj2_1 et2)) Tuple0) (and (= (Top_DHKE_FKE_key (Top_DHKE_FKE_FKE_slst (proj2_1 et1))) (Top_Logic_odflt1 witness2 (Top_FMap___lb_rb1 (Top_OTP_GenEager_RO_slm (proj2_1 et2)) Tuple0))) (=> (not (= (Top_DHKE_FKE_FKEAuth_FChan_FAuth_FAuth_slst (proj2_1 et2)) (as Top_Ch_Init (Top_stlkg (tuple3 Top_party Top_party Top_DH_G_group))))) (= (Top_DHKE_FKE_key (Top_DHKE_FKE_FKE_slst (proj2_1 et2))) (Top_Logic_odflt1 witness2 (Top_FMap___lb_rb1 (Top_OTP_GenEager_RO_slm (proj2_1 et2)) Tuple0))))))))) (= (exists ((m2 (Top_Composition_sum tuple0 tuple0))) (= (proj2_0 et1) ((as Top_Composition_Right (Top_Composition_sum Top_role (Top_Composition_sum tuple0 tuple0))) m2))) (exists ((m2 (Top_Composition_sum tuple0 tuple0))) (= (proj2_0 et2) ((as Top_Composition_Right (Top_Composition_sum Top_role (Top_Composition_sum tuple0 tuple0))) m2))))))))"
+ },
+ {
+  "id": "examples/UC/dh_enc.ec::Z3:5",
+  "file": "examples/UC/dh_enc.ec",
+  "solver": "Z3",
+  "call": 5,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/Z3/examples__UC__dh_enc.ec/Z3.0005.smt",
+  "goal": "(assert (not (forall ((et1 (tuple2 (tuple23 Top_role (tuple3 Top_party Top_party tuple0) (tuple3 Top_party Top_party tuple0) (tuple3 Top_party Top_party tuple0) (Top_Logic_option (Top_Composition_sum Top_DH_G_group Top_DH_G_group)) (Top_Composition_sum (tuple2 Top_role (tuple3 Top_party Top_party Top_DH_G_group)) (tuple2 Top_role (tuple3 Top_party Top_party Top_DH_G_group))) (Top_Composition_sum (tuple2 Top_role (tuple3 Top_party Top_party tuple0)) (tuple2 Top_role (tuple3 Top_party Top_party tuple0))) (Top_Logic_option Top_DH_G_group) (Top_Logic_option Top_DH_G_group) (Top_Logic_option (Top_Composition_sum Top_DH_G_group Top_DH_G_group)) (Top_Composition_sum (tuple2 Top_role (tuple3 Top_party Top_party Top_DH_G_group)) (tuple2 Top_role (tuple3 Top_party Top_party Top_DH_G_group))) Top_role (tuple3 Top_party Top_party Top_DH_G_group) Top_role (tuple3 Top_party Top_party Top_DH_G_group) Top_role (tuple3 Top_party Top_party tuple0) Top_role (tuple3 Top_party Top_party tuple0) Top_role (tuple3 Top_party Top_party Top_DH_G_group) Top_role (tuple3 Top_party Top_party Top_DH_G_group)) memory)) (et2 (tuple2 (tuple2 Top_role (tuple3 Top_party Top_party tuple0)) memory))) (=> (and (and (= (proj23_0 (proj2_0 et1)) (proj2_0 (proj2_0 et2))) (= (proj23_1 (proj2_0 et1)) (proj2_1 (proj2_0 et2)))) (and (= (Top_DHKE_DHKE_Initiator_sl_X (proj2_1 et1)) (Top_DHKE_DHKE_SIM_sl_X (proj2_1 et2))) (and (= (Top_DHKE_DHKE_Responder_sl_Y (proj2_1 et1)) (Top_DHKE_DHKE_SIM_sl_Y (proj2_1 et2))) (and (= (Top_DHKE_DHKE_SIM_sl_Keager (proj2_1 et1)) (Top_DHKE_FKE_key (Top_DHKE_FKE_FKE_slst (proj2_1 et2)))) (match (Top_DHKE_FKE_kst (Top_DHKE_FKE_FKE_slst (proj2_1 et2))) ( (Top_DHKE_FKE_KE_Init (and (= (Top_DHKE_DHKE_Initiator_slst (proj2_1 et1)) Top_DHKE_IInit) (and (= (Top_DHKE_DHKE_Responder_slst (proj2_1 et1)) Top_DHKE_RWaiting) (and (= (Top_DHKE_HybFChan_F2Auth_FAuthLR_FAuth_slst (proj2_1 et1)) (as Top_Ch_Init (Top_stlkg (tuple3 Top_party Top_party Top_DH_G_group)))) (and (= (Top_DHKE_HybFChan_F2Auth_FAuthRL_FAuth_slst (proj2_1 et1)) (as Top_Ch_Init (Top_stlkg (tuple3 Top_party Top_party Top_DH_G_group)))) (and (= (Top_DHKE_SimAuth_FAuthLR_FAuth_slst (proj2_1 et2)) (as Top_Ch_Init (Top_stlkg (tuple3 Top_party Top_party Top_DH_G_group)))) (and (= (Top_DHKE_SimAuth_FAuthRL_FAuth_slst (proj2_1 et2)) (as Top_Ch_Init (Top_stlkg (tuple3 Top_party Top_party Top_DH_G_group)))) (and (= (Top_DHKE_DHKE_Initiator_sl_K (proj2_1 et1)) (as Top_Logic_None (Top_Logic_option Top_DH_G_group))) (= (Top_DHKE_DHKE_Responder_sl_K (proj2_1 et1)) (as Top_Logic_None (Top_Logic_option Top_DH_G_group))))))))))) ((Top_DHKE_FKE_KE_Blocked1 x17) (and (= (Top_DHKE_DHKE_Initiator_slp (proj2_1 et1)) x17) (and (= (Top_DHKE_DHKE_Initiator_slst (proj2_1 et1)) Top_DHKE_ISent) (and (= (Top_DHKE_DHKE_Responder_slst (proj2_1 et1)) Top_DHKE_RWaiting) (and (= (Top_DHKE_HybFChan_F2Auth_FAuthLR_FAuth_slst (proj2_1 et1)) (Top_Ch_Blocked2 (Tuple3 (proj3_0 (Top_DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_1 (Top_DHKE_DHKE_Initiator_slp (proj2_1 et1))) (Top_DHKE_DHKE_Initiator_sl_X (proj2_1 et1))))) (and (= (Top_DHKE_HybFChan_F2Auth_FAuthRL_FAuth_slst (proj2_1 et1)) (as Top_Ch_Init (Top_stlkg (tuple3 Top_party Top_party Top_DH_G_group)))) (and (= (Top_DHKE_SimAuth_FAuthLR_FAuth_slst (proj2_1 et2)) (as Top_Ch_Init (Top_stlkg (tuple3 Top_party Top_party Top_DH_G_group)))) (and (= (Top_DHKE_SimAuth_FAuthRL_FAuth_slst (proj2_1 et2)) (as Top_Ch_Init (Top_stlkg (tuple3 Top_party Top_party Top_DH_G_group)))) (and (= (Top_DHKE_DHKE_Initiator_sl_K (proj2_1 et1)) (as Top_Logic_None (Top_Logic_option Top_DH_G_group))) (= (Top_DHKE_DHKE_Responder_sl_K (proj2_1 et1)) (as Top_Logic_None (Top_Logic_option Top_DH_G_group)))))))))))) ((Top_DHKE_FKE_KE_Wait x18) (and (= (Top_DHKE_DHKE_Initiator_slp (proj2_1 et1)) x18) (and (= (Top_DHKE_DHKE_Initiator_slst (proj2_1 et1)) Top_DHKE_ISent) (and (= (Top_DHKE_DHKE_Responder_slst (proj2_1 et1)) Top_DHKE_RWaiting) (and (= (Top_DHKE_HybFChan_F2Auth_FAuthLR_FAuth_slst (proj2_1 et1)"
+ },
+ {
+  "id": "examples/Upto.ec::Z3:4",
+  "file": "examples/Upto.ec",
+  "solver": "Z3",
+  "call": 4,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/Z3/examples__Upto.ec/Z3.0004.smt",
+  "goal": "(assert (not (<= (+ (+ (mu1 (Top_ExperimentlpO2cm_Advrp_slmain Tuple0 etm) unamed_lambda) (mu1 (Top_ExperimentlpO2cm_Advrp_slmain Tuple0 etm) unamed_lambda1)) (- (mu1 (Top_ExperimentlpO2cm_Advrp_slmain Tuple0 etm) unamed_lambda2))) (+ (mu1 (Top_ExperimentlpO2cm_Advrp_slmain Tuple0 etm) unamed_lambda) (mu1 (Top_ExperimentlpO2cm_Advrp_slmain Tuple0 etm) unamed_lambda1)))))"
+ },
+ {
+  "id": "examples/WF-examp.ec::CVC5:7",
+  "file": "examples/WF-examp.ec",
+  "solver": "CVC5",
+  "call": 7,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__WF-examp.ec/CVC5.0007.smt",
+  "goal": "(assert (not (= 0 (div (Top_List_size1 xs) n))))"
+ },
+ {
+  "id": "examples/async-while.ec::Z3:1",
+  "file": "examples/async-while.ec",
+  "solver": "Z3",
+  "call": 1,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/Z3/examples__async-while.ec/Z3.0001.smt",
+  "goal": "(assert (not (=> (<= 0 (* Top_k (proj3_1 (proj2_0 et2)))) (or (and (= (< (* Top_k (proj3_1 (proj2_0 et2))) (* Top_n Top_k)) (< (proj3_1 (proj2_0 et2)) Top_n)) (=> (< (* Top_k (proj3_1 (proj2_0 et2))) (* Top_n Top_k)) (=> (< (proj3_1 (proj2_0 et2)) Top_n) (and (< (to_real (* Top_k (proj3_1 (proj2_0 et2)))) (* (to_real Top_k) (to_real (+ (proj3_1 (proj2_0 et2)) 1)))) (< (to_real (proj3_1 (proj2_0 et2))) (to_real (+ (proj3_1 (proj2_0 et2)) 1))))))) (or (and (< (* Top_k (proj3_1 (proj2_0 et2))) (* Top_n Top_k)) (not (< (* Top_k (proj3_1 (proj2_0 et2))) (* Top_n Top_k)))) (and (< (proj3_1 (proj2_0 et2)) Top_n) (not (< (proj3_1 (proj2_0 et2)) Top_n))))))))"
+ },
+ {
+  "id": "examples/br93.ec::CVC5:2",
+  "file": "examples/br93.ec",
+  "solver": "CVC5",
+  "call": 2,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__br93.ec/CVC5.0002.smt",
+  "goal": "(assert (not (<= (+ (mu1 (Top_BR93_BR93_CPAlpArp_slmain Tuple0 etm) unamed_lambda) (- (/ 1.0 2.0))) (mu1 (Top_BR93_OW_rand_OWlpTop_BR93_IlpArprp_slmain Tuple0 etm) unamed_lambda))))"
+ },
+ {
+  "id": "examples/br93.ec::Z3:1",
+  "file": "examples/br93.ec",
+  "solver": "Z3",
+  "call": 1,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/Z3/examples__br93.ec/Z3.0001.smt",
+  "goal": "(assert (not (and (=> (not (Top_FMap_dom1 (Top_BR93_H_Lazy_LRO_slm (proj2_1 et2)) (proj4_0 (proj2_0 et2)))) (forall ((x11 Top_BR93_rand)) (and (=> (or (= x11 (proj4_0 (proj2_0 et2))) (Top_List_mem1 (Top_BR93_Log_slqs (proj2_1 et2)) x11)) (Top_FMap_dom1 (Top_FMap___lb_lsmn_rb1 (Top_BR93_H_Lazy_LRO_slm (proj2_1 et2)) (proj4_0 (proj2_0 et2)) y) x11)) (=> (Top_FMap_dom1 (Top_FMap___lb_lsmn_rb1 (Top_BR93_H_Lazy_LRO_slm (proj2_1 et2)) (proj4_0 (proj2_0 et2)) y) x11) (or (= x11 (proj4_0 (proj2_0 et2))) (Top_List_mem1 (Top_BR93_Log_slqs (proj2_1 et2)) x11)))))) (=> (Top_FMap_dom1 (Top_BR93_H_Lazy_LRO_slm (proj2_1 et2)) (proj4_0 (proj2_0 et2))) (forall ((x11 Top_BR93_rand)) (and (=> (or (= x11 (proj4_0 (proj2_0 et2))) (Top_List_mem1 (Top_BR93_Log_slqs (proj2_1 et2)) x11)) (Top_FMap_dom1 (Top_BR93_H_Lazy_LRO_slm (proj2_1 et2)) x11)) (=> (Top_FMap_dom1 (Top_BR93_H_Lazy_LRO_slm (proj2_1 et2)) x11) (or (= x11 (proj4_0 (proj2_0 et2))) (Top_List_mem1 (Top_BR93_Log_slqs (proj2_1 et2)) x11)))))))))"
+ },
+ {
+  "id": "examples/cramer-shoup/bad_abs.ec::CVC5:3",
+  "file": "examples/cramer-shoup/bad_abs.ec",
+  "solver": "CVC5",
+  "call": 3,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__cramer-shoup__bad_abs.ec/CVC5.0003.smt",
+  "goal": "(assert (not (=> (<= (+ 1.0 (- (mu1 (M1lpArp_slmain vx1 etm1) unamed_lambda))) (+ (+ (+ 1.0 (- (mu1 (M2lpArp_slmain vx2 etm2) unamed_lambda1))) (mu1 (M2lpArp_slmain vx2 etm2) unamed_lambda2)) (- (mu1 (M2lpNlpArprp_slmain vx2 etm2) unamed_lambda3)))) (<= (+ (mu1 (M2lpArp_slmain vx2 etm2) unamed_lambda1) (- (mu1 (M1lpArp_slmain vx1 etm1) unamed_lambda))) (mu1 (M2lpArp_slmain vx2 etm2) unamed_lambda2)))))"
+ },
+ {
+  "id": "examples/cramer-shoup/cramer_shoup.ec::Z3:21",
+  "file": "examples/cramer-shoup/cramer_shoup.ec",
+  "solver": "Z3",
+  "call": 21,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/Z3/examples__cramer-shoup__cramer_shoup.ec/Z3.0021.smt",
+  "goal": "(assert (not (<= 0.0 r)))"
+ },
+ {
+  "id": "examples/cramer-shoup/cramer_shoup.ec::CVC5:10",
+  "file": "examples/cramer-shoup/cramer_shoup.ec",
+  "solver": "CVC5",
+  "call": 10,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__cramer-shoup__cramer_shoup.ec/CVC5.0010.smt",
+  "goal": "(assert (not (=> (<= (Top_Real_bqbr_br (+ (mu1 (Top_Ad1_MainElpTop_G1rp_slmain Tuple0 etm) unamed_lambda) (- (mu1 (Top_Ad1_MainlpTop_G1rp_slmain Tuple0 etm) unamed_lambda)))) (/ 1.0 (to_real (Top_List_size1 Top_DH_G_elems)))) (=> (<= (mu1 (Top_DDH_ex_DDH1_exlpTop_B_DDHlpArprp_slmain Tuple0 etm) unamed_lambda1) (mu1 (Top_Ad1_MainlpTop_G1rp_slmain Tuple0 etm) unamed_lambda)) (=> (<= (Top_Real_bqbr_br (+ (mu1 (Top_DDH_ex_DDH0_exlpTop_B_DDHlpArprp_slmain Tuple0 etm) unamed_lambda1) (- (mu1 (Top_DDH_ex_DDH1_exlpTop_B_DDHlpArprp_slmain Tuple0 etm) unamed_lambda1)))) (+ (Top_Real_bqbr_br (+ (mu1 (Top_DH_DDH_DDH0lpTop_B_DDHlpArprp_slmain Tuple0 etm) unamed_lambda1) (- (mu1 (Top_DH_DDH_DDH1lpTop_B_DDHlpArprp_slmain Tuple0 etm) unamed_lambda1)))) (* 2.0 (/ 1.0 (to_real (Top_List_size1 Top_DH_G_elems)))))) (<= (mu1 (Top_DDH_ex_DDH0_exlpTop_B_DDHlpArprp_slmain Tuple0 etm) unamed_lambda1) (+ (+ (Top_Real_bqbr_br (+ (mu1 (Top_DH_DDH_DDH0lpTop_B_DDHlpArprp_slmain Tuple0 etm) unamed_lambda1) (- (mu1 (Top_DH_DDH_DDH1lpTop_B_DDHlpArprp_slmain Tuple0 etm) unamed_lambda1)))) (mu1 (Top_Ad1_MainElpTop_G1rp_slmain Tuple0 etm) unamed_lambda)) (* 3.0 (/ 1.0 (to_real (Top_List_size1 Top_DH_G_elems)))))))))))"
+ },
+ {
+  "id": "examples/ehoare/adversary.ec::CVC5:1",
+  "file": "examples/ehoare/adversary.ec",
+  "solver": "CVC5",
+  "call": 1,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__ehoare__adversary.ec/CVC5.0001.smt",
+  "goal": "(assert (not (<= 0.0 Top_eps)))"
+ },
+ {
+  "id": "examples/ehoare/qselect/qselect.ec::CVC5:2",
+  "file": "examples/ehoare/qselect/qselect.ec",
+  "solver": "CVC5",
+  "call": 2,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__ehoare__qselect__qselect.ec/CVC5.0002.smt",
+  "goal": "(assert (not (=> (<= 0 i_) (=> (< i_ (Top_Array_size1 t_)) (=> (<= 0 j_) (=> (< j_ (Top_Array_size1 t_)) (and (= (Top_Array_size1 t_) (Top_Array_size1 (Top_Array___lb_lsmn_rb1 (Top_Array___lb_lsmn_rb1 t_ i_ (Top_Array___lb_rb1 t_ j_)) j_ (Top_Array___lb_rb1 t_ i_)))) (and (forall ((k Int)) (=> (not (= k i_)) (=> (not (= k j_)) (= (Top_Array___lb_rb1 t_ k) (Top_Array___lb_rb1 (Top_Array___lb_lsmn_rb1 (Top_Array___lb_lsmn_rb1 t_ i_ (Top_Array___lb_rb1 t_ j_)) j_ (Top_Array___lb_rb1 t_ i_)) k))))) (and (= (Top_Array___lb_rb1 t_ i_) (Top_Array___lb_rb1 (Top_Array___lb_lsmn_rb1 (Top_Array___lb_lsmn_rb1 t_ i_ (Top_Array___lb_rb1 t_ j_)) j_ (Top_Array___lb_rb1 t_ i_)) j_)) (= (Top_Array___lb_rb1 t_ j_) (Top_Array___lb_rb1 (Top_Array___lb_lsmn_rb1 (Top_Array___lb_lsmn_rb1 t_ i_ (Top_Array___lb_rb1 t_ j_)) j_ (Top_Array___lb_rb1 t_ i_)) i_)))))))))))"
+ },
+ {
+  "id": "examples/global-hybrid/GlobalHybridExamp1.ec::CVC5:3",
+  "file": "examples/global-hybrid/GlobalHybridExamp1.ec",
+  "solver": "CVC5",
+  "call": 3,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__global-hybrid__GlobalHybridExamp1.ec/CVC5.0003.smt",
+  "goal": "(assert (not (forall ((ethr (tuple2 (tuple3 Int Bool Top_t) memory))) (=> (and (= (proj3_1 (proj2_0 ethr)) true) (not (= (Top_GBad2_slbad (proj2_1 ethr)) true))) (and (<= (mu1 Top_dt (select Top_Logic_pred1_ho1 Top_def)) (/ 1.0 (to_real (Top_Ring_IntID_exp 2 Top_n)))) (forall ((v Top_t)) (=> (Top_Distr_support1 Top_dt v) (=> (=> (not (= v Top_def)) (= (Top_GBad2_slbad (proj2_1 ethr)) true)) (= v Top_def)))))))))"
+ },
+ {
+  "id": "examples/global-hybrid/GlobalHybridExamp2.ec::Z3:20",
+  "file": "examples/global-hybrid/GlobalHybridExamp2.ec",
+  "solver": "Z3",
+  "call": 20,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/Z3/examples__global-hybrid__GlobalHybridExamp2.ec/Z3.0020.smt",
+  "goal": "(assert (not (forall ((ethr (tuple2 (tuple8 (tuple3 Top_key Top_key Top_key) Top_exp Top_exp Top_exp Top_ro_in_t Top_exp Top_ro_in_t Top_exp) memory))) (=> (and (and (and (and (and (= (Top_Hybrid_Or_slctr (proj2_1 etm)) (Top_RO_Disting1_Or_slctr (proj2_1 ethr))) (and (and (<= 1 (Top_Hybrid_Or_slctr (proj2_1 etm))) (<= (Top_Hybrid_Or_slctr (proj2_1 etm)) (+ Top_m 1))) (and (= (Top_Hybrid_sli (proj2_1 etm)) iqt) (and (= (Top_RO_Disting1_sli (proj2_1 ethr)) iqt) (=> (<= (Top_Hybrid_Or_slctr (proj2_1 etm)) iqt) (= (Top_FullRO_RO_slm (proj2_1 ethr)) (Top_FMap_ofmap1 (const2 (as Top_Logic_None (Top_Logic_option Top_exp)))))))))) (<= (Top_Hybrid_Or_slctr (proj2_1 etm)) Top_m)) (not (< (Top_Hybrid_Or_slctr (proj2_1 etm)) (Top_Hybrid_sli (proj2_1 etm))))) (= (Top_Hybrid_Or_slctr (proj2_1 etm)) (Top_Hybrid_sli (proj2_1 etm)))) (and (= (proj6_4 (proj2_0 etm)) (proj8_5 (proj2_0 ethr))) (and (= (proj6_5 (proj2_0 etm)) (proj8_7 (proj2_0 ethr))) (= (proj8_4 (proj2_0 ethr)) Top_A)))) (not (Top_FMap_dom1 (Top_FullRO_RO_slm (proj2_1 ethr)) (proj8_4 (proj2_0 ethr))))))))"
+ },
+ {
+  "id": "examples/global-hybrid/GlobalHybridExamp2.ec::CVC5:21",
+  "file": "examples/global-hybrid/GlobalHybridExamp2.ec",
+  "solver": "CVC5",
+  "call": 21,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__global-hybrid__GlobalHybridExamp2.ec/CVC5.0021.smt",
+  "goal": "(assert (not (forall ((ethr (tuple2 (tuple8 (tuple3 Top_key Top_key Top_key) Top_exp Top_exp Top_exp Top_ro_in_t Top_exp Top_ro_in_t Top_exp) memory))) (=> (exists ((m_R (Top_FMap_fmap Top_ro_in_t Top_exp))) (and (= (Top_FullRO_RO_slm (proj2_1 ethr)) (Top_FMap___lb_lsmn_rb1 m_R (proj8_4 (proj2_0 ethr)) (proj8_5 (proj2_0 ethr)))) (and (= (proj8_1 (proj2_0 ethr)) (Top_Logic_odflt1 witness2 (Top_FMap___lb_rb1 (Top_FullRO_RO_slm (proj2_1 ethr)) (proj8_4 (proj2_0 ethr))))) (and (= (proj8_6 (proj2_0 ethr)) Top_B) (and (and (and (and (and (= (Top_Hybrid_Or_slctr (proj2_1 etm)) (Top_RO_Disting1_Or_slctr (proj2_1 ethr))) (and (and (<= 1 (Top_Hybrid_Or_slctr (proj2_1 etm))) (<= (Top_Hybrid_Or_slctr (proj2_1 etm)) (+ Top_m 1))) (and (= (Top_Hybrid_sli (proj2_1 etm)) iqt) (and (= (Top_RO_Disting1_sli (proj2_1 ethr)) iqt) (=> (<= (Top_Hybrid_Or_slctr (proj2_1 etm)) iqt) (= m_R (Top_FMap_ofmap1 (const2 (as Top_Logic_None (Top_Logic_option Top_exp)))))))))) (<= (Top_Hybrid_Or_slctr (proj2_1 etm)) Top_m)) (not (< (Top_Hybrid_Or_slctr (proj2_1 etm)) (Top_Hybrid_sli (proj2_1 etm))))) (= (Top_Hybrid_Or_slctr (proj2_1 etm)) (Top_Hybrid_sli (proj2_1 etm)))) (and (= (proj6_4 (proj2_0 etm)) (proj8_5 (proj2_0 ethr))) (and (= (proj6_5 (proj2_0 etm)) (proj8_7 (proj2_0 ethr))) (= (proj8_4 (proj2_0 ethr)) Top_A)))))))) (not (Top_FMap_dom1 (Top_FullRO_RO_slm (proj2_1 ethr)) (proj8_6 (proj2_0 ethr))))))))"
+ },
+ {
+  "id": "examples/hashed_elgamal_generic.ec::CVC5:1",
+  "file": "examples/hashed_elgamal_generic.ec",
+  "solver": "CVC5",
+  "call": 1,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__hashed_elgamal_generic.ec/CVC5.0001.smt",
+  "goal": "(assert (not (and (=> (not (Top_FMap_dom1 (Top_RO_Lazy_LRO_slm (proj2_1 et2)) (proj6_0 (proj2_0 et2)))) (<= (+ (+ (Top_FSet_card1 (Top_ROC_SetLog_Log_slqs (proj2_1 et2))) 1) (- (Top_FSet_card1 (Top_FSet_bqetbq1 (Top_ROC_SetLog_Log_slqs (proj2_1 et2)) (Top_FSet_fset12 (proj6_0 (proj2_0 et2))))))) Top_qH)) (=> (Top_FMap_dom1 (Top_RO_Lazy_LRO_slm (proj2_1 et2)) (proj6_0 (proj2_0 et2))) (<= (+ (+ (Top_FSet_card1 (Top_ROC_SetLog_Log_slqs (proj2_1 et2))) 1) (- (Top_FSet_card1 (Top_FSet_bqetbq1 (Top_ROC_SetLog_Log_slqs (proj2_1 et2)) (Top_FSet_fset12 (proj6_0 (proj2_0 et2))))))) Top_qH)))))"
+ },
+ {
+  "id": "examples/hashed_elgamal_generic.ec::Z3:2",
+  "file": "examples/hashed_elgamal_generic.ec",
+  "solver": "Z3",
+  "call": 2,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/Z3/examples__hashed_elgamal_generic.ec/Z3.0002.smt",
+  "goal": "(assert (not (forall ((xL Top_DiffieHellman_GP_ZModE_exp)) (=> (Top_Distr_support1 (Top_Distr_MUniform_duniform1 (Top_List_map1 Top_DiffieHellman_GP_ZModE_inzmod_ho (Top_List_Range_range 0 (Top_List_size1 Top_DiffieHellman_G_elems)))) xL) (forall ((yL Top_DiffieHellman_GP_ZModE_exp)) (=> (Top_Distr_support1 (Top_Distr_MUniform_duniform1 (Top_List_map1 Top_DiffieHellman_GP_ZModE_inzmod_ho (Top_List_Range_range 0 (Top_List_size1 Top_DiffieHellman_G_elems)))) yL) (and (<= 0 Top_qH) (=> (<= 0 Top_qH) (forall ((qs_R (Top_FSet_fset Top_DiffieHellman_G_group))) (=> (<= (Top_FSet_card1 qs_R) Top_qH) (forall ((hL Top_Bits_bits)) (=> (Top_Distr_support2 (Top_Distr_MUniform_duniform2 (Top_List_map2 Top_Bits_mkbits_ho (Top_Bits_Enum_bitsn Top_k))) hL) (= (Top_DiffieHellman_GP_cf (Top_DiffieHellman_GP_cf Top_DiffieHellman_G_g xL) yL) (Top_DiffieHellman_GP_cf Top_DiffieHellman_G_g (Top_DiffieHellman_GP_ZModE_as xL yL)))))))))))))))"
+ },
+ {
+  "id": "examples/hashed_elgamal_std.ec::CVC5:1",
+  "file": "examples/hashed_elgamal_std.ec",
+  "solver": "CVC5",
+  "call": 1,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__hashed_elgamal_std.ec/CVC5.0001.smt",
+  "goal": "(assert (not (<= (Top_Real_bqbr_br (+ (mu1 (Top_DH_DDH_DDH0lpTop_DDHAdvlpArprp_slmain Tuple0 etm) unamed_lambda) (- (/ 1.0 2.0)))) (+ (Top_Real_bqbr_br (+ (mu1 (Top_DH_DDH_DDH0lpTop_DDHAdvlpArprp_slmain Tuple0 etm) unamed_lambda) (- (mu1 (Top_EntropySmoothing_ES1lpTop_ESAdvlpArprp_slmain Tuple0 etm) unamed_lambda)))) (Top_Real_bqbr_br (+ (/ 1.0 2.0) (- (mu1 (Top_EntropySmoothing_ES1lpTop_ESAdvlpArprp_slmain Tuple0 etm) unamed_lambda))))))))"
+ },
+ {
+  "id": "examples/old/trapdoor.ec::CVC5:1",
+  "file": "examples/old/trapdoor.ec",
+  "solver": "CVC5",
+  "call": 1,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__old__trapdoor.ec/CVC5.0001.smt",
+  "goal": "(assert (not (forall ((p Real) (q Real) (r Real)) (=> (<= 0.0 r) (=> (<= p q) (<= (* r p) (* r q)))))))"
+ },
+ {
+  "id": "examples/plug-and-pray/Plug_and_Pray_example.ec::CVC5:1",
+  "file": "examples/plug-and-pray/Plug_and_Pray_example.ec",
+  "solver": "CVC5",
+  "call": 1,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__plug-and-pray__Plug_and_Pray_example.ec/CVC5.0001.smt",
+  "goal": "(assert (not (not (= (Top_List_Range_range 0 Top_q) (as Top_List_lbrb (Top_List_list Int))))))"
+ },
+ {
+  "id": "examples/prg-tutorial/PRGc.ec::CVC5:5",
+  "file": "examples/prg-tutorial/PRGc.ec",
+  "solver": "CVC5",
+  "call": 5,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__prg-tutorial__PRGc.ec/CVC5.0005.smt",
+  "goal": "(assert (not (=> (<= (mu1 (Top_PRFa_INDlpTop_PRFa_PRFicm_Top_D_PRFlpDrprp_slmain Tuple0 etm) unamed_lambda) (+ (+ (mu1 (Top_PRGa_INDlpTop_PRGilcm_Drp_slmain Tuple0 etm) unamed_lambda) (mu1 (Top_PRFa_INDlpTop_PRFa_PRFicm_Top_D_PRFlpDrprp_slmain Tuple0 etm) unamed_lambda1)) (- (mu1 (Top_PRGa_INDlpTop_PRGilcm_Drp_slmain Tuple0 etm) unamed_lambda2)))) (<= (+ (mu1 (Top_PRFa_INDlpTop_PRFa_PRFicm_Top_D_PRFlpDrprp_slmain Tuple0 etm) unamed_lambda) (- (mu1 (Top_PRGa_INDlpTop_PRGilcm_Drp_slmain Tuple0 etm) unamed_lambda))) (mu1 (Top_PRFa_INDlpTop_PRFa_PRFicm_Top_D_PRFlpDrprp_slmain Tuple0 etm) unamed_lambda1)))))"
+ },
+ {
+  "id": "examples/upto_syntaxtic.ec::CVC5:1",
+  "file": "examples/upto_syntaxtic.ec",
+  "solver": "CVC5",
+  "call": 1,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/CVC5/examples__upto_syntaxtic.ec/CVC5.0001.smt",
+  "goal": "(assert (not (<= (+ (+ (mu1 (Top_M_slmain Tuple0 etm) unamed_lambda) (mu1 (Top_M_slmain Tuple0 etm) unamed_lambda1)) (- (+ (mu1 (Top_Mqt_slmain Tuple0 etm) unamed_lambda) (mu1 (Top_M_slmain Tuple0 etm) unamed_lambda1)))) (mu1 (Top_M_slmain Tuple0 etm) unamed_lambda))))"
+ },
+ {
+  "id": "examples/upto_syntaxtic.ec::Z3:3",
+  "file": "examples/upto_syntaxtic.ec",
+  "solver": "Z3",
+  "call": 3,
+  "dump": "/mnt/workspace/minjun_son/AI4EC/unsat_core/stripped_workdir/dumps/Z3/examples__upto_syntaxtic.ec/Z3.0003.smt",
+  "goal": "(assert (not (<= (Top_Real_bqbr_br (+ (+ (mu1 (Top_M_slmain Tuple0 etm) unamed_lambda) (mu1 (Top_M_slmain Tuple0 etm) unamed_lambda1)) (- (+ (mu1 (Top_Mqt_slmain Tuple0 etm) unamed_lambda) (mu1 (Top_M_slmain Tuple0 etm) unamed_lambda1))))) (Top_StdOrder_RealOrder_maxr (mu1 (Top_M_slmain Tuple0 etm) unamed_lambda) (mu1 (Top_Mqt_slmain Tuple0 etm) unamed_lambda)))))"
+ }
+]

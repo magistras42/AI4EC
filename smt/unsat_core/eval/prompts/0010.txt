@@ -1,0 +1,32 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/ChaChaPoly/chacha_poly.ec::11
+source file: examples/ChaChaPoly/chacha_poly.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (= (ite (< i (ite (< (+ (+ Poly_in_poly_in_size Poly_out_poly_out_size) Extra_block_extra_block_size) (List_size1 m)) (+ (+ Poly_in_poly_in_size Poly_out_poly_out_size) Extra_block_extra_block_size) (List_size1 m))) (List_nth1 Byte_zero (List_take1 (+ (+ Poly_in_poly_in_size Poly_out_poly_out_size) Extra_block_extra_block_size) m) i) (List_nth1 Byte_zero (List_mkseq1 unamed_lambda (+ (+ (+ Poly_in_poly_in_size Poly_out_poly_out_size) Extra_block_extra_block_size) (- (List_size1 m)))) (+ i (- (ite (< (+ (+ Poly_in_poly_in_size Poly_out_poly_out_size) Extra_block_extra_block_size) (List_size1 m)) (+ (+ Poly_in_poly_in_size Poly_out_poly_out_size) Extra_block_extra_block_size) (List_size1 m)))))) (ite (< i (List_size1 m)) (List_nth1 Byte_zero m i) Byte_zero))))
+
+CANDIDATE LEMMAS (18 names):
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_list_inversion
+- List_map'def
+- List_map_sort
+- List_mkseq'def
+- List_mkseq_sort
+- List_nth'def
+- List_nth_mkseq
+- List_nth_sort
+- List_nth_take
+- List_size'def
+- List_take'def
+- List_take_sort
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

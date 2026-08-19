@@ -1,0 +1,5 @@
+{
+  "examples/ehoare/adversary.ec": "Z3",
+  "examples/ehoare/qselect/qselect.ec": "Z3",
+  "the-joy-of-easycrypt/04-hoare-logic/hoare-logic.ec": "Z3"
+}

@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/PIR.ec::Z3:5
+source file: examples/PIR.ec
+
+GOAL:
+(assert (not (=> (sxor2 (PIR_sls (proj2_1 etm)) (PIR_slsqt (proj2_1 etm)) (proj7_0 (proj2_0 etm))) (forall ((b Bool)) (=> (Distr_support1 (Distr_MUniform_duniform1 (List_clcl true (List_clcl false (as List_lbrb (List_list Bool))))) b) (ite (= (proj7_3 (proj2_0 etm)) (proj7_0 (proj2_0 etm))) (ite (= b true) (ite (<= (+ (proj7_3 (proj2_0 etm)) 1) (proj7_0 (proj2_0 etm))) (= (List_clcl (proj7_3 (proj2_0 etm)) (PIR_sls (proj2_1 etm))) (PIR_slsqt (proj2_1 etm))) (sxor2 (List_clcl (proj7_3 (proj2_0 etm)) (PIR_sls (proj2_1 etm))) (PIR_slsqt (proj2_1 etm)) (proj7_0 (proj2_0 etm)))) (ite (<= (+ (proj7_3 (proj2_0 etm)) 1) (proj7_0 (proj2_0 etm))) (= (PIR_sls (proj2_1 etm)) (List_clcl (proj7_3 (proj2_0 etm)) (PIR_slsqt (proj2_1 etm)))) (sxor2 (PIR_sls (proj2_1 etm)) (List_clcl (proj7_3 (proj2_0 etm)) (PIR_slsqt (proj2_1 etm))) (proj7_0 (proj2_0 etm))))) (ite (= b true) (ite (<= (+ (proj7_3 (proj2_0 etm)) 1) (proj7_0 (proj2_0 etm))) (= (PIR_sls (proj2_1 etm)) (PIR_slsqt (proj2_1 etm))) (sxor2 (List_clcl (proj7_3 (proj2_0 etm)) (PIR_sls (proj2_1 etm))) (List_clcl (proj7_3 (proj2_0 etm)) (PIR_slsqt (proj2_1 etm))) (proj7_0 (proj2_0 etm)))) (ite (<= (+ (proj7_3 (proj2_0 etm)) 1) (proj7_0 (proj2_0 etm))) (= (PIR_sls (proj2_1 etm)) (PIR_slsqt (proj2_1 etm))) (sxor2 (PIR_sls (proj2_1 etm)) (PIR_slsqt (proj2_1 etm)) (proj7_0 (proj2_0 etm)))))))))))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- DBool_supp_dbool
+- BS_ListSample_DAlphabet_supp_dunifin
+- DBool_dbool_leq
+- Distr_MUniform_supp_duniform
+- Distr_mu_dlet_le
+- Distr_neq0_mu
+- Distr_eq0_mu
+- Distr_mu_le
+- Distr_dmap_uni_in_inj
+- Distr_mu_eq_support
+- Distr_supp_dlet
+- Distr_supp_dprod
+- Distr_supp_drestrict
+- Distr_dmap_bij
+- Distr_mu0_false
+- Distr_supp_dmap
+- Distr_support_ho_spec
+- Distr_witness_support
+- Distr_MUniform_duniform_fu
+- Distr_dmap_supp
+- Distr_is_uniform'def
+- Distr_supp_djoin_cons
+- Distr_supportP
+- Distr_supportPn
+- Distr_in_eq_dlet
+- Distr_MUniform_eq_duniformP
+- Distr_MUniform_finite_duniform
+- Distr_in_dmap1E_can
+- Distr_mu_in_weight
+- DBool_dbool_fu
+- Distr_MUniform_duniform_ll
+- Distr_support'def
+- DList_dlist_fu
+- Distr_MRat_supp_drat
+- Distr_djoin_fu
+- Distr_eq_dmap_in
+- sxor'def
+- List_all_nthP
+- List_has_nthP
+- sxor2_cons
+- DBool_dbool_uni
+- DList_supp_dlist0
+- Distr_MUniform_duniform'def
+- Distr_dletE_bool
+- Distr_dprod1E
+- Distr_exp_cond_ge0
+- Distr_weightE_support
+- List_has'def
+- Distr_MUniform_duniform_uni
+- Distr_dmap_fu_in
+- Distr_drestrict1E
+- Distr_mrestrict'def
+- List_eq_in_filter_pred0
+- List_find'def
+- sxor2'def
+- Distr_DScalar_supp_dscalar
+- Distr_distr_0Vmem
+- Distr_dmap1E_can
+- Distr_ptt_in_pred
+- List_all'def
+- List_before_find
+- List_le_in_count
+- BS_ListSample_DAlphabet_dunifin1E
+- DBool_dbool_funi
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

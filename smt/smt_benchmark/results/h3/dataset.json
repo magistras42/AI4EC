@@ -1,0 +1,164 @@
+{
+  "single_winner": [
+    {
+      "file": "examples/ehoare/adversary.ec",
+      "winner": "Z3",
+      "n_smt": "14"
+    },
+    {
+      "file": "examples/ehoare/qselect/qselect.ec",
+      "winner": "CVC5",
+      "n_smt": "18"
+    },
+    {
+      "file": "the-joy-of-easycrypt/04-hoare-logic/hoare-logic.ec",
+      "winner": "Alt-Ergo",
+      "n_smt": "19"
+    }
+  ],
+  "disagree_multi": [
+    {
+      "file": "examples/Dice4_6.ec",
+      "winners": [
+        "Alt-Ergo",
+        "Z3"
+      ],
+      "losers": [
+        "CVC5"
+      ],
+      "n_smt": "0"
+    },
+    {
+      "file": "examples/FundamentalLemma.ec",
+      "winners": [
+        "Z3",
+        "CVC5"
+      ],
+      "losers": [
+        "Alt-Ergo"
+      ],
+      "n_smt": "5"
+    },
+    {
+      "file": "examples/MEE-CBC/FunctionalSpec.ec",
+      "winners": [
+        "Alt-Ergo",
+        "Z3"
+      ],
+      "losers": [
+        "CVC5"
+      ],
+      "n_smt": "14"
+    },
+    {
+      "file": "examples/MEE-CBC/RCPA_CMA.ec",
+      "winners": [
+        "Alt-Ergo",
+        "CVC5"
+      ],
+      "losers": [
+        "Z3"
+      ],
+      "n_smt": "13"
+    },
+    {
+      "file": "examples/PIR.ec",
+      "winners": [
+        "Alt-Ergo",
+        "CVC5"
+      ],
+      "losers": [
+        "Z3"
+      ],
+      "n_smt": "40"
+    },
+    {
+      "file": "examples/PRG.ec",
+      "winners": [
+        "Z3",
+        "CVC5"
+      ],
+      "losers": [
+        "Alt-Ergo"
+      ],
+      "n_smt": "7"
+    },
+    {
+      "file": "examples/UC/composition.ec",
+      "winners": [
+        "Alt-Ergo",
+        "CVC5"
+      ],
+      "losers": [
+        "Z3"
+      ],
+      "n_smt": "16"
+    },
+    {
+      "file": "examples/WF-examp.ec",
+      "winners": [
+        "Alt-Ergo",
+        "Z3"
+      ],
+      "losers": [
+        "CVC5"
+      ],
+      "n_smt": "2"
+    },
+    {
+      "file": "examples/async-while.ec",
+      "winners": [
+        "Z3",
+        "CVC5"
+      ],
+      "losers": [
+        "Alt-Ergo"
+      ],
+      "n_smt": "5"
+    },
+    {
+      "file": "examples/br93.ec",
+      "winners": [
+        "Alt-Ergo",
+        "CVC5"
+      ],
+      "losers": [
+        "Z3"
+      ],
+      "n_smt": "5"
+    },
+    {
+      "file": "examples/cramer-shoup/cramer_shoup.ec",
+      "winners": [
+        "Alt-Ergo",
+        "Z3"
+      ],
+      "losers": [
+        "CVC5"
+      ],
+      "n_smt": "24"
+    },
+    {
+      "file": "examples/prg-tutorial/PRGc.ec",
+      "winners": [
+        "Alt-Ergo",
+        "Z3"
+      ],
+      "losers": [
+        "CVC5"
+      ],
+      "n_smt": "9"
+    },
+    {
+      "file": "the-joy-of-easycrypt/03-ambient-logic/ambient-logic.ec",
+      "winners": [
+        "Alt-Ergo",
+        "Z3"
+      ],
+      "losers": [
+        "CVC5"
+      ],
+      "n_smt": "11"
+    }
+  ]
+}

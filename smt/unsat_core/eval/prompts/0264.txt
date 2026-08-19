@@ -1,0 +1,16 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/upto_syntaxtic.ec::4
+source file: examples/upto_syntaxtic.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (=> (<= (mu1 (Mqt_slmain Tuple0 etm) unamed_lambda) (mu1 (Mqt_slmain Tuple0 etm) unamed_lambda1)) (=> (<= (mu1 (M_slmain Tuple0 etm) unamed_lambda) (mu1 (M_slmain Tuple0 etm) unamed_lambda1)) (=> (<= (Real_bqbr_br (+ (mu1 (M_slmain Tuple0 etm) unamed_lambda2) (- (mu1 (Mqt_slmain Tuple0 etm) unamed_lambda2)))) (StdOrder_RealOrder_maxr (mu1 (M_slmain Tuple0 etm) unamed_lambda) (mu1 (Mqt_slmain Tuple0 etm) unamed_lambda))) (<= (Real_bqbr_br (+ (mu1 (M_slmain Tuple0 etm) unamed_lambda2) (- (mu1 (Mqt_slmain Tuple0 etm) unamed_lambda2)))) (StdOrder_RealOrder_maxr (mu1 (M_slmain Tuple0 etm) unamed_lambda1) (mu1 (Mqt_slmain Tuple0 etm) unamed_lambda1))))))))
+
+CANDIDATE LEMMAS (2 names):
+- Real_`___'def
+- StdOrder_RealOrder_maxr'def
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

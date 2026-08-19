@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/br93.ec::CVC5:2
+source file: examples/br93.ec
+
+GOAL:
+(assert (not (<= (+ (mu1 (BR93_BR93_CPAlpArp_slmain Tuple0 etm) unamed_lambda) (- (/ 1.0 2.0))) (mu1 (BR93_OW_rand_OWlpBR93_IlpArprp_slmain Tuple0 etm) unamed_lambda))))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- BR93_pr_Game2_OW
+- BR93_pr_Game0_Game1
+- BR93_pr_Game2
+- BR93_pr_Game1_Game2
+- BR93_pr_bad_Game1_Game2
+- Distr_ge0_mu1
+- Distr_ge0_mu
+- StdBigop_Bigreal_big_normr
+- Distr_mu_mem_le
+- Distr_ge0_weight
+- Distr_mu_bounded
+- Distr_mopt'def
+- Distr_mu_sub
+- Distr_le1_mu
+- StdOrder_RealOrder_ler_def
+- Distr_exp_norm
+- Real_upto2_abs
+- Real_upto_abs
+- StdBigop_Bigreal_BRA_sumrB
+- StdOrder_RealOrder_ler0_def
+- StdOrder_RealOrder_ler_norm_sub
+- StdOrder_RealOrder_ler_sub_dist
+- StdOrder_RealOrder_ltr_nnorml
+- Distr_le1_mu1_fin
+- Distr_mu_has_le
+- StdOrder_RealOrder_ler0_norm
+- StdOrder_RealOrder_ler_dist_add
+- StdOrder_RealOrder_ler_dist_dist
+- StdBigop_BBO_b2r_big
+- Distr_Distr
+- Distr_mu_mem_le_mu1
+- StdOrder_RealOrder_lerNgt
+- StdOrder_RealOrder_ler_nnorml
+- StdOrder_RealOrder_ler_normr
+- Distr_le1_mu1
+- Distr_support'def
+- Real_`___'def
+- StdOrder_RealOrder_ler_lt_asym
+- StdOrder_RealOrder_ler_sub_norm_add
+- StdBigop_Bigreal_BRA_sumrN
+- StdOrder_RealOrder_ler_dist_norm_add
+- StdOrder_RealOrder_ler_norml
+- StdOrder_RealOrder_ltr_neqAle
+- StdOrder_RealOrder_normr_ge0
+- FMap_dom'def
+- StdOrder_RealOrder_ltr_le_asym
+- RealFLub_has_fubZ
+- StdBigop_Bigreal_BRA_sumrD
+- StdOrder_RealOrder_eqr_normN
+- StdOrder_RealOrder_eqr_norml
+- StdOrder_RealOrder_ger0_def
+- StdOrder_RealOrder_ger0_norm
+- StdOrder_RealOrder_ler_gtF
+- StdOrder_RealOrder_ler_norm
+- StdOrder_RealOrder_ler_norm_add
+- StdOrder_RealOrder_ltrNge
+- StdOrder_RealOrder_ltr_def
+- StdOrder_RealOrder_subr_le0
+- Distr_dopt1E
+- StdBigop_Bigreal_gt0_prodr_seq
+- StdBigop_Bigreal_sumr_ge0
+- StdOrder_RealOrder_eqr_norm_id
+- StdOrder_RealOrder_ler_addr
+- StdOrder_RealOrder_ler_sub
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

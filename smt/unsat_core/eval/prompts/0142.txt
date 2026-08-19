@@ -1,0 +1,106 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/UC/dh_enc.ec::49
+source file: examples/UC/dh_enc.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (Distr_support1 (Distr_MUniform_duniform1 (List_map1 DH_GP_ZModE_inzmod_ho (List_Range_range 0 (List_size1 DH_G_elems)))) (DH_GP_ZModE_pl (DH_GP_ZModE_pl (DH_GP_loge a) (DH_GP_ZModE_lbmnrb (DH_GP_loge b))) (DH_GP_loge c)))))
+
+CANDIDATE LEMMAS (92 names):
+- CoreInt_absz'def
+- DH_FD_dt_fu
+- DH_GP_ZModE_+'def
+- DH_GP_ZModE_Sub_insubd'def
+- DH_GP_ZModE_[-]'def
+- DH_GP_ZModE_inzmod'def
+- DH_GP_ZModE_inzmod_ho_spec
+- DH_GP_^'def
+- DH_GP_loge'def
+- DH_G_*_ho_spec
+- DH_G_^'def
+- DH_G_^+'def
+- DH_G_log'def
+- DH_G_log_spec'def
+- DH_G_log_spec_ho_spec
+- Distr_MRat_drat'def
+- Distr_MRat_drat_sort
+- Distr_MRat_mrat'def
+- Distr_MRat_mrat_ho_sort
+- Distr_MRat_mrat_ho_spec
+- Distr_MUniform_duniform'def
+- Distr_MUniform_duniform_sort
+- Distr_MUnit_dunit'def
+- Distr_MUnit_dunit_ho_sort
+- Distr_MUnit_dunit_ho_spec
+- Distr_MUnit_dunit_sort
+- Distr_dlet'def
+- Distr_dlet_sort
+- Distr_dmap'def
+- Distr_dmap_sort
+- Distr_is_full'def
+- Distr_is_lossless'def
+- Distr_is_uniform'def
+- Distr_mk_sort
+- Distr_mlet'def
+- Distr_mlet_ho_sort
+- Distr_mlet_ho_spec
+- Distr_support'def
+- Int_IterOp_iter'def
+- Int_IterOp_iter_sort
+- Int_IterOp_iteri_sort
+- Int_b2i'def
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_Range_range'def
+- List_[]_sort
+- List_count'def
+- List_filter'def
+- List_filter_sort
+- List_foldr'def
+- List_foldr_sort
+- List_list_inversion
+- List_map'def
+- List_map_sort
+- List_mem'def
+- List_size'def
+- List_undup'def
+- List_undup_sort
+- List_uniq'def
+- Logic_None_sort
+- Logic_Some_proj_1'def
+- Logic_Some_proj_1_sort
+- Logic_Some_sort
+- Logic___o'def
+- Logic___o_ho_sort
+- Logic___o_ho_spec
+- Logic___o_sort
+- Logic_choiceb_sort
+- Logic_odflt'def
+- Logic_odflt_sort
+- Logic_option_inversion
+- Logic_pred1_ho_sort
+- Logic_pred1_ho_spec
+- Logic_predT_ho_sort
+- Logic_predT_ho_spec
+- RealSeries_neg'def
+- RealSeries_neg_ho_sort
+- RealSeries_neg_ho_spec
+- RealSeries_pos'def
+- RealSeries_pos_ho_sort
+- RealSeries_pos_ho_spec
+- RealSeries_psum'def
+- RealSeries_psum_pred'def
+- RealSeries_psum_pred_ho_sort
+- RealSeries_psum_pred_ho_spec
+- RealSeries_sum'def
+- RealSeries_summable'def
+- Real_`___'def
+- StdBigop_Bigreal_BRA_big'def
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

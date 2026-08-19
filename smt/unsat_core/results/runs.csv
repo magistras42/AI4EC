@@ -1,0 +1,97 @@
+file,solver,ec_ok,seconds,n_dumps,tail
+examples/ChaChaPoly/chacha_poly.ec,CVC5,0,13.527,22,-1.0B / [frag -1.0B]) [critical] [/tmp/eccore_vgm8j0tr/chacha_poly.ec: line 338 (0-85)] cannot prove goal (strict) [-] [0339] 10.8% (-1.0B / [frag -1.0B]) [\] [0339] 10.8% (-1.0B / [frag -1.0B])
+examples/ChaChaPoly/chacha_poly.ec,Z3,0,20.6,65,.0B]) [critical] [/tmp/eccore_da8bsvcv/chacha_poly.ec: line 1463 (0) to line 1464 (98)] cannot prove goal (strict) [-] [1465] 48.4% (-1.0B / [frag -1.0B]) [\] [1465] 48.4% (-1.0B / [frag -1.0B])
+examples/ChaChaPoly/ske.ec,CVC5,1,1.754,5,
+examples/ChaChaPoly/ske.ec,Z3,1,1.847,5,
+examples/Dice4_6.ec,CVC5,0,1.94,6,7% (-1.0B / [frag -1.0B]) [critical] [/tmp/eccore_rqxmtr0n/Dice4_6.ec: line 69 (47-48)] cannot prove goal (strict) [\] [0070] 79.7% (-1.0B / [frag -1.0B]) [|] [0070] 79.7% (-1.0B / [frag -1.0B])
+examples/Dice4_6.ec,Z3,1,2.105,7,
+examples/FundamentalLemma.ec,CVC5,1,1.757,9,
+examples/FundamentalLemma.ec,Z3,1,1.85,9,
+examples/MEE-CBC/FunctionalSpec.ec,CVC5,0,13.209,1,B / [frag -1.0B]) [critical] [/tmp/eccore_hc9394sq/FunctionalSpec.ec: line 301 (42-64)] cannot prove goal (strict) [/] [0301] 51.2% (-1.0B / [frag -1.0B]) [-] [0301] 51.2% (-1.0B / [frag -1.0B])
+examples/MEE-CBC/FunctionalSpec.ec,Z3,1,7.816,21,
+examples/MEE-CBC/RCPA_CMA.ec,CVC5,1,11.321,13,
+examples/MEE-CBC/RCPA_CMA.ec,Z3,0,14.201,3,% (-1.0B / [frag -1.0B]) [critical] [/tmp/eccore_y511cwkj/RCPA_CMA.ec: line 259 (0-23)] cannot prove goal (strict) [-] [0260] 39.0% (-1.0B / [frag -1.0B]) [\] [0260] 39.0% (-1.0B / [frag -1.0B])
+examples/PIR.ec,CVC5,1,8.793,71,
+examples/PIR.ec,Z3,0,12.129,5,] 14.3% (-1.0B / [frag -1.0B]) [critical] [/tmp/eccore_xxya9kn0/PIR.ec: line 81 (0-52)] cannot prove goal (strict) [\] [0082] 14.3% (-1.0B / [frag -1.0B]) [|] [0082] 14.3% (-1.0B / [frag -1.0B])
+examples/PRG.ec,CVC5,1,4.55,30,
+examples/PRG.ec,Z3,1,4.93,30,
+examples/Pedersen.ec,CVC5,1,1.882,0,
+examples/Pedersen.ec,Z3,1,1.746,0,
+examples/RWhileSampling.ec,CVC5,1,1.614,2,
+examples/RWhileSampling.ec,Z3,1,1.886,2,
+examples/SchnorrPK.ec,CVC5,1,1.807,0,
+examples/SchnorrPK.ec,Z3,1,1.852,0,
+examples/UC/MapAux.ec,CVC5,1,0.707,0,
+examples/UC/MapAux.ec,Z3,1,0.769,0,
+examples/UC/RndO.ec,CVC5,1,3.854,0,
+examples/UC/RndO.ec,Z3,1,3.356,0,
+examples/UC/composition.ec,CVC5,1,4.638,57,
+examples/UC/composition.ec,Z3,0,11.815,8,1.0B / [frag -1.0B]) [critical] [/tmp/eccore_hxk2_n41/composition.ec: line 500 (32-33)] cannot prove goal (strict) [\] [0501] 50.2% (-1.0B / [frag -1.0B]) [|] [0501] 50.2% (-1.0B / [frag -1.0B])
+examples/UC/dh_enc.ec,CVC5,0,37.031,31,5% (-1.0B / [frag -1.0B]) [critical] [/tmp/eccore_ox37qdwc/dh_enc.ec: line 1526 (0-31)] cannot prove goal (strict) [/] [1527] 70.5% (-1.0B / [frag -1.0B]) [-] [1527] 70.5% (-1.0B / [frag -1.0B])
+examples/UC/dh_enc.ec,Z3,0,44.314,51,0% (-1.0B / [frag -1.0B]) [critical] [/tmp/eccore_j2m494qg/dh_enc.ec: line 1667 (0-35)] cannot prove goal (strict) [/] [1668] 80.0% (-1.0B / [frag -1.0B]) [-] [1668] 80.0% (-1.0B / [frag -1.0B])
+examples/Upto.ec,CVC5,1,2.421,9,
+examples/Upto.ec,Z3,1,2.509,9,
+examples/WF-examp.ec,CVC5,0,11.559,7,frag -1.0B]) [critical] [/tmp/eccore_bu7qn24j/WF-examp.ec: line 64 (0) to line 65 (24)] cannot prove goal (strict) [|] [0066] 99.8% (-1.0B / [frag -1.0B]) [/] [0066] 99.8% (-1.0B / [frag -1.0B])
+examples/WF-examp.ec,Z3,1,1.529,7,
+examples/WhileSampling.ec,CVC5,1,1.416,1,
+examples/WhileSampling.ec,Z3,1,1.374,1,
+examples/async-while.ec,CVC5,1,1.497,9,
+examples/async-while.ec,Z3,1,1.502,9,
+examples/async_while.ec,CVC5,1,0.695,9,
+examples/async_while.ec,Z3,1,0.755,9,
+examples/br93.ec,CVC5,1,3.766,5,
+examples/br93.ec,Z3,0,12.159,1,46.6% (-1.0B / [frag -1.0B]) [critical] [/tmp/eccore_30j_7xj_/br93.ec: line 284 (0-47)] cannot prove goal (strict) [|] [0285] 46.6% (-1.0B / [frag -1.0B]) [/] [0285] 46.6% (-1.0B / [frag -1.0B])
+examples/cramer-shoup/bad_abs.ec,CVC5,1,1.834,9,
+examples/cramer-shoup/bad_abs.ec,Z3,1,1.812,9,
+examples/cramer-shoup/cramer_shoup.ec,CVC5,0,10.181,21,1.0B / [frag -1.0B]) [critical] [/tmp/eccore_2yjjd1mx/cramer_shoup.ec: line 872 (0-43)] cannot prove goal (strict) [/] [0873] 78.2% (-1.0B / [frag -1.0B]) [-] [0873] 78.2% (-1.0B / [frag -1.0B])
+examples/cramer-shoup/cramer_shoup.ec,Z3,1,18.933,41,
+examples/docgen/docgenbasic.ec,CVC5,1,0.376,0,
+examples/docgen/docgenbasic.ec,Z3,1,0.368,0,
+examples/ehoare/adversary.ec,CVC5,0,1.229,1,(-1.0B / [frag -1.0B]) [critical] [/tmp/eccore_5s2xglm6/adversary.ec: line 17 (27-53)] cannot prove goal (strict) [\] [0017] 11.8% (-1.0B / [frag -1.0B]) [|] [0017] 11.8% (-1.0B / [frag -1.0B])
+examples/ehoare/adversary.ec,Z3,1,3.564,23,
+examples/ehoare/qselect/qselect.ec,CVC5,1,7.026,52,
+examples/ehoare/qselect/qselect.ec,Z3,0,12.744,17,8% (-1.0B / [frag -1.0B]) [critical] [/tmp/eccore_k2ymci21/qselect.ec: line 175 (0-53)] cannot prove goal (strict) [-] [0176] 54.8% (-1.0B / [frag -1.0B]) [\] [0176] 54.8% (-1.0B / [frag -1.0B])
+examples/ehoare/random_boolean_matrix.ec,CVC5,0,1.204,1,rag -1.0B]) [critical] [/tmp/eccore_1x5p93b4/random_boolean_matrix.ec: line 48 (24-25)] cannot prove goal (strict) [|] [0049] 21.2% (-1.0B / [frag -1.0B]) [/] [0049] 21.2% (-1.0B / [frag -1.0B])
+examples/ehoare/random_boolean_matrix.ec,Z3,0,2.999,11,frag -1.0B]) [critical] [/tmp/eccore_8ku7z_tb/random_boolean_matrix.ec: line 86 (0-42)] cannot prove goal (strict) [\] [0087] 37.7% (-1.0B / [frag -1.0B]) [|] [0087] 37.7% (-1.0B / [frag -1.0B])
+examples/elgamal.ec,CVC5,1,1.466,0,
+examples/elgamal.ec,Z3,1,1.781,0,
+examples/global-hybrid/GlobalHybridExamp1.ec,CVC5,1,1.533,5,
+examples/global-hybrid/GlobalHybridExamp1.ec,Z3,1,1.877,5,
+examples/global-hybrid/GlobalHybridExamp2.ec,CVC5,1,5.327,49,
+examples/global-hybrid/GlobalHybridExamp2.ec,Z3,1,4.972,49,
+examples/hashed_elgamal_generic.ec,CVC5,1,2.459,4,
+examples/hashed_elgamal_generic.ec,Z3,1,2.877,4,
+examples/hashed_elgamal_std.ec,CVC5,1,2.276,1,
+examples/hashed_elgamal_std.ec,Z3,1,2.339,1,
+examples/incomplete/FDH.ec,CVC5,0,0.181,0,0002] 0.4% (-1.0B / [frag -1.0B]) [critical] [/tmp/eccore_2tvtoakh/FDH.ec: line 1 (0-19)] cannot locate theory `Fun' [\] [0002] 0.4% (-1.0B / [frag -1.0B]) [|] [0002] 0.4% (-1.0B / [frag -1.0B])
+examples/incomplete/FDH.ec,Z3,0,0.166,0,0002] 0.4% (-1.0B / [frag -1.0B]) [critical] [/tmp/eccore__7dypo6s/FDH.ec: line 1 (0-19)] cannot locate theory `Fun' [\] [0002] 0.4% (-1.0B / [frag -1.0B]) [|] [0002] 0.4% (-1.0B / [frag -1.0B])
+examples/old/list-ddh/DDH.ec,CVC5,0,1.293,0,0B]) [|] [0178] 31.8% (-1.0B / [frag -1.0B]) [critical] [/tmp/eccore_6t4s34qf/DDH.ec: line 178 (8-14)] parse error [/] [0178] 31.8% (-1.0B / [frag -1.0B]) [-] [0178] 31.8% (-1.0B / [frag -1.0B])
+examples/old/list-ddh/DDH.ec,Z3,0,1.294,0,0B]) [|] [0178] 31.8% (-1.0B / [frag -1.0B]) [critical] [/tmp/eccore_4kg1wenl/DDH.ec: line 178 (8-14)] parse error [/] [0178] 31.8% (-1.0B / [frag -1.0B]) [-] [0178] 31.8% (-1.0B / [frag -1.0B])
+examples/old/list-ddh/DDH_indexed.ec,CVC5,0,1.266,0,[0179] 32.1% (-1.0B / [frag -1.0B]) [critical] [/tmp/eccore_soqamnps/DDH_indexed.ec: line 179 (8-14)] parse error [/] [0179] 32.1% (-1.0B / [frag -1.0B]) [-] [0179] 32.1% (-1.0B / [frag -1.0B])
+examples/old/list-ddh/DDH_indexed.ec,Z3,0,1.343,0,[0179] 32.1% (-1.0B / [frag -1.0B]) [critical] [/tmp/eccore_sqey8xt8/DDH_indexed.ec: line 179 (8-14)] parse error [/] [0179] 32.1% (-1.0B / [frag -1.0B]) [-] [0179] 32.1% (-1.0B / [frag -1.0B])
+examples/old/list-ddh/RandOracle.ec,CVC5,0,1.03,0,[frag -1.0B]) [critical] [/tmp/eccore_nu540smf/RandOracle.ec: line 31 (34-38)] unknown variable or constant: `univ' [-] [0032] 9.3% (-1.0B / [frag -1.0B]) [\] [0032] 9.3% (-1.0B / [frag -1.0B])
+examples/old/list-ddh/RandOracle.ec,Z3,0,1.023,0,[frag -1.0B]) [critical] [/tmp/eccore_fpccq3eg/RandOracle.ec: line 31 (34-38)] unknown variable or constant: `univ' [-] [0032] 9.3% (-1.0B / [frag -1.0B]) [\] [0032] 9.3% (-1.0B / [frag -1.0B])
+examples/old/trapdoor.ec,CVC5,0,11.926,2,[frag -1.0B]) [critical] [/tmp/eccore_8fm5y9i8/trapdoor.ec: line 39 (0) to line 40 (70)] cannot prove goal (strict) [-] [0041] 3.4% (-1.0B / [frag -1.0B]) [\] [0041] 3.4% (-1.0B / [frag -1.0B])
+examples/old/trapdoor.ec,Z3,0,11.705,2,[frag -1.0B]) [critical] [/tmp/eccore_sn9envqy/trapdoor.ec: line 39 (0) to line 40 (70)] cannot prove goal (strict) [-] [0041] 3.4% (-1.0B / [frag -1.0B]) [\] [0041] 3.4% (-1.0B / [frag -1.0B])
+examples/plug-and-pray/Plug_and_Pray_example.ec,CVC5,1,1.814,7,
+examples/plug-and-pray/Plug_and_Pray_example.ec,Z3,1,1.847,7,
+examples/prg-tutorial/PRGc.ec,CVC5,0,2.522,9,3.7% (-1.0B / [frag -1.0B]) [critical] [/tmp/eccore_ad2qjli6/PRGc.ec: line 503 (56-67)] cannot prove goal (strict) [/] [0504] 83.7% (-1.0B / [frag -1.0B]) [-] [0504] 83.7% (-1.0B / [frag -1.0B])
+examples/prg-tutorial/PRGc.ec,Z3,1,3.241,17,
+examples/tactics/inline.ec,CVC5,1,0.201,0,
+examples/tactics/inline.ec,Z3,1,0.202,0,
+examples/tactics/simplify_if.ec,CVC5,1,0.496,3,
+examples/tactics/simplify_if.ec,Z3,1,0.532,3,
+examples/to-port/RingCloning.ec,CVC5,0,0.195,0,] [0051] 31.5% (-1.0B / [frag -1.0B]) [critical] [/tmp/eccore_t0moub3j/RingCloning.ec: line 51 (8-14)] parse error [-] [0051] 31.5% (-1.0B / [frag -1.0B]) [\] [0051] 31.5% (-1.0B / [frag -1.0B])
+examples/to-port/RingCloning.ec,Z3,0,0.21,0,] [0051] 31.5% (-1.0B / [frag -1.0B]) [critical] [/tmp/eccore_dkye8nwh/RingCloning.ec: line 51 (8-14)] parse error [-] [0051] 31.5% (-1.0B / [frag -1.0B]) [\] [0051] 31.5% (-1.0B / [frag -1.0B])
+examples/to-port/hashed_elgamal.ec,CVC5,0,1.955,0,.0B / [frag -1.0B]) [critical] [/tmp/eccore_w8nsdk91/hashed_elgamal.ec: line 118 (9-19)] unknown lemma `mem_empty' [|] [0119] 24.6% (-1.0B / [frag -1.0B]) [/] [0119] 24.6% (-1.0B / [frag -1.0B])
+examples/to-port/hashed_elgamal.ec,Z3,0,1.997,0,.0B / [frag -1.0B]) [critical] [/tmp/eccore_3lytgic8/hashed_elgamal.ec: line 118 (9-19)] unknown lemma `mem_empty' [|] [0119] 24.6% (-1.0B / [frag -1.0B]) [/] [0119] 24.6% (-1.0B / [frag -1.0B])
+examples/upto_syntaxtic.ec,CVC5,1,1.408,4,
+examples/upto_syntaxtic.ec,Z3,1,1.555,4,
+the-joy-of-easycrypt/02-easycrypt-intro/abstract-ind-ror.ec,CVC5,1,1.164,0,
+the-joy-of-easycrypt/02-easycrypt-intro/abstract-ind-ror.ec,Z3,1,1.071,0,
+the-joy-of-easycrypt/03-ambient-logic/ambient-logic.ec,CVC5,0,3.174,3,1.0B / [frag -1.0B]) [critical] [/tmp/eccore_blfm__wl/ambient-logic.ec: line 407 (0-8)] cannot prove goal (strict) [\] [0408] 96.7% (-1.0B / [frag -1.0B]) [|] [0408] 96.7% (-1.0B / [frag -1.0B])
+the-joy-of-easycrypt/03-ambient-logic/ambient-logic.ec,Z3,1,2.495,3,
+the-joy-of-easycrypt/04-hoare-logic/hoare-logic.ec,CVC5,0,10.648,1,-1.0B]) [critical] [/tmp/eccore_3cxpl1kv/hoare-logic.ec: line 187 (0) to line 192 (4)] cannot prove goal (strict) [-] [0193] 32.1% (-1.0B / [frag -1.0B]) [\] [0193] 32.1% (-1.0B / [frag -1.0B])
+the-joy-of-easycrypt/04-hoare-logic/hoare-logic.ec,Z3,0,10.522,1,-1.0B]) [critical] [/tmp/eccore_h2zekxyo/hoare-logic.ec: line 187 (0) to line 192 (4)] cannot prove goal (strict) [-] [0193] 32.1% (-1.0B / [frag -1.0B]) [\] [0193] 32.1% (-1.0B / [frag -1.0B])
+the-joy-of-easycrypt/05-relational-hoare-logic/relational-hoare-logic.ec,CVC5,1,0.471,1,
+the-joy-of-easycrypt/05-relational-hoare-logic/relational-hoare-logic.ec,Z3,1,0.495,1,

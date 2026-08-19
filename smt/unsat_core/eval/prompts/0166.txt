@@ -1,0 +1,24 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/cramer-shoup/cramer_shoup.ec::10
+source file: examples/cramer-shoup/cramer_shoup.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (=> (<= (Real_bqbr_br (+ (mu1 (Ad1_MainElpG1rp_slmain Tuple0 etm) unamed_lambda) (- (mu1 (Ad1_MainlpG1rp_slmain Tuple0 etm) unamed_lambda)))) (/ 1.0 (to_real (List_size1 DH_G_elems)))) (=> (<= (mu1 (DDH_ex_DDH1_exlpB_DDHlpArprp_slmain Tuple0 etm) unamed_lambda1) (mu1 (Ad1_MainlpG1rp_slmain Tuple0 etm) unamed_lambda)) (=> (<= (Real_bqbr_br (+ (mu1 (DDH_ex_DDH0_exlpB_DDHlpArprp_slmain Tuple0 etm) unamed_lambda1) (- (mu1 (DDH_ex_DDH1_exlpB_DDHlpArprp_slmain Tuple0 etm) unamed_lambda1)))) (+ (Real_bqbr_br (+ (mu1 (DH_DDH_DDH0lpB_DDHlpArprp_slmain Tuple0 etm) unamed_lambda1) (- (mu1 (DH_DDH_DDH1lpB_DDHlpArprp_slmain Tuple0 etm) unamed_lambda1)))) (* 2.0 (/ 1.0 (to_real (List_size1 DH_G_elems)))))) (<= (mu1 (DDH_ex_DDH0_exlpB_DDHlpArprp_slmain Tuple0 etm) unamed_lambda1) (+ (+ (Real_bqbr_br (+ (mu1 (DH_DDH_DDH0lpB_DDHlpArprp_slmain Tuple0 etm) unamed_lambda1) (- (mu1 (DH_DDH_DDH1lpB_DDHlpArprp_slmain Tuple0 etm) unamed_lambda1)))) (mu1 (Ad1_MainElpG1rp_slmain Tuple0 etm) unamed_lambda)) (* 3.0 (/ 1.0 (to_real (List_size1 DH_G_elems)))))))))))
+
+CANDIDATE LEMMAS (10 names):
+- Distr_mu_bounded
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_list_inversion
+- List_size'def
+- Real_`___'def
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

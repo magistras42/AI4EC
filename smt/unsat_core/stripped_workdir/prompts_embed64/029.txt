@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/plug-and-pray/Plug_and_Pray_example.ec::CVC5:1
+source file: examples/plug-and-pray/Plug_and_Pray_example.ec
+
+GOAL:
+(assert (not (not (= (List_Range_range 0 q) (as List_lbrb (List_list Int))))))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- List_Range_rangeS
+- List_Range_range_geq
+- List_Range_le2_mem_range
+- List_Range_range_ltn
+- IntDiv_eq_range
+- List_Range_rangeSr
+- List_Range_mem_range
+- List_Range_range_uniq
+- List_head_behead
+- List_mem_head_behead
+- List_Range_mem_range_ge
+- List_Range_mem_range_lt
+- List_Range_mem_range_opp
+- List_Range_mem_range_add2
+- List_Range_mem_range_le
+- List_Range_range_cat
+- List_Range_size_range
+- List_mem_eq0
+- List_nseq0_le
+- List_Range_mem_range_addl
+- List_Range_mem_range_gt
+- List_Range_mem_range_incl
+- List_Range_mem_range_subl
+- List_Range_mem_range_subr
+- List_mkseq0_le
+- List_take_le0
+- List_Iota_iota0
+- List_Range_mem_range_addr
+- List_allpairs0l
+- List_allpairs0r
+- List_has_nil
+- List_head'def
+- List_onth'def
+- List_Range_nth_range
+- List_cat_eq0IL
+- List_cat_eq0IR
+- List_last_nonempty
+- List_mem'def
+- List_nth_rev
+- List_rcons'def
+- List_take0
+- List_Range_range_addr
+- List_cat0s
+- List_cat_eq0I
+- List_cat_nseq
+- List_cats0
+- List_head_nil
+- List_in_nil
+- List_map_nth_range
+- List_ohead_head
+- List_size_eq0
+- List_take'def
+- List_zip0l
+- List_Iota_iota1
+- List_Range_range_add
+- List_behead_cat
+- List_list_inversion
+- List_map'def
+- List_nseq0
+- List_rem'def
+- List_take_cons
+- Discrete_enum_uniq_pmap_range
+- List_Range_range'def
+- List_Range_range_addl
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

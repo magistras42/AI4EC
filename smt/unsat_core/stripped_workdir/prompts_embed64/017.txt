@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/cramer-shoup/bad_abs.ec::CVC5:3
+source file: examples/cramer-shoup/bad_abs.ec
+
+GOAL:
+(assert (not (=> (<= (+ 1.0 (- (mu1 (M1lpArp_slmain vx1 etm1) unamed_lambda))) (+ (+ (+ 1.0 (- (mu1 (M2lpArp_slmain vx2 etm2) unamed_lambda1))) (mu1 (M2lpArp_slmain vx2 etm2) unamed_lambda2)) (- (mu1 (M2lpNlpArprp_slmain vx2 etm2) unamed_lambda3)))) (<= (+ (mu1 (M2lpArp_slmain vx2 etm2) unamed_lambda1) (- (mu1 (M1lpArp_slmain vx1 etm1) unamed_lambda))) (mu1 (M2lpArp_slmain vx2 etm2) unamed_lambda2)))))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- Distr_ge0_mu1
+- Distr_ge0_mu
+- StdOrder_RealOrder_ler_sub
+- Distr_mu_sub
+- StdOrder_RealOrder_ler_lt_sub
+- StdOrder_RealOrder_ltr_le_sub
+- StdOrder_RealOrder_ler_subl_addl
+- StdOrder_RealOrder_ler_subl_addr
+- StdOrder_RealOrder_ler_add2r
+- StdOrder_RealOrder_ltr_naddr
+- StdOrder_RealOrder_ler_paddr
+- StdOrder_RealOrder_ler_subr_addr
+- Distr_le1_mu
+- StdOrder_RealOrder_ler_add
+- StdOrder_RealOrder_ler_lt_add
+- StdOrder_RealOrder_ler_naddr
+- StdOrder_RealOrder_ler_opp2
+- StdOrder_RealOrder_ler_oppr
+- StdOrder_RealOrder_ler_subr_addl
+- StdOrder_RealOrder_ltr_le_add
+- StdOrder_RealOrder_ltr_naddl
+- StdOrder_RealOrder_ltr_paddr
+- Distr_ge0_weight
+- Distr_mu_bounded
+- StdOrder_RealOrder_ler_paddl
+- StdOrder_RealOrder_ltrW
+- StdOrder_RealOrder_ltr_paddl
+- Distr_mu_mem_le
+- Real_upto_le
+- StdOrder_RealOrder_lerNgt
+- StdOrder_RealOrder_ler_add2l
+- StdOrder_RealOrder_ler_gtF
+- StdOrder_RealOrder_ler_naddl
+- StdOrder_RealOrder_lerr_eq
+- StdOrder_RealOrder_ltr_def
+- StdOrder_RealOrder_ltr_neqAle
+- StdOrder_RealOrder_addr_ge0
+- StdOrder_RealOrder_ler_lt_trans
+- StdOrder_RealOrder_ltr_geF
+- StdOrder_RealOrder_ltr_spaddr
+- StdOrder_RealOrder_ltr_snaddr
+- StdOrder_RealOrder_subr_le0
+- Real_upto_abs
+- StdOrder_RealOrder_ler_addr
+- StdOrder_RealOrder_ler_eqVlt
+- StdOrder_RealOrder_ler_oppl
+- StdOrder_RealOrder_ler_trans
+- StdOrder_RealOrder_ltr_le_trans
+- StdOrder_RealOrder_ltr_snaddl
+- StdOrder_RealOrder_ltr_spaddl
+- StdOrder_RealOrder_ltr_sub
+- Distr_mu_mem_le_mu1
+- StdOrder_RealOrder_ger_addr
+- StdOrder_RealOrder_ler_nimulr
+- StdOrder_RealOrder_subr_ge0
+- Distr_le1_mu1
+- StdOrder_RealOrder_ger_leVge
+- StdOrder_RealOrder_ler_leVge
+- StdOrder_RealOrder_ler_pemulr
+- StdOrder_RealOrder_ger_addl
+- StdOrder_RealOrder_ger_pmulr
+- StdOrder_RealOrder_ler_lt_asym
+- StdOrder_RealOrder_ler_nemulr
+- StdOrder_RealOrder_ler_pimulr
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/WF-examp.ec::CVC5:7
+source file: examples/WF-examp.ec
+
+GOAL:
+(assert (not (= 0 (div (List_size1 xs) n))))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- List_size_trim
+- List_nth_behead
+- List_nth_out
+- List_nth_rev
+- List_nth_drop
+- List_trim_tail
+- List_mem_nth
+- List_size_drop
+- List_size_take
+- List_size_takel
+- List_nth_change_dfl
+- List_size_take_condle
+- List_head_drop
+- List_size_eq0
+- List_size_ge0
+- List_size_put
+- List_nseqSr
+- List_nth_take
+- List_onth_nth
+- List_put_consS
+- List_size_take_le
+- List_before_index
+- List_index_nth
+- List_nseqS
+- List_nth_default
+- List_nth_insert
+- List_nth_last
+- List_nth_neg
+- List_nth_put
+- List_trim_cat
+- List_trim_neg
+- List_cat_nseq
+- List_cat_take_insert_drop
+- List_eq_from_nth
+- List_eq_from_put
+- List_nthPn
+- List_onth_some_rg
+- List_put_out
+- List_size_insert
+- List_size_nseq
+- List_trim_head
+- List_alltuplesS
+- List_drop_nth
+- List_nth_cat
+- List_nth_rcons
+- List_size_rem
+- List_take_nth
+- List_alltuples_le0
+- List_index_size
+- List_put_rcons_in
+- List_size_alltuples
+- List_size_behead
+- List_size_belast
+- List_size_rcons
+- List_take_cons
+- List_behead_drop
+- List_drop_oversize
+- List_nth_mapi
+- List_nth_mapi_rec
+- List_size_eqD
+- List_take_size
+- List_drop_cons
+- List_index_ge0
+- List_last_nth
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

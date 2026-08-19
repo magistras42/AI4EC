@@ -1,0 +1,42 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/UC/dh_enc.ec::13
+source file: examples/UC/dh_enc.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (=> (or (= (DHKE_SimAuth_FAuthRL_FAuth_slst (proj2_1 et2)) (as Ch_Init (stlkg (tuple3 party party DH_G_group)))) (= (DHKE_SimAuth_FAuthRL_FAuth_slst (proj2_1 et2)) (Ch_Available (Tuple3 (proj3_1 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_0 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (DHKE_DHKE_SIM_sl_Y (proj2_1 et2)))))) (=> (=> (= (DHKE_SimAuth_FAuthRL_FAuth_slst (proj2_1 et2)) (as Ch_Init (stlkg (tuple3 party party DH_G_group)))) (= (DHKE_HybFChan_F2Auth_FAuthRL_FAuth_slst (proj2_1 et1)) (Ch_Blocked2 (Tuple3 (proj3_1 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_0 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (DHKE_DHKE_SIM_sl_Y (proj2_1 et2)))))) (=> (=> (= (DHKE_SimAuth_FAuthRL_FAuth_slst (proj2_1 et2)) (Ch_Available (Tuple3 (proj3_1 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_0 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (DHKE_DHKE_SIM_sl_Y (proj2_1 et2))))) (= (DHKE_HybFChan_F2Auth_FAuthRL_FAuth_slst (proj2_1 et1)) (Ch_Available (Tuple3 (proj3_1 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_0 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (DHKE_DHKE_SIM_sl_Y (proj2_1 et2)))))) (and (and (or (= (DHKE_HybFChan_unblock (DHKE_SimAuth_FAuthRL_set_msg (DHKE_SimAuth_FAuthRL_FAuth_slst (proj2_1 et2)) I (Tuple3 (proj3_1 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_0 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (DHKE_DHKE_SIM_sl_Y (proj2_1 et2))))) (as Ch_Init (stlkg (tuple3 party party DH_G_group)))) (= (DHKE_HybFChan_unblock (DHKE_SimAuth_FAuthRL_set_msg (DHKE_SimAuth_FAuthRL_FAuth_slst (proj2_1 et2)) I (Tuple3 (proj3_1 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_0 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (DHKE_DHKE_SIM_sl_Y (proj2_1 et2))))) (Ch_Available (Tuple3 (proj3_1 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_0 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (DHKE_DHKE_SIM_sl_Y (proj2_1 et2)))))) (and (=> (= (DHKE_HybFChan_unblock (DHKE_SimAuth_FAuthRL_set_msg (DHKE_SimAuth_FAuthRL_FAuth_slst (proj2_1 et2)) I (Tuple3 (proj3_1 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_0 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (DHKE_DHKE_SIM_sl_Y (proj2_1 et2))))) (as Ch_Init (stlkg (tuple3 party party DH_G_group)))) (= (DHKE_HybFChan_unblock (DHKE_HybFChan_F2Auth_FAuthRL_FAuth_slst (proj2_1 et1))) (Ch_Blocked2 (Tuple3 (proj3_1 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_0 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (DHKE_DHKE_SIM_sl_Y (proj2_1 et2)))))) (=> (= (DHKE_HybFChan_unblock (DHKE_SimAuth_FAuthRL_set_msg (DHKE_SimAuth_FAuthRL_FAuth_slst (proj2_1 et2)) I (Tuple3 (proj3_1 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_0 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (DHKE_DHKE_SIM_sl_Y (proj2_1 et2))))) (Ch_Available (Tuple3 (proj3_1 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_0 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (DHKE_DHKE_SIM_sl_Y (proj2_1 et2))))) (= (DHKE_HybFChan_unblock (DHKE_HybFChan_F2Auth_FAuthRL_FAuth_slst (proj2_1 et1))) (Ch_Available (Tuple3 (proj3_1 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_0 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (DHKE_DHKE_SIM_sl_Y (proj2_1 et2)))))))) (=> (not (= p ((as Composition_Right (Composition_sum tuple0 tuple0)) Tuple0))) (match p (((Composition_Left x) true) ((Composition_Right x1) (and (=> (= (DHKE_SimAuth_FAuthRL_FAuth_slst (proj2_1 et2)) (as Ch_Init (stlkg (tuple3 party party DH_G_group)))) (= (DHKE_HybFChan_unblock (DHKE_HybFChan_F2Auth_FAuthRL_FAuth_slst (proj2_1 et1))) (Ch_Blocked2 (Tuple3 (proj3_1 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (proj3_0 (DHKE_DHKE_Initiator_slp (proj2_1 et1))) (DHKE_DHKE_SIM_sl_Y (proj2_1 et2)))))) (=> (= (DHK
+
+CANDIDATE LEMMAS (28 names):
+- Ch_Available_proj_1'def
+- Ch_Available_proj_1_sort
+- Ch_Available_sort
+- Ch_Blocked1_proj_1'def
+- Ch_Blocked1_proj_1_sort
+- Ch_Blocked1_sort
+- Ch_Blocked2_proj_1'def
+- Ch_Blocked2_proj_1_sort
+- Ch_Blocked2_sort
+- Ch_Init_sort
+- Ch_Wait_proj_1'def
+- Ch_Wait_proj_1_sort
+- Ch_Wait_sort
+- Composition_Left_proj_1'def
+- Composition_Left_proj_1_sort
+- Composition_Left_sort
+- Composition_Right_proj_1'def
+- Composition_Right_proj_1_sort
+- Composition_Right_sort
+- Composition_sum_inversion
+- DHKE_HybFChan_unblock'def
+- DHKE_SimAuth_FAuthRL_set_msg'def
+- Logic_None_sort
+- Logic_Some_proj_1'def
+- Logic_Some_proj_1_sort
+- Logic_Some_sort
+- Logic_option_inversion
+- stlkg_inversion
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

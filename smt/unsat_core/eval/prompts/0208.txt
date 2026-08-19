@@ -1,0 +1,53 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/ehoare/qselect/qselect.ec::17
+source file: examples/ehoare/qselect/qselect.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (= (/ 1.0 (to_real (+ (+ hi_ (- lo_)) 1))) (ite (and (<= lo_ (Partition0_sindex_inv1 Partition0_lseq_ho t_ lo_ hi_ p)) (<= (Partition0_sindex_inv1 Partition0_lseq_ho t_ lo_ hi_ p) hi_)) (/ 1.0 (to_real (+ (+ hi_ (- lo_)) 1))) (to_real 0)))))
+
+CANDIDATE LEMMAS (39 names):
+- Array___[_]'def
+- Array___[_]_sort
+- Array_mkarray_sort
+- Array_ofarray_sort
+- Array_offun'def
+- Array_offun_sort
+- Array_size'def
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_InsertSort_insert'def
+- List_InsertSort_insert_sort
+- List_InsertSort_sort'def
+- List_InsertSort_sort_sort
+- List_[]_sort
+- List_find'def
+- List_index'def
+- List_list_inversion
+- List_map'def
+- List_map_sort
+- List_mem'def
+- List_mkseq'def
+- List_mkseq_sort
+- List_nth'def
+- List_nth_sort
+- List_size'def
+- List_uniq'def
+- Logic_pred1_ho_sort
+- Logic_pred1_ho_spec
+- Partition0_<='def
+- Partition0_<=_ho_spec
+- Partition0_array_sub'def
+- Partition0_array_sub_sort
+- Partition0_list_sindex_inv'def
+- Partition0_sindex_inv'def
+- Partition0_sindex_inv_in
+- Partition0_uniq_on'def
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

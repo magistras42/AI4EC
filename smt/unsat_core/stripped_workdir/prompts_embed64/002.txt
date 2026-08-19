@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/ChaChaPoly/ske.ec::Z3:1
+source file: examples/ChaChaPoly/ske.ec
+
+GOAL:
+(assert (not (forall ((et2 (tuple2 (tuple6 SKE_RND_plaintext SKE_RND_ciphertext SKE_RND_plaintext SKE_RND_ciphertext SKE_RND_key SKE_RND_plaintext) memory))) (=> (not (exists ((c SKE_RND_ciphertext)) (and (List_mem1 (SKE_RND_Mem_sllc (proj2_1 et2)) c) (not (= (SKE_RND_CCA_CPA_UFCMA_dec (SKE_RND_CCA_CPA_UFCMA_StLSke_slgs (proj2_1 et2)) (SKE_RND_Mem_slk (proj2_1 et2)) c) (as Logic_None (Logic_option SKE_RND_plaintext))))))) (=> (SKE_RND_CCA_CPA_UFCMA_valid_key (SKE_RND_Mem_slk (proj2_1 et2))) (=> (forall ((c SKE_RND_ciphertext)) (=> (FMap_dom1 (SKE_RND_Mem_sllog (proj2_1 et2)) c) (= (SKE_RND_CCA_CPA_UFCMA_dec (SKE_RND_CCA_CPA_UFCMA_StLSke_slgs (proj2_1 et2)) (SKE_RND_Mem_slk (proj2_1 et2)) c) (FMap___lb_rb1 (SKE_RND_Mem_sllog (proj2_1 et2)) c)))) (forall ((c1 SKE_RND_ciphertext)) (=> (FMap_dom1 (FMap___lb_lsmn_rb1 (SKE_RND_Mem_sllog (proj2_1 et2)) (SKE_RND_CCA_CPA_UFCMA_enc (SKE_RND_CCA_CPA_UFCMA_StLSke_slgs (proj2_1 et2)) (SKE_RND_Mem_slk (proj2_1 et2)) (proj6_0 (proj2_0 et2))) (proj6_0 (proj2_0 et2))) c1) (= (SKE_RND_CCA_CPA_UFCMA_dec (SKE_RND_CCA_CPA_UFCMA_StLSke_slgs (proj2_1 et2)) (SKE_RND_Mem_slk (proj2_1 et2)) c1) (FMap___lb_rb1 (FMap___lb_lsmn_rb1 (SKE_RND_Mem_sllog (proj2_1 et2)) (SKE_RND_CCA_CPA_UFCMA_enc (SKE_RND_CCA_CPA_UFCMA_StLSke_slgs (proj2_1 et2)) (SKE_RND_Mem_slk (proj2_1 et2)) (proj6_0 (proj2_0 et2))) (proj6_0 (proj2_0 et2))) c1))))))))))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- SKE_RND_CCA_CPA_UFCMA_dec_enc
+- FMap_in_dom_with'def
+- FMap_fmapW
+- FMap_restr_set_neq
+- List_assocP
+- List_assoc_head
+- FMap_restr_set_eq
+- List_allpairsP
+- FMap_mem_fdom_set
+- List_assoc_some_onth_mem
+- List_flatten_mapP
+- FMap_fmapP
+- FMap_restr_set
+- List_assoc_none
+- FMap_uniq_find_eq_some
+- List_mem_zip_mapr
+- List_onth_zip_some
+- FMap_fdomP
+- FMap_find_spec_ind
+- List_assoc_some
+- List_mapP
+- FMap_FindNotIn
+- FMap_eq_except_set_getlr
+- FMap_fcollPn
+- FMap_find_some_unique
+- FMap_set_pair_map
+- List_assoc_cons
+- List_pmapP
+- FMap_FindIn
+- FMap_fcoll'def
+- FMap_find_some
+- FMap_get_filter
+- FMap_mem_pair_map
+- FMap_offsetmapT
+- FMap_rem_set
+- FMap_set_union_map_r
+- List_pmap_inj_in_uniq
+- FMap_dom'def
+- FMap_domE
+- FMap_eq_in_filter
+- FMap_find_eq_none
+- FMap_find_not_none
+- FMap_mem_filter
+- FMap_offsetmapN
+- FMap_rem_id
+- List_assoc_get_mem
+- List_mem'def
+- List_mem_map_snd
+- List_mem_zip_fst
+- List_nth_index_map
+- FMap_fdom_set
+- FMap_filter_set
+- FMap_get_none
+- FMap_get_set_id
+- FMap_oget_map
+- FMap_set_set_neqE
+- List_allpairs_uniq
+- List_mem_zip
+- FMap_domNE
+- FMap_get_setE
+- FMap_get_set_eqE
+- FMap_get_some
+- FMap_map_set
+- FMap_mem_ofassoc
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

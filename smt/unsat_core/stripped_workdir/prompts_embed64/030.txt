@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/prg-tutorial/PRGc.ec::CVC5:5
+source file: examples/prg-tutorial/PRGc.ec
+
+GOAL:
+(assert (not (=> (<= (mu1 (PRFa_INDlpPRFa_PRFicm_D_PRFlpDrprp_slmain Tuple0 etm) unamed_lambda) (+ (+ (mu1 (PRGa_INDlpPRGilcm_Drp_slmain Tuple0 etm) unamed_lambda) (mu1 (PRFa_INDlpPRFa_PRFicm_D_PRFlpDrprp_slmain Tuple0 etm) unamed_lambda1)) (- (mu1 (PRGa_INDlpPRGilcm_Drp_slmain Tuple0 etm) unamed_lambda2)))) (<= (+ (mu1 (PRFa_INDlpPRFa_PRFicm_D_PRFlpDrprp_slmain Tuple0 etm) unamed_lambda) (- (mu1 (PRGa_INDlpPRGilcm_Drp_slmain Tuple0 etm) unamed_lambda))) (mu1 (PRFa_INDlpPRFa_PRFicm_D_PRFlpDrprp_slmain Tuple0 etm) unamed_lambda1)))))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- PRFi_PRGil_bad
+- PRGi_PRGil
+- Distr_mu_sub
+- Distr_ge0_mu1
+- Distr_ge0_weight
+- Distr_ge0_mu
+- Distr_le1_mu
+- Distr_mu_le_weight
+- Distr_mu_mem_le
+- StdBigop_Bigreal_big_normr
+- Distr_weight_dlet
+- Distr_le1_mu1
+- Distr_has_fub_mu1
+- Distr_mu_bounded
+- RealFLub_flub'def
+- Distr_exp_norm
+- Distr_mopt'def
+- RealFLub_has_fubZ
+- StdBigop_Bigint_gt0_prodr_seq
+- Distr_E_split
+- Distr_mu_has_le
+- Distr_mu_not
+- Distr_p_max'def
+- FMap_dom'def
+- Distr_mode_ge
+- StdBigop_Bigint_BIM_big_seq_cond
+- StdBigop_Bigreal_BRA_sumrB
+- StdBigop_Bigreal_gt0_prodr_seq
+- StdOrder_RealOrder_ler_lt_sub
+- StdOrder_RealOrder_ltr_le_sub
+- Distr_support'def
+- List_mem_count
+- StdOrder_RealOrder_ler_sub
+- Distr_mu_disjoint
+- Real_upto_abs
+- StdBigop_Bigint_BIM_big_seq
+- StdBigop_Bigint_prodr_gt0_seq
+- StdOrder_RealOrder_nmono_inj
+- Distr_expB
+- Distr_expD
+- Distr_expD_cond
+- Mu_mem_mu_mem_le_fsize
+- RealFLub_flubZ
+- Distr_expN
+- Distr_mu_eq
+- FMap_ofassoc'def
+- List_maxz_seq
+- RealFLub_flub_upper_bound
+- StdBigop_Bigint_ler_prod_seq
+- StdBigop_Bigint_prodr_ge0_seq
+- StdBigop_Bigreal_ler_prod_seq
+- StdBigop_Bigreal_prodr_ge0
+- StdBigop_Bigreal_prodr_gt0
+- StdBigop_Bigreal_sumr_ge0
+- StdOrder_RealOrder_ler_lt_add
+- StdOrder_RealOrder_ltr_le_add
+- Distr_mu_mem_le_mu1
+- RealFLub_ler_has_fub
+- SmtMap_offun_sort
+- StdBigop_Bigint_BIA_big_seq
+- StdBigop_Bigreal_BRM_big_seq
+- StdBigop_Bigreal_BRM_big_seq_cond
+- StdBigop_Bigreal_ler_prod
+- StdBigop_Bigreal_sumr_norm
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

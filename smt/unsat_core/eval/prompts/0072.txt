@@ -1,0 +1,43 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/PIR.ec::5
+source file: examples/PIR.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (=> (sxor2 (PIR_sls (proj2_1 etm)) (PIR_slsqt (proj2_1 etm)) (proj7_0 (proj2_0 etm))) (forall ((b Bool)) (=> (Distr_support1 (Distr_MUniform_duniform1 (List_clcl true (List_clcl false (as List_lbrb (List_list Bool))))) b) (ite (= (proj7_3 (proj2_0 etm)) (proj7_0 (proj2_0 etm))) (ite (= b true) (ite (<= (+ (proj7_3 (proj2_0 etm)) 1) (proj7_0 (proj2_0 etm))) (= (List_clcl (proj7_3 (proj2_0 etm)) (PIR_sls (proj2_1 etm))) (PIR_slsqt (proj2_1 etm))) (sxor2 (List_clcl (proj7_3 (proj2_0 etm)) (PIR_sls (proj2_1 etm))) (PIR_slsqt (proj2_1 etm)) (proj7_0 (proj2_0 etm)))) (ite (<= (+ (proj7_3 (proj2_0 etm)) 1) (proj7_0 (proj2_0 etm))) (= (PIR_sls (proj2_1 etm)) (List_clcl (proj7_3 (proj2_0 etm)) (PIR_slsqt (proj2_1 etm)))) (sxor2 (PIR_sls (proj2_1 etm)) (List_clcl (proj7_3 (proj2_0 etm)) (PIR_slsqt (proj2_1 etm))) (proj7_0 (proj2_0 etm))))) (ite (= b true) (ite (<= (+ (proj7_3 (proj2_0 etm)) 1) (proj7_0 (proj2_0 etm))) (= (PIR_sls (proj2_1 etm)) (PIR_slsqt (proj2_1 etm))) (sxor2 (List_clcl (proj7_3 (proj2_0 etm)) (PIR_sls (proj2_1 etm))) (List_clcl (proj7_3 (proj2_0 etm)) (PIR_slsqt (proj2_1 etm))) (proj7_0 (proj2_0 etm)))) (ite (<= (+ (proj7_3 (proj2_0 etm)) 1) (proj7_0 (proj2_0 etm))) (= (PIR_sls (proj2_1 etm)) (PIR_slsqt (proj2_1 etm))) (sxor2 (PIR_sls (proj2_1 etm)) (PIR_slsqt (proj2_1 etm)) (proj7_0 (proj2_0 etm)))))))))))
+
+CANDIDATE LEMMAS (29 names):
+- Distr_MRat_drat'def
+- Distr_MRat_drat_sort
+- Distr_MRat_mrat'def
+- Distr_MRat_mrat_ho_sort
+- Distr_MRat_mrat_ho_spec
+- Distr_MUniform_duniform'def
+- Distr_MUniform_duniform_sort
+- Distr_mk_sort
+- Distr_support'def
+- Int_b2i'def
+- List_++'def
+- List_++_sort
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_count'def
+- List_list_inversion
+- List_mem'def
+- List_size'def
+- List_undup'def
+- List_undup_sort
+- Logic_pred1_ho_sort
+- Logic_pred1_ho_spec
+- sxor'def
+- sxor2'def
+- sxor2_cons
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

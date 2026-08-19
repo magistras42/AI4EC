@@ -1,0 +1,38 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/MEE-CBC/RCPA_CMA.ec::9
+source file: examples/MEE-CBC/RCPA_CMA.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (forall ((et1 (tuple2 (tuple8 EtM_ptxt (tuple2 EtM_ctxt EtM_tag) (tuple2 EtM_eK EtM_mK) EtM_ptxt EtM_eK EtM_mK EtM_ctxt EtM_tag) memory)) (et2 (tuple2 (tuple5 EtM_ptxt EtM_ctxt EtM_tag EtM_ctxt EtM_tag) memory))) (=> (not (= (EtM_MACa_SUF_CMA_SUF_Wrap_slwin (proj2_1 et2)) true)) (=> (forall ((p (tuple2 EtM_ctxt EtM_tag))) (= (FSet_mem1 (EtM_Sec_CTXT_CTXT_Wrap_sls (proj2_1 et1)) p) (FSet_mem1 (EtM_MACa_SUF_CMA_SUF_Wrap_sls (proj2_1 et2)) p))) (=> (forall ((c EtM_ctxt) (t EtM_tag)) (=> (FSet_mem1 (EtM_Sec_CTXT_CTXT_Wrap_sls (proj2_1 et1)) (Tuple2 c t)) (not (= (dec usk c) (as Logic_None (Logic_option EtM_ptxt)))))) (=> (not (= (EtM_Sec_CTXT_CTXT_Wrap_slwin (proj2_1 et1)) true)) (forall ((result_R EtM_ctxt)) (=> (= (dec usk result_R) (Logic_Some usp)) (forall ((result_R0 EtM_tag)) (and (forall ((p1 (tuple2 EtM_ctxt EtM_tag))) (and (=> (FSet_mem1 (FSet_bqbrbq1 (EtM_Sec_CTXT_CTXT_Wrap_sls (proj2_1 et1)) (FSet_fset12 (Tuple2 result_R result_R0))) p1) (FSet_mem1 (FSet_bqbrbq1 (EtM_MACa_SUF_CMA_SUF_Wrap_sls (proj2_1 et2)) (FSet_fset12 (Tuple2 result_R result_R0))) p1)) (=> (FSet_mem1 (FSet_bqbrbq1 (EtM_MACa_SUF_CMA_SUF_Wrap_sls (proj2_1 et2)) (FSet_fset12 (Tuple2 result_R result_R0))) p1) (FSet_mem1 (FSet_bqbrbq1 (EtM_Sec_CTXT_CTXT_Wrap_sls (proj2_1 et1)) (FSet_fset12 (Tuple2 result_R result_R0))) p1)))) (forall ((c1 EtM_ctxt) (t1 EtM_tag)) (=> (FSet_mem1 (FSet_bqbrbq1 (EtM_Sec_CTXT_CTXT_Wrap_sls (proj2_1 et1)) (FSet_fset12 (Tuple2 result_R result_R0))) (Tuple2 c1 t1)) (not (= (dec usk c1) (as Logic_None (Logic_option EtM_ptxt)))))))))))))))))
+
+CANDIDATE LEMMAS (24 names):
+- FSet_`_`'def
+- FSet_`_`_sort
+- FSet_elems_sort
+- FSet_fset1'def
+- FSet_fset1_sort
+- FSet_in_fset1
+- FSet_in_fsetU
+- FSet_mem'def
+- FSet_oflist_sort
+- List_++'def
+- List_++_sort
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_list_inversion
+- List_mem'def
+- Logic_None_sort
+- Logic_Some_proj_1'def
+- Logic_Some_proj_1_sort
+- Logic_Some_sort
+- Logic_option_inversion
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

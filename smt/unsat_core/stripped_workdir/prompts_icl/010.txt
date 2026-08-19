@@ -1,0 +1,144 @@
+You will pick the lemmas an SMT solver needs to prove a goal.
+First, worked examples of the task (goal -> the lemmas that were
+actually needed):
+
+EXAMPLE 1
+GOAL:
+(assert (not (=> (and (<= 0 i) (< i (Int_min 0 (+ 1 (List_size1 l2))))) (= dflc (f dfla (ite (= i 0) b (List_nth1 dflb l2 (+ i (- 1)))))))))
+
+CANDIDATE LEMMAS (12 names):
+- Int_min'def
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_list_inversion
+- List_nth'def
+- List_nth_sort
+- List_size'def
+- List_size_ge0
+
+CORRECT ANSWER: ["Int_min'def", "List_size_ge0"]
+
+EXAMPLE 2
+GOAL:
+(assert (not (forall ((et2 (tuple2 SKE_RND_ciphertext memory))) (=> (not (exists ((c SKE_RND_ciphertext)) (and (List_mem1 (SKE_RND_Mem_sllc (proj2_1 et2)) c) (not (= (SKE_RND_CCA_CPA_UFCMA_dec (SKE_RND_CCA_CPA_UFCMA_StLSke_slgs (proj2_1 et2)) (SKE_RND_Mem_slk (proj2_1 et2)) c) (as Logic_None (Logic_option SKE_RND_plaintext))))))) (=> (SKE_RND_CCA_CPA_UFCMA_valid_key (SKE_RND_Mem_slk (proj2_1 et2))) (=> (forall ((c SKE_RND_ciphertext)) (=> (FMap_dom1 (SKE_RND_Mem_sllog (proj2_1 et2)) c) (= (SKE_RND_CCA_CPA_UFCMA_dec (SKE_RND_CCA_CPA_UFCMA_StLSke_slgs (proj2_1 et2)) (SKE_RND_Mem_slk (proj2_1 et2)) c) (FMap___lb_rb1 (SKE_RND_Mem_sllog (proj2_1 et2)) c)))) (=> (not (exists ((c SKE_RND_ciphertext)) (and (List_mem1 (ite (FMap_dom1 (SKE_RND_Mem_sllog (proj2_1 et2)) (proj2_0 et2)) (SKE_RND_Mem_sllc (proj2_1 et2)) (List_clcl (proj2_0 et2) (SKE_RND_Mem_sllc (proj2_1 et2)))) c) (not (= (SKE_RND_CCA_CPA_UFCMA_dec (SKE_RND_CCA_CPA_UFCMA_StLSke_slgs (proj2_1 et2)) (SKE_RND_Mem_slk (proj2_1 et2)) c) (as Logic_None (Logic_option SKE_RND_plaintext))))))) (= (SKE_RND_CCA_CPA_UFCMA_dec (SKE_RND_CCA_CPA_UFCMA_StLSke_slgs (proj2_1 et2)) (SKE_RND_Mem_slk (proj2_1 et2)) (proj2_0 et2)) (FMap___lb_rb1 (SKE
+
+CANDIDATE LEMMAS (17 names):
+- FMap___[_]'def
+- FMap___[_]_sort
+- FMap_dom'def
+- FMap_tomap_sort
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_list_inversion
+- List_mem'def
+- Logic_None_sort
+- Logic_Some_proj_1'def
+- Logic_Some_proj_1_sort
+- Logic_Some_sort
+- Logic_option_inversion
+
+CORRECT ANSWER: ["FMap_dom'def", "List_mem'def"]
+
+EXAMPLE 3
+GOAL:
+(assert (not (not (= (Int_max 0 (pad_length m)) 0))))
+
+CANDIDATE LEMMAS (10 names):
+- Int_max'def
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_list_inversion
+- List_size'def
+- pad_length'def
+
+CORRECT ANSWER: ["Int_max'def", "pad_length'def"]
+
+EXAMPLE 4
+GOAL:
+(assert (not (forall ((ethr (tuple2 (tuple7 Int BS_word BS_word Int Bool (List_list Int) (List_list Int)) memory))) (=> (and (= (proj7_3 (proj2_0 ethr)) 0) (and (= (PIR_slsqt (proj2_1 ethr)) (as List_lbrb (List_list Int))) (and (= (PIR_sls (proj2_1 ethr)) (as List_lbrb (List_list Int))) (is_restr x N)))) (forall ((s (List_list Int)) (j Int)) (= (and (= (FSet_oflist1 s) x) (= j N)) (and (= (FSet_oflist1 s) (restr x j)) (= j N))))))))
+
+CANDIDATE LEMMAS (19 names):
+- FSet_`&`'def
+- FSet_`&`_sort
+- FSet_elems_sort
+- FSet_mem'def
+- FSet_mem_ho_sort
+- FSet_mem_ho_spec
+- FSet_oflist_sort
+- List_::_proj_1'def
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_proj_2_sort
+- List_::_sort
+- List_[]_sort
+- List_filter'def
+- List_filter_sort
+- List_list_inversion
+- List_mem'def
+- is_restr'def
+- restr'def
+
+CORRECT ANSWER: ["is_restr'def"]
+
+Now solve the real task below in the same way.
+
+============================================================
+
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/UC/dh_enc.ec::CVC5:31
+source file: examples/UC/dh_enc.ec
+
+GOAL:
+(assert (not (forall ((et1 (tuple2 (Composition_sum role (Composition_sum tuple0 tuple0)) memory)) (et2 (tuple2 (Composition_sum role (Composition_sum tuple0 tuple0)) memory))) (=> (and (= (proj2_0 et1) (proj2_0 et2)) (and (and (= (DHKE_FKE_FKEAuth_FChan_FAuth_FAuth_slst (proj2_1 et1)) (DHKE_FKE_FKEAuth_FChan_FAuth_FAuth_slst (proj2_1 et2))) (and (= (OTP_OTP_Initiator_slp (proj2_1 et1)) (OTP_OTP_Initiator_slp (proj2_1 et2))) (= (OTP_OTP_Initiator_slst (proj2_1 et1)) (OTP_OTP_Initiator_slst (proj2_1 et2))))) (and (= (DHKE_FKE_kst (DHKE_FKE_FKE_slst (proj2_1 et1))) (DHKE_FKE_kst (DHKE_FKE_FKE_slst (proj2_1 et2)))) (and (FMap_dom1 (OTP_GenEager_RO_slm (proj2_1 et2)) Tuple0) (and (= (DHKE_FKE_key (DHKE_FKE_FKE_slst (proj2_1 et1))) (Logic_odflt1 witness2 (FMap___lb_rb1 (OTP_GenEager_RO_slm (proj2_1 et2)) Tuple0))) (=> (not (= (DHKE_FKE_FKEAuth_FChan_FAuth_FAuth_slst (proj2_1 et2)) (as Ch_Init (stlkg (tuple3 party party DH_G_group))))) (= (DHKE_FKE_key (DHKE_FKE_FKE_slst (proj2_1 et2))) (Logic_odflt1 witness2 (FMap___lb_rb1 (OTP_GenEager_RO_slm (proj2_1 et2)) Tuple0))))))))) (= (exists ((m2 (Composition_sum tuple0 tuple0))) (= (proj2_0 et1) ((as Composition_Right (Composition_sum role (Composition_sum tuple0 tuple0))) m2))) (exists ((m2 (Composition_sum tuple0 tuple0))) (= (proj2_0 et2) ((as Composition_Right (Composition_sum role (Composition_sum tuple0 tuple0))) m2))))))))
+
+CANDIDATE LEMMAS (32 names):
+- Ch_Available_proj_1'def
+- Ch_Available_proj_1_sort
+- Ch_Available_sort
+- Ch_Blocked1_proj_1'def
+- Ch_Blocked1_proj_1_sort
+- Ch_Blocked1_sort
+- Ch_Blocked2_proj_1'def
+- Ch_Blocked2_proj_1_sort
+- Ch_Blocked2_sort
+- Ch_Init_sort
+- Ch_Wait_proj_1'def
+- Ch_Wait_proj_1_sort
+- Ch_Wait_sort
+- Composition_Left_proj_1'def
+- Composition_Left_proj_1_sort
+- Composition_Left_sort
+- Composition_Right_proj_1'def
+- Composition_Right_proj_1_sort
+- Composition_Right_sort
+- Composition_sum_inversion
+- FMap___[_]'def
+- FMap___[_]_sort
+- FMap_dom'def
+- FMap_tomap_sort
+- Logic_None_sort
+- Logic_Some_proj_1'def
+- Logic_Some_proj_1_sort
+- Logic_Some_sort
+- Logic_odflt'def
+- Logic_odflt_sort
+- Logic_option_inversion
+- stlkg_inversion
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

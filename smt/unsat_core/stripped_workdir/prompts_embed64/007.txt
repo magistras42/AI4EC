@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/PIR.ec::CVC5:8
+source file: examples/PIR.ec
+
+GOAL:
+(assert (not (ite b (sxor2 (List_clcl (proj7_0 (proj2_0 etm)) (PIR_slsqt (proj2_1 etm))) (PIR_slsqt (proj2_1 etm)) (proj7_0 (proj2_0 etm))) (sxor2 (PIR_slsqt (proj2_1 etm)) (List_clcl (proj7_0 (proj2_0 etm)) (PIR_slsqt (proj2_1 etm))) (proj7_0 (proj2_0 etm))))))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- sxor'def
+- sxor2_cons
+- sxor_cons
+- sxor2'def
+- List_rem'def
+- List_has'def
+- List_mem'def
+- List_rcons'def
+- List_list_inversion
+- List_has_nthP
+- List_head_behead
+- List_ohead'def
+- List_zip'def
+- List_::_proj_2_sort
+- List_all'def
+- List_all_nthP
+- List_find'def
+- List_before_find
+- List_path'def
+- Bool_BoolFin_enumP
+- List_++'def
+- List_belast'def
+- List_uniq'def
+- List_mask_cons
+- List_mem_head
+- List_splitPr
+- BitEncoding_BitChunking_chunk_sort
+- FSet_oflist_cons
+- List_::_proj_1_sort
+- List_::_proj_2'def
+- List_::_sort
+- List_drop_take1_nth
+- List_in_cons
+- List_mem_rcons
+- List_mem_seq1
+- List_nth1
+- List_onth'def
+- List_belast_rcons
+- List_cat1s
+- List_count_gt0
+- List_insert0
+- List_mask'def
+- List_nthPn
+- List_put_cons0
+- List_take_cons
+- DBool_Support_enumP
+- List_::_proj_1'def
+- List_cat_cons
+- List_eqseq_cons
+- List_filter_cons
+- List_last'def
+- List_mem_seq2
+- List_ohead_cons
+- List_perm_consCA
+- List_size_eq1
+- List_zip_sort
+- List_alltuples_le0
+- List_behead'def
+- List_cons_uniq
+- List_le_in_count
+- List_perm_cons
+- List_put_sort
+- List_subseq'def
+- List_undup'def
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

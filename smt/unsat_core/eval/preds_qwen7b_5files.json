@@ -1,0 +1,144 @@
+{
+ "examples/FundamentalLemma.ec::6": [
+  "max'def"
+ ],
+ "examples/FundamentalLemma.ec::7": [
+  "max'def"
+ ],
+ "examples/FundamentalLemma.ec::8": [
+  "Distr_ge0_mu"
+ ],
+ "examples/FundamentalLemma.ec::9": [
+  "Distr_ge0_mu"
+ ],
+ "examples/PRG.ec::1": [
+  "Distr_mu_bounded"
+ ],
+ "examples/PRG.ec::12": [
+  "Distr_MUniform_duniform'def",
+  "List_size'def",
+  "List_size_ge0"
+ ],
+ "examples/PRG.ec::17": [
+  "FMap_dom'def",
+  "FMap_fdom'def",
+  "FSet_card'def"
+ ],
+ "examples/PRG.ec::19": [
+  "Distr_MUniform_duniform'def",
+  "FMap_fdom'def",
+  "FSet_card'def",
+  "ge0_qF",
+  "ge0_qP"
+ ],
+ "examples/PRG.ec::20": [
+  "Support_card_gt0"
+ ],
+ "examples/PRG.ec::25": [
+  "Support_card_gt0"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::1": [
+  "ge1_m"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::5": [
+  "ge1_m"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::20": [
+  "FMap_dom'def",
+  "Logic_None_sort",
+  "Logic_Some_sort"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::21": [
+  "FMap_dom'def",
+  "Logic_odflt'def",
+  "Logic_option_inversion"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::22": [
+  "Logic_odflt'def",
+  "Logic_odflt_sort",
+  "FMap_get_set_sameE",
+  "FMap_ofmap_sort"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::23": [],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::24": [],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::25": [
+  "Logic_Some_sort",
+  "FMap_dom'def",
+  "Logic_Some_proj_1'def"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::26": [],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::32": [
+  "FMap_dom'def",
+  "Logic_None_sort",
+  "Logic_Some_sort"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::33": [
+  "FMap_dom'def",
+  "Logic_odflt'def",
+  "Logic_option_inversion"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::34": [
+  "FMap_dom'def",
+  "Logic_odflt'def",
+  "Logic_option_inversion"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::35": [],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::36": [],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::37": [],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::38": [
+  "Logic_Some_sort",
+  "FMap_dom'def",
+  "Logic_Some_proj_1'def"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::39": [],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::40": [],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::42": [
+  "ge1_m"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::45": [
+  "ge1_m"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::46": [
+  "ge1_m"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::47": [
+  "ge1_m"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::48": [
+  "ge1_m"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::49": [
+  "ge1_m"
+ ],
+ "examples/hashed_elgamal_generic.ec::1": [
+  "FMap_dom'def",
+  "FSet_card'def",
+  "FSet_fset1'def"
+ ],
+ "examples/hashed_elgamal_generic.ec::2": [
+  "DiffieHellman_GP_ZModE_inzmod_ho_spec"
+ ],
+ "examples/hashed_elgamal_generic.ec::3": [
+  "FMap_dom'def",
+  "FSet_card'def",
+  "FSet_fset1'def"
+ ],
+ "examples/hashed_elgamal_generic.ec::4": [
+  "Reduction"
+ ],
+ "examples/plug-and-pray/Plug_and_Pray_example.ec::1": [
+  "List_Range_range'def"
+ ],
+ "examples/plug-and-pray/Plug_and_Pray_example.ec::2": [
+  "Int_max'def"
+ ],
+ "examples/plug-and-pray/Plug_and_Pray_example.ec::4": [
+  "gt0_q"
+ ],
+ "examples/plug-and-pray/Plug_and_Pray_example.ec::5": [
+  "gt0_q"
+ ],
+ "examples/plug-and-pray/Plug_and_Pray_example.ec::7": [
+  "gt0_q"
+ ]
+}

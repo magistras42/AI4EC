@@ -1,0 +1,402 @@
+[
+ {
+  "file": "examples/ChaChaPoly/chacha_poly.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 2.9,
+  "n_stripped": 126,
+  "n_dumps": 1
+ },
+ {
+  "file": "examples/FundamentalLemma.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 3.5,
+  "n_stripped": 3,
+  "n_dumps": 6
+ },
+ {
+  "file": "examples/ChaChaPoly/ske.ec",
+  "solver": "CVC5",
+  "ec_ok": 1,
+  "seconds": 3.7,
+  "n_stripped": 2,
+  "n_dumps": 5
+ },
+ {
+  "file": "examples/ChaChaPoly/ske.ec",
+  "solver": "Z3",
+  "ec_ok": 0,
+  "seconds": 12.2,
+  "n_stripped": 2,
+  "n_dumps": 1
+ },
+ {
+  "file": "examples/FundamentalLemma.ec",
+  "solver": "Z3",
+  "ec_ok": 0,
+  "seconds": 12.5,
+  "n_stripped": 3,
+  "n_dumps": 6
+ },
+ {
+  "file": "examples/MEE-CBC/FunctionalSpec.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 13.1,
+  "n_stripped": 5,
+  "n_dumps": 1
+ },
+ {
+  "file": "examples/MEE-CBC/RCPA_CMA.ec",
+  "solver": "Z3",
+  "ec_ok": 0,
+  "seconds": 14.0,
+  "n_stripped": 2,
+  "n_dumps": 3
+ },
+ {
+  "file": "examples/MEE-CBC/FunctionalSpec.ec",
+  "solver": "Z3",
+  "ec_ok": 1,
+  "seconds": 20.8,
+  "n_stripped": 5,
+  "n_dumps": 21
+ },
+ {
+  "file": "examples/MEE-CBC/RCPA_CMA.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 8.8,
+  "n_stripped": 2,
+  "n_dumps": 8
+ },
+ {
+  "file": "examples/PIR.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 6.3,
+  "n_stripped": 31,
+  "n_dumps": 8
+ },
+ {
+  "file": "examples/ChaChaPoly/chacha_poly.ec",
+  "solver": "Z3",
+  "ec_ok": 0,
+  "seconds": 26.6,
+  "n_stripped": 126,
+  "n_dumps": 6
+ },
+ {
+  "file": "examples/PIR.ec",
+  "solver": "Z3",
+  "ec_ok": 0,
+  "seconds": 14.1,
+  "n_stripped": 31,
+  "n_dumps": 5
+ },
+ {
+  "file": "examples/PRG.ec",
+  "solver": "Z3",
+  "ec_ok": 0,
+  "seconds": 14.5,
+  "n_stripped": 2,
+  "n_dumps": 12
+ },
+ {
+  "file": "examples/PRG.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 14.4,
+  "n_stripped": 2,
+  "n_dumps": 12
+ },
+ {
+  "file": "examples/WF-examp.ec",
+  "solver": "Z3",
+  "ec_ok": 1,
+  "seconds": 3.6,
+  "n_stripped": 1,
+  "n_dumps": 7
+ },
+ {
+  "file": "examples/UC/dh_enc.ec",
+  "solver": "Z3",
+  "ec_ok": 0,
+  "seconds": 18.4,
+  "n_stripped": 12,
+  "n_dumps": 5
+ },
+ {
+  "file": "examples/Upto.ec",
+  "solver": "Z3",
+  "ec_ok": 0,
+  "seconds": 15.7,
+  "n_stripped": 3,
+  "n_dumps": 4
+ },
+ {
+  "file": "examples/Upto.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 15.5,
+  "n_stripped": 3,
+  "n_dumps": 4
+ },
+ {
+  "file": "examples/WF-examp.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 12.5,
+  "n_stripped": 1,
+  "n_dumps": 7
+ },
+ {
+  "file": "examples/br93.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 5.4,
+  "n_stripped": 5,
+  "n_dumps": 2
+ },
+ {
+  "file": "examples/async-while.ec",
+  "solver": "Z3",
+  "ec_ok": 0,
+  "seconds": 12.0,
+  "n_stripped": 4,
+  "n_dumps": 1
+ },
+ {
+  "file": "examples/cramer-shoup/bad_abs.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 2.9,
+  "n_stripped": 2,
+  "n_dumps": 3
+ },
+ {
+  "file": "examples/cramer-shoup/bad_abs.ec",
+  "solver": "Z3",
+  "ec_ok": 1,
+  "seconds": 5.0,
+  "n_stripped": 2,
+  "n_dumps": 9
+ },
+ {
+  "file": "examples/async-while.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 12.3,
+  "n_stripped": 4,
+  "n_dumps": 1
+ },
+ {
+  "file": "examples/ehoare/adversary.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 2.4,
+  "n_stripped": 8,
+  "n_dumps": 1
+ },
+ {
+  "file": "examples/br93.ec",
+  "solver": "Z3",
+  "ec_ok": 0,
+  "seconds": 12.4,
+  "n_stripped": 5,
+  "n_dumps": 1
+ },
+ {
+  "file": "examples/ehoare/qselect/qselect.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 2.8,
+  "n_stripped": 7,
+  "n_dumps": 2
+ },
+ {
+  "file": "examples/cramer-shoup/cramer_shoup.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 10.7,
+  "n_stripped": 18,
+  "n_dumps": 10
+ },
+ {
+  "file": "examples/UC/dh_enc.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 36.9,
+  "n_stripped": 12,
+  "n_dumps": 31
+ },
+ {
+  "file": "examples/ehoare/adversary.ec",
+  "solver": "Z3",
+  "ec_ok": 0,
+  "seconds": 12.0,
+  "n_stripped": 8,
+  "n_dumps": 1
+ },
+ {
+  "file": "examples/global-hybrid/GlobalHybridExamp1.ec",
+  "solver": "Z3",
+  "ec_ok": 1,
+  "seconds": 9.5,
+  "n_stripped": 2,
+  "n_dumps": 5
+ },
+ {
+  "file": "examples/ehoare/qselect/qselect.ec",
+  "solver": "Z3",
+  "ec_ok": 0,
+  "seconds": 12.2,
+  "n_stripped": 7,
+  "n_dumps": 2
+ },
+ {
+  "file": "examples/global-hybrid/GlobalHybridExamp1.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 9.9,
+  "n_stripped": 2,
+  "n_dumps": 3
+ },
+ {
+  "file": "examples/hashed_elgamal_std.ec",
+  "solver": "Z3",
+  "ec_ok": 1,
+  "seconds": 4.1,
+  "n_stripped": 1,
+  "n_dumps": 1
+ },
+ {
+  "file": "examples/hashed_elgamal_std.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 4.7,
+  "n_stripped": 1,
+  "n_dumps": 1
+ },
+ {
+  "file": "examples/global-hybrid/GlobalHybridExamp2.ec",
+  "solver": "Z3",
+  "ec_ok": 0,
+  "seconds": 16.5,
+  "n_stripped": 18,
+  "n_dumps": 20
+ },
+ {
+  "file": "examples/old/trapdoor.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 2.8,
+  "n_stripped": 11,
+  "n_dumps": 1
+ },
+ {
+  "file": "examples/hashed_elgamal_generic.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 14.2,
+  "n_stripped": 4,
+  "n_dumps": 1
+ },
+ {
+  "file": "examples/global-hybrid/GlobalHybridExamp2.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 17.6,
+  "n_stripped": 18,
+  "n_dumps": 21
+ },
+ {
+  "file": "examples/plug-and-pray/Plug_and_Pray_example.ec",
+  "solver": "Z3",
+  "ec_ok": 1,
+  "seconds": 4.5,
+  "n_stripped": 2,
+  "n_dumps": 7
+ },
+ {
+  "file": "examples/prg-tutorial/PRGc.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 4.5,
+  "n_stripped": 2,
+  "n_dumps": 5
+ },
+ {
+  "file": "examples/hashed_elgamal_generic.ec",
+  "solver": "Z3",
+  "ec_ok": 0,
+  "seconds": 20.8,
+  "n_stripped": 4,
+  "n_dumps": 2
+ },
+ {
+  "file": "examples/to-port/hashed_elgamal.ec",
+  "solver": "Z3",
+  "ec_ok": 0,
+  "seconds": 2.1,
+  "n_stripped": 2,
+  "n_dumps": 0
+ },
+ {
+  "file": "examples/to-port/hashed_elgamal.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 2.0,
+  "n_stripped": 2,
+  "n_dumps": 0
+ },
+ {
+  "file": "examples/cramer-shoup/cramer_shoup.ec",
+  "solver": "Z3",
+  "ec_ok": 0,
+  "seconds": 44.1,
+  "n_stripped": 18,
+  "n_dumps": 21
+ },
+ {
+  "file": "examples/upto_syntaxtic.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 2.5,
+  "n_stripped": 3,
+  "n_dumps": 1
+ },
+ {
+  "file": "examples/old/trapdoor.ec",
+  "solver": "Z3",
+  "ec_ok": 0,
+  "seconds": 12.3,
+  "n_stripped": 11,
+  "n_dumps": 1
+ },
+ {
+  "file": "examples/prg-tutorial/PRGc.ec",
+  "solver": "Z3",
+  "ec_ok": 1,
+  "seconds": 12.7,
+  "n_stripped": 2,
+  "n_dumps": 17
+ },
+ {
+  "file": "examples/plug-and-pray/Plug_and_Pray_example.ec",
+  "solver": "CVC5",
+  "ec_ok": 0,
+  "seconds": 12.1,
+  "n_stripped": 2,
+  "n_dumps": 1
+ },
+ {
+  "file": "examples/upto_syntaxtic.ec",
+  "solver": "Z3",
+  "ec_ok": 0,
+  "seconds": 15.0,
+  "n_stripped": 3,
+  "n_dumps": 3
+ }
+]

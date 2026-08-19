@@ -1,0 +1,178 @@
+{
+ "examples/ChaChaPoly/chacha_poly.ec::Z3:6": [
+  "List_nseq1",
+  "GenBlock_ge0_block_size"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::CVC5:1": [
+  "StdOrder_IntOrder_Domain_expr0n",
+  "StdOrder_IntOrder_Domain_exprS",
+  "StdOrder_IntOrder_ler0n",
+  "StdOrder_IntOrder_ltr0n"
+ ],
+ "examples/ChaChaPoly/ske.ec::Z3:1": [],
+ "examples/FundamentalLemma.ec::CVC5:6": [
+  "RealExp_exp0",
+  "RealExp_exp_gt0",
+  "RealExp_exp_mono"
+ ],
+ "examples/MEE-CBC/FunctionalSpec.ec::CVC5:1": [
+  "Int_max'def",
+  "pad_length'def"
+ ],
+ "examples/MEE-CBC/RCPA_CMA.ec::Z3:3": [
+  "FSet_fcard1"
+ ],
+ "examples/MEE-CBC/RCPA_CMA.ec::CVC5:8": [
+  "Distr_DScalar_dscalar1"
+ ],
+ "examples/PIR.ec::Z3:5": [
+  "Distr_MUniform_duniform'def",
+  "Distr_MUniform_duniform1E",
+  "Distr_MUniform_duniform1E_uniq",
+  "Distr_MUniform_duniform_sort",
+  "Distr_MUniform_supp_duniform",
+  "Distr_MUniform_eq_duniformP",
+  "Distr_MUniform_finite_duniform",
+  "Distr_MUniform_duniform_uni"
+ ],
+ "examples/PIR.ec::CVC5:8": [],
+ "examples/PRG.ec::Z3:12": [
+  "Distr_MUniform_duniform1E",
+  "Distr_MUniform_duniform1E_uniq",
+  "Distr_MUniform_duniform_sort",
+  "Distr_MUniform_supp_duniform",
+  "Distr_MUniform_duniform_uni",
+  "Distr_MUniform_finite_duniform",
+  "Distr_MUniform_duniform1E"
+ ],
+ "examples/UC/dh_enc.ec::CVC5:31": [
+  "Composition_Right_sort",
+  "Composition_Right_proj_1_sort",
+  "Logic_odflt_sort",
+  "FMap_dom'def"
+ ],
+ "examples/UC/dh_enc.ec::Z3:5": [
+  "Ch_Init_sort",
+  "Logic_None_sort",
+  "Logic_Some_sort"
+ ],
+ "examples/Upto.ec::Z3:4": [
+  "Real_RField_add0r",
+  "Real_RField_addIr",
+  "Real_RField_addKr",
+  "Real_RField_addNKr",
+  "Real_RField_addNr",
+  "Real_RField_addr0",
+  "Real_RField_addrA",
+  "Real_RField_addrAC"
+ ],
+ "examples/WF-examp.ec::CVC5:7": [
+  "IntDiv_div0z",
+  "IntDiv_divz0",
+  "IntDiv_divz1",
+  "IntDiv_divzN",
+  "IntDiv_divzDl",
+  "IntDiv_divzDr",
+  "IntDiv_divz_eq"
+ ],
+ "examples/async-while.ec::Z3:1": [
+  "Int_lez_def",
+  "Int_lez_trans",
+  "Int_lez_total",
+  "Int_lez01",
+  "Int_lezNgt",
+  "Int_lez_add1r",
+  "Int_lez_add2l",
+  "Int_lez_add2r"
+ ],
+ "examples/br93.ec::CVC5:2": [
+  "RealExp_exp0",
+  "RealExp_exp_gt0",
+  "RealExp_exp_mono"
+ ],
+ "examples/br93.ec::Z3:1": [
+  "FMap_dom'def",
+  "FMap_domE",
+  "FMap_dom_ho_sort",
+  "FMap_dom_ho_spec"
+ ],
+ "examples/cramer-shoup/bad_abs.ec::CVC5:3": [
+  "RealExp_exp0",
+  "RealExp_exp_gt0",
+  "RealExp_exp_mono"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::Z3:21": [
+  "RealExp_ge1_sqrt",
+  "RealExp_ge2_e",
+  "RealExp_sqrt_gt0"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::CVC5:10": [
+  "Real_b2r0",
+  "Real_b2r1",
+  "Real_b2rE",
+  "Real_b2r_ge0",
+  "Real_RField_add0r",
+  "Real_RField_addKr"
+ ],
+ "examples/ehoare/adversary.ec::CVC5:1": [
+  "RealExp_rpow_gt0"
+ ],
+ "examples/ehoare/qselect/qselect.ec::CVC5:2": [],
+ "examples/global-hybrid/GlobalHybridExamp1.ec::CVC5:3": [],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::Z3:20": [
+  "FMap_fsize0_empty",
+  "FMap_fsize_empty",
+  "FMap_fsize_set",
+  "FMap_ge0_fsize"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::CVC5:21": [
+  "FMap_fmapP",
+  "FMap_fsize0_empty",
+  "FMap_fsize_empty",
+  "FMap_fsize_set"
+ ],
+ "examples/hashed_elgamal_generic.ec::CVC5:1": [],
+ "examples/hashed_elgamal_generic.ec::Z3:2": [
+  "DiffieHellman_GP_ZModE_ZModpField_MulMonoid_add0m",
+  "DiffieHellman_GP_ZModE_ZModpField_MulMonoid_addmA",
+  "DiffieHellman_GP_ZModE_ZModpField_MulMonoid_addmAC",
+  "DiffieHellman_GP_ZModE_ZModpField_MulMonoid_addmACA",
+  "DiffieHellman_GP_ZModE_ZModpField_MulMonoid_addmC",
+  "DiffieHellman_GP_ZModE_ZModpField_MulMonoid_addmCA",
+  "DiffieHellman_GP_ZModE_ZModpField_MulMonoid_iteropE",
+  "DiffieHellman_GP_ZModE_ZModpField_mul1r"
+ ],
+ "examples/hashed_elgamal_std.ec::CVC5:1": [
+  "RealExp_exp0",
+  "RealExp_exp_gt0",
+  "RealExp_exp_mono",
+  "RealExp_ge1_sqrt",
+  "RealExp_sqrt_gt0",
+  "RealExp_sqrt_mono"
+ ],
+ "examples/old/trapdoor.ec::CVC5:1": [
+  "RealExp_^'def",
+  "RealExp_rpow_gt0",
+  "RealExp_rpow_ge0",
+  "RealExp_exp_gt0"
+ ],
+ "examples/plug-and-pray/Plug_and_Pray_example.ec::CVC5:1": [
+  "List_Range_mem_range"
+ ],
+ "examples/prg-tutorial/PRGc.ec::CVC5:5": [
+  "StdBigop_Bigreal_Num_Domain_add0r",
+  "StdBigop_Bigreal_Num_Domain_addr0"
+ ],
+ "examples/upto_syntaxtic.ec::CVC5:1": [
+  "Core_<='def",
+  "Distr_daddE",
+  "Distr_dletE"
+ ],
+ "examples/upto_syntaxtic.ec::Z3:3": [
+  "StdOrder_RealOrder_maxrA",
+  "StdOrder_RealOrder_maxrC",
+  "StdOrder_RealOrder_maxrE",
+  "StdOrder_RealOrder_maxrl",
+  "StdOrder_RealOrder_maxrr"
+ ]
+}

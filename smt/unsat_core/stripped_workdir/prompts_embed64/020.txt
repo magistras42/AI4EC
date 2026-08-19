@@ -1,0 +1,78 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/ehoare/adversary.ec::CVC5:1
+source file: examples/ehoare/adversary.ec
+
+GOAL:
+(assert (not (<= 0.0 eps)))
+
+CANDIDATE LEMMAS (64 names, pre-ranked by relevance):
+- StdOrder_RealOrder_normr_lt0
+- StdOrder_RealOrder_ltr_nnorml
+- StdOrder_RealOrder_normr_gt0
+- StdOrder_RealOrder_normr_ge0
+- Xreal_Rp_of_realN
+- RealExp_exp_gt0
+- RealExp_rpowe_ge0
+- StdOrder_RealOrder_normr_le0
+- StdOrder_RealOrder_ler_nnorml
+- Xreal_Rp_of_real_le0
+- RealExp_ge0_sqrt
+- StdOrder_RealOrder_ler0N1
+- StdOrder_RealOrder_ler0_def
+- Distr_mu_pos_fin
+- RealExp_le1Dx_rpowe
+- RealExp_rpowe_gt0
+- StdOrder_RealOrder_eqr_norm_id
+- StdOrder_RealOrder_ger0_def
+- StdOrder_RealOrder_ler0_norm
+- StdOrder_RealOrder_normr_idP
+- StdOrder_RealOrder_unit_normr
+- DBool_Biased_clamp_ge0
+- RealExp_exp_neq0
+- RealExp_le1Dx_exp
+- StdOrder_RealOrder_ltr0N1
+- RealExp_rpow_ge0
+- StdOrder_RealOrder_eqr_normN
+- StdOrder_RealOrder_ger0_norm
+- Xreal_Rp_to_real_range
+- RealExp_rpow_gt0
+- StdOrder_RealOrder_normE
+- StdOrder_RealOrder_normr_unit
+- Xreal_Rp_%pos'def
+- Xreal_Rp_to_realP
+- Xreal_Rp_to_realP_simpl
+- RealExp_e_ge0
+- RealExp_sqrt_gt0
+- StdOrder_RealOrder_exprn_egt1
+- Xreal_Rp_of_real_neg
+- RealExp_rpow_hmono
+- RealSeries_neg_ge0
+- StdOrder_RealOrder_exprn_ilt1
+- StdOrder_RealOrder_ge0_sqr
+- StdOrder_RealOrder_gtr0_norm
+- dr_mu1
+- Real_RField_lreg_neq0
+- Real_`___'def
+- Real_gt_intp
+- Real_lub_adherent
+- StdBigop_Bigreal_Num_Domain_lreg_neq0
+- StdOrder_RealOrder_Domain_lreg_neq0
+- StdOrder_RealOrder_ler_norm
+- StdOrder_RealOrder_lt0r_neq0
+- StdOrder_RealOrder_ltr0_neq0
+- DBool_Biased_clamp_le1
+- RealExp_rpow1
+- Real_RField_lregP
+- StdBigop_Bigreal_Num_Domain_lregP
+- StdOrder_RealOrder_Domain_lregP
+- StdOrder_RealOrder_expr_gt0
+- RealExp_rpow_mono
+- RealSeries_pos_ge0
+- Real_ceil_lt
+- StdOrder_RealOrder_lerN10
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

@@ -1,0 +1,27 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/global-hybrid/GlobalHybridExamp2.ec::26
+source file: examples/global-hybrid/GlobalHybridExamp2.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (forall ((et1 (tuple2 (tuple8 (tuple3 key key key) exp exp exp ro_in_t exp ro_in_t exp) memory)) (et2 (tuple2 (tuple4 (tuple3 key key key) exp exp exp) memory))) (=> (and (and (and (and (= (RO_Disting1_sli (proj2_1 et1)) iqt) (and (= (Reduct_sli (proj2_1 et2)) iqt) (and (= (RO_Disting1_Or_slctr (proj2_1 et1)) (Reduct_Or_slctr (proj2_1 et2))) (and (= (FMap___lb_rb1 (FullRO_RO_slm (proj2_1 et1)) A) (Logic_Some q1_R)) (and (= (FMap___lb_rb1 (FullRO_RO_slm (proj2_1 et1)) B) (Logic_Some q2_R)) (and (= (Reduct_slu (proj2_1 et2)) (cf g q1_R)) (and (= (Reduct_slv (proj2_1 et2)) (cf g q2_R)) (= (Reduct_slw (proj2_1 et2)) (cf g (as q1_R q2_R)))))))))) (<= (RO_Disting1_Or_slctr (proj2_1 et1)) m)) (not (< (RO_Disting1_Or_slctr (proj2_1 et1)) (RO_Disting1_sli (proj2_1 et1))))) (= (RO_Disting1_Or_slctr (proj2_1 et1)) (RO_Disting1_sli (proj2_1 et1)))) (forall ((r0 exp)) (=> (Distr_support1 dexp r0) (forall ((r1 exp)) (=> (Distr_support1 dexp r1) (and (and (= (cf g (Logic_odflt1 witness2 (FMap___lb_rb1 (FullRO_RO_slm (proj2_1 et1)) A))) (Reduct_slu (proj2_1 et2))) (and (= (cf g (Logic_odflt1 witness2 (FMap___lb_rb1 (FullRO_RO_slm (proj2_1 et1)) B))) (Reduct_slv (proj2_1 et2))) (= (cf g (as (Logic_odflt1 witness2 (FMap___lb_rb1 (FullRO_RO_slm (proj2_1 et1)) A)) (Logic_odflt1 witness2 (FMap___lb_rb1 (FullRO_RO_slm (proj2_1 et1)) B)))) (Reduct_slw (proj2_1 et2))))) (and (= (RO_Disting1_sli (proj2_1 et1)) iqt) (and (= (Reduct_sli (proj2_1 et2)) iqt) (and (= (+ (RO_Disting1_Or_slctr (proj2_1 et1)) 1) (+ (Reduct_Or_slctr (proj2_1 et2)) 1)) (and (= (FMap___lb_rb1 (FullRO_RO_slm (proj2_1 et1)) A) (Logic_Some q1_R)) (and (= (FMap___lb_rb1 (FullRO_RO_slm (proj2_1 et1)) B) (Logic_Some q2_R)) (and (= (Reduct_slu (proj2_1 et2)) (cf g q1_R)) (and (= (Reduct_slv (proj2_1 et2)) (cf g q2_R)) (= (Reduct_slw (proj2_1 et2)) (cf g (as q1_R q2_R)))))))))))))))))))
+
+CANDIDATE LEMMAS (13 names):
+- Distr_support'def
+- FMap___[_]'def
+- FMap___[_]_sort
+- FMap_tomap_sort
+- Logic_None_sort
+- Logic_Some_proj_1'def
+- Logic_Some_proj_1_sort
+- Logic_Some_sort
+- Logic_odflt'def
+- Logic_odflt_sort
+- Logic_option_inversion
+- Logic_pred1_ho_sort
+- Logic_pred1_ho_spec
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

@@ -1,0 +1,18 @@
+You are helping an EasyCrypt proof: an SMT solver must prove the goal below.
+From the candidate lemmas (axioms available in the environment), pick the ones
+the solver actually NEEDS. Most goals need only 1-3 of them.
+
+goal_id: examples/prg-tutorial/PRGc.ec::9
+source file: examples/prg-tutorial/PRGc.ec
+
+GOAL (Why3-translated proof obligation; the (assert (not ...)) form):
+(assert (not (forall ((i Int)) (= (Logic_bso1 unamed_lambda (select (select Logic_bso_ho1 prefix_mn_ho) unamed_lambda1) i) (to_real i)))))
+
+CANDIDATE LEMMAS (4 names):
+- Logic___o'def
+- Logic___o_ho_sort
+- Logic___o_ho_spec
+- Logic___o_sort
+
+Answer with up to 8 candidate names, ranked most-necessary first, copied
+EXACTLY from the list above.

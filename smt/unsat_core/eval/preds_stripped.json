@@ -1,0 +1,232 @@
+{
+ "examples/ChaChaPoly/chacha_poly.ec::Z3:6": [
+  "List_size_nseq",
+  "GenBlock_ge0_block_size",
+  "Int_max'def"
+ ],
+ "examples/ChaChaPoly/chacha_poly.ec::CVC5:1": [
+  "Int_min'def",
+  "Int_minzz",
+  "Int_min_ho_spec"
+ ],
+ "examples/ChaChaPoly/ske.ec::Z3:1": [
+  "SKE_RND_CCA_CPA_UFCMA_dec_enc",
+  "FMap_get_setE",
+  "FMap_mem_set",
+  "FMap_get_set_sameE",
+  "FMap_get_set_neqE",
+  "FMap_domE"
+ ],
+ "examples/FundamentalLemma.ec::CVC5:6": [
+  "Real_`___'def",
+  "max'def",
+  "Distr_ge0_mu1",
+  "StdOrder_RealOrder_ger0_norm",
+  "StdOrder_RealOrder_ler_norml"
+ ],
+ "examples/MEE-CBC/FunctionalSpec.ec::CVC5:1": [
+  "pad_length'def",
+  "Int_max'def",
+  "IntDiv_modz_ge0",
+  "IntDiv_ltz_pmod",
+  "IntDiv_%_'def"
+ ],
+ "examples/MEE-CBC/RCPA_CMA.ec::Z3:3": [
+  "FSet_in_fsetU1",
+  "FSet_in_fsetU",
+  "FSet_in_fset1"
+ ],
+ "examples/MEE-CBC/RCPA_CMA.ec::CVC5:8": [
+  "EtM_dC_ll",
+  "Distr_dprod_ll",
+  "Distr_MUnit_dunit_ll",
+  "Distr_dprod_ll_auto",
+  "Distr_`*`'def"
+ ],
+ "examples/PIR.ec::Z3:5": [
+  "sxor2'def",
+  "sxor2_cons",
+  "Distr_MUniform_supp_duniform",
+  "sxor'def",
+  "sxor_cons",
+  "List_mem_seq2"
+ ],
+ "examples/PIR.ec::CVC5:8": [
+  "sxor2_cons",
+  "sxor2'def",
+  "sxor'def",
+  "sxor_cons"
+ ],
+ "examples/PRG.ec::Z3:12": [
+  "List_size_ge0",
+  "Int_lez_anti",
+  "Int_eqz_leq"
+ ],
+ "examples/UC/dh_enc.ec::CVC5:31": [
+  "Composition_sum_inversion",
+  "Composition_Right_sort",
+  "Composition_Right_proj_1'def"
+ ],
+ "examples/UC/dh_enc.ec::Z3:5": [
+  "stlkg_inversion",
+  "Ch_Init_sort",
+  "Ch_Blocked2_sort",
+  "Ch_Blocked2_proj_1'def",
+  "Logic_option_inversion",
+  "Logic_None_sort"
+ ],
+ "examples/Upto.ec::Z3:4": [
+  "Distr_ge0_mu1",
+  "Distr_ge0_mu"
+ ],
+ "examples/WF-examp.ec::CVC5:7": [
+  "IntDiv_divz_small",
+  "List_size_ge0",
+  "IntDiv_divz_eq0",
+  "IntDiv_pdiv_small"
+ ],
+ "examples/async-while.ec::Z3:1": [
+  "StdOrder_IntOrder_ltr_pmul2r",
+  "Real_fromintM",
+  "Real_lt_fromint",
+  "StdOrder_RealOrder_ltr_pmul2l",
+  "StdOrder_IntOrder_ltr_pmul2l",
+  "Real_fromintD",
+  "Real_le_fromint",
+  "Real_fromint1"
+ ],
+ "examples/br93.ec::CVC5:2": [
+  "BR93_pr_Game2_OW",
+  "BR93_pr_Game2",
+  "BR93_pr_Game1_Game2",
+  "BR93_pr_Game0_Game1",
+  "BR93_pr_bad_Game1_Game2",
+  "BR93_OW_OWr",
+  "Distr_ge0_mu1"
+ ],
+ "examples/br93.ec::Z3:1": [
+  "FMap_mem_set",
+  "FMap_domE",
+  "FMap_get_setE",
+  "FMap_get_set_sameE",
+  "FMap_get_set_neqE",
+  "FMap_dom'def",
+  "SmtMap_get_setE"
+ ],
+ "examples/cramer-shoup/bad_abs.ec::CVC5:3": [
+  "Distr_ge0_mu1",
+  "Distr_ge0_mu",
+  "Distr_mu_bounded",
+  "Distr_le1_mu1"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::Z3:21": [
+  "Distr_ge0_mu1",
+  "Distr_ge0_mu",
+  "Distr_mu_bounded",
+  "Ad1_pr_abs"
+ ],
+ "examples/cramer-shoup/cramer_shoup.ec::CVC5:10": [
+  "Real_`___'def",
+  "Real_`____ho_spec",
+  "Distr_ge0_mu1",
+  "Distr_mu_bounded"
+ ],
+ "examples/ehoare/adversary.ec::CVC5:1": [
+  "dr_mu_test",
+  "Distr_ge0_mu",
+  "dr_mu1",
+  "Distr_ge0_mu1",
+  "Distr_mu_bounded",
+  "test_ho_spec"
+ ],
+ "examples/ehoare/qselect/qselect.ec::CVC5:2": [
+  "Array_get_set_if",
+  "Array_size_set",
+  "Array_get_set"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp1.ec::CVC5:3": [
+  "mu1_dt",
+  "Logic_pred1_ho_spec",
+  "dt_uni",
+  "dt_fu",
+  "ge1_n"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::Z3:20": [
+  "FMap_mem_empty",
+  "FMap_emptyE",
+  "FMap_domE",
+  "FMap_dom'def",
+  "SmtMap_cstE",
+  "FMap_getE",
+  "FMap_ofmapK"
+ ],
+ "examples/global-hybrid/GlobalHybridExamp2.ec::CVC5:21": [
+  "FMap_mem_set",
+  "FMap_mem_empty",
+  "FMap_get_set_neqE",
+  "FMap_domE",
+  "FMap_emptyE",
+  "FMap_dom'def",
+  "SmtMap_cstE"
+ ],
+ "examples/hashed_elgamal_generic.ec::CVC5:1": [
+  "FSet_fcardU1",
+  "gt0_qH",
+  "Int_b2i'def",
+  "Int_b2i_ge0",
+  "Int_b2i_le1",
+  "FSet_fcard_ge0"
+ ],
+ "examples/hashed_elgamal_generic.ec::Z3:2": [
+  "DiffieHellman_GP_expM",
+  "gt0_qH",
+  "DiffieHellman_GP_expE",
+  "DiffieHellman_GP_^'def"
+ ],
+ "examples/hashed_elgamal_std.ec::CVC5:1": [
+  "StdOrder_RealOrder_ler_dist_add",
+  "StdOrder_RealOrder_distrC",
+  "StdOrder_RealOrder_ler_norm_add",
+  "StdOrder_RealOrder_normrN",
+  "Real_`___'def"
+ ],
+ "examples/old/trapdoor.ec::CVC5:1": [
+  "StdOrder_RealOrder_ler_wpmul2l",
+  "StdOrder_RealOrder_ler_wpmul2r",
+  "Real_RField_mulrC",
+  "StdOrder_RealOrder_ler_pmul2l",
+  "StdOrder_RealOrder_ler_pmul",
+  "StdOrder_RealOrder_mulr_ge0"
+ ],
+ "examples/plug-and-pray/Plug_and_Pray_example.ec::CVC5:1": [
+  "gt0_q",
+  "List_Range_range_ltn",
+  "List_Range_mem_range",
+  "List_in_nil",
+  "List_Range_size_range",
+  "List_size_eq0",
+  "List_Range_range'def"
+ ],
+ "examples/prg-tutorial/PRGc.ec::CVC5:5": [
+  "Distr_ge0_mu1",
+  "Distr_ge0_mu",
+  "Distr_mu_bounded",
+  "Distr_le1_mu1"
+ ],
+ "examples/upto_syntaxtic.ec::CVC5:1": [
+  "Distr_ge0_mu1",
+  "Distr_ge0_mu",
+  "Distr_mu_bounded",
+  "Distr_le1_mu1"
+ ],
+ "examples/upto_syntaxtic.ec::Z3:3": [
+  "Real_`___'def",
+  "StdOrder_RealOrder_maxr'def",
+  "Distr_ge0_mu1",
+  "StdOrder_RealOrder_ler_norml",
+  "StdOrder_RealOrder_maxrl",
+  "StdOrder_RealOrder_maxrr",
+  "StdOrder_RealOrder_ger0_norm",
+  "StdOrder_RealOrder_normE"
+ ]
+}
