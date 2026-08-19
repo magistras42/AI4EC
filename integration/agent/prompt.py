@@ -1,0 +1,1341 @@
+"""Prompt construction for stateless LLM iterations."""
+
+from __future__ import annotations
+
+import re
+from pathlib import Path
+from typing import Any
+
+from .ec_context import format_context_note, format_introduction_note
+from .ec_program import (
+    ProgramPair,
+    common_prefix_length,
+    parse_program_block,
+    seq_candidates,
+)
+from .error_history import normalize_tactic
+from .llm import action_response_format_spec
+
+EXAMPLES_PATH = Path(__file__).resolve().parent / "examples" / "tactics_fewshot.md"
+
+_HL_JUDGMENT_RE = re.compile(r"\b(hoare|ehoare|phoare|equiv)\s*\[", re.IGNORECASE)
+_IMPL_BEFORE_HL_RE = re.compile(
+    r"=>\s*(hoare|ehoare|phoare|equiv)\s*\[",
+    re.IGNORECASE,
+)
+# Module paths may include functor apps: M(A).f or Game(Adv).step ~ Game(Adv).step
+_MOD_PATH = r"[A-Za-z_][\w']*(?:\([^)]*\))?(?:\.[A-Za-z_][\w']*(?:\([^)]*\))?)+"
+_PROC_HEADER_RE = re.compile(
+    rf"^\s*{_MOD_PATH}(?:\s*~\s*{_MOD_PATH})?\s*$"
+)
+_CALL_STMT_RE = re.compile(r"<@|\bcall\b", re.IGNORECASE)
+# Random sampling. Its absence from the statement vocabulary is why goals whose
+# remaining code was a sampling read as "no code left": `<$` was matched by
+# nothing, so the prompt advised `skip.` where `rnd` was the correct move.
+_SAMPLING_RE = re.compile(r"<\$")
+_ASSIGN_RE = re.compile(r"<-")
+# EasyCrypt's per-instruction index in the two-column equiv dump, e.g. "(1)".
+_INSTR_INDEX_RE = re.compile(r"\(\s*\d+\s*\)")
+# Any recognizable instruction form.
+_STATEMENT_RE = re.compile(r"<\$|<-|<@|\bwhile\s*\(|\bif\s*\(|\bcall\b", re.IGNORECASE)
+_IN_SYNC_RE = re.compile(r"programs\s+are\s+in\s+sync", re.IGNORECASE)
+_WHILE_RE = re.compile(r"\bwhile\s*\(")
+_IF_RE = re.compile(r"\bif\s*\(")
+_NONLINEAR_RE = re.compile(r"\^|\blog\b|\bln\b|\bexp\b|\*\s*[A-Za-z0-9_(]")
+
+BASE_TOOL_SPEC = """\
+Respond with exactly one JSON object and no other text.
+
+Tactic:
+{"action": "tactic", "tactic": "by rewrite addr0.", "name": "", "query": "", "count": ""}
+
+Undo one or more tactic steps (never undo the lemma signature or `proof.` line).
+Omit count or use "" / "1" to undo a single step; set count to undo several:
+{"action": "undo", "tactic": "", "name": "", "query": "", "count": ""}
+{"action": "undo", "tactic": "", "name": "", "query": "", "count": "3"}
+
+Never use the `admit` tactic: it marks a goal as assumed rather than
+proving it, and will be rejected outright.
+"""
+
+LOOKUP_TOOL_SPEC = """
+Lookup a lemma or axiom by EasyCrypt-qualified path (``Theory.basename``) or bare
+basename (lists all theories when ambiguous):
+{"action": "lookup_lemma", "tactic": "", "name": "RField.exprM", "query": "", "count": ""}
+{"action": "lookup_lemma", "tactic": "", "name": "exprM", "query": "", "count": ""}
+
+Search lemmas. Put the mode in ``name`` (empty = semantic). Modes:
+  semantic  — embedding cosine similarity (may miss exact identifiers)
+  substring — case-insensitive substring over lemma paths/names, then signatures
+  prefix    — lemma paths or basenames starting with the query
+  exact     — exact qualified path or unique basename (case-insensitive)
+Optional theory filter (any mode): include ``theory:Path`` in the query, e.g.
+``theory:RField`` or ``theory:Ring.IntID``. Remaining tokens are the search text.
+Catalog keys are qualified paths (``RField.exprM``, ``Ring.IntID.exprM``); use
+those names in ``apply`` / ``rewrite`` / ``smt(...)``.
+Examples:
+{"action": "search_lemmas", "tactic": "", "name": "", "query": "natural log product", "count": ""}
+{"action": "search_lemmas", "tactic": "", "name": "substring", "query": "lnM", "count": ""}
+{"action": "search_lemmas", "tactic": "", "name": "prefix", "query": "ln", "count": ""}
+{"action": "search_lemmas", "tactic": "", "name": "exact", "query": "lnM", "count": ""}
+{"action": "search_lemmas", "tactic": "", "name": "substring", "query": "theory:RField exprM", "count": ""}
+{"action": "search_lemmas", "tactic": "", "name": "substring", "query": "theory:RField", "count": ""}
+If semantic search fails to surface a known identity, switch to substring/prefix/exact
+with a short token from the expected lemma name. Do not repeat the same search
+mode+query. The harness limits consecutive lookup/search actions.
+"""
+
+TOOL_SPEC = BASE_TOOL_SPEC
+
+_ANTI_LOOP_RULE = (
+    "## Anti-loop rule\n"
+    "After any failed tactic, the next action MUST change strategy class:\n"
+    "- break a compound `t1; t2.` into separate steps,\n"
+    "- change the invariant / lemma arguments,\n"
+    "- try a different head tactic,\n"
+    "- or use lookup/search/undo.\n"
+    "Whitespace, `&&` vs `/\\`, or reordering equivalent conjuncts do NOT "
+    "count as a new strategy. The harness hard-rejects normalized duplicates "
+    "of tactics that already failed at this goal."
+)
+
+_ROLLBACK_RULE = (
+    "## Failed tactics are rolled back\n"
+    "When a tactic fails (EasyCrypt error, parse error, format error, or "
+    "harness rejection), the harness removes it from the proof script. "
+    "The proof state does not advance, so the next prompt shows the SAME "
+    "current goal on purpose — that is not a stale or repeated user "
+    "message. Read the failure feedback below and choose a different "
+    "tactic; do not treat an unchanged goal as missing error context."
+)
+
+_GOAL_SHAPE_RULE = (
+    "## Goal shape before program-logic tactics\n"
+    "Read the formula under the dashed separator carefully:\n"
+    "- If it is an implication or has leading binders wrapping a Hoare/pHoare/"
+    "equiv judgment (e.g. `H => hoare[...]`, `forall x, hoare[...]`), first "
+    "introduce those hypotheses/binders with `move => ...` (or `move => /#`). "
+    "Only then apply `proc.`, `while`, `wp`, etc. Those tactics expect a bare "
+    "program-logic judgment, not `P => judgment`.\n"
+    "- If it already shows `pre =` / `post =` (or a bare `hoare`/`phoare`/"
+    "`equiv` judgment), do not re-introduce; use program-logic tactics.\n"
+    "- If it is a plain ambient formula, use ambient tactics only.\n"
+    "The prompt also adds **Active goal-shape hints** under the current goal "
+    "whenever the displayed state matches a known shape — read those before "
+    "choosing a tactic; do not wait for a failed attempt."
+)
+
+_PROGRAM_LOGIC_MENU_RULE = (
+    "## Program-logic tactic menu (match the leading statements)\n"
+    "Inspect the statement lists between `pre =` and `post =` (left and "
+    "right columns for `equiv`). Choose a head tactic that matches what is "
+    "actually at the front of each side:\n"
+    "- Closed procedure header (`M.f` or `M.f ~ N.g`, no numbered statements "
+    "yet): usually `proc.` to open bodies. Prefer `proc*.` when you still "
+    "need the original procedure identity so a later `call` can apply a lemma "
+    "about those procedures (plain `proc.` opens bodies and drops that link).\n"
+    "- Identical abstract procedure calls on both sides of an `equiv`, with no "
+    "useful specification: `call (_: true)` then `auto` / `skip` — a full "
+    "`call (_: P ==> Q)` that restates the same goal is circular.\n"
+    "- Concrete module/procedure bodies still wrapped behind a call: try "
+    "`inline *` (or `inline M.f`) before `wp` / `auto`, so constants and "
+    "assignments become visible.\n"
+    "- `while` with a small, statically known trip count in the precondition: "
+    "consider `unroll k.` at the loop's code position, then `rcondf` / "
+    "`rcondt` when the remaining guard is obviously false/true. Do not insist "
+    "on inventing an invariant when unrolling is enough.\n"
+    "- `while` with unknown/large bound: use `while (invariant).`, then "
+    "discharge body preservation and init/exit separately.\n"
+    "- Asymmetric `equiv` (loop/`if` on one side only, other side empty or "
+    "different): use `seq` to carve matching prefixes before `while` / "
+    "`rcondt` / `rcondf` / `if`. Applying `while` or `rcondf` to the wrong "
+    "side or wrong code position fails with a shape error — that does NOT "
+    "mean the goal became ambient.\n"
+    "- Empty instruction lists (no statements left): `skip.` then ambient "
+    "tactics. After `skip.`, program-logic tactics (`wp`, `proc`, `while`, "
+    "`call`) no longer apply.\n"
+    "- Nonlinear arithmetic in invariants or residuals (`^`, products, logs): "
+    "bare `smt()` often fails — use `simplify` / `progress`, named "
+    "`smt(Lemma)`, `rewrite`, or search for the algebraic identity."
+)
+
+_SIMPLIFY_RULE = (
+    "## When to simplify / progress\n"
+    "`simplify` and `progress` clean definitional and propositional clutter; "
+    "they are not substitutes for a correct invariant or lemma.\n"
+    "Prefer them when:\n"
+    "- After `proc.` / `wp` / `skip` / `while` / `auto`, the remaining goal is "
+    "still definitionally heavy (projections, pairs, unreduced applications, "
+    "large nested equalities) rather than a short ambient formula.\n"
+    "- After `skip.`, the goal is now ambient (plain formula / implication). "
+    "If `smt()` fails on a busy residual, try `progress.` or `simplify.` "
+    "once to split conjuncts / reduce projections, then retry automation or "
+    "a named lemma — do not re-apply `skip.` / `wp.`.\n"
+    "- Concrete numeric or algebraic goals remain after program-logic reduction "
+    "and bare `smt()` fails — try `simplify.` or `progress.` once, then retry "
+    "automation or a named lemma.\n"
+    "- A one-shot `while (...); auto; smt()` fails: switch to stepwise `while`, "
+    "inspect each subgoal, and consider `simplify`/`progress` on busy residual "
+    "goals before another SMT attempt.\n"
+    "Do not spam `simplify.` when the goal is already a simple ambient formula."
+)
+
+_LEMMA_SEARCH_RULE = (
+    "## Finding algebraic identities\n"
+    "Semantic search often misses short lemma names. When you need a known "
+    "rewrite (exponent laws, ring identities, etc.): try `substring` / "
+    "`prefix` / `exact` on a short token from the name, optionally scoped "
+    "with `theory:Path` (e.g. `theory:RField` or `theory:Ring.IntID`). "
+    "Use the returned qualified path in `rewrite` / `apply` / `smt(...)`. "
+    "Do not burn the search budget on repeated semantic queries."
+)
+
+
+def load_fewshot_examples(path: Path | None = None) -> str:
+    example_path = path or EXAMPLES_PATH
+    return example_path.read_text(encoding="utf-8")
+
+
+def _goal_conclusion(goal: str) -> str:
+    """Return the formula below EasyCrypt's dashed separator, if present."""
+    text = goal or ""
+    if "------------------------------------------------------------------------" in text:
+        text = text.split("------------------------------------------------------------------------")[-1]
+    return text.strip()
+
+
+def goal_looks_program_logic(goal: str) -> bool:
+    """True when the displayed goal still looks like Hoare/pHoare/equiv form."""
+    text = goal or ""
+    if "pre =" in text and "post =" in text:
+        return True
+    compact = re.sub(r"\s+", " ", text).lower()
+    if _HL_JUDGMENT_RE.search(compact):
+        return True
+    # EasyCrypt often prints open statement lists without repeating `equiv[`.
+    if _WHILE_RE.search(text) or _IF_RE.search(text):
+        return True
+    return False
+
+
+def goal_is_implication_before_hl(goal: str) -> bool:
+    """True when the conclusion is H => HL-judgment or forall-wrapped HL."""
+    compact = re.sub(r"\s+", " ", _goal_conclusion(goal)).strip().lower()
+    if not compact:
+        return False
+    if re.match(r"^(forall|∀)\b", compact) and _HL_JUDGMENT_RE.search(compact):
+        return True
+    return bool(_IMPL_BEFORE_HL_RE.search(compact))
+
+
+_SUBGOAL_HEADER_RE = re.compile(r"^[ \t]*Goal #(\d+)\s*$", re.MULTILINE)
+_REMAINING_RE = re.compile(r"remaining:\s*(\d+)")
+
+
+def count_subgoals(goal: str) -> int:
+    """How many goals EasyCrypt says are open, per the ``(remaining: N)`` header."""
+    match = _REMAINING_RE.search(goal or "")
+    if match:
+        return int(match.group(1))
+    return 1 if (goal or "").strip() else 0
+
+
+def active_goal_text(goal: str) -> str:
+    """Return ONLY the active (first) subgoal from an EasyCrypt goal dump.
+
+    EasyCrypt prints every open goal, the active one first and the rest under
+    ``Goal #2``, ``Goal #3``, ... A tactic applies to the active goal alone,
+    but every shape heuristic here used to run over the whole dump, so it
+    described a blend of goals that does not exist. Measured over one run:
+    90% of prompts carried more than one subgoal, 70% of the goal text was
+    inactive, and 38% of prompts got different advice once scoped -- including
+    fabricated ``seq`` instruction counts lifted from a *different* subgoal
+    and handed to the model for a goal with no program in it at all.
+    """
+    text = goal or ""
+    match = _SUBGOAL_HEADER_RE.search(text)
+    return text[: match.start()].rstrip() if match else text
+
+
+def _program_statement_block(goal: str) -> str:
+    """Extract the statement region between pre= and post= when present.
+
+    EasyCrypt prints the region as::
+
+        pre =
+          <precondition formula, ANY number of lines>
+
+        q <$ dexp                  (1)  q1 <$ dexp
+
+        post =
+
+    The precondition and the statements are separated by a blank line, and
+    statement lines carry a distinctive shape (``<$`` / ``<-`` / ``<@`` /
+    ``while`` / ``if``, or an ``(N)`` instruction index).
+
+    This used to drop only the FIRST line after ``pre =`` and treat everything
+    else as statements, so a multi-line precondition leaked in wholesale. Since
+    a precondition of plain equalities contains none of the statement markers,
+    the leaked text then read as "no code left" and the caller advised ``skip.``
+    on goals whose programs were not empty at all -- 121 times across the
+    measured runs, with ``skip`` failing on ``left instruction list is not
+    empty``.
+    """
+    text = goal or ""
+    if "pre =" not in text or "post =" not in text:
+        return ""
+    mid = text.split("pre =", 1)[1].split("post =", 1)[0]
+    # `strip("\n")`, not `strip()`: leading spaces on the FIRST line are the
+    # left column of the two-column dump being empty, and a bare `.strip()`
+    # deletes them, shifting that row's shared index marker out of alignment
+    # with every other row. `ec_program` locates the index column by agreement
+    # across rows, so one misaligned row cost the whole block -- 25 of 683 real
+    # blocks parsed as unindexed for this reason alone.
+    return "\n".join(_statement_lines(mid)).strip("\n")
+
+
+def _statement_lines(region: str) -> list[str]:
+    """Lines in `region` that are program statements rather than formula text.
+
+    Deliberately conservative: a line is a statement only when it shows a
+    recognizable instruction form. Misclassifying formula text AS code is the
+    safer error here -- it suppresses an "apply skip" claim rather than
+    inventing one.
+    """
+    out: list[str] = []
+    for raw in (region or "").splitlines():
+        line = raw.rstrip()
+        if not line.strip():
+            continue
+        # A closed procedure header (`M.f` / `M.f ~ N.g`) IS the remaining
+        # program -- the bodies simply have not been opened by `proc.` yet --
+        # but it carries none of the instruction markers, so it needs its own
+        # clause or `proc`-stage goals read as empty.
+        if _PROC_HEADER_RE.match(line.strip()):
+            out.append(line)
+            continue
+        if _STATEMENT_RE.search(line) or _INSTR_INDEX_RE.search(line):
+            out.append(line)
+    return out
+
+
+def _programs_in_sync(goal: str) -> bool:
+    """True when EasyCrypt reports both sides hold IDENTICAL remaining code.
+
+    It prints this instead of the statement lists::
+
+        &1 (left ) : {..., c : cipher} [programs are in sync]
+
+    The marker means code REMAINS on both sides -- the opposite of what the
+    absence of a printed statement list naively suggests.
+    """
+    return bool(_IN_SYNC_RE.search(goal or ""))
+
+
+def _statement_kind(line: str, *, position: str) -> str | None:
+    """Classify one instruction, and name the tactic that consumes it.
+
+    ``position`` is "last" or "first" because EasyCrypt's tactics divide on
+    exactly that: ``rnd`` and ``wp`` work backwards from the END of the
+    program, while ``if`` / ``rcondt`` / ``rcondf`` work forwards from the
+    FRONT. Advice keyed to the wrong end is worse than none.
+    """
+    consumes_last = position == "last"
+    if _SAMPLING_RE.search(line):
+        return ("random sampling (`<$`) — `rnd` applies here" if consumes_last
+                else "random sampling (`<$`) — `seq 1 1` to split it off")
+    if _CALL_STMT_RE.search(line):
+        return "procedure call (`<@`) — `call` / `inline` applies here"
+    if _ASSIGN_RE.search(line):
+        return ("assignment (`<-`) — `wp` applies here" if consumes_last
+                else "assignment (`<-`) — `wp` works from the END, not here")
+    if _WHILE_RE.search(line):
+        return "`while` loop — `while (Inv).` or `unroll`"
+    if _IF_RE.search(line):
+        return "conditional — `if` / `rcondt` / `rcondf` applies here"
+    return None
+
+
+def _last_statement_kind(side: str) -> str | None:
+    """What the final instruction on one side is, for tactic selection.
+
+    ``rnd`` requires the last instruction on both sides to be a random
+    sampling; applying it otherwise is ``invalid arguments`` / ``invalid last
+    instruction``, which was 31 of 134 measured tactic failures.
+    """
+    lines = [l for l in (side or "").splitlines() if l.strip()]
+    if not lines:
+        return None
+    return _statement_kind(lines[-1], position="last")
+
+
+def _first_statement_kind(side: str) -> str | None:
+    """What the FIRST instruction on one side is.
+
+    The symmetric gap to `_last_statement_kind`, and it cost more than the
+    original. `if`, `rcondt` and `rcondf` all address the head of the program,
+    and the hint block named only the tail -- so a model told "last
+    instruction: assignment" still had nothing to decide `if` on. Measured
+    over the 2026-08-05 run: ``invalid first instruction`` was 13 of 78 tactic
+    failures, every one of them an `if`, and the second most common failure
+    message overall.
+    """
+    lines = [l for l in (side or "").splitlines() if l.strip()]
+    if not lines:
+        return None
+    return _statement_kind(lines[0], position="first")
+
+
+def _split_equiv_columns(block: str) -> tuple[str, str]:
+    """Best-effort split of EasyCrypt's two-column equiv statement dump."""
+    if not block:
+        return "", ""
+    left_parts: list[str] = []
+    right_parts: list[str] = []
+    for raw in block.splitlines():
+        line = raw.rstrip()
+        if not line.strip():
+            continue
+        # Common dumps pad a wide left column then a right column.
+        m = re.match(r"^(.*?)(?: {2,}|\t+)(\(.*)$", line)
+        if m:
+            left_parts.append(m.group(1))
+            right_parts.append(m.group(2))
+            continue
+        if re.match(r"^\s*\(", line) and left_parts and not "".join(left_parts).strip():
+            right_parts.append(line)
+        else:
+            left_parts.append(line)
+    return "\n".join(left_parts), "\n".join(right_parts)
+
+
+def _has_proc_header(block: str) -> bool:
+    stripped = block.strip()
+    if not stripped:
+        return False
+    # A lone Module.proc / Module.f ~ Module.g line, no numbered code yet.
+    if re.search(r"\(\d", stripped):
+        return False
+    if _WHILE_RE.search(stripped) or _IF_RE.search(stripped) or _CALL_STMT_RE.search(
+        stripped
+    ):
+        return False
+    for line in stripped.splitlines():
+        if _PROC_HEADER_RE.match(line.strip()):
+            return True
+    return False
+
+
+def _side_is_empty(side: str) -> bool:
+    text = side.strip()
+    if not text:
+        return True
+    # Column placeholders / whitespace-only dumps count as empty.
+    compact = re.sub(r"[\s().\d-]+", "", text)
+    return not compact
+
+
+def _goal_section(goal: str) -> list[str]:
+    """Render the goal, naming which part a tactic will actually act on.
+
+    A bare ``(remaining: 3)`` header followed by three undifferentiated dumps
+    does not say which goal is active, and the model was observed choosing
+    tactics that fit an inactive one. The active goal is kept first and
+    labelled; the rest stay for context, explicitly marked as not actionable.
+    """
+    text = goal or ""
+    subgoals = count_subgoals(text)
+    if subgoals <= 1:
+        return ["## Current goal", text, ""]
+
+    active = active_goal_text(text)
+    rest = text[len(active) :].lstrip("\n")
+    return [
+        f"## Current goal — ACTIVE (1 of {subgoals} open)",
+        "Your tactic applies to THIS goal only.",
+        "",
+        active,
+        "",
+        f"## Other open goals ({subgoals - 1}) — context only, not actionable yet",
+        "Do not pick a tactic to fit these; they become active only after the "
+        "goal above is discharged.",
+        "",
+        rest,
+        "",
+    ]
+
+
+def format_replayed_prefix_note(replayed_prefix: int) -> str:
+    """Tell the model which tactics are verified work, not its own guesses.
+
+    Nothing previously distinguished the replayed prefix from tactics the model
+    had added itself, and it destroyed the prefix routinely. On run
+    20260807T031032Z one `undo` of count 12 erased 12 of `G1_G2_eq`'s 18
+    replayed tactics at step 2, after a single failed `smt`; across that run's
+    three agent trials undos removed 37, 53 and 12 tactics, and two trials
+    ended holding fewer tactics than the bootstrap had handed them.
+
+    Deliberately not a prohibition. The bootstrap stops at the FIRST failure,
+    and an earlier tactic can be the real cause -- a `seq` whose invariant is
+    too weak compiles and strands the proof later -- so reaching back is
+    sometimes correct. It should just be a decision, not a reflex.
+    """
+    if replayed_prefix < 1:
+        return ""
+    return (
+        "## The first "
+        f"{replayed_prefix} tactic(s) are the original proof, already verified\n"
+        f"The proof script you are continuing already contains {replayed_prefix} "
+        "tactic(s) from the original proof. They were replayed one at a time "
+        "against the CURRENT EasyCrypt build and every one of them compiled — "
+        "they are not guesses, and the tactic that broke is the NEXT one.\n"
+        "\n"
+        "Undoing them throws away verified work. `undo` removes tactics from "
+        "the END of the script, so a large count reaches back into this "
+        "prefix; the harness will stop a multi-step undo at its boundary "
+        "rather than let one number erase it.\n"
+        "\n"
+        "If you believe a tactic INSIDE the prefix is the real cause — a `seq` "
+        "whose invariant is too weak will compile and strand the proof later — "
+        "you can still reach it, by undoing one step at a time. Say why in "
+        "your reasoning first."
+    )
+
+
+def _seq_position_bullets(
+    pair: ProgramPair, split_limit: int | None = None
+) -> list[str]:
+    """State the `seq` positions that exist, and where the good cuts are.
+
+    Three facts, in the order they are needed: the valid range, where the two
+    programs stop agreeing, and any cut that lands on a shared procedure call.
+    The last is ported from shannon-prover's `_compute_seq_suggestions` and is
+    the one the model cannot read off the dump -- matching a call at left 13 to
+    the same call at right 12 is what makes `seq 13 12` the cut rather than a
+    guess.
+    """
+    n_left, n_right = len(pair.left), len(pair.right)
+    # Stated as a CEILING, not an admissible range. Measured on
+    # INDCPA_HEG_G1 (run 20260806T194914Z): of 12 failed `seq` attempts, 11
+    # used indices inside these counts and were rejected anyway -- twice with
+    # EasyCrypt naming its own far smaller limit (`invalid split index: ^<5`
+    # and `^<4` against counts of 13/12). The earlier wording promised
+    # "N must be 0..13 ... any other index is `invalid position parameter`",
+    # which is simply false. Claim only what the counts actually support.
+    bullets = [
+        f"Instruction counts — left: {n_left}, right: {n_right} (counted from "
+        "EasyCrypt's own instruction indices). `seq N M : (inv)` splits the "
+        "FIRST N (left) and M (right) instructions, so N and M can never "
+        f"exceed {n_left} and {n_right}. Being within that ceiling does NOT "
+        "guarantee the index is legal — EasyCrypt applies further restrictions "
+        "at the current proof position."
+    ]
+    if split_limit is not None:
+        # EasyCrypt already told us the real bound at THIS goal, and it is far
+        # tighter than the counts: `^<5` against a count of 13 on
+        # INDCPA_HEG_G1. Stating it beats restating the ceiling the model has
+        # already been rejected inside of.
+        bullets.append(
+            f"EasyCrypt has ALREADY reported the real limit at this goal: "
+            f"`invalid split index: ^<{split_limit}`. N must be strictly less "
+            f"than {split_limit} — i.e. at most {split_limit - 1}, not "
+            f"{n_left}. Do not try an index at or above {split_limit} again."
+        )
+    else:
+        bullets.append(
+            "If EasyCrypt answers `invalid split index: ^<K`, K is the real "
+            "limit: use an index strictly below K rather than guessing again."
+        )
+    if not pair.is_equiv:
+        return bullets
+
+    prefix = common_prefix_length(pair)
+    if prefix and prefix < max(n_left, n_right):
+        bullets.append(
+            f"The two programs agree for their first {prefix} instructions and "
+            f"diverge at position {prefix + 1}. `seq {prefix} {prefix} : "
+            "(={...})` cuts exactly at that divergence, which keeps the "
+            "matching prefix in one subgoal."
+        )
+    elif n_left != n_right:
+        bullets.append(
+            f"The sides are asymmetric ({n_left} vs {n_right} instructions), "
+            "so a symmetric tactic will not apply. Align them with `seq` (or "
+            "a one-sided `while{1}` / `if{2}` / `rnd{1}`) before pairing them."
+        )
+
+    for candidate in seq_candidates(pair)[:3]:
+        bullets.append(
+            f"Both sides call `{candidate.procedure}` — left at position "
+            f"{candidate.left_pos}, right at position {candidate.right_pos}. "
+            f"`{candidate.tactic}` cuts exactly there, so the prefixes can be "
+            "discharged together with `call` / `auto`."
+        )
+    return bullets
+
+
+def format_active_goal_shape_hints(
+    goal: str, split_limit: int | None = None
+) -> str:
+    """Proactive, shape-conditioned hints for the current EasyCrypt goal.
+
+    These are intentionally pattern-level (program-logic vs ambient, loops,
+    calls, empty programs) and must not cite corpus-specific lemmas or proofs.
+    """
+    if not (goal or "").strip():
+        return ""
+
+    # Every heuristic below must see the ACTIVE goal only. Reading the whole
+    # dump blends open goals together and invents a shape that is not there.
+    subgoals = count_subgoals(goal)
+    goal = active_goal_text(goal)
+    if not goal.strip():
+        return ""
+
+    bullets: list[str] = [
+        "These hints are selected from the *current* goal text. Prefer them "
+        "over generic trial-and-error; a matching tactic now beats failing "
+        "first and reading an error hint later.",
+    ]
+    if subgoals > 1:
+        bullets.append(
+            f"There are {subgoals} open goals. Everything below describes the "
+            "ACTIVE goal (the first one) -- the only goal your tactic will "
+            "apply to. The others are shown for context; do not choose a "
+            "tactic to fit them."
+        )
+
+    if goal_is_implication_before_hl(goal):
+        bullets.append(
+            "Detected: binders/implication wrapping a Hoare/pHoare/equiv "
+            "judgment. First `move => ...` (or `move => /#`) to expose the "
+            "bare judgment; only then `proc.` / `while` / `wp`."
+        )
+        return _render_hint_block(bullets)
+
+    if goal_looks_program_logic(goal):
+        bullets.append(
+            "Detected: PROGRAM-LOGIC goal (`pre`/`post` or Hoare/equiv "
+            "judgment). Use program-logic tactics only until statements are "
+            "gone. Do not apply `smt` / `ring` / `trivial` / `split` yet."
+        )
+        block = _program_statement_block(goal)
+        left, right = _split_equiv_columns(block)
+        is_equiv = (
+            bool(re.search(r"\s~\s", block))
+            or "{1}" in goal
+            or "{2}" in goal
+            or "={" in goal  # relational equality sugar, e.g. ={x,y}
+            or (
+                bool(left.strip())
+                and bool(right.strip())
+                and left.strip() != right.strip()
+            )
+        )
+
+        if _has_proc_header(block):
+            bullets.append(
+                "Detected: closed procedure header. Start with `proc.` to open "
+                "bodies. If this is an `equiv` and a later step must `call` a "
+                "lemma about those same procedures, prefer `proc*.` so the "
+                "procedure identity is preserved."
+            )
+        if _CALL_STMT_RE.search(block):
+            bullets.append(
+                "Detected: procedure call(s) in the statement list. For "
+                "identical abstract calls on both sides of an `equiv` with no "
+                "usable spec, try `call (_: true)` then `auto`. If the callee "
+                "is a concrete module in scope, try `inline *` (or "
+                "`inline M.f`) before `wp`/`auto`."
+            )
+        if _WHILE_RE.search(block):
+            bullets.append(
+                "Detected: `while` in the program. Either (a) give an "
+                "invariant with `while (Inv).` and discharge body / init-exit "
+                "separately, or (b) if the trip count is a small constant in "
+                "the precondition, `unroll k.` at the loop position then "
+                "`rcondf`/`rcondt` when the guard is statically false/true. "
+                "`wp` alone will not eliminate the loop."
+            )
+            if is_equiv:
+                left_while = bool(_WHILE_RE.search(left))
+                right_while = bool(_WHILE_RE.search(right))
+                if left_while != right_while or _side_is_empty(left) or _side_is_empty(
+                    right
+                ):
+                    bullets.append(
+                        "Detected: asymmetric `equiv` statements (loop/`if` "
+                        "or emptiness differs across sides). Use `seq` to "
+                        "align prefixes before `while` / `rcondt` / `rcondf` / "
+                        "`if`. A shape error here means the wrong head "
+                        "statement — not that the goal is ambient."
+                    )
+        elif _IF_RE.search(block) and is_equiv:
+            bullets.append(
+                "Detected: conditional in an `equiv` body. Consider `if` / "
+                "`rcondt` / `rcondf` at the correct code position, or `seq` "
+                "if the sides are not aligned."
+            )
+
+        # Structured facts about the remaining program. `seq N M`, `rnd` and
+        # `skip` all need these and none of them are reliably legible in the
+        # raw dump: together they were 60 of 134 measured tactic failures
+        # (13x "invalid `position' parameter", 20x "invalid arguments",
+        # 10x "invalid last instruction", "left instruction list is not empty").
+        left_stmts = _statement_lines(left)
+        right_stmts = _statement_lines(right)
+        pair = parse_program_block(block)
+        if pair.indexed:
+            # Counted from EasyCrypt's own index column rather than by counting
+            # instruction-shaped lines. The line count treats a statement's
+            # nested body as more statements: on 503 of 654 real indexed goals
+            # it OVERSTATED the maximum, every time, and the sentence it
+            # decorated tells the model not to exceed it. One measured goal was
+            # reported as `left: 15, right: 15` when `seq` accepted at most
+            # 13 and 12 -- an `invalid 'position' parameter` handed to the
+            # model as a fact.
+            bullets.extend(_seq_position_bullets(pair, split_limit))
+        elif left_stmts or right_stmts:
+            # No index column printed, so no position is known. Say nothing
+            # about counts rather than quote the line tally.
+            bullets.append(
+                "`seq N M : (inv)` splits the FIRST N (left) and M (right) "
+                "instructions. EasyCrypt printed no instruction indices for "
+                "this goal, so check the listing above before choosing N/M."
+            )
+
+        if pair.indexed:
+            sides = (
+                ("left", [s.text for s in pair.left]),
+                ("right", [s.text for s in pair.right]),
+            )
+        else:
+            sides = (("left", [left]), ("right", [right]))
+        for label, texts in sides:
+            # Both ends, because the tactics divide on exactly that: `rnd`
+            # and `wp` consume from the END, `if` / `rcondt` / `rcondf`
+            # from the FRONT. Naming only the tail left every `if` to
+            # guesswork -- 13 of 78 failures in the 2026-08-05 run.
+            if not texts:
+                continue
+            first = _first_statement_kind("\n".join(texts))
+            if first:
+                bullets.append(f"First instruction on the {label}: {first}.")
+            kind = _last_statement_kind("\n".join(texts))
+            if kind:
+                bullets.append(f"Last instruction on the {label}: {kind}.")
+
+        if not pair.indexed and subgoals == 2:
+            # The nearest thing to a wrong-logic-class discriminator that any
+            # measurement has found. 24% of failures are a program-logic tactic
+            # aimed at a goal whose judgment is already discharged, and neither
+            # classifier sees it: `goal_looks_program_logic` says program-logic
+            # on 91% of them and shannon-prover's `classify_goal` says pRHL on
+            # all 25 it was tested against.
+            #
+            # Subgoal count ALONE does not separate them either -- the handoff
+            # proposed it and the rates are 21.6% (accepted) vs 50.7% (wrong)
+            # at two open goals, nowhere near a rule. Conjoined with "EasyCrypt
+            # printed no instruction index column" it reaches 58% precision at
+            # 45% recall over 568 labelled steps, ~5x the 11.8% base rate, and
+            # its precision beat the base rate in all 9 runs measured.
+            #
+            # 58% is a hint, not a fact, so this is phrased as something to try
+            # first and cheap to be wrong about -- NOT as "this goal is
+            # ambient". Two in five of these really are program-logic goals.
+            bullets.append(
+                "Note: this goal prints `pre`/`post` but EasyCrypt listed no "
+                "instruction indices for it, and there are 2 open goals. On "
+                "measured runs that combination is a discharged judgment about "
+                "half the time — the program logic is already done and only an "
+                "ambient residual is left. If your program-logic tactic "
+                "answers `expecting a goal of the form: hoare[S], ehoare[S], "
+                "phoare[S], equiv[S]`, do not retry it or vary its arguments: "
+                "switch to `smt` / `progress` / `rewrite` / `move =>` "
+                "immediately."
+            )
+
+        if _programs_in_sync(goal):
+            # The marker means both sides hold IDENTICAL code, so EasyCrypt
+            # prints no statement list. Reading that absence as emptiness is
+            # what produced the bogus "apply skip" advice.
+            bullets.append(
+                "Detected: `[programs are in sync]` — both sides have the "
+                "SAME remaining code, which is why no statement list is "
+                "shown. Code has NOT been consumed: do not apply `skip.` "
+                "yet. Advance both sides together (`seq`, `rnd`, `wp`, "
+                "`call`, `inline`) until the programs are actually empty."
+            )
+            # Measured over the 2026-08-05 run: of 101 sync goals, 89 accepted
+            # a program-logic tactic and 12 answered "expecting a goal of the
+            # form hoare/ehoare/phoare/equiv" -- the judgment was already
+            # discharged and only an ambient residual was left. No feature of
+            # the printed goal separates the two, so the advice above cannot
+            # be made conditional. Naming the recovery is what is left, and it
+            # is the same shape as the `skip.` fallback below.
+            bullets.append(
+                "If a program-logic tactic here answers `expecting a goal of "
+                "the form: hoare[S], ehoare[S], phoare[S], equiv[S]`, this "
+                "goal is NOT a program-logic goal despite printing `pre`/"
+                "`post` — the judgment is already discharged and what remains "
+                "is ambient. Switch to `smt` / `progress` / `rewrite` / "
+                "`move =>` rather than retrying `wp` or `seq`."
+            )
+        elif not _WHILE_RE.search(block) and not _IF_RE.search(block):
+            # NOTE: no `block and ...` guard. An empty block is precisely the
+            # empty-program case that legitimately wants `skip.`; requiring a
+            # non-empty block suppressed the one situation the advice is
+            # correct for, now that formula text no longer inflates it.
+            if not left_stmts and not right_stmts:
+                bullets.append(
+                    "Detected: no remaining instructions under `pre`/`post`. "
+                    "Apply `skip.` to move to an ambient goal, then use "
+                    "ambient tactics (`smt`, `progress`, `rewrite`, ...). "
+                    "If `skip.` reports `left instruction list is not empty`, "
+                    "statements remain that are not shown — use `seq`/`wp` "
+                    "instead."
+                )
+            elif _SAMPLING_RE.search(block) and not _CALL_STMT_RE.search(block):
+                bullets.append(
+                    "Detected: random sampling(s) (`<$`) remain. `rnd` "
+                    "requires the LAST instruction on both sides to be a "
+                    "sampling — if it is not, use `seq`/`wp` to reach that "
+                    "point first rather than retrying bare `rnd.`."
+                )
+            elif _ASSIGN_RE.search(block) and not _CALL_STMT_RE.search(block):
+                bullets.append(
+                    "Detected: straight-line assignments remain. Typical "
+                    "finish: `wp.` then `skip.` then ambient automation."
+                )
+        return _render_hint_block(bullets)
+
+    # Ambient
+    conclusion = _goal_conclusion(goal)
+    bullets.append(
+        "Detected: AMBIENT-LOGIC goal (plain formula, no `pre`/`post`). "
+        "Use ambient tactics only (`smt`, `rewrite`, `apply`, `progress`, "
+        "`trivial`, ...). Do not apply `proc` / `wp` / `skip` / `while` / "
+        "`call`."
+    )
+    # Measured over every run in integration/output/experiments: bare `smt()`
+    # on an ambient goal is 0 accepted of 27 attempts, and 26 of the 28
+    # failures are `cannot prove goal (strict)` -- the solver reaching its
+    # limit, not a syntax problem. These residuals are not the arithmetic
+    # `smt` closes easily: 16 of 30 carry a quantifier and 12 have more than
+    # three top-level connectives. The productive idiom on this corpus is the
+    # opposite one -- a compound that REDUCES a program-logic goal first and
+    # then calls smt (`wp; skip; smt().`), which is where all 20 of the
+    # successes come from.
+    bullets.append(
+        "Note: on this corpus a BARE `smt()` at an ambient goal has never "
+        "succeeded (0 of 27 attempts; 26 of the failures were `cannot prove "
+        "goal (strict)`). These residuals carry quantifiers and several "
+        "connectives, so the solver runs out of room. Give it help rather "
+        "than repeating it: name lemmas — `smt(Lemma1 Lemma2)`, SPACE-separated, "
+        "since a comma is a parse error — or reduce "
+        "the goal first with `move => ...` / `progress.` / `simplify.`, or "
+        "cut an intermediate fact with `have h : P by smt(). smt(h).`"
+    )
+    if "=>" in conclusion or conclusion.lower().startswith("forall"):
+        bullets.append(
+            "Detected: ambient implication or quantifiers. Introduce with "
+            "`move => ...` / `split` as needed before automation, or use "
+            "`progress.` to decompose a busy residual."
+        )
+    if _NONLINEAR_RE.search(conclusion):
+        bullets.append(
+            "Detected: nonlinear operators in the formula. Bare `smt()` often "
+            "fails — try `simplify.` / `progress.`, `smt(LemmaName)`, or "
+            "`rewrite` with a lemma from substring/exact search."
+        )
+    return _render_hint_block(bullets)
+
+
+#: What EasyCrypt's complaint tells you to change about the SAME tactic. Keyed
+#: on the message text because the message is far more specific than the
+#: `ec_errors` kind: "invalid last instruction" and "invalid first
+#: instruction" are both `tactic_error`, and they call for opposite moves.
+#: Taxonomy measured over 203 failures in runs C+D+E -- ~45% are position
+#: errors inside the RIGHT tactic class, i.e. the tactic was right and only
+#: its target was wrong.
+_ERROR_REPAIR_LADDER: tuple[tuple[str, str], ...] = (
+    ("invalid last instruction",
+     "`rnd` / `wp` consume from the END of the program. The last instruction "
+     "is not what this tactic needs. Keep the tactic and reach the right "
+     "position first -- `seq N M : (inv)` to split off a prefix, or `wp` to "
+     "absorb trailing assignments -- rather than changing tactic."),
+    ("invalid first instruction",
+     "`if` / `rcondt` / `rcondf` address the FIRST instruction. Check the "
+     "'First instruction on the left/right' facts above: apply the tactic to "
+     "the side whose head is actually a conditional (`if{1}` vs `if{2}`), or "
+     "`seq` to bring the conditional to the front."),
+    ("instruction list is not empty",
+     "Code remains, so `skip` cannot apply yet. Same goal, different tactic "
+     "position: consume the remaining statements with `seq` / `wp` / `rnd` / "
+     "`call` first."),
+    # Neither rung may tell the model to "re-read the instruction counts
+    # above": on a `[programs are in sync]` goal EasyCrypt prints no statement
+    # list at all, so no counts appear -- 48% of measured goals carry that
+    # marker, and on G2_G3 step 1 the model was sent to consult a table that
+    # was not there and guessed `5 5`, `7 7`, `6 6` in turn. And when counts
+    # ARE printed, staying inside them is not sufficient: 11 of 12 failed `seq`
+    # attempts on INDCPA_HEG_G1 were within the printed counts.
+    ("invalid `position' parameter",
+     "The tactic is right, the POSITION is wrong. If instruction counts are "
+     "shown above, stay within them -- but note they are only a ceiling, not "
+     "a guarantee. If no counts are shown, this goal prints no statement list "
+     "(`[programs are in sync]` does this), so do not guess indices: start "
+     "from the indices the ORIGINAL tactic used, which encode the author's "
+     "alignment, and adjust one side at a time."),
+    ("invalid split index",
+     "The POSITION is wrong, and EasyCrypt has told you the limit: the "
+     "`^<K` in its message means the index must be strictly less than K. Use "
+     "K-1 or lower rather than trying another guess."),
+    ("invalid arguments",
+     "Right tactic, wrong arguments. Change only the arguments -- the witness "
+     "function for `rnd`, the invariant for `seq`/`while`, the spec for "
+     "`call` -- and keep the head tactic."),
+    ("expecting a goal of the form",
+     "WRONG LOGIC CLASS: this is not a Hoare/pHoare/equiv judgment, so no "
+     "program-logic tactic will apply however it is parameterised. Switch to "
+     "ambient reasoning (`smt`, `progress`, `rewrite`, `move =>`), or "
+     "introduce binders first if the judgment is wrapped in an implication."),
+    ("cannot find theory",
+     "A `require import` no longer resolves. This is an import problem, not a "
+     "tactic problem -- see the library-change notes above."),
+    ("cannot prove goal",
+     "The tactic applied but automation could not close the residual. Give it "
+     "more to work with: `smt(Lemma1 Lemma2)` with named lemmas, or "
+     "`progress` / `simplify` first to decompose."),
+)
+
+
+def format_broken_tactic_repair(tactic: str, error: str | None) -> str:
+    """Tell the model to repair the tactic that broke, not to start over.
+
+    The harness has always shown the original script, but as background
+    material headed "adapt rather than paste" -- and the model treated it that
+    way. Measured on run G's `G2_G3`: 8 of 40 attempts reused an original
+    tactic verbatim, and 19 of 40 were `rnd` variants although the original
+    uses `rnd` exactly once, with a specific witness. It even tried the right
+    tactic, `rnd(fun x => t{1} +^ x)`, but compounded three original lines
+    into one and it failed.
+
+    So this states the repair procedure explicitly and pairs EasyCrypt's own
+    complaint with the edit that complaint calls for. Every rung keeps the
+    tactic and changes one thing about it, except the class-mismatch rung
+    where keeping it is precisely the mistake.
+    """
+    tactic = (tactic or "").strip()
+    if not tactic:
+        return ""
+    cleaned = " ".join((error or "").split())
+    lines = [
+        "## Repair THIS tactic first",
+        "",
+        "The proof replayed cleanly until the tactic below, which is the one "
+        "that stopped working. Your first move should be to REPAIR IT, not to "
+        "invent a different approach: it encodes the original author's intent "
+        "and is usually one edit away from applying.",
+        "",
+        f"    {tactic}",
+    ]
+    if cleaned:
+        lines += ["", f"EasyCrypt said: {cleaned[:400]}"]
+
+    rung = next((advice for needle, advice in _ERROR_REPAIR_LADDER
+                 if needle.lower() in cleaned.lower()), None)
+    if rung:
+        lines += ["", f"What that error calls for: {rung}"]
+
+    # An asymmetric cut is information, and the model discards it by default.
+    # The original G2_G3 tactic is `seq 4 3` -- deliberately uneven, because
+    # the two programs are -- and every model attempt was symmetric: 5 5, 7 7,
+    # 6 6, 5 5. Collapsing N M to N N throws away the author's alignment and
+    # then searches for it again from scratch.
+    asym = re.match(r"seq\s+(\d+)\s+(\d+)", tactic)
+    if asym and asym.group(1) != asym.group(2):
+        left, right = asym.group(1), asym.group(2)
+        lines += [
+            "",
+            f"NOTE: this cut is ASYMMETRIC ({left} on the left, {right} on the "
+            "right). That is deliberate -- the two programs are not aligned "
+            "statement for statement, and these indices record where the "
+            f"author matched them. Do not collapse it to `seq {left} {left}` "
+            f"or `seq {right} {right}`: adjust ONE side at a time and keep the "
+            "offset unless you have a reason to believe it changed.",
+        ]
+
+    lines += [
+        "",
+        "Order of attack, cheapest first:",
+        "1. Same tactic, different ARGUMENTS (witness, invariant, spec).",
+        "2. Same tactic, different POSITION or side (`{1}` / `{2}`, `seq` to "
+        "reach it).",
+        "3. Split a compound `t1; t2; t3.` into separate steps -- a compound "
+        "fails whole even when its first component was right. Measured: of 55 "
+        "failed compounds ending in `smt()`, 40 died in the FIRST segment "
+        "(24 `invalid last instruction` from `rnd`, 16 `left instruction list "
+        "is not empty` from `skip`), so `smt` never ran and the error you are "
+        "reading is not about it.",
+        "4. Only then a different head tactic.",
+        "",
+        "If a later original tactic is shown below, it tells you what state "
+        "this one is supposed to produce. Use that as the target.",
+    ]
+    return "\n".join(lines)
+
+
+def _render_hint_block(bullets: list[str]) -> str:
+    if not bullets:
+        return ""
+    header, *rest = bullets
+    lines = [header]
+    lines.extend(f"- {item}" for item in rest)
+    return "\n".join(lines)
+
+
+def tool_spec(*, enable_lemma_lookup: bool = False) -> str:
+    spec = BASE_TOOL_SPEC
+    if enable_lemma_lookup:
+        spec += LOOKUP_TOOL_SPEC
+    return spec + "\n" + action_response_format_spec()
+
+
+def build_prompt(
+    goal: str,
+    top_premises: dict[str, str],
+    failed_tactics: list[tuple[str, str]],
+    proof_tail: str,
+    fewshot: str | None = None,
+    repair_hint: str | None = None,
+    changelog_hints: str | None = None,
+    informal_proof: str | None = None,
+    informal_proof_is_formal: bool = False,
+    informal_proof_heading: str | None = None,
+    lookup_notes: list[str] | None = None,
+    enable_lemma_lookup: bool = False,
+    past_steps: list[dict[str, Any]] | None = None,
+    search_warning: str | None = None,
+    recent_failures: list[tuple[str, str]] | None = None,
+    noop_tactics: list[str] | None = None,
+    broken_tactic: str | None = None,
+    broken_tactic_error: str | None = None,
+    state_diff: str | None = None,
+    replayed_prefix: int = 0,
+    split_limit: int | None = None,
+) -> str:
+    sections = [
+        "You are an EasyCrypt proof assistant agent. Choose the next tactic or undo.",
+        "",
+        "## Reading the current goal",
+        (
+            "EasyCrypt displays goals in two distinct forms that require different tactics:\n"
+            "\n"
+            "PROGRAM-LOGIC form — you will see 'pre = ...' and 'post = ...' fields,\n"
+            "or a line like 'Func.procedure' between the pre and post. This means the\n"
+            "proof is still inside Hoare/pHoare/equiv reasoning. You MUST use program-\n"
+            "logic tactics (proc, proc*, wp, skip, call, inline, rnd, seq, if, while,\n"
+            "unroll, rcondt, rcondf) to reduce this before ANY ambient-logic tactic\n"
+            "(smt, ring, algebra, trivial) can apply.\n"
+            "\n"
+            "AMBIENT-LOGIC form — the goal shows a plain formula with no 'pre'/'post'\n"
+            "fields, e.g. '0 <= x', 'a + b = b + a', or 'P => Q'. Now you can use\n"
+            "smt(), ring, trivial, rewrite, apply, have, split, left, right, etc.\n"
+            "Do NOT apply proc/wp/skip/call to an ambient-logic goal.\n"
+            "\n"
+            "Transition: after `skip.` (empty program), the next goal is ambient even\n"
+            "if the previous one had pre/post. Read the newly displayed goal; if there\n"
+            "is no pre/post, switch to ambient tactics immediately.\n"
+            "\n"
+            "ring and algebra only work on EQUALITIES (lhs = rhs). For inequalities\n"
+            "or implications, use smt(). If smt() alone fails on a nonlinear goal\n"
+            "(products, squares, logs, exponents), try smt(lemma_name) with a relevant\n"
+            "lemma, simplify/progress, or introduce an intermediate step:\n"
+            "have h : fact by smt(). smt(h)."
+        ),
+        "",
+        _GOAL_SHAPE_RULE,
+        "",
+        _PROGRAM_LOGIC_MENU_RULE,
+        "",
+        _SIMPLIFY_RULE,
+        "",
+        _LEMMA_SEARCH_RULE,
+        "",
+        _ANTI_LOOP_RULE,
+        "",
+        _ROLLBACK_RULE,
+        "",
+    ]
+    if search_warning:
+        sections.extend(["## Search budget warning", search_warning, ""])
+    if repair_hint:
+        sections.extend(
+            [
+                "## Repair hint (reference broken proof)",
+                repair_hint,
+                "",
+            ]
+        )
+    if changelog_hints:
+        sections.extend(
+            [
+                "## Known EasyCrypt library changes",
+                changelog_hints,
+                "",
+            ]
+        )
+    if informal_proof:
+        # An explicit heading wins: replay-bootstrap shows the REMAINING
+        # original tactics, of which only the first is known-broken (the rest
+        # were never reached, so calling them "does NOT compile" would be
+        # false and would invite the model to discard usable structure).
+        heading = informal_proof_heading or (
+            "## Broken formal proof (reference only — it does NOT compile; "
+            "do not paste it verbatim)"
+            if informal_proof_is_formal
+            else "## Informal proof sketch (natural-language reference, no code)"
+        )
+        sections.extend([heading, informal_proof, ""])
+    sections.extend(
+        [
+            "## Few-shot examples",
+            fewshot or load_fewshot_examples(),
+            "",
+            *_goal_section(goal),
+        ]
+    )
+    if state_diff:
+        # Directly under the goal, because it is the caption for it: what the
+        # last accepted tactic did to produce what is printed above. The
+        # harness has always been able to say a tactic did NOTHING and never
+        # able to say what a productive one did, so a `seq` that triples the
+        # subgoal count reads to the model exactly like a regression.
+        sections.extend([state_diff, ""])
+    prefix_note = format_replayed_prefix_note(replayed_prefix)
+    if prefix_note:
+        # Directly before the repair block: "these N compile, the next one is
+        # your task" is one thought, and splitting it across the prompt is how
+        # the model came to treat the whole script as its own scratch work.
+        sections.extend(["", prefix_note, ""])
+    if broken_tactic:
+        sections.extend(
+            ["", format_broken_tactic_repair(broken_tactic, broken_tactic_error), ""]
+        )
+    active_hints = format_active_goal_shape_hints(goal, split_limit)
+    if active_hints:
+        sections.extend(
+            [
+                "## Active goal-shape hints",
+                active_hints,
+                "",
+            ]
+        )
+    # Which names exist and of what kind. Every fact here is already on screen
+    # in the goal's context block; the model was shown it and did not act on
+    # it -- 10 of 16 measured name/scope failures are re-introducing `&1`/`&2`
+    # or a hypothesis the block already lists.
+    context_note = format_context_note(goal)
+    if context_note:
+        sections.extend([context_note, ""])
+    # What `move =>` can actually take. The context block alone was not
+    # enough: 4 of 8 measured `move` failures on G2_bad_ub had `&1` in the
+    # CONCLUSION (`forall &1 &2, ...`) rather than as a context entry, so the
+    # names-in-scope note stayed silent while EasyCrypt said "already exists".
+    intro_note = format_introduction_note(_goal_conclusion(active_goal_text(goal)))
+    if intro_note:
+        sections.extend(["## Introducing hypotheses", "", intro_note, ""])
+    sections.extend(
+        [
+            "## Top relevant premises",
+            _format_premises(top_premises),
+            "",
+            "## Previously failed at this goal",
+            _format_failures(failed_tactics),
+        ]
+    )
+    if failed_tactics:
+        banned = _banned_tactic_strings(failed_tactics)
+        sections.extend(
+            [
+                "IMPORTANT: the harness will REJECT any tactic that matches a "
+                "banned entry above after normalization (whitespace, trailing "
+                "'.', and `&&`/`||` vs `/\\`/`\\/` do not create a new tactic). "
+                "It is guaranteed to fail identically again at this exact goal. "
+                "Choose a genuinely different head tactic, invariant, lemma "
+                "argument, or break a compound into separate steps.",
+                "Banned tactics at this goal:",
+                *[f"- `{tactic}`" for tactic in banned],
+            ]
+        )
+    if noop_tactics:
+        # A distinct section from the ban list above, because the failure mode
+        # is the opposite and the model needs to know which it is looking at.
+        # These tactics did not error -- EasyCrypt accepted them and said
+        # nothing -- they simply left the goal untouched, so they were removed
+        # from the script. Without being told, a model reads "accepted" and
+        # tries the same thing again; that is how one lemma ended with 45 of
+        # its 58 lines a bare `wp.`.
+        sections.extend(
+            [
+                "",
+                "## Tactics that compiled but did NOTHING here",
+                (
+                    "Each of these was accepted by EasyCrypt and then verified "
+                    "to leave the goal byte-identical, so it was removed from "
+                    "the script. Do not repeat them at THIS goal -- they have "
+                    "nothing left to consume. They become available again as "
+                    "soon as the goal changes:"
+                ),
+                *[f"- `{tactic}`" for tactic in noop_tactics],
+            ]
+        )
+    prior = _format_recent_other_failures(recent_failures or [], failed_tactics)
+    if prior:
+        sections.extend(
+            [
+                "",
+                "## Recent failures at earlier goals",
+                (
+                    "The goal text changed after an accepted tactic, so the "
+                    "per-goal ban list above was reset. These recent failures "
+                    "are still relevant context (informational — not hard-banned "
+                    "at the new goal unless they also appear above):"
+                ),
+                prior,
+            ]
+        )
+    sections.extend(
+        [
+            "",
+            "## Recent reasoning and outcomes",
+            _format_past_steps(past_steps or []),
+        ]
+    )
+    sections.extend(
+        [
+            "",
+            "## Proof script tail",
+            proof_tail,
+            "",
+        ]
+    )
+    if lookup_notes:
+        sections.extend(
+            [
+                "## Lemma lookup results",
+                "\n".join(lookup_notes) if lookup_notes else "(none)",
+                "",
+            ]
+        )
+    sections.extend(
+        [
+            "## Tool specification",
+            tool_spec(enable_lemma_lookup=enable_lemma_lookup),
+        ]
+    )
+    return "\n".join(sections)
+
+
+def _format_premises(premises: dict[str, str]) -> str:
+    if not premises:
+        return "(none)"
+    lines = []
+    for name, text in premises.items():
+        lines.append(f"- {name}: {text}")
+    return "\n".join(lines)
+
+
+def _format_failures(failures: list[tuple[str, str]]) -> str:
+    if not failures:
+        return "(none)"
+    # Dedup by normalized tactic so repeated spam does not bloat the prompt
+    # or reinforce the failing string. Keep first occurrence order.
+    grouped: dict[str, dict[str, Any]] = {}
+    order: list[str] = []
+    for error, tactic in failures:
+        key = normalize_tactic(tactic)
+        if key not in grouped:
+            grouped[key] = {"tactic": tactic, "error": error, "count": 0}
+            order.append(key)
+        grouped[key]["count"] += 1
+        # Prefer the first substantive EasyCrypt error over later reject notices.
+        if grouped[key]["count"] == 1:
+            grouped[key]["error"] = error
+    lines = []
+    for key in order:
+        item = grouped[key]
+        count = item["count"]
+        prefix = f"{count}x " if count > 1 else ""
+        lines.append(
+            f"- {prefix}tactic `{item['tactic']}` -> error: {str(item['error']).strip()}"
+        )
+    return "\n".join(lines)
+
+
+def _format_recent_other_failures(
+    recent_failures: list[tuple[str, str]],
+    current_failures: list[tuple[str, str]],
+) -> str:
+    """Render recent failures from earlier goals, skipping current-goal dupes."""
+    if not recent_failures:
+        return ""
+    current_keys = {normalize_tactic(tactic) for _error, tactic in current_failures}
+    lines: list[str] = []
+    seen: set[str] = set()
+    for error, tactic in recent_failures:
+        key = normalize_tactic(tactic)
+        if key in current_keys or key in seen:
+            continue
+        seen.add(key)
+        err = str(error).strip()
+        if len(err) > 800:
+            err = err[:800] + "\n[truncated]"
+        lines.append(f"- tactic `{tactic}` -> error: {err}")
+    return "\n".join(lines)
+
+
+def _banned_tactic_strings(failures: list[tuple[str, str]]) -> list[str]:
+    seen: set[str] = set()
+    banned: list[str] = []
+    for _error, tactic in failures:
+        key = normalize_tactic(tactic)
+        if key in seen:
+            continue
+        seen.add(key)
+        banned.append(tactic.strip())
+    return banned
+
+
+def _format_past_steps(steps: list[dict[str, Any]]) -> str:
+    """Render bounded agent memory without replaying full prompts."""
+    if not steps:
+        return "(none)"
+    lines: list[str] = []
+    for item in steps:
+        step = item.get("step", "?")
+        action = item.get("action", "unknown")
+        detail = (
+            item.get("tactic")
+            or item.get("lookup_name")
+            or item.get("search_query")
+            or ""
+        )
+        outcome = item.get("outcome", "unknown")
+        lines.append(
+            f"- step {step}: {action}"
+            + (f" `{detail}`" if detail else "")
+            + f" -> {outcome}"
+        )
+        thought = str(item.get("thought") or "").strip()
+        if thought:
+            if len(thought) > 2000:
+                thought = thought[:2000] + "\n[truncated]"
+            lines.append(f"  reasoning: {thought}")
+        error = str(item.get("error") or "").strip()
+        if error:
+            if len(error) > 4000:
+                error = error[:4000] + "\n[truncated]"
+            lines.append(f"  feedback: {error}")
+    return "\n".join(lines)

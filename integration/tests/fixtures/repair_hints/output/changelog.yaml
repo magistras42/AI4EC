@@ -1,0 +1,56 @@
+repo: EasyCrypt/easycrypt
+releases:
+  - version: r2022.04
+    published_at: '2022-04-01T00:00:00Z'
+    entries:
+      - id: '1'
+        title: Ancient entry outside the test replay range
+        kind: lemma_added
+        identifiers: [SomethingOld]
+        summary: Should never appear -- strictly before the source version.
+        repair_hint: Should never appear.
+        relevance: high
+  - version: r2025.02
+    published_at: '2025-02-01T00:00:00Z'
+    entries:
+      - id: '605'
+        title: 'SmtMap: split into SmtMap and FinMap'
+        kind: mechanism_change
+        identifiers: [SmtMap, FinMap]
+        summary: SmtMap.ec was split into two theories; a bare `SmtMap` import may now be ambiguous.
+        repair_hint: Import the specific split theory (SmtMap or FinMap) instead of relying on the old combined SmtMap.
+        relevance: high
+      - id: '690'
+        title: 'FMap: add lemmas on range after update'
+        kind: lemma_renamed
+        identifiers: [FMap, frng]
+        summary: New lemmas about how frng changes after a .[x <- v] update; the old rewrite form no longer applies directly.
+        repair_hint: Use the new frng_set lemma instead of manually unfolding frng after an update.
+        relevance: medium
+      - id: '700'
+        title: Documentation typo fix in FMap.ec comments
+        kind: documentation
+        identifiers: [FMap]
+        summary: Fixed a typo in a comment.
+        repair_hint: Should never appear -- kind=documentation is always dropped.
+        relevance: low
+  - version: r2025.10
+    published_at: '2025-10-01T00:00:00Z'
+    entries:
+      - id: '800'
+        title: 'FMap: frng renamed again after the r2025.02 split'
+        kind: lemma_renamed
+        identifiers: [FMap, frng]
+        summary: frng was renamed a second time following the r2025.02 SmtMap/FMap split.
+        repair_hint: Use frng2 instead of the r2025.02-era frng_set lemma.
+        relevance: medium
+  - version: r2026.07
+    published_at: '2026-07-01T00:00:00Z'
+    entries:
+      - id: '900'
+        title: Unrelated internal refactor
+        kind: internal
+        identifiers: [InternalOnly]
+        summary: Should never appear -- kind=internal is always dropped.
+        repair_hint: Should never appear.
+        relevance: medium

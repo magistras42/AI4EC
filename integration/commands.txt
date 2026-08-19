@@ -1,0 +1,10 @@
+python3 -m integration.experiment run \
+  --deepseek \
+  --spec joy-informal-repair \
+  --trials 40 \
+  --stuck-limit 20 \
+  --max-steps 15 \
+  --llm-model "deepseek-v4-pro" \
+  --llm-max-tokens 16384 \
+  --thinking adaptive \
+  --embed-model "text-embedding-nomic-embed-text-v1.5"

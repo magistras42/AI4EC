@@ -1,0 +1,144 @@
+diff --git a/src/ec.ml b/src/ec.ml
+index 1a1efc5d..4073cac6 100644
+--- a/src/ec.ml
++++ b/src/ec.ml
+@@ -416,6 +416,7 @@ let main () =
+       (*---*) docgen      : bool;
+       (*---*) outdirp     : string option;
+       (*---*) upto        : (int * int option) option;
++      (*---*) premises    : bool;
+       mutable trace       : trace1 list option;
+     }
+ 
+@@ -495,6 +496,7 @@ let main () =
+         ; docgen      = false
+         ; outdirp     = None
+         ; upto        = None
++        ; premises    = false
+         ; trace       = None }
+ 
+     end
+@@ -531,6 +533,7 @@ let main () =
+         ; docgen      = false
+         ; outdirp     = None
+         ; upto        = None
++        ; premises    = false
+         ; trace       = trace0 }
+ 
+       end
+@@ -560,6 +563,7 @@ let main () =
+         ; docgen      = false
+         ; outdirp     = None
+         ; upto        = llmopts.llmo_upto
++        ; premises    = llmopts.llmo_premises
+         ; trace       = None }
+ 
+       end
+@@ -605,11 +609,20 @@ let main () =
+         ; docgen      = true
+         ; outdirp     = docopts.doco_outdirp
+         ; upto        = None
++        ; premises    = false
+         ; trace       = None }
+       end
+ 
+   in
+ 
++  (* Validate: -premises requires -upto *)
++  if state.premises && Option.is_none state.upto then begin
++    Format.eprintf
++      "easycrypt llm: -premises requires -upto; \
++       please supply -upto LINE or -upto LINE:COL@.";
++    exit 1
++  end;
++
+   (match state.input with
+    | Some input -> EcCommands.addidir (Filename.dirname input)
+    | None ->
+@@ -785,6 +798,11 @@ let main () =
+                    if past_upto loc then begin
+                      T.finalize terminal;
+                      EcCommands.pp_current_goal_or_noproof ~all:true Format.std_formatter;
++                     if state.premises then begin
++                       Printf.printf "(* --- premises --- *)\n";
++                       EcCommands.pp_accessible_lemmas Format.std_formatter;
++                       Format.pp_print_flush Format.std_formatter ()
++                     end;
+                      exit 0
+                    end;
+ 
+diff --git a/src/ecCommands.ml b/src/ecCommands.ml
+index 08f80162..5064b360 100644
+--- a/src/ecCommands.ml
++++ b/src/ecCommands.ml
+@@ -1095,3 +1095,14 @@ let pp_all_goals () =
+   end
+ 
+   | _ -> []
++
++(* -------------------------------------------------------------------- *)
++let pp_accessible_lemmas (fmt : Format.formatter) =
++  let env = EcScope.env (current ()) in
++  let ax  = EcEnv.Ax.all
++              ~check:(fun _ ax ->
++                EcDecl.is_lemma ax.ax_kind ||
++                EcDecl.is_axiom ax.ax_kind)
++              env in
++  let ppe = EcPrinting.PPEnv.ofenv env in
++  EcPrinting.pp_by_theory ppe EcPrinting.pp_axiom fmt ax
+diff --git a/src/ecCommands.mli b/src/ecCommands.mli
+index 7dab0b84..01bd6d83 100644
+--- a/src/ecCommands.mli
++++ b/src/ecCommands.mli
+@@ -63,6 +63,7 @@ val pp_current_goal : ?all:bool -> Format.formatter -> unit
+ val pp_current_goal_or_noproof : ?all:bool -> Format.formatter -> unit
+ val pp_maybe_current_goal : Format.formatter -> unit
+ val pp_all_goals : unit -> string list
++val pp_accessible_lemmas : Format.formatter -> unit
+ 
+ (* -------------------------------------------------------------------- *)
+ val pragma_verbose : bool -> unit
+diff --git a/src/ecOptions.ml b/src/ecOptions.ml
+index bd21a69a..b2774eec 100644
+--- a/src/ecOptions.ml
++++ b/src/ecOptions.ml
+@@ -53,6 +53,7 @@ and llm_option = {
+   llmo_provers   : prv_options;
+   llmo_lastgoals : bool;
+   llmo_upto      : (int * int option) option;
++  llmo_premises  : bool;
+ }
+ 
+ and prv_options = {
+@@ -374,7 +375,8 @@ let specs = {
+       `Group "loader";
+       `Group "provers";
+       `Spec  ("lastgoals" , `Flag  , "Print last unproved goals on failure");
+-      `Spec  ("upto"      , `String, "Compile up to LINE or LINE:COL and print goals")]);
++      `Spec  ("upto"      , `String, "Compile up to LINE or LINE:COL and print goals");
++      `Spec  ("premises"  , `Flag,   "Print all accessible lemmas/axioms after goal state (requires -upto)")]);
+ 
+     ("cli", "Run EasyCrypt top-level", [
+       `Group "loader";
+@@ -581,7 +583,8 @@ let llm_options_of_values ini values input =
+   { llmo_input     = input;
+     llmo_provers   = prv_options_of_values ini values;
+     llmo_lastgoals = get_flag "lastgoals" values;
+-    llmo_upto      = parse_upto values; }
++    llmo_upto      = parse_upto values;
++    llmo_premises  = get_flag "premises" values; }
+ 
+ (* -------------------------------------------------------------------- *)
+ let parse getini argv =
+diff --git a/src/ecOptions.mli b/src/ecOptions.mli
+index a5c09b11..81199688 100644
+--- a/src/ecOptions.mli
++++ b/src/ecOptions.mli
+@@ -49,6 +49,7 @@ and llm_option = {
+   llmo_provers   : prv_options;
+   llmo_lastgoals : bool;
+   llmo_upto      : (int * int option) option;
++  llmo_premises  : bool;
+ }
+ 
+ and prv_options = {

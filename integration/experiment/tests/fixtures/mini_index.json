@@ -1,0 +1,12 @@
+{
+  "proofs": [
+    {
+      "repo_slug": "tejasanilshah-the-joy-of-easycrypt",
+      "file": "chapter/multi_lemma.ec",
+      "line": 8,
+      "kind": "lemma",
+      "name": "target",
+      "signature": "lemma target (n : int) : 0 + n = n."
+    }
+  ]
+}

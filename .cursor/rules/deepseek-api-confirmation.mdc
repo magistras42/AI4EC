@@ -1,0 +1,12 @@
+---
+description: Never confirm DeepSeek API usage for the user
+alwaysApply: true
+---
+
+# DeepSeek API confirmation
+
+When a command uses `--deepseek` (DeepSeek paid API), the CLI asks a human to type `YES`.
+
+**Never accept that prompt for the user.** Do not pipe `YES`, automate the prompt, or run the experiment yourself.
+
+Instead, give the user the exact command to run in their own terminal. See root `AGENTS.md`.

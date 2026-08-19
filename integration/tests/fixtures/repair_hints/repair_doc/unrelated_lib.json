@@ -1,0 +1,8 @@
+{
+  "path": "theories/algebra/Ring.ec",
+  "confidence": "test_fixture",
+  "caveat": "Trimmed test fixture, not the real repair_doc entry.",
+  "current_content_summary": "Ring and field algebraic structures, unrelated to maps.",
+  "requires": "AllCore",
+  "version_diffs_found": []
+}

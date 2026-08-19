@@ -1,0 +1,78 @@
+Name,URL
+SimpleORAM,https://github.com/IvanRenison/SimpleORAM-Jasmin
+EvoCrypt,https://github.com/SRI-CSL/evocrypt
+Formosa Dilithium,https://github.com/formosa-crypto/dilithium
+Formosa Keccak,https://github.com/formosa-crypto/formosa-keccak
+Formosa SLHDSA,https://github.com/formosa-crypto/formosa-slhdsa
+Formosa XMSS,https://github.com/formosa-crypto/formosa-xmss
+Formosa MLKEM,https://github.com/formosa-crypto/formosa-mlkem
+Formosa Arch-Specs,https://github.com/formosa-crypto/arch-specs
+Formosa MLDSA Correctness,https://github.com/formosa-crypto/formosa-mldsa-correctness
+Formosa 25519,https://github.com/formosa-crypto/formosa-25519
+Formosa Crypto-Specs,https://github.com/formosa-crypto/crypto-specs
+Formosa Jasmin Tutorial,https://github.com/formosa-crypto/jasmin-tutorial
+Formosa Libjade,https://github.com/formosa-crypto/libjade
+Formosa X-Wing,https://github.com/formosa-crypto/formosa-x-wing
+Formosa libjbn,https://github.com/formosa-crypto/libjbn
+Jasmin-Zk,https://github.com/dfirsov/jasmin-zk
+Asymmetric Ladder,https://github.com/proof-ladders/asymmetric-ladder
+Zksync-Verification,https://github.com/NethermindEth/zksync-verification
+Probabilistic Or,https://github.com/alleystoughton/ProbabilisticOr
+PCR,https://github.com/alleystoughton/PCR
+Saber,https://github.com/MM45/Saber-Formal-Verification-EasyCrypt
+ZK in EC,https://github.com/dfirsov/easycrypt-zk-code
+Easy Schnorr,https://github.com/asifmallik/easyschnorr
+Xwing Benchmarks,https://github.com/X-Wing-KEM-Team/xwing-benchmarks
+FV-XMSS-EC,https://github.com/MM45/FV-XMSS-EC
+AutoCrypt,https://github.com/JHUISI/autocrypt
+Algorithmic Bounds,https://github.com/alleystoughton/AlgorithmicBounds
+Rewinding,https://github.com/dfirsov/easycrypt-rewinding
+XMSS-Jasmin,https://github.com/ruipedro16/xmss-jasmin
+Random Password Generator,https://github.com/passcert-project/random-password-generator
+EasyUC,https://github.com/easyuc/EasyUC
+Decomposition-Zk,https://github.com/Nsidorenco/Decomposition-zk
+Zkp-Xpln,https://github.com/gerlion/zkp-xpln
+Minivoting,https://github.com/catalindragan/minivoting-privacy
+Helios,https://gitlab.com/ec-evoting/helios
+Yao,https://github.com/fdupress/yao
+QSSM-RS,https://github.com/peavey2787/qssm-rs
+DualKey-MLWR,https://github.com/samlavery/DualKey-MLWR
+Solberg Defense,https://github.com/mortensol/EasyCrypt
+MPCEC,https://github.com/spitters/MPCEC
+Cryptolib,https://github.com/maximedenes/cryptolib
+SpaceWallet,https://github.com/vSpaceWallet/Proofs
+Frodo-EC,https://github.com/strub/frodo-easycrypt
+Modelling PQC EC,https://github.com/Cimylog/modelling_pqc_in_easycrypt
+EzRSA,https://github.com/zaclegarssure/EzRSA
+CS591 Project,https://github.com/nbcohen99/CS591Project
+Mystery Thesis,https://github.com/student10428798/Thesis_Easycrypt
+EasyPIR,https://github.com/henrybarthelemy/easypir
+Meijers Dissertation,https://github.com/MM45/dissertation-artifacts
+Evoting Thesis,https://github.com/dn813/prbx-easycrypt-2026
+KZG PCS,https://github.com/gerlion/kzg_pcs
+Commit Non Malleability EC,https://github.com/dfirsov/commitments-non-malleability-ec
+OSKGO Thesis,https://github.com/oskgo/master-artifacts
+EasyCrypt Iceberg,https://github.com/xoredtwice/easycrypt-iceberg
+Shipovnik Verification,https://github.com/y4cer/shipovnik_verification
+Comparison Non Malleability Unsat,https://github.com/dfirsov/comparison-based-non-malleabiltiy-unsat
+EC Final Project,https://github.com/elimbaum/easycrypt-final-project
+Guessing Game,https://github.com/alleystoughton/GuessingGame
+BLT Signatures,https://github.com/dfirsov/easycrypt-one-time-blt-signature
+Above Threshold,https://github.com/zwang3583/aboveThreshold-DP-Proof
+Sphincs,https://github.com/infopunk/Sphincs-Hash-Function-Security-EasyCrypt
+EasyCrypt Examples,https://github.com/AvishkarMahajan/easycrypt_examples
+LQ-1,https://github.com/LaharadevLQ1/lq1-ec-proofs
+Uvoting,https://github.com/krips/uvoting
+FV Sphincs,https://github.com/MM45/FV-SPHINCSPLUS-EC
+ElGamal,https://github.com/derens99/ElGamal-proof
+Old Formosa Libjc,https://github.com/tfaoliveira/libjc
+SRI High Assurance Crypto,https://github.com/SRI-CSL/high-assurance-crypto
+EasyCrypt,https://github.com/EasyCrypt/easycrypt
+Merkle Damgard,Private
+CMAC,Private
+CraftCodeLab,https://github.com/Hacker-Code-J/EasyCrypt-CraftCodeLab
+Formal Methods S&P,https://github.com/SmoothThunk/Formal-Methods-in-Security-and-Privacy
+EasyTeach,https://github.com/tarakaramg/EasyTeach
+EasyTeach Alley,https://github.com/alleystoughton/EasyTeach
+The Joy of EasyCrypt,https://github.com/tejasanilshah/the-joy-of-easycrypt
+Acc sElect,https://github.com/mortensol/acc-select

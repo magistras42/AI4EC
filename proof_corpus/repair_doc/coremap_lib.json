@@ -1,0 +1,8 @@
+{
+  "path": "theories/core/CoreMap.ec",
+  "confidence": "verified_current_source (whole file, 9 lines)",
+  "caveat": "No true git-diff was possible. This is a structural snapshot of the file's CURRENT (main-branch) content plus any changelog-confirmed version deltas.",
+  "current_content_summary": "Extremely small: declares the abstract total-map type ('a,'b) map plus three SMT-bound primitives -- cst (constant map), and the get/set notations `.[_]` / `.[_ <- _]`. The file's own comment says explicitly not to use these directly and to use the (user-facing) Map theory instead -- in the current tree that user-facing theory is SmtMap (see the SmtMap library file already produced), which re-exposes exactly these three primitives plus tofun/offun/eq_except/merge.",
+  "version_diffs_found": "None found by name in the scanned changelog window.",
+  "import_repair_note": "CoreMap is a bind-to-SMT layer, not a user API -- its own header says \"The only purposes of these types and operators are to be bound to the relevant SMT operators. Do not use them directly and use the Map theory instead.\" It matters for import repair because of HOW its names travel. SmtMap.ec begins `require import AllCore CoreMap.`, but FMap.ec does a bare `import CoreMap.` -- import, not require. A bare `import` brings names into scope for that file alone and does not re-export them, so a proof whose `map` / `cst` / `\"_.[_]\"` references resolve after requiring SmtMap is relying on SmtMap's require, and nothing FMap provides will substitute for it. CoreMap has had no symbol removed in the tracked window, so an unknown `map` or `cst` is a missing SmtMap (or CoreMap) require, never a move."
+}
